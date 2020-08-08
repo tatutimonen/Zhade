@@ -1,5 +1,4 @@
-#include "App.hpp"
-#include "Config.hpp"
+#include "Main.hpp"
 
 int main(void)
 {

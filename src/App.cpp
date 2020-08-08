@@ -8,6 +8,7 @@ App::App(string const& name)
 {
     setupWindow();
     setupExtensionWrangler();
+    
     GLuint program = glCreateProgram();
     if (!program)
     {
