@@ -8,13 +8,18 @@ App::App(string const& name)
 {
     setupWindow();
     setupExtensionWrangler();
-    
+
     GLuint program = glCreateProgram();
     if (!program)
     {
         throw runtime_error("Error creating program!");
     }
     program_ = program;
+}
+
+void App::run()
+{
+    
 }
 
 int App::setupWindow()
