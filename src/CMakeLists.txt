@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.17)
 
 project(shadow-mapper LANGUAGES CXX)
 
-find_package(OpenGL REQUIRED)
 find_package(glew REQUIRED)
 find_package(glfw3 REQUIRED) # doesn't seem to be logged even if found?
 find_package(glm REQUIRED) # neither this one
