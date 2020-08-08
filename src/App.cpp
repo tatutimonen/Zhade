@@ -1,4 +1,4 @@
-#include <App.hpp>
+#include "App.hpp"
 
 using std::string;
 using std::runtime_error;
@@ -24,12 +24,12 @@ int App::setupWindow()
         throw runtime_error("Error initializing GLFW!");
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, config::OPENGL_VERSION_MAJOR);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, config::OPENGL_VERSION_MINOR);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, Config::OPENGL_VERSION_MAJOR);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, Config::OPENGL_VERSION_MINOR);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-    GLFWwindow *window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, name_.c_str(), nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, name_.c_str(), nullptr, nullptr);
     if (!window)
     {
         glfwTerminate();
@@ -63,7 +63,7 @@ int App::setupExtensionWrangler()
 
 void App::render()
 {
-    while (!glfwWindowShouldClose)
+    while (!glfwWindowShouldClose(window_))
     {
         return;
     }
