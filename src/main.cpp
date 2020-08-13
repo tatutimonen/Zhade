@@ -1,8 +1,12 @@
 #include "main.hpp"
 
+#include <iostream>
+
+#include <glm/glm.hpp>
+
 int main(void)
 {
-    App app = App(Config::APP_NAME);
-    app.run();
+    glm::mat4 x = glm::mat4(1.0f);
+    std::cout << "asd" << std::endl;
     return 0;
 }

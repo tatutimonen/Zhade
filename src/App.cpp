@@ -19,7 +19,10 @@ App::App(const string& name)
 
 void App::run()
 {
-    
+    while (!glfwWindowShouldClose(window_))
+    {
+        ;
+    }
 }
 
 int App::setupWindow()
@@ -69,8 +72,5 @@ int App::setupExtensionWrangler()
 
 void App::render()
 {
-    while (!glfwWindowShouldClose(window_))
-    {
-        return;
-    }
+    return;
 }
