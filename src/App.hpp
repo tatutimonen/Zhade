@@ -10,9 +10,9 @@
 
 namespace
 {
-    constexpr GLuint WINDOW_WIDTH  = 800;
-    constexpr GLuint WINDOW_HEIGHT = 600;
-}
+constexpr GLuint WINDOW_WIDTH  = 800;
+constexpr GLuint WINDOW_HEIGHT = 600;
+} // namespace
 
 class App
 {
