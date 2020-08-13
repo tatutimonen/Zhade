@@ -25,7 +25,7 @@ void App::run()
     }
 }
 
-int App::setupWindow()
+void App::setupWindow()
 {
     if (!glfwInit())
     {
@@ -48,7 +48,7 @@ int App::setupWindow()
     window_ = window;
 }
 
-int App::setupExtensionWrangler()
+void App::setupExtensionWrangler()
 {
     if (!window_)
     {

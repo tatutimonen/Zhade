@@ -23,11 +23,11 @@ public:
     void                    run();
 
 private:
-                            App(const App&);
-    App&                    operator=(const App&);
+    //                        App(const App&);
+    //App&                    operator=(const App&);
 
-    int                     setupWindow();
-    int                     setupExtensionWrangler();
+    void                     setupWindow();
+    void                     setupExtensionWrangler();
     void                    render();
 
     const std::string&      name_;
