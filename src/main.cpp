@@ -1,4 +1,4 @@
-#include "Main.hpp"
+#include "main.hpp"
 
 int main(void)
 {

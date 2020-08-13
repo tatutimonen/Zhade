@@ -10,27 +10,27 @@
 
 namespace
 {
-    GLuint constexpr WINDOW_WIDTH  = 800;
-    GLuint constexpr WINDOW_HEIGHT = 600;
+    constexpr GLuint WINDOW_WIDTH  = 800;
+    constexpr GLuint WINDOW_HEIGHT = 600;
 }
 
 class App
 {
 public:
-                            App(std::string const& name);
+                            App(const std::string& name);
     virtual                 ~App() {}
 
     void                    run();
 
 private:
-                            App(App const&);
-    App&                    operator=(App const&);
+                            App(const App&);
+    App&                    operator=(const App&);
 
     int                     setupWindow();
     int                     setupExtensionWrangler();
     void                    render();
 
-    std::string const&      name_;
+    const std::string&      name_;
     GLFWwindow*             window_ = nullptr;
     GLuint                  program_;
     GLuint                  static_vao_ = 0;

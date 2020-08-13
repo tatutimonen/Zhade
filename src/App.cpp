@@ -3,7 +3,7 @@
 using std::string;
 using std::runtime_error;
 
-App::App(string const& name)
+App::App(const string& name)
     : name_(name)
 {
     setupWindow();
