@@ -12,7 +12,7 @@ target_link_libraries(App
 )
 
 # Dependencies
-set(DEPS_DIR ${CMAKE_SOURCE_DIR}/deps)
+set(DEPS_DIR ${CMAKE_SOURCE_DIR}/dep)
 target_include_directories(App
     PUBLIC ${DEPS_DIR}/glew-2.2.0/include/
            ${DEPS_DIR}/glfw-3.3.2/include/
