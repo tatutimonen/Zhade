@@ -6,10 +6,7 @@ add_executable(App main.cpp App.cpp)
 if(WIN32)
     set_target_properties(glew PROPERTIES LINK_FLAGS "/ignore:4281")
 endif()
-# CMake actually builds all of these in the background if necessary
 target_link_libraries(App PUBLIC glew glfw glm)
-# Dependencies
-set(EXTERN_DIR ${CMAKE_SOURCE_DIR}/extern)
 target_include_directories(App
     PUBLIC ${EXTERN_DIR}/glew-2.2.0/include
            ${EXTERN_DIR}/glfw-3.3.2/include
