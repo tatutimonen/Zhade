@@ -1,5 +1,11 @@
+#----------------------------------------------------------------------------
+# CXX flags.
+
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+#----------------------------------------------------------------------------
+# Executable definition and library linking.
 
 add_executable(App main.cpp App.cpp)
 # Ignore the GLEW-related linker warning about unoptimal x64 image base address
@@ -12,3 +18,5 @@ target_include_directories(App
            ${EXTERN_DIR}/glfw-3.3.2/include
            ${EXTERN_DIR}/glm
 )
+
+#----------------------------------------------------------------------------
