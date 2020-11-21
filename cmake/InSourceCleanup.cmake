@@ -1,0 +1,2 @@
+file(REMOVE_RECURSE "${CMAKE_SOURCE_DIR}/CMakeFiles")
+file(REMOVE "${CMAKE_SOURCE_DIR}/CMakeCache.txt")

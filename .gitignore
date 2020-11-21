@@ -3,3 +3,7 @@
 
 # Build
 build
+
+# CMake
+CMakeFiles
+CMakeCache.txt
