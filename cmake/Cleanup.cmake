@@ -1,8 +1,6 @@
-
 set(libs "glew" "glfw" "glm")
 string(REPLACE ";" "|" libs_pattern "${libs}")
-message("${libs_pattern}")
-target
+message("${CMAKE_GENERATOR_PLATFORM}")
 #[[file(GLOB files "*")
 if(NOT ${CLEAN_ALL})
     list(FILTER files EXCLUDE REGEX "glew|glfw|glm")

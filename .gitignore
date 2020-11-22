@@ -1,9 +1,9 @@
 # Editor
-.vscode
+.vscode/
 
 # Build
-build
+[Bb]uild/
 
 # CMake
-CMakeFiles
+CMakeFiles/
 CMakeCache.txt
