@@ -1,6 +1,6 @@
 #include <iostream>
 
-//#include <GL/glew.h>
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
@@ -12,7 +12,7 @@ int main(void)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-    /*auto window = glfwCreateWindow(800, 600, "Hello there.", nullptr, nullptr);
+    auto window = glfwCreateWindow(800, 600, "Hello there.", nullptr, nullptr);
     glfwMakeContextCurrent(window);
     glewExperimental = GL_TRUE;
     glewInit();
@@ -22,7 +22,7 @@ int main(void)
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         glfwSwapBuffers(window);
-    }*/
+    }
 
     glfwTerminate();
 
