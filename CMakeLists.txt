@@ -14,9 +14,9 @@ set(CMAKE_CXX_STANDARD          17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS        OFF)
 
-add_subdirectory("lib/glew" EXCLUDE_FROM_ALL)
-add_subdirectory("lib/glfw" EXCLUDE_FROM_ALL)
-add_definitions("-DGLEW_STATIC")
+add_definitions(-DGLEW_STATIC)
 add_subdirectory("lib/glew-cmake" EXCLUDE_FROM_ALL)
+add_subdirectory("lib/glfw" EXCLUDE_FROM_ALL)
+add_subdirectory("lib/glm" EXCLUDE_FROM_ALL)
 
 add_subdirectory("${CMAKE_SOURCE_DIR}/src" main)
