@@ -9,5 +9,6 @@ target_link_libraries(main
 target_include_directories(main
     PRIVATE "lib/glew-cmake/include"
             "lib/glfw/include"
-            "glm/glm"
+            "lib/glm/glm"
+            "lib/Simple-OpenGL-Image-Library/src"
 )

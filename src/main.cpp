@@ -4,6 +4,8 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
+#include <omp.h>
+
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
 int main(void)
@@ -49,9 +51,12 @@ int main(void)
         \n\
         layout (location = 0) in vec3 position;\n\
         \n\
+        out vec3 position_out;\n\
+        \n\
         void main()\n\
         {\n\
-            gl_Position = vec4(position, 1.0);\n\
+            gl_Position = vec4(position.x, position.y, position.z, 1.0);\n\
+            position_out = gl_Position.xyz;\n\
         }\n\
     ";
     glShaderSource(vertex_shader, 1, &vertex_shader_source, nullptr);
@@ -62,11 +67,12 @@ int main(void)
     const GLchar* fragment_shader_source = "\
         #version 330 core\n\
         \n\
+        in vec3 position_out;\n\
         out vec4 color;\n\
         \n\
         void main()\n\
         {\n\
-            color = vec4(1.0, 0.0, 0.0, 1.0);\n\
+            color = vec4(position_out, 1.0f);\n\
         }\n\
     ";
     glShaderSource(fragment_shader, 1, &fragment_shader_source, nullptr);
@@ -85,9 +91,11 @@ int main(void)
         \n\
         out vec4 color;\n\
         \n\
+        uniform vec4 u_color;\n\
+        \n\
         void main()\n\
         {\n\
-            color = vec4(1.0, 1.0, 0.0, 1.0);\n\
+            color = u_color;\n\
         }\n\
     ";
     glShaderSource(fragment_shader_2, 1, &fragment_shader_source_2, nullptr);
@@ -107,11 +115,16 @@ int main(void)
 
         glClearColor(0.4627f, 0.7255f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        
+
         glBindVertexArray(vao);
         glUseProgram(shader_program);
         glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        GLfloat time = glfwGetTime();
+        GLfloat green_shade = (glm::sin(time) / 2) + 0.5;
+        GLint color_location = glGetUniformLocation(shader_program_2, "u_color");
         glUseProgram(shader_program_2);
+        glUniform4f(color_location, 0.0f, 0.0f, green_shade, 1.0f);
         glDrawArrays(GL_TRIANGLES, 3, 3);
         glBindVertexArray(0);
 
