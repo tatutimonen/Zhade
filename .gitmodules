@@ -1,5 +1,5 @@
 [submodule "lib/glew-cmake"]
-	path = lib/glew-cmake
+	path = lib/glew
 	url = git@github.com:Perlmint/glew-cmake.git
 [submodule "lib/glfw"]
 	path = lib/glfw
@@ -8,5 +8,5 @@
 	path = lib/glm
 	url = git@github.com:g-truc/glm.git
 [submodule "lib/Simple-OpenGL-Image-Library"]
-	path = lib/Simple-OpenGL-Image-Library
+	path = lib/soil
 	url = git@github.com:kbranigan/Simple-OpenGL-Image-Library.git
