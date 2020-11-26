@@ -8,8 +8,8 @@ target_link_libraries(main
             SOIL
 )
 target_include_directories(main
-    PRIVATE "lib/glew/include"
-            "lib/glfw/include"
-            "lib/glm/glm"
-            "lib/soil/src"
+    PRIVATE "${lib_dir}/glew/include"
+            "${lib_dir}/glfw/include"
+            "${lib_dir}/glm/glm"
+            "${lib_dir}/soil/src"
 )

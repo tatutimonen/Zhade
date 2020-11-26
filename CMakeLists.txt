@@ -16,10 +16,11 @@ set(CMAKE_CXX_EXTENSIONS        OFF)
 
 find_package(OpenMP REQUIRED)
 
+set(lib_dir "${CMAKE_SOURCE_DIR}/lib")
 add_compile_definitions(GLEW_STATIC)
-add_subdirectory("lib/glew" EXCLUDE_FROM_ALL)
-add_subdirectory("lib/glfw" EXCLUDE_FROM_ALL)
-add_subdirectory("lib/glm"  EXCLUDE_FROM_ALL)
-add_subdirectory("lib/soil" EXCLUDE_FROM_ALL)
+add_subdirectory("${lib_dir}/glew" EXCLUDE_FROM_ALL)
+add_subdirectory("${lib_dir}/glfw" EXCLUDE_FROM_ALL)
+add_subdirectory("${lib_dir}/glm"  EXCLUDE_FROM_ALL)
+add_subdirectory("${lib_dir}/soil" EXCLUDE_FROM_ALL)
 
 add_subdirectory("${CMAKE_SOURCE_DIR}/src" main)
