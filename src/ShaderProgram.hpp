@@ -7,16 +7,9 @@ class Shader;
 
 #include <cstdint>
 
-static constexpr uint32_t pipeline_length = 4;
-
-enum ShaderType {
-    VERTEX_SHADER,
-    GEOMETRY_SHADER,
-    TESSELLATION_SHADER,
-    FRAGMENT_SHADER
-};
 
 class ShaderProgram {
+    static constexpr uint32_t pipeline_length = 4;
 public:
     ShaderProgram(const Shader& vertex_shader, const Shader& fragment_shader, const Shader* geometry_shader = nullptr);
     ~ShaderProgram();

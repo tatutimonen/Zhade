@@ -9,7 +9,14 @@ class ShaderProgram;
 #include <string>
 #include <fstream>
 #include <sstream>
-#include <vector>
+
+
+enum ShaderType {
+    VERTEX_SHADER,
+    GEOMETRY_SHADER,
+    TESSELLATION_SHADER,
+    FRAGMENT_SHADER
+};
 
 class Shader {
 public:

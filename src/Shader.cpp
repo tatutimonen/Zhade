@@ -4,9 +4,11 @@ Shader::Shader(const std::string& filename, int32_t gl_shader_type)
 {
     std::ifstream shader_file;
     shader_file.open(filename);
+    
     std::stringstream sstream;
     sstream << shader_file.rdbuf();
     m_shader_source = sstream.str();
+
     m_handle = glCreateShader(gl_shader_type);
     const char* shader_source = m_shader_source.c_str();
     glShaderSource(m_handle, 1, &shader_source, nullptr);
