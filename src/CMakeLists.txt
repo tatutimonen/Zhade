@@ -1,5 +1,7 @@
 add_executable(main
     main.cpp
+    Shader.cpp
+    ShaderProgram.cpp
 )
 target_link_libraries(main
     PRIVATE libglew_static
