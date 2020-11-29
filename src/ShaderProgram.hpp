@@ -11,7 +11,7 @@ class Shader;
 class ShaderProgram {
     static constexpr uint32_t pipeline_length = 4;
 public:
-    ShaderProgram(const Shader& vertex_shader, const Shader& fragment_shader, const Shader* geometry_shader = nullptr);
+    ShaderProgram(Shader* vertex_shader, Shader* fragment_shader, Shader* geometry_shader = nullptr);
     ~ShaderProgram();
 
     uint32_t get_handle() const;
@@ -20,7 +20,7 @@ public:
 
 private:
     uint32_t m_handle;
-    uint32_t m_shader_handles[pipeline_length] = { 0 };
+    Shader* m_shaders[pipeline_length] = { nullptr };
 
     void delete_shaders();
 };

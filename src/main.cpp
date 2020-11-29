@@ -81,7 +81,7 @@ int main(void)
 
     Shader vertex_shader = Shader("../src/vshader.glsl", GL_VERTEX_SHADER);
     Shader fragment_shader = Shader("../src/fshader.glsl", GL_FRAGMENT_SHADER);
-    ShaderProgram shader_program = ShaderProgram(vertex_shader, fragment_shader);
+    ShaderProgram shader_program = ShaderProgram(&vertex_shader, &fragment_shader);
     shader_program.use();
 
     glBindVertexArray(vao);

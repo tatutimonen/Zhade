@@ -1,29 +1,27 @@
 #include "ShaderProgram.hpp"
 
-ShaderProgram::ShaderProgram(const Shader& vertex_shader,
-                             const Shader& fragment_shader,
-                             const Shader* geometry_shader)
+ShaderProgram::ShaderProgram(Shader* vertex_shader, Shader* fragment_shader, Shader* geometry_shader)
 {
     m_handle = glCreateProgram();
 
-    m_shader_handles[VERTEX_SHADER] = vertex_shader.get_handle();
-    vertex_shader.attach(this);
+    m_shaders[VERTEX_SHADER] = vertex_shader;
+    vertex_shader->attach(this);
 
-    fragment_shader.attach(this);
-    m_shader_handles[FRAGMENT_SHADER] = fragment_shader.get_handle();
+    fragment_shader->attach(this);
+    m_shaders[FRAGMENT_SHADER] = fragment_shader;
 
     if (geometry_shader != nullptr) {
-        m_shader_handles[GEOMETRY_SHADER] = geometry_shader->get_handle();
+        m_shaders[GEOMETRY_SHADER] = geometry_shader;
         geometry_shader->attach(this);
     }
 
     link();
+    delete_shaders();
 }
 
 ShaderProgram::~ShaderProgram()
 {
     glDeleteProgram(m_handle);
-    delete_shaders();
 }
 
 uint32_t ShaderProgram::get_handle() const
@@ -43,6 +41,11 @@ void ShaderProgram::use() const
 
 void ShaderProgram::delete_shaders()
 {
-    for (const auto shader_handle : m_shader_handles)
-        glDeleteShader(shader_handle);
+    for (uint32_t i = 0; i < pipeline_length; ++i) {
+        Shader* shader = m_shaders[i];
+        if (shader != nullptr) {
+            shader->~Shader();
+            m_shaders[i] = nullptr;
+        }
+    }
 }
