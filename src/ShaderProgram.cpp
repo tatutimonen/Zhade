@@ -17,14 +17,13 @@ ShaderProgram::ShaderProgram(const Shader& vertex_shader,
         geometry_shader->attach(this);
     }
 
-    this->link();
+    link();
 }
 
 ShaderProgram::~ShaderProgram()
 {
     glDeleteProgram(m_handle);
-    for (const auto shader_handle : m_shader_handles)
-        glDeleteShader(shader_handle);
+    delete_shaders();
 }
 
 uint32_t ShaderProgram::get_handle() const
@@ -40,4 +39,10 @@ void ShaderProgram::link() const
 void ShaderProgram::use() const
 {
     glUseProgram(m_handle);
+}
+
+void ShaderProgram::delete_shaders()
+{
+    for (const auto shader_handle : m_shader_handles)
+        glDeleteShader(shader_handle);
 }

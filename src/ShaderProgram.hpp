@@ -21,4 +21,6 @@ public:
 private:
     uint32_t m_handle;
     uint32_t m_shader_handles[pipeline_length] = { 0 };
+
+    void delete_shaders();
 };
