@@ -1,11 +1,11 @@
 #pragma once
 
+#include "gl_common.hpp"
 #include "ShaderProgram.hpp"
 class ShaderProgram;
 
 #include <GL/glew.h>
 
-#include <cstdint>
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -20,13 +20,13 @@ enum ShaderType {
 
 class Shader {
 public:
-    Shader(const std::string& filename, int32_t gl_shader_type);
+    Shader(GLint gl_shader_type, const std::string& filename);
     ~Shader();
 
-    uint32_t get_handle() const;
-    void attach(const ShaderProgram* shader_program) const;
+    GLuint get_handle() const;
+    void attach(const ShaderProgram* shader_program);
 
 private:
     std::string m_shader_source;
-    uint32_t m_handle;
+    GLuint m_handle;
 };
