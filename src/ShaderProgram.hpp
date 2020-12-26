@@ -6,6 +6,7 @@ class Shader;
 #include <GL/glew.h>
 
 #include <iostream>
+#include <string>
 
 
 class ShaderProgram {
@@ -15,7 +16,7 @@ public:
     ~ShaderProgram();
 
     GLuint get_handle() const;
-    GLint get_uniform_location(const char* name) const;
+    GLint get_uniform_location(const std::string& name) const;
     void link() const;
     void use() const;
     void delete_shaders();

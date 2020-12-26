@@ -28,9 +28,9 @@ GLuint ShaderProgram::get_handle() const
     return m_handle;
 }
 
-GLint ShaderProgram::get_uniform_location(const char* name) const
+GLint ShaderProgram::get_uniform_location(const std::string& name) const
 {
-    GL_CALL(return glGetUniformLocation(m_handle, name));
+    GL_CALL(return glGetUniformLocation(m_handle, name.c_str()));
 }
 
 void ShaderProgram::link() const
