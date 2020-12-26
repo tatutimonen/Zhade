@@ -58,7 +58,7 @@ void ShaderProgram::delete_shaders()
     for (int i = 0; i < pipeline_length; ++i) {
         Shader* shader = m_shaders[i];
         if (shader != nullptr) {
-            shader->~Shader();
+            delete shader;
             m_shaders[i] = nullptr;
         }
     }
