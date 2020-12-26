@@ -9,12 +9,13 @@ class Shader;
 
 
 class ShaderProgram {
-    static constexpr unsigned pipeline_length = 4U;
+    static constexpr unsigned int pipeline_length = 4U;
 public:
     ShaderProgram(Shader* vertex_shader, Shader* fragment_shader, Shader* geometry_shader = nullptr);
     ~ShaderProgram();
 
     GLuint get_handle() const;
+    GLint get_uniform_location(const char* uniform) const;
     void link() const;
     void use() const;
 
