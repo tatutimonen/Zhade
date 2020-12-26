@@ -15,7 +15,7 @@ public:
     ~ShaderProgram();
 
     GLuint get_handle() const;
-    GLint get_uniform_location(const char* uniform) const;
+    GLint get_uniform_location(const char* name) const;
     void link() const;
     void use() const;
 
