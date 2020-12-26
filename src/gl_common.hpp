@@ -5,8 +5,6 @@
 #include <iostream>
 #include <iomanip>
 
-//----------------------------------------------------------------------------
-// OpenGL call wrapper with logging.
 
 #define GL_CALL(fn) fn; check_errors(#fn, __FILE__, __LINE__);
 
@@ -31,5 +29,3 @@ inline void check_errors(const char* fn, const char* file, int line)
     }
 }
 } // namespace
-
-//----------------------------------------------------------------------------

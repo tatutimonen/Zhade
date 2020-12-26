@@ -22,7 +22,7 @@ Shader::Shader(GLint gl_shader_type, const std::string& filename)
                   << m_handle
                   << ": "
                   << info_log;
-        this->~Shader();
+        delete this;
     }
 }
 
