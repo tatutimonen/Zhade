@@ -18,10 +18,9 @@ public:
     GLint get_uniform_location(const char* name) const;
     void link() const;
     void use() const;
+    void delete_shaders();
 
 private:
     GLuint m_handle;
     Shader* m_shaders[pipeline_length] = { nullptr };
-
-    void delete_shaders();
 };

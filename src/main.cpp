@@ -104,6 +104,7 @@ int main(void)
     GL_CALL(glDeleteVertexArrays(1, &vao));
     GL_CALL(glDeleteBuffers(1, &vbo));
     GL_CALL(glDeleteBuffers(1, &ebo));
+    shader_program->delete_shaders();
     delete shader_program;
 
     glfwTerminate();
