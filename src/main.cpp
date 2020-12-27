@@ -1,6 +1,8 @@
 #include <iostream>
 
 #include "gl_common.hpp"
+#include "App.hpp"
+#include "Camera.hpp"
 #include "Shader.hpp"
 #include "ShaderProgram.hpp"
 
@@ -8,28 +10,12 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/string_cast.hpp>
 #include <SOIL.h>
 
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
-
 int main(void)
 {
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-    //glfwWindowHint(GLFW_SAMPLES, 4);
-
-    auto window = glfwCreateWindow(800, 800, "Hello there.", nullptr, nullptr);
-    glfwMakeContextCurrent(window);
-    glfwSetKeyCallback(window, key_callback);
-    glewExperimental = GL_TRUE;
-    glewInit();
-
-    GL_CALL(glViewport(0, 0, 800, 800));
+    auto app = App::get_instance();
 
     GLfloat vertices[] = {
         -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
@@ -105,7 +91,7 @@ int main(void)
     //GL_CALL(glEnable(GL_MULTISAMPLE));
 
     int i = 0;
-    while (!glfwWindowShouldClose(window)) {
+    while (!glfwWindowShouldClose(app->get_gl_ctx())) {
         
         glfwPollEvents();
 
@@ -123,7 +109,7 @@ int main(void)
         GL_CALL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
         GL_CALL(glBindVertexArray(0));
 
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(app->get_gl_ctx());
 
     }
 
@@ -134,13 +120,5 @@ int main(void)
     shader_program->delete_shaders();
     delete shader_program;
 
-    glfwTerminate();
-
     return 0;
-}
-
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
-{
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GL_TRUE);
 }

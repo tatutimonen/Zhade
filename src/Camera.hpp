@@ -1,7 +1,9 @@
 #pragma once
 
 #include "gl_common.hpp"
+#include "App.hpp"
 
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -17,15 +19,18 @@ public:
     void set_up(const glm::vec3& up)             { m_up = up; }
     virtual void set_view() = 0;
 
-    const glm::vec3& get_position() const { return m_position; }
-    const glm::vec3& get_target() const   { return m_target; }
-    const glm::vec3& get_up() const       { return m_up; }
-    const glm::mat4& get_view() const     { return m_view; }
-    float get_z_near() const              { return m_z_near; }
-    float get_z_far() const               { return m_z_far; }
+    const glm::vec3& get_position() const     { return m_position; }
+    const glm::vec3& get_target() const       { return m_target; }
+    const glm::vec3& get_up() const           { return m_up; }
+    float get_z_near() const                  { return m_z_near; }
+    float get_z_far() const                   { return m_z_far; }
+    const glm::mat4& get_view() const         { return m_view; }
+    const glm::mat4& get_projectivity() const { return m_projectivity; }
 
     void move();
     void rotate();
+    void push_view_matrix(GLint location);
+    void push_projection_matrix(GLint location);
 
 protected:
     glm::vec3 m_position;
@@ -34,6 +39,7 @@ protected:
     float m_z_near;
     float m_z_far;
     glm::mat4 m_view;
+    glm::mat4 m_projectivity;
 };
 
 class OrthographicCamera : public Camera {

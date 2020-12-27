@@ -1,6 +1,7 @@
 add_executable(main
     main.cpp
     gl_common.hpp
+    App.cpp
     Camera.cpp
     Shader.cpp
     ShaderProgram.cpp
