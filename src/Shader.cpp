@@ -1,5 +1,6 @@
 #include "Shader.hpp"
 
+
 Shader::Shader(GLint gl_shader_type, const std::string& filename)
 {
     std::ifstream shader_file;
@@ -29,11 +30,6 @@ Shader::Shader(GLint gl_shader_type, const std::string& filename)
 Shader::~Shader()
 {
     GL_CALL(glDeleteShader(m_handle));
-}
-
-GLuint Shader::get_handle() const
-{
-    return m_handle;
 }
 
 void Shader::attach(const ShaderProgram* shader_program)

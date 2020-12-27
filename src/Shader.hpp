@@ -23,10 +23,10 @@ public:
     Shader(GLint gl_shader_type, const std::string& filename);
     ~Shader();
 
-    GLuint get_handle() const;
+    GLuint get_handle() const { return m_handle; }
     void attach(const ShaderProgram* shader_program);
 
 private:
-    std::string m_shader_source;
     GLuint m_handle;
+    std::string m_shader_source;
 };

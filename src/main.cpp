@@ -7,6 +7,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include <SOIL.h>
 
 
@@ -19,6 +21,7 @@ int main(void)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    //glfwWindowHint(GLFW_SAMPLES, 4);
 
     auto window = glfwCreateWindow(800, 800, "Hello there.", nullptr, nullptr);
     glfwMakeContextCurrent(window);
@@ -84,8 +87,24 @@ int main(void)
     ShaderProgram* shader_program = new ShaderProgram(vertex_shader, fragment_shader);
     shader_program->use();
 
-    GL_CALL(glBindVertexArray(vao));
+    glm::mat4 M(1.0f);
+    M = glm::rotate(M, glm::radians(-80.0f), glm::vec3(1.0f, 0.0f, 1.0f));
+    GLint M_loc = shader_program->get_uniform_location("M");
+    GL_CALL(glUniformMatrix4fv(M_loc, 1, GL_FALSE, glm::value_ptr(M)));
 
+    glm::mat4 V(1.0f);
+    V = glm::translate(V, glm::vec3(0.0f, 0.0f, -1.5f));
+    GLint V_loc = shader_program->get_uniform_location("V");
+    GL_CALL(glUniformMatrix4fv(V_loc, 1, GL_FALSE, glm::value_ptr(V)));
+
+    glm::mat4 P;
+    P = glm::perspective(glm::radians(70.0f), 1.0f, 0.1f, 100.0f);
+    GLint P_loc = shader_program->get_uniform_location("P");
+    GL_CALL(glUniformMatrix4fv(P_loc, 1, GL_FALSE, glm::value_ptr(P)));
+
+    //GL_CALL(glEnable(GL_MULTISAMPLE));
+
+    int i = 0;
     while (!glfwWindowShouldClose(window)) {
         
         glfwPollEvents();
@@ -94,7 +113,15 @@ int main(void)
         GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
 
         GL_CALL(glBindTexture(GL_TEXTURE_2D, tex));
+
+        glm::mat4 R(1.0f);
+        R = glm::rotate(R, glm::radians(static_cast<GLfloat>(i++) * 0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
+        GLint R_loc = shader_program->get_uniform_location("R");
+        GL_CALL(glUniformMatrix4fv(R_loc, 1, GL_FALSE, glm::value_ptr(R)));
+
+        GL_CALL(glBindVertexArray(vao));
         GL_CALL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
+        GL_CALL(glBindVertexArray(0));
 
         glfwSwapBuffers(window);
 

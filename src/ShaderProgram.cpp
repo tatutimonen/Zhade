@@ -1,5 +1,6 @@
 #include "ShaderProgram.hpp"
 
+
 ShaderProgram::ShaderProgram(Shader* vertex_shader, Shader* fragment_shader, Shader* geometry_shader)
 {
     GL_CALL(m_handle = glCreateProgram());
@@ -23,14 +24,16 @@ ShaderProgram::~ShaderProgram()
     GL_CALL(glDeleteProgram(m_handle));
 }
 
-GLuint ShaderProgram::get_handle() const
+GLint ShaderProgram::get_uniform_location(const std::string& name)
 {
-    return m_handle;
-}
-
-GLint ShaderProgram::get_uniform_location(const std::string& name) const
-{
-    GL_CALL(return glGetUniformLocation(m_handle, name.c_str()));
+    if (m_uniform_location_cache.find(name) != m_uniform_location_cache.end()) {
+        return m_uniform_location_cache[name];
+    }
+    GL_CALL(GLint location = glGetUniformLocation(m_handle, name.c_str()));
+    if (location != -1) {
+        m_uniform_location_cache[name] = location;
+    }
+    return location;
 }
 
 void ShaderProgram::link() const

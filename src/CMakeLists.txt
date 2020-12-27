@@ -1,8 +1,9 @@
 add_executable(main
     main.cpp
+    gl_common.hpp
+    Camera.cpp
     Shader.cpp
     ShaderProgram.cpp
-    gl_common.hpp
 )
 target_link_libraries(main
     PRIVATE libglew_static
