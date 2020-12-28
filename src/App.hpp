@@ -21,6 +21,8 @@ public:
     GLFWwindow* get_gl_ctx() const { return m_window; }
     const bool* get_keys() const   { return m_keys; }
 
+    void init();
+
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
     {
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -41,8 +43,6 @@ public:
 
 private:
     App() = default;
-
-    void init();
 
 
     static App* m_instance;

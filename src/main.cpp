@@ -15,7 +15,12 @@
 
 int main(void)
 {
-    auto app = App::get_instance();
+    
+    App::get_instance()->init();
+    PerspectiveCamera camera = PerspectiveCamera(glm::vec3(0.0f, 1.0f, 3.0f),
+                                                 glm::vec3(0.0f, 1.0f, 0.0f),
+                                                 glm::vec3(0.0f, 1.0f, 0.0f),
+                                                 0.1f, 100.0f, 70.0f, 1.0f);
 
     GLfloat vertices[] = {
         -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
@@ -88,10 +93,8 @@ int main(void)
     GLint P_loc = shader_program->get_uniform_location("P");
     GL_CALL(glUniformMatrix4fv(P_loc, 1, GL_FALSE, glm::value_ptr(P)));
 
-    //GL_CALL(glEnable(GL_MULTISAMPLE));
-
     int i = 0;
-    while (!glfwWindowShouldClose(app->get_gl_ctx())) {
+    while (!glfwWindowShouldClose(App::get_instance()->get_gl_ctx())) {
         
         glfwPollEvents();
 
@@ -109,7 +112,7 @@ int main(void)
         GL_CALL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
         GL_CALL(glBindVertexArray(0));
 
-        glfwSwapBuffers(app->get_gl_ctx());
+        glfwSwapBuffers(App::get_instance()->get_gl_ctx());
 
     }
 

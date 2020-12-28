@@ -1,15 +1,11 @@
 #include "App.hpp"
 
 
-App* App::m_instance = nullptr;
+App* App::m_instance = new App();
 bool App::m_keys[1024];
 
 App* App::get_instance()
 {
-    if (m_instance == nullptr) {
-        m_instance = new App();
-        m_instance->init();
-    }
     return m_instance;
 }
 
