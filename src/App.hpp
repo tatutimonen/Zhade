@@ -77,7 +77,7 @@ private:
     static bool m_keys[1024];
     float m_delta_time = 0.0f;
     float m_last_frame = 0.0f;
-    static constexpr float mouse_sensitivity = 0.003f;
+    static constexpr float mouse_sensitivity = 0.002f;
     static float m_theta;
     static float m_phi;
 };

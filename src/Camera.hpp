@@ -9,7 +9,7 @@
 
 
 class Camera {
-    static constexpr float camera_base_speed = 3.0f;
+    static constexpr float camera_base_speed = 2.5f;
 public:
     virtual ~Camera() = default;
 
