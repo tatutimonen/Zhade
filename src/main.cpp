@@ -10,16 +10,16 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include <SOIL.h>
 
 
 int main(void)
 {
-    
     App::get_instance()->init();
-    PerspectiveCamera camera = PerspectiveCamera(glm::vec3(0.0f, 1.0f, 3.0f),
-                                                 glm::vec3(0.0f, 1.0f, 0.0f),
-                                                 glm::vec3(0.0f, 1.0f, 0.0f),
+    PerspectiveCamera camera = PerspectiveCamera(glm::vec3(0.0f, 0.0f,  3.0f),
+                                                 glm::vec3(0.0f, 0.0f, -1.0f),
+                                                 glm::vec3(0.0f, 1.0f,  0.0f),
                                                  0.1f, 100.0f, 70.0f, 1.0f);
 
     GLfloat vertices[] = {
@@ -78,35 +78,29 @@ int main(void)
     ShaderProgram* shader_program = new ShaderProgram(vertex_shader, fragment_shader);
     shader_program->use();
 
-    glm::mat4 M(1.0f);
-    M = glm::rotate(M, glm::radians(-80.0f), glm::vec3(1.0f, 0.0f, 1.0f));
-    GLint M_loc = shader_program->get_uniform_location("M");
-    GL_CALL(glUniformMatrix4fv(M_loc, 1, GL_FALSE, glm::value_ptr(M)));
-
-    glm::mat4 V(1.0f);
-    V = glm::translate(V, glm::vec3(0.0f, 0.0f, -1.5f));
-    GLint V_loc = shader_program->get_uniform_location("V");
-    GL_CALL(glUniformMatrix4fv(V_loc, 1, GL_FALSE, glm::value_ptr(V)));
-
-    glm::mat4 P;
-    P = glm::perspective(glm::radians(70.0f), 1.0f, 0.1f, 100.0f);
-    GLint P_loc = shader_program->get_uniform_location("P");
-    GL_CALL(glUniformMatrix4fv(P_loc, 1, GL_FALSE, glm::value_ptr(P)));
+    glm::mat4 model_matrix(1.0f);
+    GLint model_matrix_loc = shader_program->get_uniform_location("model");
+    GL_CALL(glUniformMatrix4fv(model_matrix_loc, 1, GL_FALSE, glm::value_ptr(model_matrix)));
+    camera.push_view_matrix(shader_program->get_uniform_location("view"));
+    camera.push_projection_matrix(shader_program->get_uniform_location("projection"));
 
     int i = 0;
     while (!glfwWindowShouldClose(App::get_instance()->get_gl_ctx())) {
         
+        App::get_instance()->update_internal_times();
+        
         glfwPollEvents();
+        bool moved = camera.move();
+        bool rotated = camera.rotate();
+        if (moved || rotated) {
+            camera.push_view_matrix(shader_program->get_uniform_location("view"));
+            camera.push_projection_matrix(shader_program->get_uniform_location("projection"));
+        }
 
         GL_CALL(glClearColor(0.4627f, 0.7255f, 0.0f, 1.0f));
         GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
 
         GL_CALL(glBindTexture(GL_TEXTURE_2D, tex));
-
-        glm::mat4 R(1.0f);
-        R = glm::rotate(R, glm::radians(static_cast<GLfloat>(i++) * 0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
-        GLint R_loc = shader_program->get_uniform_location("R");
-        GL_CALL(glUniformMatrix4fv(R_loc, 1, GL_FALSE, glm::value_ptr(R)));
 
         GL_CALL(glBindVertexArray(vao));
         GL_CALL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));

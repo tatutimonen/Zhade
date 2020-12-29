@@ -12,23 +12,46 @@ void Camera::set_view()
     m_view = glm::lookAt(m_position, m_position + m_target, m_up);
 }
 
-void Camera::move()
+bool Camera::move()
 {
-    glm::vec3 position_prev = m_position;
+    const glm::vec3 position_prev = m_position;
     auto keys = App::get_instance()->get_keys();
+    float camera_speed = camera_base_speed * App::get_instance()->get_delta_time();
     if (keys[GLFW_KEY_W])
-        m_position += camera_base_speed * m_target;
+        m_position += camera_speed * m_target;
     if (keys[GLFW_KEY_S]) 
-        m_position += camera_base_speed * -m_target;
+        m_position += camera_speed * -m_target;
     if (keys[GLFW_KEY_D])
-        m_position += camera_base_speed * glm::normalize(glm::cross(m_target, m_up));
+        m_position += camera_speed * glm::normalize(glm::cross(m_target, m_up));
     if (keys[GLFW_KEY_A])
-        m_position += camera_base_speed * -glm::normalize(glm::cross(m_target, m_up));
+        m_position += camera_speed * -glm::normalize(glm::cross(m_target, m_up));
     
-    if (m_position != position_prev) {
+    if (glm::length2(glm::abs(m_position - position_prev)) > epsilon*epsilon) {
         set_view();
         set_projectivity();
+        return true;
     }
+
+    return false;
+}
+
+bool Camera::rotate()
+{
+    float theta = App::get_instance()->get_theta();
+    float phi = App::get_instance()->get_phi();
+    const glm::vec3 target_prev = m_target;
+    m_target.x = glm::cos(theta) * glm::sin(phi);
+    m_target.y = glm::sin(theta);
+    m_target.z = -glm::cos(theta) * glm::cos(phi);
+    m_target = glm::normalize(m_target);
+
+    if (glm::length2(glm::abs(m_target - target_prev)) > epsilon*epsilon) {
+        set_view();
+        set_projectivity();
+        return true;
+    }
+
+    return false;
 }
 
 void Camera::push_view_matrix(GLint location)

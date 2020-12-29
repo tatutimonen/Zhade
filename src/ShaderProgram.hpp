@@ -11,7 +11,7 @@ class Shader;
 
 
 class ShaderProgram {
-    static constexpr unsigned int pipeline_length = 4u;
+    static constexpr unsigned pipeline_length = 4u;
 public:
     ShaderProgram(Shader* vertex_shader, Shader* fragment_shader, Shader* geometry_shader = nullptr);
     ~ShaderProgram();

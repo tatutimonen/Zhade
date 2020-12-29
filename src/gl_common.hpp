@@ -2,12 +2,17 @@
 
 #include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
+#include <glm/gtx/norm.hpp>
 
 #include <iostream>
 #include <iomanip>
 
 
 #define GL_CALL(fn) fn; check_errors(#fn, __FILE__, __LINE__);
+
+constexpr float epsilon = std::numeric_limits<float>::epsilon();
+
 
 namespace
 {

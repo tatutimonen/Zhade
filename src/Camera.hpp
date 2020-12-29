@@ -9,7 +9,7 @@
 
 
 class Camera {
-    static constexpr float camera_base_speed = 0.05f;
+    static constexpr float camera_base_speed = 3.0f;
 public:
     virtual ~Camera() = default;
 
@@ -27,8 +27,8 @@ public:
     const glm::mat4& get_view() const         { return m_view; }
     const glm::mat4& get_projectivity() const { return m_projectivity; }
 
-    void move();
-    void rotate();
+    bool move();
+    bool rotate();
     void push_view_matrix(GLint location);
     void push_projection_matrix(GLint location);
 
