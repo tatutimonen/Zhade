@@ -4,7 +4,7 @@
 App* App::m_instance = new App();
 bool App::m_keys[1024];
 float App::m_theta = 0.0f;
-float App::m_phi = 0.0f;
+float App::m_phi = -glm::half_pi<float>();
 
 App* App::get_instance()
 {

@@ -58,7 +58,7 @@ void ShaderProgram::use() const
 
 void ShaderProgram::delete_shaders()
 {
-    for (int i = 0; i < pipeline_length; ++i) {
+    for (int i = 0; i < s_pipeline_length; ++i) {
         Shader* shader = m_shaders[i];
         if (shader != nullptr) {
             delete shader;

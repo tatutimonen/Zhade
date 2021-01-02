@@ -11,10 +11,12 @@ target_link_libraries(main
             glfw
             glm
             SOIL
+            assimp
 )
 target_include_directories(main
     PRIVATE "${lib_dir}/glew/include"
             "${lib_dir}/glfw/include"
             "${lib_dir}/glm/glm"
             "${lib_dir}/soil/src"
+            "${lib_dir}/assimp/include"
 )

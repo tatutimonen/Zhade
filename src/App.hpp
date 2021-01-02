@@ -44,19 +44,14 @@ public:
 
     static void mouse_callback(GLFWwindow* window, double x_pos, double y_pos)
     {
-        static bool first_mouse = true;
-        static float x_pos_prev;
-        static float y_pos_prev;
-        if (first_mouse) {
-            x_pos_prev = x_pos;
-            y_pos_prev = y_pos;
-            first_mouse = false;
-        }
+        static float x_pos_prev = x_pos;
+        static float y_pos_prev = y_pos;
 
         float x_offset = mouse_sensitivity * (x_pos - x_pos_prev);
         float y_offset = mouse_sensitivity * (y_pos_prev - y_pos);
 
-        m_theta = glm::clamp(m_theta + y_offset, glm::radians(-89.9f), glm::radians(89.9f));
+        float theta_bound = glm::half_pi<float>() - 0.01f;
+        m_theta = glm::clamp(m_theta + y_offset, -theta_bound, theta_bound);
         m_phi += x_offset;
 
         x_pos_prev = x_pos;

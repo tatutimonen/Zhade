@@ -12,15 +12,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <SOIL.h>
+#include <assimp/Importer.hpp>
 
 
 int main(void)
 {
     App::get_instance()->init();
-    PerspectiveCamera camera = PerspectiveCamera(glm::vec3(0.0f, 0.0f,  3.0f),
-                                                 glm::vec3(0.0f, 0.0f, -1.0f),
-                                                 glm::vec3(0.0f, 1.0f,  0.0f),
-                                                 0.1f, 100.0f, 70.0f, 1.0f);
+    PerspectiveCamera camera = PerspectiveCamera();
 
     GLfloat vertices[] = {
         -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,

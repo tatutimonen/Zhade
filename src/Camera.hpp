@@ -9,8 +9,9 @@
 
 
 class Camera {
-    static constexpr float camera_base_speed = 2.5f;
+    static constexpr float s_camera_base_speed = 2.5f;
 public:
+    Camera();
     virtual ~Camera() = default;
 
     void set_position(const glm::vec3& position) { m_position = position; }
@@ -33,7 +34,11 @@ public:
     void push_projection_matrix(GLint location);
 
 protected:
-    Camera(const glm::vec3& position, const glm::vec3& target, const glm::vec3& up, float z_near, float z_far);
+    Camera(const glm::vec3& position,
+           const glm::vec3& target,
+           const glm::vec3& up,
+           float z_near,
+           float z_far);
 
     glm::vec3 m_position;
     glm::vec3 m_target;
@@ -44,10 +49,18 @@ protected:
     glm::mat4 m_projectivity = glm::mat4(1.0f);
 };
 
+
 class OrthographicCamera final : public Camera {
 public:
-    OrthographicCamera(const glm::vec3& position, const glm::vec3& target, const glm::vec3& up, float z_near, float z_far,
-                       float x0, float x1, float y0, float y1);
+    OrthographicCamera(const glm::vec3& position = glm::vec3(),
+                       const glm::vec3& target   = glm::vec3(0.0f, 0.0f, -1.0f),
+                       const glm::vec3& up       = glm::vec3(0.0f, 1.0f, 0.0f),
+                       float z_near              = 0.1f,
+                       float z_far               = 100.0f,
+                       float x0                  = 0.0f,
+                       float x1                  = App::window_width,
+                       float y0                  = 0.0f,
+                       float y1                  = App::window_height);
     ~OrthographicCamera() = default;
 
     void set_projectivity();
@@ -60,10 +73,17 @@ private:
     glm::vec2 m_y_range;
 };
 
+
 class PerspectiveCamera final : public Camera {
 public:
-    PerspectiveCamera(const glm::vec3& position, const glm::vec3& target, const glm::vec3& up, float z_near, float z_far,
-                      float fov, float aspect_ratio);
+    PerspectiveCamera(const glm::vec3& position = glm::vec3(),
+                      const glm::vec3& target   = glm::vec3(0.0f, 0.0f, -1.0f),
+                      const glm::vec3& up       = glm::vec3(0.0f, 1.0f, 0.0f),
+                      float z_near              = 0.1f,
+                      float z_far               = 100.0f,
+                      float fov                 = 70.0f,
+                      float aspect_ratio        = static_cast<float>(App::window_width) \
+                                                  / static_cast<float>(App::window_height));
     ~PerspectiveCamera() = default;
 
     void set_projectivity();

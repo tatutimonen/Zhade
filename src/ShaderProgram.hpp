@@ -11,7 +11,7 @@ class Shader;
 
 
 class ShaderProgram {
-    static constexpr unsigned pipeline_length = 4u;
+    static constexpr unsigned s_pipeline_length = 4u;
 public:
     ShaderProgram(Shader* vertex_shader, Shader* fragment_shader, Shader* geometry_shader = nullptr);
     ~ShaderProgram();
@@ -24,6 +24,6 @@ public:
 
 private:
     GLuint m_handle;
-    Shader* m_shaders[pipeline_length] = { nullptr };
+    Shader* m_shaders[s_pipeline_length] = { nullptr };
     std::unordered_map<std::string, GLint> m_uniform_location_cache;
 };

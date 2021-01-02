@@ -10,3 +10,6 @@
 [submodule "lib/Simple-OpenGL-Image-Library"]
 	path = lib/soil
 	url = git@github.com:kbranigan/Simple-OpenGL-Image-Library.git
+[submodule "lib/assimp"]
+	path = lib/assimp
+	url = git@github.com:assimp/assimp.git
