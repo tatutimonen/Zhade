@@ -16,8 +16,8 @@ public:
     App(const App&) = delete;
     App(App&&) = delete;
 
-    App& operator=(const App&) = delete;
-    App& operator=(App&&) = delete;
+    App& operator =(const App&) = delete;
+    App& operator =(App&&) = delete;
 
     static App* get_instance();
     GLFWwindow* get_gl_ctx() const { return m_window; }
@@ -60,8 +60,8 @@ public:
 
 
     const std::string name = "Shadow Mapper";
-    static const unsigned window_width = 800;
-    static const unsigned window_height = 800;
+    static const unsigned int window_width = 800;
+    static const unsigned int window_height = 800;
 
 private:
     App() = default;

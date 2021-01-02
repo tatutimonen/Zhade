@@ -34,7 +34,7 @@ bool Camera::move()
     if (keys[GLFW_KEY_LEFT_SHIFT])
         m_position += camera_speed * glm::vec3(0.0f, -1.0f, 0.0f);
     
-    if (glm::length2(glm::abs(m_position - position_prev)) > epsilon*epsilon) {
+    if (!vec3f_close(m_position, position_prev)) {
         set_view();
         set_projectivity();
         return true;
@@ -53,7 +53,7 @@ bool Camera::rotate()
     m_target.z = glm::cos(theta) * glm::sin(phi);
     m_target = glm::normalize(m_target);
 
-    if (glm::length2(glm::abs(m_target - target_prev)) > epsilon*epsilon) {
+    if (!vec3f_close(m_target, target_prev)) {
         set_view();
         set_projectivity();
         return true;

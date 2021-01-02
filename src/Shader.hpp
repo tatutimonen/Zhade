@@ -6,6 +6,7 @@ class ShaderProgram;
 
 #include <GL/glew.h>
 
+#include <utility>
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -24,9 +25,12 @@ public:
     ~Shader();
 
     GLuint get_handle() const { return m_handle; }
-    void attach(const ShaderProgram* shader_program);
+    void attach(const std::unique_ptr<ShaderProgram> shader_program);
 
 private:
+    void parse_shader_file(const std::string& filename);
+    void compile() const;
+
     GLuint m_handle;
     std::string m_shader_source;
 };

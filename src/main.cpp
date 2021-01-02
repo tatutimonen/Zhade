@@ -14,11 +14,14 @@
 #include <SOIL.h>
 #include <assimp/Importer.hpp>
 
+#include <utility>
+#include <memory>
+
 
 int main(void)
 {
     App::get_instance()->init();
-    PerspectiveCamera camera = PerspectiveCamera();
+    auto camera = PerspectiveCamera(glm::vec3(0.0f, 0.0f, 3.0f));
 
     GLfloat vertices[] = {
         -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
@@ -71,9 +74,9 @@ int main(void)
     SOIL_free_image_data(img);
     GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
 
-    Shader* vertex_shader = new Shader(GL_VERTEX_SHADER, "../src/vshader.glsl");
-    Shader* fragment_shader = new Shader(GL_FRAGMENT_SHADER, "../src/fshader.glsl");
-    ShaderProgram* shader_program = new ShaderProgram(vertex_shader, fragment_shader);
+    auto vertex_shader = std::make_shared<Shader>(new Shader(GL_VERTEX_SHADER, "../src/vshader.glsl"));
+    auto fragment_shader = std::make_shared<Shader>(new Shader(GL_FRAGMENT_SHADER, "../src/fshader.glsl"));
+    auto shader_program = std::make_unique<ShaderProgram>(new ShaderProgram(vertex_shader, fragment_shader));
     shader_program->use();
 
     glm::mat4 model_matrix(1.0f);
@@ -88,8 +91,8 @@ int main(void)
         App::get_instance()->update_internal_times();
         
         glfwPollEvents();
-        bool moved = camera.move();
-        bool rotated = camera.rotate();
+        const bool moved = camera.move();
+        const bool rotated = camera.rotate();
         if (moved || rotated) {
             camera.push_view_matrix(shader_program->get_uniform_location("view"));
             camera.push_projection_matrix(shader_program->get_uniform_location("projection"));
@@ -112,8 +115,6 @@ int main(void)
     GL_CALL(glDeleteVertexArrays(1, &vao));
     GL_CALL(glDeleteBuffers(1, &vbo));
     GL_CALL(glDeleteBuffers(1, &ebo));
-    shader_program->delete_shaders();
-    delete shader_program;
 
     return 0;
 }

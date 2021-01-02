@@ -57,10 +57,10 @@ public:
                        const glm::vec3& up       = glm::vec3(0.0f, 1.0f, 0.0f),
                        float z_near              = 0.1f,
                        float z_far               = 100.0f,
-                       float x0                  = 0.0f,
-                       float x1                  = App::window_width,
-                       float y0                  = 0.0f,
-                       float y1                  = App::window_height);
+                       float x0                  = -5.0f,
+                       float x1                  = 5.0f,
+                       float y0                  = -5.0f,
+                       float y1                  = 5.0f);
     ~OrthographicCamera() = default;
 
     void set_projectivity();

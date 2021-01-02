@@ -15,6 +15,12 @@
 constexpr float epsilon = std::numeric_limits<float>::epsilon();
 
 
+inline bool vec3f_close(const glm::vec3& x, const glm::vec3& y)
+{
+    return glm::length2(glm::abs(x - y)) < epsilon * epsilon;
+}
+
+
 namespace {
     void log_gl_error(GLenum err, const char* fn, const char* file, int line)
     {
