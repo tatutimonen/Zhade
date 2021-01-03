@@ -25,7 +25,7 @@ public:
     ~Shader();
 
     GLuint get_handle() const { return m_handle; }
-    void attach(const std::unique_ptr<ShaderProgram> shader_program);
+    void attach(GLuint shader_program_handle);
 
 private:
     void parse_shader_file(const std::string& filename);

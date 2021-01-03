@@ -74,9 +74,9 @@ int main(void)
     SOIL_free_image_data(img);
     GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
 
-    auto vertex_shader = std::make_shared<Shader>(new Shader(GL_VERTEX_SHADER, "../src/vshader.glsl"));
-    auto fragment_shader = std::make_shared<Shader>(new Shader(GL_FRAGMENT_SHADER, "../src/fshader.glsl"));
-    auto shader_program = std::make_unique<ShaderProgram>(new ShaderProgram(vertex_shader, fragment_shader));
+    auto vertex_shader = std::shared_ptr<Shader>(new Shader(GL_VERTEX_SHADER, "../src/vshader.glsl"));
+    auto fragment_shader = std::shared_ptr<Shader>(new Shader(GL_FRAGMENT_SHADER, "../src/fshader.glsl"));
+    auto shader_program = std::unique_ptr<ShaderProgram>(new ShaderProgram(vertex_shader, fragment_shader));
     shader_program->use();
 
     glm::mat4 model_matrix(1.0f);
@@ -85,7 +85,6 @@ int main(void)
     camera.push_view_matrix(shader_program->get_uniform_location("view"));
     camera.push_projection_matrix(shader_program->get_uniform_location("projection"));
 
-    int i = 0;
     while (!glfwWindowShouldClose(App::get_instance()->get_gl_ctx())) {
         
         App::get_instance()->update_internal_times();

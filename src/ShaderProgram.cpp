@@ -7,16 +7,16 @@ ShaderProgram::ShaderProgram(std::shared_ptr<Shader> vertex_shader,
 {
     GL_CALL(m_handle = glCreateProgram());
 
-    /*m_shaders[VERTEX_SHADER] = vertex_shader;
-    vertex_shader->attach(std::unique_ptr<ShaderProgram>(this));
+    m_shaders[VERTEX_SHADER] = vertex_shader;
+    vertex_shader->attach(this->get_handle());
 
     m_shaders[FRAGMENT_SHADER] = fragment_shader;
-    fragment_shader->attach(std::unique_ptr<ShaderProgram>(this));
+    fragment_shader->attach(this->get_handle());
 
     if (geometry_shader != nullptr) {
         m_shaders[GEOMETRY_SHADER] = geometry_shader;
-        geometry_shader->attach(std::unique_ptr<ShaderProgram>(this));
-    }*/
+        geometry_shader->attach(this->get_handle());
+    }
 
     link();
 }

@@ -15,9 +15,9 @@ Shader::~Shader()
     GL_CALL(glDeleteShader(m_handle));
 }
 
-void Shader::attach(const std::unique_ptr<ShaderProgram> shader_program)
+void Shader::attach(GLuint shader_program_handle)
 {
-    GL_CALL(glAttachShader(shader_program->get_handle(), m_handle));
+    GL_CALL(glAttachShader(shader_program_handle, m_handle));
 }
 
 void Shader::parse_shader_file(const std::string& filename)
