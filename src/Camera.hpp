@@ -2,6 +2,7 @@
 
 #include "gl_common.hpp"
 #include "App.hpp"
+#include "ShaderProgram.hpp"
 
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -30,8 +31,8 @@ public:
 
     bool move();
     bool rotate();
-    void push_view_matrix(GLint location);
-    void push_projection_matrix(GLint location);
+    void push_view_matrix(std::shared_ptr<ShaderProgram> program);
+    void push_projection_matrix(std::shared_ptr<ShaderProgram> program);
 
 protected:
     Camera(const glm::vec3& position,

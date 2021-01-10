@@ -62,14 +62,14 @@ bool Camera::rotate()
     return false;
 }
 
-void Camera::push_view_matrix(GLint location)
+void Camera::push_view_matrix(std::shared_ptr<ShaderProgram> program)
 {
-    GL_CALL(glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(m_view)));
+    program->set_uniform<glm::mat4>("view", glm::value_ptr(m_view));
 }
 
-void Camera::push_projection_matrix(GLint location)
+void Camera::push_projection_matrix(std::shared_ptr<ShaderProgram> program)
 {
-    GL_CALL(glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(m_projectivity)));
+    program->set_uniform<glm::mat4>("projection", glm::value_ptr(m_projectivity));
 }
 
 

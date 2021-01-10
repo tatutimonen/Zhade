@@ -74,16 +74,19 @@ int main(void)
     SOIL_free_image_data(img);
     GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
 
-    auto vertex_shader = std::shared_ptr<Shader>(new Shader(GL_VERTEX_SHADER, "../src/vshader.glsl"));
-    auto fragment_shader = std::shared_ptr<Shader>(new Shader(GL_FRAGMENT_SHADER, "../src/fshader.glsl"));
-    auto shader_program = std::unique_ptr<ShaderProgram>(new ShaderProgram(vertex_shader, fragment_shader));
+    auto vertex_shader = std::make_shared<Shader>(GL_VERTEX_SHADER, "../src/vshader.glsl");
+    auto fragment_shader = std::make_shared<Shader>(GL_FRAGMENT_SHADER, "../src/fshader.glsl");
+    auto shader_program = std::make_shared<ShaderProgram>(vertex_shader, fragment_shader);
     shader_program->use();
 
     glm::mat4 model_matrix(1.0f);
     GLint model_matrix_loc = shader_program->get_uniform_location("model");
     GL_CALL(glUniformMatrix4fv(model_matrix_loc, 1, GL_FALSE, glm::value_ptr(model_matrix)));
-    camera.push_view_matrix(shader_program->get_uniform_location("view"));
-    camera.push_projection_matrix(shader_program->get_uniform_location("projection"));
+    camera.push_view_matrix(shader_program);
+    camera.push_projection_matrix(shader_program);
+
+    GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+    GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 
     while (!glfwWindowShouldClose(App::get_instance()->get_gl_ctx())) {
         
@@ -93,8 +96,8 @@ int main(void)
         const bool moved = camera.move();
         const bool rotated = camera.rotate();
         if (moved || rotated) {
-            camera.push_view_matrix(shader_program->get_uniform_location("view"));
-            camera.push_projection_matrix(shader_program->get_uniform_location("projection"));
+            camera.push_view_matrix(shader_program);
+            camera.push_projection_matrix(shader_program);
         }
 
         GL_CALL(glClearColor(0.4627f, 0.7255f, 0.0f, 1.0f));

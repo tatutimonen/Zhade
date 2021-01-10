@@ -10,10 +10,6 @@ project(shadow-mapper)
 
 set(CMAKE_MODULE_PATH "{CMAKE_SOURCE_DIR}/cmake")
 
-set(CMAKE_CXX_STANDARD          17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS        OFF)
-
 find_package(OpenMP REQUIRED)
 
 set(lib_dir "${CMAKE_SOURCE_DIR}/lib")
@@ -25,3 +21,9 @@ add_subdirectory("${lib_dir}/soil"   EXCLUDE_FROM_ALL)
 add_subdirectory("${lib_dir}/assimp" EXCLUDE_FROM_ALL)
 
 add_subdirectory("${CMAKE_SOURCE_DIR}/src" main)
+
+set_target_properties(main PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS OFF
+)

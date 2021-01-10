@@ -5,6 +5,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include <utility>
 #include <string>
 #include <iostream>
 
@@ -16,15 +17,15 @@ public:
     App(const App&) = delete;
     App(App&&) = delete;
 
-    App& operator =(const App&) = delete;
-    App& operator =(App&&) = delete;
+    App& operator=(const App&) = delete;
+    App& operator=(App&&) = delete;
 
-    static App* get_instance();
-    GLFWwindow* get_gl_ctx() const { return m_window; }
-    const bool* get_keys() const   { return m_keys; }
-    float get_delta_time() const   { return m_delta_time; }
-    float get_theta() const        { return m_theta; }
-    float get_phi() const          { return m_phi; }
+    inline static App* get_instance()     { return m_instance; };
+    inline GLFWwindow* get_gl_ctx() const { return m_window; }
+    inline const bool* get_keys() const   { return m_keys; }
+    inline float get_delta_time() const   { return m_delta_time; }
+    inline float get_theta() const        { return m_theta; }
+    inline float get_phi() const          { return m_phi; }
 
     void init();
     void update_internal_times();
@@ -33,13 +34,8 @@ public:
     {
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
             glfwSetWindowShouldClose(window, GL_TRUE);
-
-        if (key >= 0 && key < 1024) {
-            if (action == GLFW_PRESS)
-                m_keys[key] = true;
-            else if (action == GLFW_RELEASE)
-                m_keys[key] = false;
-        }
+    
+        m_keys[key] = static_cast<bool>(action);
     }
 
     static void mouse_callback(GLFWwindow* window, double x_pos, double y_pos)
@@ -58,7 +54,6 @@ public:
         y_pos_prev = y_pos;
     }
 
-
     const std::string name = "Shadow Mapper";
     static const unsigned int window_width = 800;
     static const unsigned int window_height = 800;
@@ -66,13 +61,13 @@ public:
 private:
     App() = default;
 
-
     static App* m_instance;
-    GLFWwindow* m_window;
-    static bool m_keys[1024];
-    float m_delta_time = 0.0f;
-    float m_last_frame = 0.0f;
     static constexpr float mouse_sensitivity = 0.002f;
+    static bool m_keys[512];
     static float m_theta;
     static float m_phi;
+
+    GLFWwindow* m_window;
+    float m_delta_time = 0.0f;
+    float m_last_frame = 0.0f;
 };
