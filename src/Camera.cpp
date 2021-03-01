@@ -1,6 +1,5 @@
 #include "Camera.hpp"
 
-
 Camera::Camera(const glm::vec3& position,
                const glm::vec3& target,
                const glm::vec3& up,
@@ -11,16 +10,11 @@ Camera::Camera(const glm::vec3& position,
     set_view();
 }
 
-void Camera::set_view()
-{
-    m_view = glm::lookAt(m_position, m_position + m_target, m_up);
-}
-
 bool Camera::move()
 {
     const glm::vec3 position_prev = m_position;
-    const auto keys = App::get_instance()->get_keys();
-    const float camera_speed = s_camera_base_speed * App::get_instance()->get_delta_time();
+    const auto keys = App::get_instance().get_keys();
+    const float camera_speed = s_camera_base_speed * App::get_instance().get_delta_time();
     if (keys[GLFW_KEY_W])
         m_position += camera_speed * m_target;
     if (keys[GLFW_KEY_S]) 
@@ -30,11 +24,11 @@ bool Camera::move()
     if (keys[GLFW_KEY_A])
         m_position += camera_speed * -glm::normalize(glm::cross(m_target, m_up));
     if (keys[GLFW_KEY_SPACE])
-        m_position += camera_speed * glm::vec3(0.0f, 1.0f, 0.0f);
+        m_position += camera_speed * Util::make_unit_vec3y();
     if (keys[GLFW_KEY_LEFT_SHIFT])
-        m_position += camera_speed * glm::vec3(0.0f, -1.0f, 0.0f);
+        m_position += camera_speed * -Util::make_unit_vec3y();
     
-    if (!vec3f_close(m_position, position_prev)) {
+    if (!Util::vec3f_close(m_position, position_prev)) {
         set_view();
         set_projectivity();
         return true;
@@ -45,15 +39,15 @@ bool Camera::move()
 
 bool Camera::rotate()
 {
-    const float theta = App::get_instance()->get_theta();
-    const float phi = App::get_instance()->get_phi();
+    const float theta = App::get_instance().get_theta();
+    const float phi = App::get_instance().get_phi();
     const glm::vec3 target_prev = m_target;
     m_target.x = glm::cos(theta) * glm::cos(phi);
     m_target.y = glm::sin(theta);
     m_target.z = glm::cos(theta) * glm::sin(phi);
     m_target = glm::normalize(m_target);
 
-    if (!vec3f_close(m_target, target_prev)) {
+    if (!Util::vec3f_close(m_target, target_prev)) {
         set_view();
         set_projectivity();
         return true;

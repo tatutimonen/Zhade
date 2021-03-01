@@ -1,6 +1,9 @@
 #pragma once
 
+extern "C" {
 #include <GL/glew.h>
+}
+
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/norm.hpp>
@@ -12,16 +15,34 @@
 
 
 #define GL_CALL(fn) fn; check_errors(#fn, __FILE__, __LINE__);
-#define VAR_NAME(x) std::string(#x);
-
-constexpr float epsilon = std::numeric_limits<float>::epsilon();
 
 
-inline bool vec3f_close(const glm::vec3& x, const glm::vec3& y)
-{
-    return glm::length2(glm::abs(x - y)) < epsilon*epsilon;
-}
+namespace Util {
 
+    constexpr float epsilon = std::numeric_limits<float>::epsilon();
+
+
+    inline bool vec3f_close(const glm::vec3& x, const glm::vec3& y)
+    {
+        return glm::length2(glm::abs(x - y)) < epsilon*epsilon;
+    }
+
+    inline glm::vec3 make_unit_vec3x()
+    {
+        return glm::vec3(1.0f, 0.0f, 0.0f);
+    }
+    
+    inline glm::vec3 make_unit_vec3y()
+    {
+        return glm::vec3(0.0f, 1.0f, 0.0f);
+    }
+    
+    inline glm::vec3 make_unit_vec3z()
+    {
+        return glm::vec3(0.0f, 0.0f, 1.0f);
+    }
+
+} // namespace Util
 
 namespace {
 

@@ -1,10 +1,11 @@
 #pragma once
 
-#include "gl_common.hpp"
+#include "Util.hpp"
 
+extern "C" {
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-
+}
 #include <utility>
 #include <string>
 #include <iostream>
@@ -12,15 +13,14 @@
 
 class App {
 public:
+    App(const App&) = delete;
+    App(App&&)      = delete;
     ~App();
 
-    App(const App&) = delete;
-    App(App&&) = delete;
-
     App& operator=(const App&) = delete;
-    App& operator=(App&&) = delete;
+    App& operator=(App&&)      = delete;
 
-    inline static App* get_instance()     { return m_instance; };
+    inline static App& get_instance()     { static App instance; return instance; };
     inline GLFWwindow* get_gl_ctx() const { return m_window; }
     inline const bool* get_keys() const   { return m_keys; }
     inline float get_delta_time() const   { return m_delta_time; }
@@ -35,7 +35,7 @@ public:
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
             glfwSetWindowShouldClose(window, GL_TRUE);
     
-        m_keys[key] = static_cast<bool>(action);
+        m_keys[key] = (bool)action;
     }
 
     static void mouse_callback(GLFWwindow* window, double x_pos, double y_pos)
@@ -61,7 +61,6 @@ public:
 private:
     App() = default;
 
-    static App* m_instance;
     static constexpr float mouse_sensitivity = 0.002f;
     static bool m_keys[512];
     static float m_theta;

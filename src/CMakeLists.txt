@@ -1,19 +1,19 @@
-add_executable(main
+add_executable(App
     main.cpp
-    gl_common.hpp
+    Util.cpp
     App.cpp
     Camera.cpp
     Shader.cpp
     ShaderProgram.cpp
 )
-target_link_libraries(main
+target_link_libraries(App
     PRIVATE libglew_static
             glfw
             glm
             SOIL
             assimp
 )
-target_include_directories(main
+target_include_directories(App
     PRIVATE "${lib_dir}/glew/include"
             "${lib_dir}/glfw/include"
             "${lib_dir}/glm/glm"

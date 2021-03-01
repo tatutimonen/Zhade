@@ -1,10 +1,10 @@
-cmake_minimum_required(VERSION 3.17)
-
 if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
     message(FATAL_ERROR "Only out-of-source builds are supported. \
                          Please use ${CMAKE_SOURCE_DIR}/cmake/InSourceCleanup.cmake \
                          in ${CMAKE_SOURCE_DIR} before attempting to generate project files again.")
 endif()
+
+cmake_minimum_required(VERSION 3.17)
 
 project(shadow-mapper)
 
@@ -20,9 +20,9 @@ add_subdirectory("${lib_dir}/glm"    EXCLUDE_FROM_ALL)
 add_subdirectory("${lib_dir}/soil"   EXCLUDE_FROM_ALL)
 add_subdirectory("${lib_dir}/assimp" EXCLUDE_FROM_ALL)
 
-add_subdirectory("${CMAKE_SOURCE_DIR}/src" main)
+add_subdirectory("${CMAKE_SOURCE_DIR}/src" App)
 
-set_target_properties(main PROPERTIES
+set_target_properties(App PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED ON
     CXX_EXTENSIONS OFF

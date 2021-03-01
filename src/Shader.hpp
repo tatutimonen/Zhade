@@ -1,9 +1,10 @@
 #pragma once
 
-#include "gl_common.hpp"
+#include "Util.hpp"
 
+extern "C" {
 #include <GL/glew.h>
-
+}
 #include <fstream>
 #include <functional>
 #include <iomanip>
@@ -12,16 +13,18 @@
 #include <string>
 #include <utility>
 
-
-enum struct ShaderType {
-    VERTEX_SHADER,
-    GEOMETRY_SHADER,
-    FRAGMENT_SHADER,
-    COUNT
-};
+// ([^m])_([a-z])
+// $1\U$2
 
 class Shader {
 public:
+    enum ShaderType {
+        VERTEX_SHADER,
+        GEOMETRY_SHADER,
+        FRAGMENT_SHADER,
+        SHADER_MAX
+    };
+
     Shader(GLint gl_shader_type, const std::string& filename);
     ~Shader();
 

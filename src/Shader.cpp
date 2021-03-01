@@ -4,22 +4,22 @@
 Shader::Shader(GLint gl_shader_type, const std::string& filename)
 {
     switch (gl_shader_type) {
-    case GL_VERTEX_SHADER:
-        m_shader_type = ShaderType::VERTEX_SHADER;
-        break;
-    case GL_FRAGMENT_SHADER:
-        m_shader_type = ShaderType::FRAGMENT_SHADER;
-        break;
-    case GL_GEOMETRY_SHADER:
-        m_shader_type = ShaderType::GEOMETRY_SHADER;
-        break;
-    default:
-        std::stringstream err_msg_sstream;
-        err_msg_sstream << "Invalid OpenGL symbolic constant describing shader type "
-                        << "(0x"
-                        << std::hex << std::setw(4) << std::setfill('0') << gl_shader_type
-                        << ")";
-        throw std::runtime_error(err_msg_sstream.str());
+        case GL_VERTEX_SHADER:
+            m_shader_type = VERTEX_SHADER;
+            break;
+        case GL_GEOMETRY_SHADER:
+            m_shader_type = GEOMETRY_SHADER;
+            break;
+        case GL_FRAGMENT_SHADER:
+            m_shader_type = FRAGMENT_SHADER;
+            break;
+        default:
+            std::stringstream err_msg_sstream;
+            err_msg_sstream << "Invalid OpenGL symbolic constant describing shader type "
+                            << "(0x"
+                            << std::hex << std::setw(4) << std::setfill('0') << gl_shader_type
+                            << ")";
+            throw std::runtime_error(err_msg_sstream.str());
     }
     parse_shader_file(filename);
     GL_CALL(m_handle = glCreateShader(gl_shader_type));

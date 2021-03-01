@@ -1,9 +1,11 @@
 #pragma once
 
-#include "gl_common.hpp"
+#include "Util.hpp"
 #include "Shader.hpp"
 
+extern "C" {
 #include <GL/glew.h>
+}
 
 #include <iostream>
 #include <memory>
@@ -20,21 +22,22 @@ public:
     ~ShaderProgram();
 
     template<typename T>
-    void set_uniform(const std::string& name, const float* data);
+    void set_uniform(const std::string& name, const GLvoid* data);
 
     inline GLuint get_handle() const { return m_handle; }
     GLint get_attrib_location(const std::string& name);
     GLint get_uniform_location(const std::string& name);
 
-    void link() const;
-    void use() const;
+    void bind() const;
+    void unbind() const;
     void attach_shader(std::shared_ptr<Shader> shader);
     void detach_shader(std::shared_ptr<Shader> shader);
     void detach_shaders();
+    void link() const;
 
 private:
     GLuint m_handle;
-    std::shared_ptr<Shader> m_shaders[static_cast<unsigned int>(ShaderType::COUNT)] = { nullptr };
+    std::shared_ptr<Shader> m_shaders[Shader::SHADER_MAX] = { nullptr };
     std::unordered_map<std::string, GLint> m_attrib_location_cache;
     std::unordered_map<std::string, GLint> m_uniform_location_cache;
 };

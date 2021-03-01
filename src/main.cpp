@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "gl_common.hpp"
+#include "Util.hpp"
 #include "App.hpp"
 #include "Camera.hpp"
 #include "Shader.hpp"
@@ -20,7 +20,7 @@
 
 int main(void)
 {
-    App::get_instance()->init();
+    App::get_instance().init();
     auto camera = PerspectiveCamera(glm::vec3(0.0f, 0.0f, 3.0f));
 
     GLfloat vertices[] = {
@@ -77,7 +77,7 @@ int main(void)
     auto vertex_shader = std::make_shared<Shader>(GL_VERTEX_SHADER, "../src/vshader.glsl");
     auto fragment_shader = std::make_shared<Shader>(GL_FRAGMENT_SHADER, "../src/fshader.glsl");
     auto shader_program = std::make_shared<ShaderProgram>(vertex_shader, fragment_shader);
-    shader_program->use();
+    shader_program->bind();
 
     glm::mat4 model_matrix(1.0f);
     GLint model_matrix_loc = shader_program->get_uniform_location("model");
@@ -88,9 +88,9 @@ int main(void)
     GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
     GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 
-    while (!glfwWindowShouldClose(App::get_instance()->get_gl_ctx())) {
+    while (!glfwWindowShouldClose(App::get_instance().get_gl_ctx())) {
         
-        App::get_instance()->update_internal_times();
+        App::get_instance().update_internal_times();
         
         glfwPollEvents();
         const bool moved = camera.move();
@@ -109,7 +109,7 @@ int main(void)
         GL_CALL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
         GL_CALL(glBindVertexArray(0));
 
-        glfwSwapBuffers(App::get_instance()->get_gl_ctx());
+        glfwSwapBuffers(App::get_instance().get_gl_ctx());
 
     }
 

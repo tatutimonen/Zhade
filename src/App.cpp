@@ -1,7 +1,7 @@
 #include "App.hpp"
 
 
-App* App::m_instance = new App();
+// The elegance of singletons :)
 bool App::m_keys[512];
 float App::m_theta = 0.0f;
 float App::m_phi = -glm::half_pi<float>();
