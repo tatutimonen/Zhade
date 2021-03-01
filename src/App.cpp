@@ -3,8 +3,8 @@
 
 // The elegance of singletons :)
 bool App::m_keys[512];
-float App::m_theta = 0.0f;
-float App::m_phi = -glm::half_pi<float>();
+float App::m_pitch = 0.0f;
+float App::m_yaw = -glm::half_pi<float>();
 
 void App::init()
 {

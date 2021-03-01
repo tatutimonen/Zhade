@@ -15,6 +15,7 @@ bool Camera::move()
     const glm::vec3 position_prev = m_position;
     const auto keys = App::get_instance().get_keys();
     const float camera_speed = s_camera_base_speed * App::get_instance().get_delta_time();
+    
     if (keys[GLFW_KEY_W])
         m_position += camera_speed * m_target;
     if (keys[GLFW_KEY_S]) 
@@ -28,7 +29,7 @@ bool Camera::move()
     if (keys[GLFW_KEY_LEFT_SHIFT])
         m_position += camera_speed * -Util::make_unit_vec3y();
     
-    if (!Util::vec3f_close(m_position, position_prev)) {
+    if (m_position != position_prev) {
         set_view();
         set_projectivity();
         return true;
@@ -39,15 +40,15 @@ bool Camera::move()
 
 bool Camera::rotate()
 {
-    const float theta = App::get_instance().get_theta();
-    const float phi = App::get_instance().get_phi();
+    const float pitch = App::get_instance().get_pitch();
+    const float yaw = App::get_instance().get_yaw();
     const glm::vec3 target_prev = m_target;
-    m_target.x = glm::cos(theta) * glm::cos(phi);
-    m_target.y = glm::sin(theta);
-    m_target.z = glm::cos(theta) * glm::sin(phi);
+    m_target.x = glm::cos(pitch) * glm::cos(yaw);
+    m_target.y = glm::sin(pitch);
+    m_target.z = glm::cos(pitch) * glm::sin(yaw);
     m_target = glm::normalize(m_target);
 
-    if (!Util::vec3f_close(m_target, target_prev)) {
+    if (m_target != target_prev) {
         set_view();
         set_projectivity();
         return true;
@@ -56,14 +57,14 @@ bool Camera::rotate()
     return false;
 }
 
-void Camera::push_view_matrix(std::shared_ptr<ShaderProgram> program)
+void Camera::push_view_matrix(std::weak_ptr<ShaderProgram> shader_program)
 {
-    program->set_uniform<glm::mat4>("view", glm::value_ptr(m_view));
+    shader_program.lock()->set_uniform<glm::mat4>("view", glm::value_ptr(m_view));
 }
 
-void Camera::push_projection_matrix(std::shared_ptr<ShaderProgram> program)
+void Camera::push_projection_matrix(std::weak_ptr<ShaderProgram> shader_program)
 {
-    program->set_uniform<glm::mat4>("projection", glm::value_ptr(m_projectivity));
+    shader_program.lock()->set_uniform<glm::mat4>("projection", glm::value_ptr(m_projectivity));
 }
 
 

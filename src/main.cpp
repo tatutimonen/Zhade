@@ -96,8 +96,8 @@ int main(void)
         const bool moved = camera.move();
         const bool rotated = camera.rotate();
         if (moved || rotated) {
-            camera.push_view_matrix(shader_program);
-            camera.push_projection_matrix(shader_program);
+            camera.push_view_matrix(std::weak_ptr<ShaderProgram>(shader_program));
+            camera.push_projection_matrix(std::weak_ptr<ShaderProgram>(shader_program));
         }
 
         GL_CALL(glClearColor(0.4627f, 0.7255f, 0.0f, 1.0f));

@@ -33,8 +33,8 @@ public:
 
     bool move();
     bool rotate();
-    void push_view_matrix(std::shared_ptr<ShaderProgram> program);
-    void push_projection_matrix(std::shared_ptr<ShaderProgram> program);
+    void push_view_matrix(std::weak_ptr<ShaderProgram> program);
+    void push_projection_matrix(std::weak_ptr<ShaderProgram> program);
 
 protected:
     Camera(const glm::vec3& position,

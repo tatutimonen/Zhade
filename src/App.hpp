@@ -24,8 +24,8 @@ public:
     inline GLFWwindow* get_gl_ctx() const { return m_window; }
     inline const bool* get_keys() const   { return m_keys; }
     inline float get_delta_time() const   { return m_delta_time; }
-    inline float get_theta() const        { return m_theta; }
-    inline float get_phi() const          { return m_phi; }
+    inline float get_pitch() const        { return m_pitch; }
+    inline float get_yaw() const          { return m_yaw; }
 
     void init();
     void update_internal_times();
@@ -46,9 +46,9 @@ public:
         float x_offset = mouse_sensitivity * (x_pos - x_pos_prev);
         float y_offset = mouse_sensitivity * (y_pos_prev - y_pos);
 
-        float theta_bound = glm::half_pi<float>() - 0.01f;
-        m_theta = glm::clamp(m_theta + y_offset, -theta_bound, theta_bound);
-        m_phi += x_offset;
+        float pitch_bound = glm::half_pi<float>() - 0.01f;
+        m_pitch = glm::clamp(m_pitch + y_offset, -pitch_bound, pitch_bound);
+        m_yaw += x_offset;
 
         x_pos_prev = x_pos;
         y_pos_prev = y_pos;
@@ -63,8 +63,8 @@ private:
 
     static constexpr float mouse_sensitivity = 0.002f;
     static bool m_keys[512];
-    static float m_theta;
-    static float m_phi;
+    static float m_pitch;
+    static float m_yaw;
 
     GLFWwindow* m_window;
     float m_delta_time = 0.0f;
