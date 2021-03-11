@@ -3,7 +3,6 @@
 extern "C" {
 #include <GL/glew.h>
 }
-
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/norm.hpp>
@@ -33,6 +32,8 @@ namespace Util {
     {
         return glm::vec3(0.0f, 0.0f, 1.0f);
     }
+
+    constexpr float z_fight_epsilon = 1e-5f;
 
 } // namespace Util
 

@@ -12,7 +12,6 @@ extern "C" {
 
 
 class Camera {
-    static constexpr float s_camera_base_speed = 2.5f;
 public:
     Camera();
     virtual ~Camera() = default;
@@ -33,8 +32,10 @@ public:
 
     bool move();
     bool rotate();
-    void push_view_matrix(std::weak_ptr<ShaderProgram> program);
-    void push_projection_matrix(std::weak_ptr<ShaderProgram> program);
+    void push_view_matrix(ShaderProgram& shader_program);
+    void push_projection_matrix(ShaderProgram& shader_program);
+
+    static constexpr float s_camera_base_speed = 2.5f;
 
 protected:
     Camera(const glm::vec3& position,

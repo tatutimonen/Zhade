@@ -57,14 +57,14 @@ bool Camera::rotate()
     return false;
 }
 
-void Camera::push_view_matrix(std::weak_ptr<ShaderProgram> shader_program)
+void Camera::push_view_matrix(ShaderProgram& shader_program)
 {
-    shader_program.lock()->set_uniform<glm::mat4>("view", glm::value_ptr(m_view));
+    shader_program.set_uniform<glm::mat4>("view", glm::value_ptr(m_view));
 }
 
-void Camera::push_projection_matrix(std::weak_ptr<ShaderProgram> shader_program)
+void Camera::push_projection_matrix(ShaderProgram& shader_program)
 {
-    shader_program.lock()->set_uniform<glm::mat4>("projection", glm::value_ptr(m_projectivity));
+    shader_program.set_uniform<glm::mat4>("projection", glm::value_ptr(m_projectivity));
 }
 
 

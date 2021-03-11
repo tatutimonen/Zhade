@@ -14,12 +14,13 @@ Shader::Shader(GLint gl_shader_type, const std::string& filename)
             m_shader_type = FRAGMENT_SHADER;
             break;
         default:
-            std::stringstream err_msg_sstream;
-            err_msg_sstream << "Invalid OpenGL symbolic constant describing shader type "
-                            << "(0x"
-                            << std::hex << std::setw(4) << std::setfill('0') << gl_shader_type
-                            << ")";
-            throw std::runtime_error(err_msg_sstream.str());
+            std::stringstream err_msg;
+            err_msg << "Invalid OpenGL symbolic constant describing shader type "
+                    << "(0x"
+                    << std::hex << std::setw(4) << std::setfill('0') << gl_shader_type
+                    << ")";
+            std::cerr << err_msg.str() << std::endl;
+            throw std::runtime_error(err_msg.str());
     }
     parse_shader_file(filename);
     GL_CALL(m_handle = glCreateShader(gl_shader_type));
@@ -52,11 +53,12 @@ void Shader::compile() const
     if (status == GL_FALSE) {
         GLchar info_log[512];
         GL_CALL(glGetShaderInfoLog(m_handle, 512, nullptr, info_log));
-        std::stringstream err_msg_sstream;
-        err_msg_sstream << "Error compiling shader with ID "
-                        << m_handle
-                        << ": "
-                        << info_log;
-        throw std::runtime_error(err_msg_sstream.str());
+        std::stringstream err_msg;
+        err_msg << "Error compiling shader with ID "
+                << m_handle
+                << ": "
+                << info_log;
+        std::cerr << err_msg.str() << std::endl;
+        throw std::runtime_error(err_msg.str());
     }
 }

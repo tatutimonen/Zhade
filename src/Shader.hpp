@@ -6,12 +6,9 @@ extern "C" {
 #include <GL/glew.h>
 }
 #include <fstream>
-#include <functional>
 #include <iomanip>
-#include <map>
 #include <sstream>
 #include <string>
-#include <utility>
 
 // ([^m])_([a-z])
 // $1\U$2

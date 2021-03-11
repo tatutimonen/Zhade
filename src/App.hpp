@@ -1,34 +1,40 @@
 #pragma once
 
+#include "Mesh.hpp"
 #include "Util.hpp"
 
 extern "C" {
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 }
-#include <utility>
-#include <string>
+
 #include <iostream>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 
 class App {
 public:
     App(const App&) = delete;
-    App(App&&)      = delete;
+    App(App&&) = delete;
     ~App();
 
     App& operator=(const App&) = delete;
-    App& operator=(App&&)      = delete;
+    App& operator=(App&&) = delete;
 
-    inline static App& get_instance()     { static App instance; return instance; };
-    inline GLFWwindow* get_gl_ctx() const { return m_window; }
-    inline const bool* get_keys() const   { return m_keys; }
-    inline float get_delta_time() const   { return m_delta_time; }
-    inline float get_pitch() const        { return m_pitch; }
-    inline float get_yaw() const          { return m_yaw; }
+    inline static App& get_instance()                                   { static App instance; return instance; };
+    inline GLFWwindow* get_gl_ctx() const                               { return m_window; }
+    inline const bool* get_keys() const                                 { return m_keys; }
+    inline float get_delta_time() const                                 { return m_delta_time; }
+    inline float get_pitch() const                                      { return m_pitch; }
+    inline float get_yaw() const                                        { return m_yaw; }
+    inline const std::vector<std::shared_ptr<Mesh>>& get_meshes() const { return m_meshes; }
 
     void init();
     void update_internal_times();
+    void add_mesh(std::shared_ptr<Mesh> mesh);
 
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
     {
@@ -69,4 +75,6 @@ private:
     GLFWwindow* m_window;
     float m_delta_time = 0.0f;
     float m_last_frame = 0.0f;
+
+    std::vector<std::shared_ptr<Mesh>> m_meshes;
 };

@@ -1,10 +1,12 @@
 add_executable(App
-    main.cpp
-    Util.cpp
     App.cpp
     Camera.cpp
+    Common.cpp
+    main.cpp
+    Mesh.cpp
     Shader.cpp
     ShaderProgram.cpp
+    Util.cpp
 )
 target_link_libraries(App
     PRIVATE libglew_static

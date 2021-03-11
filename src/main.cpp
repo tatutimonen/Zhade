@@ -1,15 +1,15 @@
-#include <iostream>
-
-#include "Util.hpp"
 #include "App.hpp"
 #include "Camera.hpp"
+#include "Common.hpp"
+#include "Mesh.hpp"
 #include "Shader.hpp"
 #include "ShaderProgram.hpp"
+#include "Util.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <SOIL.h>
 #include <assimp/Importer.hpp>
@@ -21,102 +21,48 @@
 int main(void)
 {
     App::get_instance().init();
-    auto camera = PerspectiveCamera(glm::vec3(0.0f, 0.0f, 3.0f));
 
-    GLfloat vertices[] = {
-        -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-         0.5f,  0.5f,  0.0f,  1.0f,  1.0f,
-         0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-        -0.5f, -0.5f,  0.0f,  0.0f,  0.0f
-    };
-    GLuint indices[] = {
-        0, 1, 2,
-        2, 3, 0
-    };
-    // Vertex array object holds vertex attribute data, including possible element data.
-    GLuint vao;
-    GL_CALL(glGenVertexArrays(1, &vao));
-    GLuint vbo;
-    GL_CALL(glGenBuffers(1, &vbo));
-    GLuint ebo;
-    GL_CALL(glGenBuffers(1, &ebo));
+    auto vshader = std::make_shared<Shader>(GL_VERTEX_SHADER, Common::shader_path + "vshader_default.glsl");
+    auto fshader = std::make_shared<Shader>(GL_FRAGMENT_SHADER, Common::shader_path + "fshader.glsl");
+    auto shader_program = std::make_shared<ShaderProgram>(vshader, fshader);
 
-    GL_CALL(glBindVertexArray(vao));
-    {
-        GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, vbo));
-        GL_CALL(glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW));
+    auto camera = PerspectiveCamera(glm::vec3(0.0f, 1.0f, 3.0f));
+    camera.push_view_matrix(*shader_program.get());
+    camera.push_projection_matrix(*shader_program.get());
 
-        GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo));
-        GL_CALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW));
+    auto cube_material = std::make_shared<Mesh::Material>(
+        glm::vec3(0.1745f,   0.01175f,  0.01175f),
+        glm::vec3(0.61424f,  0.04136f,  0.04136f),
+        glm::vec3(0.727811f, 0.626959f, 0.626959f),
+        0.6f
+    );
+    auto cube = Mesh::make_cube(shader_program, cube_material);
+    App::get_instance().add_mesh(std::move(cube));
 
-        // Vertex positions.
-        GL_CALL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(GLfloat), (GLvoid*)0));
-        GL_CALL(glEnableVertexAttribArray(0));
-        // Texture coords.
-        GL_CALL(glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(GLfloat), (GLvoid*)(3*sizeof(GLfloat))));
-        GL_CALL(glEnableVertexAttribArray(1));
-    }
-    GL_CALL(glBindVertexArray(0));
-
-    GLuint tex;
-    GL_CALL(glGenTextures(1, &tex));
-    GL_CALL(glBindTexture(GL_TEXTURE_2D, tex));
-
-    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
-    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
-    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-
-    int w, h;
-    unsigned char* img = SOIL_load_image("../texture/cataphract.jpg", &w, &h, 0, SOIL_LOAD_RGB);
-    GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img));
-    GL_CALL(glGenerateMipmap(GL_TEXTURE_2D));
-    SOIL_free_image_data(img);
-    GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
-
-    auto vertex_shader = std::make_shared<Shader>(GL_VERTEX_SHADER, "../src/vshader.glsl");
-    auto fragment_shader = std::make_shared<Shader>(GL_FRAGMENT_SHADER, "../src/fshader.glsl");
-    auto shader_program = std::make_shared<ShaderProgram>(vertex_shader, fragment_shader);
-    shader_program->bind();
-
-    glm::mat4 model_matrix(1.0f);
-    GLint model_matrix_loc = shader_program->get_uniform_location("model");
-    GL_CALL(glUniformMatrix4fv(model_matrix_loc, 1, GL_FALSE, glm::value_ptr(model_matrix)));
-    camera.push_view_matrix(shader_program);
-    camera.push_projection_matrix(shader_program);
-
-    GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
-    GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+    auto plane = Mesh::make_plane(shader_program);
+    plane->set_transformation(glm::scale(glm::vec3(10.0f)) * glm::translate(glm::vec3(0.0f, -Util::z_fight_epsilon, 0.0f)));
+    App::get_instance().add_mesh(std::move(plane));
 
     while (!glfwWindowShouldClose(App::get_instance().get_gl_ctx())) {
-        
+
         App::get_instance().update_internal_times();
         
         glfwPollEvents();
         const bool moved = camera.move();
         const bool rotated = camera.rotate();
         if (moved || rotated) {
-            camera.push_view_matrix(std::weak_ptr<ShaderProgram>(shader_program));
-            camera.push_projection_matrix(std::weak_ptr<ShaderProgram>(shader_program));
+            camera.push_view_matrix(*shader_program.get());
+            camera.push_projection_matrix(*shader_program.get());
         }
 
-        GL_CALL(glClearColor(0.4627f, 0.7255f, 0.0f, 1.0f));
-        GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
+        GL_CALL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
-        GL_CALL(glBindTexture(GL_TEXTURE_2D, tex));
-
-        GL_CALL(glBindVertexArray(vao));
-        GL_CALL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
-        GL_CALL(glBindVertexArray(0));
+        for (const auto& mesh : App::get_instance().get_meshes())
+            mesh->render();
 
         glfwSwapBuffers(App::get_instance().get_gl_ctx());
 
     }
-
-    GL_CALL(glBindVertexArray(0));
-    GL_CALL(glDeleteVertexArrays(1, &vao));
-    GL_CALL(glDeleteBuffers(1, &vbo));
-    GL_CALL(glDeleteBuffers(1, &ebo));
 
     return 0;
 }
