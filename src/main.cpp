@@ -12,7 +12,6 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <SOIL.h>
-#include <assimp/Importer.hpp>
 
 #include <utility>
 #include <memory>

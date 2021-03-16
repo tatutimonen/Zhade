@@ -1,8 +1,6 @@
 #pragma once
 
-extern "C" {
 #include <GL/glew.h>
-}
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/norm.hpp>

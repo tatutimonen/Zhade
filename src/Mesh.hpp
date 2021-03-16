@@ -3,13 +3,9 @@
 #include "ShaderProgram.hpp"
 #include "Util.hpp"
 
-extern "C" {
 #include <GL/glew.h>
-}
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
 
 #include <iostream>
 #include <memory>

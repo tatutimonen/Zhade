@@ -17,8 +17,9 @@ add_compile_definitions(GLEW_STATIC)
 add_subdirectory("${lib_dir}/glew"   EXCLUDE_FROM_ALL)
 add_subdirectory("${lib_dir}/glfw"   EXCLUDE_FROM_ALL)
 add_subdirectory("${lib_dir}/glm"    EXCLUDE_FROM_ALL)
+add_compile_definitions(GL_SILENCE_DEPRECATION)
 add_subdirectory("${lib_dir}/soil"   EXCLUDE_FROM_ALL)
-add_subdirectory("${lib_dir}/assimp" EXCLUDE_FROM_ALL)
+#add_subdirectory("${lib_dir}/assimp" EXCLUDE_FROM_ALL)
 
 add_subdirectory("${CMAKE_SOURCE_DIR}/src" App)
 

@@ -4,9 +4,7 @@
 #include "App.hpp"
 #include "ShaderProgram.hpp"
 
-extern "C" {
 #include <GLFW/glfw3.h>
-}
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 

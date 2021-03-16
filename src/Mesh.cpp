@@ -67,8 +67,6 @@ std::unique_ptr<Mesh> Mesh::from_file(const std::string& filename,
                                       std::shared_ptr<Material> material,
                                       GLenum draw_mode)
 {
-    Assimp::Importer importer;
-    // ...
     return nullptr;
 }
 
