@@ -123,7 +123,7 @@ GLint ShaderProgram::get_uniform_location(const std::string& name)
         return m_uniform_location_cache[name];
 
     GL_CALL(GLint location = glGetUniformLocation(m_handle, name.c_str()));
-    if (location == (GLint)-1) {
+    if (location == -1) {
         std::stringstream err_msg;
         err_msg << "Error querying uniform location of "
                 << "\"" << name << "\". "
@@ -142,9 +142,7 @@ void ShaderProgram::attach_shader(const std::shared_ptr<Shader>& shader)
 
 void ShaderProgram::detach_shader(const std::shared_ptr<Shader>& shader)
 {
-    if (!shader)
-        return;
-
+    if (!shader) return;
     GL_CALL(glDetachShader(m_handle, shader->get_handle()));
     m_shaders[shader->get_shader_type()] = nullptr;
 }
