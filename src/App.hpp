@@ -3,10 +3,8 @@
 #include "Mesh.hpp"
 #include "Util.hpp"
 
-extern "C" {
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-}
 
 #include <iostream>
 #include <memory>

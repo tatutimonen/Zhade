@@ -3,9 +3,7 @@
 #include "Util.hpp"
 #include "Shader.hpp"
 
-extern "C" {
 #include <GL/glew.h>
-}
 
 #include <algorithm>
 #include <array>

@@ -2,9 +2,7 @@
 
 #include "Util.hpp"
 
-extern "C" {
 #include <GL/glew.h>
-}
 #include <fstream>
 #include <iomanip>
 #include <sstream>
