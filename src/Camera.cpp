@@ -72,7 +72,7 @@ OrthographicCamera::OrthographicCamera(std::unique_ptr<Specification> spec)
 
 void OrthographicCamera::set_projectivity()
 {
-    auto spec = dynamic_cast<OrthographicCamera::Specification*>(m_spec.get());
+    auto spec = get_spec();
     m_projectivity = glm::ortho(spec->x_range[0], spec->x_range[1], spec->y_range[0], spec->y_range[1], spec->z_near, spec->z_far);
 }
 
@@ -85,6 +85,6 @@ PerspectiveCamera::PerspectiveCamera(std::unique_ptr<Specification> spec)
 
 void PerspectiveCamera::set_projectivity()
 {
-    auto spec = dynamic_cast<PerspectiveCamera::Specification*>(m_spec.get());
+    auto spec = get_spec();
     m_projectivity = glm::perspective(spec->fov, spec->aspect_ratio, spec->z_near, spec->z_far);
 }

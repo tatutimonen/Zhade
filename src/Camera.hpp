@@ -74,7 +74,7 @@ public:
 
     virtual void set_projectivity() override;
 
-    virtual const Specification* get_spec() const { return dynamic_cast<Specification*>(m_spec.get()); }
+    virtual const Specification* get_spec() const { return static_cast<Specification*>(m_spec.get()); }
 };
 
 
@@ -96,5 +96,5 @@ public:
 
     virtual void set_projectivity() override;
 
-    virtual const Specification* get_spec() const { return dynamic_cast<Specification*>(m_spec.get()); }
+    virtual const Specification* get_spec() const { return static_cast<Specification*>(m_spec.get()); }
 };

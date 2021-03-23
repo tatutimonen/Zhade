@@ -29,7 +29,6 @@ int main(void)
         std::make_unique<Camera::Specification>(glm::vec3(0.0f, 1.0f, 3.0f))
     );
     auto camera = PerspectiveCamera(std::move(camera_spec));
-    std::cout << "asd" << std::endl;
     camera.push_view_matrix(*shader_program.get());
     camera.push_projection_matrix(*shader_program.get());
 
