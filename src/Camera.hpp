@@ -36,9 +36,9 @@ public:
                                                   m_spec->up); }
     virtual void set_projectivity() = 0;
 
-    inline const glm::mat4& get_view() const         { return m_view; }
-    inline const glm::mat4& get_projectivity() const { return m_projectivity; }
-    virtual const Specification* get_spec() const    = 0;
+    inline const glm::mat4& get_view() const             { return m_view; }
+    inline const glm::mat4& get_projectivity() const     { return m_projectivity; }
+    virtual inline const Specification* get_spec() const = 0;
 
     bool move();
     bool rotate();
@@ -74,7 +74,7 @@ public:
 
     virtual void set_projectivity() override;
 
-    virtual const Specification* get_spec() const { return static_cast<Specification*>(m_spec.get()); }
+    virtual inline const Specification* get_spec() const { return static_cast<Specification*>(m_spec.get()); }
 };
 
 
@@ -96,5 +96,5 @@ public:
 
     virtual void set_projectivity() override;
 
-    virtual const Specification* get_spec() const { return static_cast<Specification*>(m_spec.get()); }
+    virtual inline const Specification* get_spec() const { return static_cast<Specification*>(m_spec.get()); }
 };
