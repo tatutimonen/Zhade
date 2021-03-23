@@ -31,10 +31,8 @@ public:
 
     virtual ~Camera() = default;
 
-    inline void set_view() { m_view = glm::lookAt(m_spec->position,
-                                                  m_spec->position + m_spec->target,
-                                                  m_spec->up); }
-    virtual void set_projectivity() = 0;
+    inline void set_view()                 { m_view = glm::lookAt(m_spec->position, m_spec->position + m_spec->target, m_spec->up); }
+    virtual inline void set_projectivity() = 0;
 
     inline const glm::mat4& get_view() const             { return m_view; }
     inline const glm::mat4& get_projectivity() const     { return m_projectivity; }
@@ -72,7 +70,7 @@ public:
     OrthographicCamera(std::unique_ptr<Specification> spec = std::make_unique<Specification>());
     ~OrthographicCamera() = default;
 
-    virtual void set_projectivity() override;
+    virtual inline void set_projectivity() override;
 
     virtual inline const Specification* get_spec() const { return static_cast<Specification*>(m_spec.get()); }
 };
@@ -94,7 +92,7 @@ public:
     PerspectiveCamera(std::unique_ptr<Specification> spec = std::make_unique<Specification>());
     ~PerspectiveCamera() = default;
 
-    virtual void set_projectivity() override;
+    virtual inline void set_projectivity() override;
 
     virtual inline const Specification* get_spec() const { return static_cast<Specification*>(m_spec.get()); }
 };
