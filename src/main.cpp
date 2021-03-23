@@ -25,9 +25,7 @@ int main(void)
     auto fshader = std::make_shared<Shader>(GL_FRAGMENT_SHADER, Common::shader_path + "fshader.glsl");
     auto shader_program = std::make_shared<ShaderProgram>(vshader, fshader);
 
-    auto camera_spec = std::make_unique<PerspectiveCamera::Specification>(
-        std::make_unique<Camera::Specification>(glm::vec3(0.0f, 1.0f, 3.0f))
-    );
+    auto camera_spec = std::make_unique<PerspectiveCamera::Specification>();
     auto camera = PerspectiveCamera(std::move(camera_spec));
     camera.push_view_matrix(*shader_program.get());
     camera.push_projection_matrix(*shader_program.get());
