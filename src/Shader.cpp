@@ -1,32 +1,37 @@
 #include "Shader.hpp"
 
+//------------------------------------------------------------------------
 
-Shader::Shader(GLint gl_shader_type, const std::string& filename)
+const std::map<GLint, Shader::ShaderType> Shader::s_glShaderToCustomShader = {
+    {GL_VERTEX_SHADER, VERTEX_SHADER},
+    {GL_GEOMETRY_SHADER, GEOMETRY_SHADER},
+    {GL_FRAGMENT_SHADER, FRAGMENT_SHADER}
+};
+
+//------------------------------------------------------------------------
+
+Shader::Shader(GLint glShaderType, const std::string& filename)
 {
-    switch (gl_shader_type) {
-        case GL_VERTEX_SHADER:
-            m_shader_type = VERTEX_SHADER;
-            break;
-        case GL_GEOMETRY_SHADER:
-            m_shader_type = GEOMETRY_SHADER;
-            break;
-        case GL_FRAGMENT_SHADER:
-            m_shader_type = FRAGMENT_SHADER;
-            break;
-        default:
-            std::stringstream err_msg;
-            err_msg << "Invalid OpenGL symbolic constant describing shader type "
-                    << "(0x"
-                    << std::hex << std::setw(4) << std::setfill('0') << gl_shader_type
-                    << ")";
-            std::cerr << err_msg.str() << std::endl;
-            throw std::runtime_error(err_msg.str());
+    try {
+        m_shaderType = s_glShaderToCustomShader.at(glShaderType);
+        parseShaderFile(filename);
+        GL_CALL(m_handle = glCreateShader(glShaderType));
+        // glShaderSource needs an lvalue.
+        const GLchar* shader_source_ptr = m_shaderSource.c_str();
+        GL_CALL(glShaderSource(m_handle, 1, &shader_source_ptr, nullptr));
+        compile();
     }
-    parse_shader_file(filename);
-    GL_CALL(m_handle = glCreateShader(gl_shader_type));
-    const char* shader_source = m_shader_source.c_str();
-    GL_CALL(glShaderSource(m_handle, 1, &shader_source, nullptr));
-    compile();
+    catch (const std::out_of_range& e) {
+        std::ostringstream errMsg;
+        errMsg << "\nInvalid OpenGL symbolic constant describing shader type "
+               << "(0x"
+               << std::hex << std::setw(4) << std::setfill('0') << glShaderType
+               << ")";
+        throw std::runtime_error(e.what() + errMsg.str());
+    }
+    catch (const std::exception& e) {
+        throw std::runtime_error(e.what());
+    }
 }
 
 Shader::~Shader()
@@ -34,31 +39,42 @@ Shader::~Shader()
     GL_CALL(glDeleteShader(m_handle));
 }
 
-void Shader::parse_shader_file(const std::string& filename)
+//------------------------------------------------------------------------
+
+void Shader::parseShaderFile(const std::string& filename)
 {
-    std::ifstream shader_file;
-    shader_file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    std::ifstream shaderFile;
+    shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     
-    shader_file.open(filename);
-    std::stringstream sstream;
-    sstream << shader_file.rdbuf();
-    m_shader_source = sstream.str();
+    shaderFile.open(filename);
+    std::ostringstream osstream;
+    osstream << shaderFile.rdbuf();
+    m_shaderSource = osstream.str();
+    shaderFile.close();
 }
+
+//------------------------------------------------------------------------
 
 void Shader::compile() const
 {
     GL_CALL(glCompileShader(m_handle));
+
     GLint status;
     GL_CALL(glGetShaderiv(m_handle, GL_COMPILE_STATUS, &status));
     if (status == GL_FALSE) {
-        GLchar info_log[512];
-        GL_CALL(glGetShaderInfoLog(m_handle, 512, nullptr, info_log));
-        std::stringstream err_msg;
-        err_msg << "Error compiling shader with ID "
+        GLint logLength;
+        GL_CALL(glGetShaderiv(m_handle, GL_INFO_LOG_LENGTH, &logLength));
+        std::string infoLog;
+        infoLog.resize(static_cast<std::string::size_type>(logLength - 1));
+        GL_CALL(glGetShaderInfoLog(m_handle, logLength, nullptr, infoLog.data()));
+        
+        std::ostringstream errMsg;
+        errMsg << "Error compiling shader with ID "
                 << m_handle
                 << ": "
-                << info_log;
-        std::cerr << err_msg.str() << std::endl;
-        throw std::runtime_error(err_msg.str());
+                << infoLog;
+        throw std::runtime_error(errMsg.str());
     }
 }
+
+//------------------------------------------------------------------------

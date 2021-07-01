@@ -13,31 +13,35 @@
 #include <unordered_map>
 #include <utility>
 
+//------------------------------------------------------------------------
 
 class ShaderProgram {
 public:
-    ShaderProgram(const std::shared_ptr<Shader>& vertex_shader,
-                  const std::shared_ptr<Shader>& fragment_shader,
-                  const std::shared_ptr<Shader>& geometry_shader = nullptr);
+    ShaderProgram(std::shared_ptr<Shader> vertexShader,
+                  std::shared_ptr<Shader> fragmentShader,
+                  std::shared_ptr<Shader> geometryShader = nullptr);
     ~ShaderProgram();
 
     template<typename T>
-    void set_uniform(const std::string& name, const GLvoid* data);
+    void setUniform(const std::string& name, const GLvoid* data);
 
-    inline GLuint get_handle() const { return m_handle; }
-    GLint get_attrib_location(const std::string& name);
-    GLint get_uniform_location(const std::string& name);
+    inline GLuint getHandle() const noexcept { return m_handle; }
+    GLint getAttribLocation(const std::string& name);
+    GLint getUniformLocation(const std::string& name);
 
-    void use() const;
-    void unuse() const;
-    void attach_shader(const std::shared_ptr<Shader>& shader);
-    void detach_shader(const std::shared_ptr<Shader>& shader);
-    void detach_shaders();
+    void use() const noexcept;
+    void unuse() const noexcept;
+
+    void attachShader(const std::shared_ptr<Shader> shader);
+    void detachShader(const std::shared_ptr<Shader> shader);
+    void detachShaders();
     void link() const;
 
 private:
     GLuint m_handle;
-    std::array<std::shared_ptr<Shader>, Shader::SHADER_MAX> m_shaders = { nullptr };
-    std::unordered_map<std::string, GLint> m_attrib_location_cache;
-    std::unordered_map<std::string, GLint> m_uniform_location_cache;
+    std::array<std::shared_ptr<Shader>, Shader::N> m_shaders = { nullptr };
+    std::unordered_map<std::string, GLint> m_attribLocationCache;
+    std::unordered_map<std::string, GLint> m_uniformLocationCache;
 };
+
+//------------------------------------------------------------------------

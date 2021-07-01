@@ -1,90 +1,110 @@
 #include "Mesh.hpp"
 
+//------------------------------------------------------------------------
 
 Mesh::Mesh(const std::vector<Vertex>& vertices,
            const std::vector<GLuint>& indices,
-           std::shared_ptr<ShaderProgram> shader_program,
-           std::shared_ptr<Material> material,
-           GLenum draw_mode)
-    : m_material(std::move(material)), m_draw_mode(draw_mode), m_shader_program(std::move(shader_program)),
-      m_nof_indices(indices.size())
+           const std::shared_ptr<ShaderProgram>& shaderProgram,
+           const std::shared_ptr<Material>& material,
+           GLenum drawMode)
+    : m_material{material},
+      m_drawMode{drawMode},
+      m_shaderProgram{shaderProgram},
+      m_nofIndices{(GLsizei)indices.size()}
 {
-    GL_CALL(glGenVertexArrays(1, &m_vao));
-    GL_CALL(glGenBuffers(1, &m_vbo));
-    GL_CALL(glGenBuffers(1, &m_ebo));
+    GL_CALL(glGenVertexArrays(1, &m_VAO));
+    GL_CALL(glGenBuffers(1, &m_VBO));
+    GL_CALL(glGenBuffers(1, &m_EBO));
 
-    GL_CALL(glBindVertexArray(m_vao));
+    GL_CALL(glBindVertexArray(m_VAO));
     
-    GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, m_vbo));
-    GL_CALL(glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(Vertex), vertices.data(), m_draw_mode));
+    GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, m_VBO));
+    GL_CALL(glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(Vertex), vertices.data(), m_drawMode));
 
     GL_CALL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)0));
     GL_CALL(glEnableVertexAttribArray(0));
     GL_CALL(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)offsetof(Vertex, normal)));
     GL_CALL(glEnableVertexAttribArray(1));
+    GL_CALL(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)offsetof(Vertex, texCoords)));
+    GL_CALL(glEnableVertexAttribArray(2));
 
-    GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo));
-    GL_CALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size()*sizeof(GLuint), indices.data(), m_draw_mode));
+    GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO));
+    GL_CALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size()*sizeof(GLuint), indices.data(), m_drawMode));
 
     GL_CALL(glBindVertexArray(0));
     GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
     GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 }
 
+//------------------------------------------------------------------------
+
 Mesh::~Mesh()
 {
-    GL_CALL(glDeleteVertexArrays(1, &m_vao));
-    GL_CALL(glDeleteBuffers(1, &m_vbo));
-    GL_CALL(glDeleteBuffers(1, &m_ebo));
+    GL_CALL(glDeleteVertexArrays(1, &m_VAO));
+    GL_CALL(glDeleteBuffers(1, &m_VBO));
+    GL_CALL(glDeleteBuffers(1, &m_EBO));
 }
 
-void Mesh::render()
+//------------------------------------------------------------------------
+
+void Mesh::render() const noexcept
 {
-    push_material();
-    push_model_matrix();
-    m_shader_program->use();
-    GL_CALL(glBindVertexArray(m_vao));
-    GL_CALL(glDrawElements(m_primitive_mode, m_nof_indices, GL_UNSIGNED_INT, (const GLvoid*)0));
-    GL_CALL(glBindVertexArray(0));
-    m_shader_program->unuse();
+    pushMaterial();
+    pushModelMatrix();
+    
+    m_shaderProgram->use();
+    m_colorTexture->bind();
+    GL_CALL(glBindVertexArray(m_VAO));
+    GL_CALL(glDrawElements(m_primitiveMode, m_nofIndices, GL_UNSIGNED_INT, (const GLvoid*)0));
+    m_colorTexture->unbind();
+    m_shaderProgram->unuse();
 }
 
-void Mesh::push_model_matrix()
+//------------------------------------------------------------------------
+
+void Mesh::pushModelMatrix() const noexcept
 {
-    m_shader_program->set_uniform<glm::mat4>("model", glm::value_ptr(m_transformation));
+    m_shaderProgram->setUniform<glm::mat4>("u_model", glm::value_ptr(m_transformation));
 }
 
-void Mesh::push_material()
+//------------------------------------------------------------------------
+
+void Mesh::pushMaterial() const noexcept
 {
-    m_shader_program->set_uniform<glm::vec3>("material.ambient", glm::value_ptr(m_material->ambient));
-    m_shader_program->set_uniform<glm::vec3>("material.diffuse", glm::value_ptr(m_material->diffuse));
-    m_shader_program->set_uniform<glm::vec3>("material.specular", glm::value_ptr(m_material->specular));
-    m_shader_program->set_uniform<GLfloat>("material.shininess", &m_material->shininess);
+    m_shaderProgram->setUniform<glm::vec3>("u_material.emission", glm::value_ptr(m_material->emission));
+    m_shaderProgram->setUniform<glm::vec3>("u_material.ambient", glm::value_ptr(m_material->ambient));
+    m_shaderProgram->setUniform<glm::vec3>("u_material.diffuse", glm::value_ptr(m_material->diffuse));
+    m_shaderProgram->setUniform<glm::vec3>("u_material.specular", glm::value_ptr(m_material->specular));
+    m_shaderProgram->setUniform<GLfloat>("u_material.shininess", &m_material->shininess);
 }
 
-std::unique_ptr<Mesh> Mesh::from_file(const std::string& filename,
-                                      std::shared_ptr<ShaderProgram> shader_program,
-                                      std::shared_ptr<Material> material,
-                                      GLenum draw_mode)
+//------------------------------------------------------------------------
+
+std::unique_ptr<Mesh> Mesh::fromFile(const std::string& filename,
+                                     const std::shared_ptr<ShaderProgram>& shaderProgram,
+                                     const std::shared_ptr<Material>& material,
+                                     GLenum drawMode)
 {
     return nullptr;
 }
 
-std::unique_ptr<Mesh> Mesh::make_cube(std::shared_ptr<ShaderProgram> shader_program,
-                                      std::shared_ptr<Material> material,
-                                      GLenum draw_mode)
+//------------------------------------------------------------------------
+
+std::unique_ptr<Mesh> Mesh::makeCube(const std::shared_ptr<ShaderProgram>& shaderProgram,
+                                     const std::shared_ptr<Material>& material,
+                                     GLenum drawMode)
 {
     const std::vector<Vertex> vertices = {
         // bottom
-        { glm::vec3( 0.5f,  0.0f,  0.5f),  Util::make_unit_vec3z() },
-        { glm::vec3(-0.5f,  0.0f,  0.5f), -Util::make_unit_vec3x() },
-        { glm::vec3(-0.5f,  0.0f, -0.5f), -Util::make_unit_vec3z() },
-        { glm::vec3( 0.5f,  0.0f, -0.5f),  Util::make_unit_vec3x() },
+        { glm::vec3( 0.5f,  0.0f,  0.5f),  Util::makeUnitVec3z(), glm::vec2() },
+        { glm::vec3(-0.5f,  0.0f,  0.5f), -Util::makeUnitVec3x(), glm::vec2() },
+        { glm::vec3(-0.5f,  0.0f, -0.5f), -Util::makeUnitVec3z(), glm::vec2() },
+        { glm::vec3( 0.5f,  0.0f, -0.5f),  Util::makeUnitVec3x(), glm::vec2() },
         // top
-        { glm::vec3( 0.5f,  1.0f,  0.5f),  Util::make_unit_vec3z() },
-        { glm::vec3(-0.5f,  1.0f,  0.5f), -Util::make_unit_vec3x() },
-        { glm::vec3(-0.5f,  1.0f, -0.5f), -Util::make_unit_vec3z() },
-        { glm::vec3( 0.5f,  1.0f, -0.5f),  Util::make_unit_vec3x() }
+        { glm::vec3( 0.5f,  1.0f,  0.5f),  Util::makeUnitVec3z(), glm::vec2() },
+        { glm::vec3(-0.5f,  1.0f,  0.5f), -Util::makeUnitVec3x(), glm::vec2() },
+        { glm::vec3(-0.5f,  1.0f, -0.5f), -Util::makeUnitVec3z(), glm::vec2() },
+        { glm::vec3( 0.5f,  1.0f, -0.5f),  Util::makeUnitVec3x(), glm::vec2() }
     };
 
     const std::vector<GLuint> indices = {
@@ -98,23 +118,27 @@ std::unique_ptr<Mesh> Mesh::make_cube(std::shared_ptr<ShaderProgram> shader_prog
         3, 0, 7, 7, 4, 0
     };
 
-    return std::make_unique<Mesh>(vertices, indices, shader_program, material, draw_mode);
+    return std::make_unique<Mesh>(vertices, indices, shaderProgram, material, drawMode);
 }
 
-std::unique_ptr<Mesh> Mesh::make_plane(std::shared_ptr<ShaderProgram> shader_program,
-                                       std::shared_ptr<Material> material,
-                                       GLenum draw_mode)
+//------------------------------------------------------------------------
+
+std::unique_ptr<Mesh> Mesh::makePlane(const std::shared_ptr<ShaderProgram>& shaderProgram,
+                                      const std::shared_ptr<Material>& material,
+                                      GLenum drawMode)
 {
     const std::vector<Vertex> vertices = {
-        { glm::vec3( 0.5f,  0.0f,  0.5f), Util::make_unit_vec3y() },
-        { glm::vec3(-0.5f,  0.0f,  0.5f), Util::make_unit_vec3y() },
-        { glm::vec3(-0.5f,  0.0f, -0.5f), Util::make_unit_vec3y() },
-        { glm::vec3( 0.5f,  0.0f, -0.5f), Util::make_unit_vec3y() }
+        { glm::vec3( 0.5f,  0.0f,  0.5f), Util::makeUnitVec3y(), glm::vec2() },
+        { glm::vec3(-0.5f,  0.0f,  0.5f), Util::makeUnitVec3y(), glm::vec2() },
+        { glm::vec3(-0.5f,  0.0f, -0.5f), Util::makeUnitVec3y(), glm::vec2() },
+        { glm::vec3( 0.5f,  0.0f, -0.5f), Util::makeUnitVec3y(), glm::vec2() }
     };
     
     const std::vector<GLuint> indices = {
         0, 1, 2, 2, 3, 0
     };
 
-    return std::make_unique<Mesh>(vertices, indices, shader_program, material, draw_mode);
+    return std::make_unique<Mesh>(vertices, indices, shaderProgram, material, drawMode);
 }
+
+//------------------------------------------------------------------------

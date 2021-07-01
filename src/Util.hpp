@@ -11,47 +11,47 @@
 #include <string>
 
 
-#define GL_CALL(fn) fn; check_errors(#fn, __FILE__, __LINE__);
+#define GL_CALL(fn) fn; checkErrors(#fn, __FILE__, __LINE__);
 
 
 namespace Util {
 
-    inline glm::vec3 make_unit_vec3x()
+    inline glm::vec3 makeUnitVec3x()
     {
         return glm::vec3(1.0f, 0.0f, 0.0f);
     }
     
-    inline glm::vec3 make_unit_vec3y()
+    inline glm::vec3 makeUnitVec3y()
     {
         return glm::vec3(0.0f, 1.0f, 0.0f);
     }
     
-    inline glm::vec3 make_unit_vec3z()
+    inline glm::vec3 makeUnitVec3z()
     {
         return glm::vec3(0.0f, 0.0f, 1.0f);
     }
 
-    constexpr float z_fight_epsilon = 1e-5f;
+    constexpr float zFightEpsilon = 1e-5f;
 
 } // namespace Util
 
 namespace {
 
-    void log_gl_error(GLenum err, const char* fn, const char* file, int line)
+    void logGlError(GLenum err, const char* fn, const char* file, int line)
     {
         std::ostream& log_stream = std::cout;
         log_stream << "OpenGL Error "
                    << "0x" << std::hex << std::setw(4) << std::setfill('0') << err
                    << " in call \"" << fn << "\" in "
-                   << file << ":" << line 
+                   << file << ":" << std::dec << line 
                    << std::endl;
     }
 
-    inline void check_errors(const char* fn, const char* file, int line)
+    inline void checkErrors(const char* fn, const char* file, int line)
     {
         GLenum err = glGetError();
         if (err != GL_NO_ERROR) {
-            log_gl_error(err, fn, file, line);
+            logGlError(err, fn, file, line);
             throw std::runtime_error(nullptr);
         }
     }

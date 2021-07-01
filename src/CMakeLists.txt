@@ -2,10 +2,12 @@ add_executable(App
     App.cpp
     Camera.cpp
     Common.cpp
+    ITexture.cpp
     main.cpp
     Mesh.cpp
     Shader.cpp
     ShaderProgram.cpp
+    Texture2D.cpp
     Util.cpp
 )
 target_link_libraries(App

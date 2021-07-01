@@ -1,21 +1,23 @@
 #include "ShaderProgram.hpp"
 
+//------------------------------------------------------------------------
 
-ShaderProgram::ShaderProgram(const std::shared_ptr<Shader>& vertex_shader,
-                             const std::shared_ptr<Shader>& fragment_shader,
-                             const std::shared_ptr<Shader>& geometry_shader)
+ShaderProgram::ShaderProgram(std::shared_ptr<Shader> vertexShader,
+                             std::shared_ptr<Shader> fragmentShader,
+                             std::shared_ptr<Shader> geometryShader)
 {
     GL_CALL(m_handle = glCreateProgram());
 
-    m_shaders[Shader::VERTEX_SHADER] = vertex_shader;
-    attach_shader(vertex_shader);
+    m_shaders[Shader::VERTEX_SHADER] = vertexShader;
+    attachShader(vertexShader);
 
-    m_shaders[Shader::FRAGMENT_SHADER] = fragment_shader;
-    attach_shader(fragment_shader);
+    m_shaders[Shader::FRAGMENT_SHADER] = fragmentShader;
+    attachShader(fragmentShader);
 
-    if (geometry_shader != nullptr) {
-        m_shaders[Shader::GEOMETRY_SHADER] = geometry_shader;
-        attach_shader(geometry_shader);
+    if (geometryShader != nullptr)
+    {
+        m_shaders[Shader::GEOMETRY_SHADER] = geometryShader;
+        attachShader(geometryShader);
     }
 
     link();
@@ -26,158 +28,184 @@ ShaderProgram::~ShaderProgram()
     GL_CALL(glDeleteProgram(m_handle));
 }
 
+//------------------------------------------------------------------------
+
 template<typename T>
-void ShaderProgram::set_uniform(const std::string& name, const GLvoid* data)
+void ShaderProgram::setUniform(const std::string& name, const GLvoid* data)
 {
-    std::stringstream err_msg;
-    err_msg << "Invalid uniform variable type "
-            << "(" << typeid(T).name() << ")\n";
-    std::cerr << err_msg.str();
+    std::ostringstream errMsg;
+    errMsg << "Invalid uniform variable type "
+           << "(" << typeid(T).name() << ")\n";
+    std::cerr << errMsg.str();
 }
 
 template<>
-void ShaderProgram::set_uniform<GLint>(const std::string& name, const GLvoid* data)
+void ShaderProgram::setUniform<GLint>(const std::string& name, const GLvoid* data)
 {
     use();
-    GL_CALL(glUniform1i(get_uniform_location(name), *((const GLint*)data)))
+    GL_CALL(glUniform1i(getUniformLocation(name), *((const GLint*)data)))
     unuse();
 }
 
 template<>
-void ShaderProgram::set_uniform<GLfloat>(const std::string& name, const GLvoid* data)
+void ShaderProgram::setUniform<GLfloat>(const std::string& name, const GLvoid* data)
 {
     use();
-    GL_CALL(glUniform1f(get_uniform_location(name), *((const GLfloat*)data)));
+    GL_CALL(glUniform1f(getUniformLocation(name), *((const GLfloat*)data)));
     unuse();
 }
 
 template<>
-void ShaderProgram::set_uniform<glm::vec2>(const std::string& name, const GLvoid* data)
+void ShaderProgram::setUniform<glm::vec2>(const std::string& name, const GLvoid* data)
 {
     use();
-    GL_CALL(glUniform2fv(get_uniform_location(name), 1, (const GLfloat*)data));
+    GL_CALL(glUniform2fv(getUniformLocation(name), 1, (const GLfloat*)data));
     unuse();
 }
 
 template<>
-void ShaderProgram::set_uniform<glm::vec3>(const std::string& name, const GLvoid* data)
+void ShaderProgram::setUniform<glm::vec3>(const std::string& name, const GLvoid* data)
 {
     use();
-    GL_CALL(glUniform3fv(get_uniform_location(name), 1, (const GLfloat*)data));
+    GL_CALL(glUniform3fv(getUniformLocation(name), 1, (const GLfloat*)data));
     unuse();
 }
 
 template<>
-void ShaderProgram::set_uniform<glm::vec4>(const std::string& name, const GLvoid* data)
+void ShaderProgram::setUniform<glm::vec4>(const std::string& name, const GLvoid* data)
 {
     use();
-    GL_CALL(glUniform4fv(get_uniform_location(name), 1, (const GLfloat*)data));
+    GL_CALL(glUniform4fv(getUniformLocation(name), 1, (const GLfloat*)data));
     unuse();
 }
 
 template<>
-void ShaderProgram::set_uniform<glm::mat3>(const std::string& name, const GLvoid* data)
+void ShaderProgram::setUniform<glm::mat3>(const std::string& name, const GLvoid* data)
 {
     use();
-    GL_CALL(glUniformMatrix3fv(get_uniform_location(name), 1, GL_FALSE, (const GLfloat*)data));
+    GL_CALL(glUniformMatrix3fv(getUniformLocation(name), 1, GL_FALSE, (const GLfloat*)data));
     unuse();
 }
 
 template<>
-void ShaderProgram::set_uniform<glm::mat4x3>(const std::string& name, const GLvoid* data)
+void ShaderProgram::setUniform<glm::mat4x3>(const std::string& name, const GLvoid* data)
 {
     use();
-    GL_CALL(glUniformMatrix4x3fv(get_uniform_location(name), 1, GL_FALSE, (const GLfloat*)data));
+    GL_CALL(glUniformMatrix4x3fv(getUniformLocation(name), 1, GL_FALSE, (const GLfloat*)data));
     unuse();
 }
 
 template<>
-void ShaderProgram::set_uniform<glm::mat4>(const std::string& name, const GLvoid* data)
+void ShaderProgram::setUniform<glm::mat4>(const std::string& name, const GLvoid* data)
 {
     use();
-    GL_CALL(glUniformMatrix4fv(get_uniform_location(name), 1, GL_FALSE, (const GLfloat*)data));
+    GL_CALL(glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, (const GLfloat*)data));
     unuse();
 }
 
-GLint ShaderProgram::get_attrib_location(const std::string& name)
+//------------------------------------------------------------------------
+
+GLint ShaderProgram::getAttribLocation(const std::string& name)
 {
-    if (m_attrib_location_cache.find(name) != m_attrib_location_cache.end())
-        return m_attrib_location_cache[name];
+    if (m_attribLocationCache.find(name) != m_attribLocationCache.end())
+        return m_attribLocationCache[name];
     
     GL_CALL(GLint location = glGetAttribLocation(m_handle, name.c_str()));
     if (location == -1) {
-        std::stringstream err_msg;
-        err_msg << "Error querying attribute location of "
-                << "\"" << name << "\". "
-                << "Did it go unused?\n";
-        std::cerr << err_msg.str();
+        std::ostringstream errMsg;
+        errMsg << "Error querying attribute location of "
+               << "\"" << name << "\". "
+               << "Did it go unused?\n";
+        std::cerr << errMsg.str();
     }
     
-    m_attrib_location_cache[name] = location;
+    m_attribLocationCache[name] = location;
     return location;
 }
 
-GLint ShaderProgram::get_uniform_location(const std::string& name)
+//------------------------------------------------------------------------
+
+GLint ShaderProgram::getUniformLocation(const std::string& name)
 {
-    if (m_uniform_location_cache.find(name) != m_uniform_location_cache.end())
-        return m_uniform_location_cache[name];
+    if (m_uniformLocationCache.find(name) != m_uniformLocationCache.end())
+        return m_uniformLocationCache[name];
 
     GL_CALL(GLint location = glGetUniformLocation(m_handle, name.c_str()));
     if (location == -1) {
-        std::stringstream err_msg;
-        err_msg << "Error querying uniform location of "
-                << "\"" << name << "\". "
-                << "Did it go unused?\n";
-        std::cerr << err_msg.str();
+        std::ostringstream errMsg;
+        errMsg << "Error querying uniform location of "
+               << "\"" << name << "\". "
+               << "Did it go unused?\n";
+        std::cerr << errMsg.str();
     }
 
-    m_uniform_location_cache[name] = location;
+    m_uniformLocationCache[name] = location;
     return location;
 }
 
-void ShaderProgram::attach_shader(const std::shared_ptr<Shader>& shader)
+//------------------------------------------------------------------------
+
+void ShaderProgram::attachShader(const std::shared_ptr<Shader> shader)
 {
-    GL_CALL(glAttachShader(m_handle, shader->get_handle()));
+    GL_CALL(glAttachShader(m_handle, shader->getHandle()));
 }
 
-void ShaderProgram::detach_shader(const std::shared_ptr<Shader>& shader)
+//------------------------------------------------------------------------
+
+void ShaderProgram::detachShader(const std::shared_ptr<Shader> shader)
 {
-    if (!shader) return;
-    GL_CALL(glDetachShader(m_handle, shader->get_handle()));
-    m_shaders[shader->get_shader_type()] = nullptr;
+    if (shader == nullptr)
+        return;
+
+    GL_CALL(glDetachShader(m_handle, shader->getHandle()));
+    m_shaders[shader->getShaderType()] = nullptr;
 }
 
-void ShaderProgram::detach_shaders()
+//------------------------------------------------------------------------
+
+void ShaderProgram::detachShaders()
 {
     for (const auto& shader : m_shaders)
-        detach_shader(shader);
+        detachShader(shader);
 }
 
-void ShaderProgram::use() const
+//------------------------------------------------------------------------
+
+void ShaderProgram::use() const noexcept
 {
     GL_CALL(glUseProgram(m_handle));
 }
 
-void ShaderProgram::unuse() const
+//------------------------------------------------------------------------
+
+void ShaderProgram::unuse() const noexcept
 {
     GL_CALL(glUseProgram(0));
 }
 
+//------------------------------------------------------------------------
+
 void ShaderProgram::link() const
 {
     GL_CALL(glLinkProgram(m_handle));
+
     GLint status;
     GL_CALL(glGetProgramiv(m_handle, GL_LINK_STATUS, &status));
     if (!status) {
-        char info_log[512];
-        GL_CALL(glGetProgramInfoLog(m_handle, 512, nullptr, info_log));
-        std::stringstream err_msg;
-        err_msg << "Error linking shader program with ID "
-                << m_handle
-                << ": "
-                << info_log
-                << "\n";
-        std::cerr << err_msg.str();
-        throw std::runtime_error(err_msg.str());
+        GLint logLength;
+        GL_CALL(glGetProgramiv(m_handle, GL_INFO_LOG_LENGTH, &logLength));
+        std::string infoLog;
+        infoLog.resize(static_cast<std::string::size_type>(logLength - 1));
+        GL_CALL(glGetProgramInfoLog(m_handle, logLength, nullptr, infoLog.data()));
+        
+        std::ostringstream errMsg;
+        errMsg << "Error linking shader program with ID "
+               << m_handle
+               << ": "
+               << infoLog
+               << "\n";
+        throw std::runtime_error(errMsg.str());
     }
 }
+
+//------------------------------------------------------------------------

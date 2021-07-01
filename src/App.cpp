@@ -1,18 +1,21 @@
 #include "App.hpp"
 
+//------------------------------------------------------------------------
 
 // The elegance of singletons :)
 bool App::m_keys[512];
 float App::m_pitch = 0.0f;
 float App::m_yaw = -glm::half_pi<float>();
 
+//------------------------------------------------------------------------
+
 void App::init()
 {
     // GLFW
     glfwInit();
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
@@ -30,7 +33,10 @@ void App::init()
     GL_CALL(glViewport(0, 0, window_width, window_height));
     GL_CALL(glClearColor(46/255.0f, 68/255.0f, 130/255.0f, 1.0f));
     GL_CALL(glEnable(GL_DEPTH_TEST));
+    GL_CALL(glEnable(GL_FRAMEBUFFER_SRGB));
 }
+
+//------------------------------------------------------------------------
 
 void App::update_internal_times()
 {
@@ -39,12 +45,18 @@ void App::update_internal_times()
     m_last_frame = current_frame;
 }
 
+//------------------------------------------------------------------------
+
 void App::add_mesh(std::shared_ptr<Mesh> mesh)
 {
     m_meshes.push_back(mesh);
 }
 
+//------------------------------------------------------------------------
+
 App::~App()
 {
     glfwTerminate();
 }
+
+//------------------------------------------------------------------------

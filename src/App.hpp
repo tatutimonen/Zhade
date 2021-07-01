@@ -8,10 +8,12 @@
 
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <utility>
 #include <vector>
 
+//------------------------------------------------------------------------
 
 class App {
 public:
@@ -59,8 +61,8 @@ public:
     }
 
     const std::string name = "Shadow Mapper";
-    static const unsigned int window_width = 800;
-    static const unsigned int window_height = 800;
+    static const unsigned int window_width = 800u;
+    static const unsigned int window_height = 800u;
 
 private:
     App() = default;
@@ -76,3 +78,5 @@ private:
 
     std::vector<std::shared_ptr<Mesh>> m_meshes;
 };
+
+//------------------------------------------------------------------------

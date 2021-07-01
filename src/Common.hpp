@@ -2,9 +2,14 @@
 
 #include <string>
 
+//------------------------------------------------------------------------
 
 namespace Common {
 
-    const std::string shader_path = "../src/shaders/";
+    const std::string shaderPath = "../src/shaders/";
 
-}
+    const std::string texturePath = "../texture/";
+
+} // namespace Common
+
+//------------------------------------------------------------------------
