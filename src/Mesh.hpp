@@ -11,6 +11,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 //------------------------------------------------------------------------
@@ -23,11 +24,10 @@ public:
         glm::vec2 texCoords;
     };
     struct Material {
-        // Defaults to silver, no emission. See http://devernay.free.fr/cours/opengl/materials.html
         glm::vec3 emission = glm::vec3(0.0f);
-        glm::vec3 ambient  = glm::vec3(0.19225f);
-        glm::vec3 diffuse  = glm::vec3(0.50754f);
-        glm::vec3 specular = glm::vec3(0.508273f);
+        glm::vec3 ambient  = glm::vec3(1.0f);
+        glm::vec3 diffuse  = glm::vec3(1.0f);
+        glm::vec3 specular = glm::vec3(1.0f);
         GLfloat shininess  = 0.4f;
 
         Material() = default;
@@ -37,6 +37,7 @@ public:
          const std::vector<GLuint>& indices,
          const std::shared_ptr<ShaderProgram>& shaderProgram,
          const std::shared_ptr<Material>& material = std::make_shared<Material>(),
+         const std::shared_ptr<Texture2D>& colorTexture = std::shared_ptr<Texture2D>(Texture2D::makeDefault()),
          GLenum draw_mode = GL_STATIC_DRAW);
     ~Mesh();
 
@@ -59,10 +60,12 @@ public:
 
     static std::unique_ptr<Mesh> makeCube(const std::shared_ptr<ShaderProgram>& shader_program,
                                           const std::shared_ptr<Material>& material = std::make_shared<Material>(),
+                                          const std::shared_ptr<Texture2D>& colorTexture = std::shared_ptr<Texture2D>(Texture2D::makeDefault()),
                                           GLenum draw_mode = GL_STATIC_DRAW);
 
     static std::unique_ptr<Mesh> makePlane(const std::shared_ptr<ShaderProgram>& shader_program,
                                            const std::shared_ptr<Material>& material = std::make_shared<Material>(),
+                                           const std::shared_ptr<Texture2D>& colorTexture = std::shared_ptr<Texture2D>(Texture2D::makeDefault()),
                                            GLenum draw_mode = GL_STATIC_DRAW);
 
 private:

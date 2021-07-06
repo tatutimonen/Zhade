@@ -16,7 +16,7 @@ public:
     struct Specification {
         GLsizei levels = 1;
         GLenum internalFormat = GL_RGBA8;
-        GLsizei width;
+        GLsizei width = 1;
         GLint border = 0;
         GLenum format = GL_RGBA;
         GLenum type = GL_UNSIGNED_BYTE;
@@ -25,6 +25,7 @@ public:
         GLenum mag_filter = GL_LINEAR;
         GLenum wrap_s = GL_CLAMP_TO_EDGE;
 
+        Specification() = default;
         Specification(GLsizei width)
             : width{width}
         {}
@@ -36,8 +37,6 @@ public:
 
     virtual inline void bind() const = 0;
     virtual inline void unbind() const = 0;
-
-    static const std::map<GLenum, GLenum> s_glFormatToSoilFormat;
 };
 
 //------------------------------------------------------------------------

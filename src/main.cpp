@@ -11,7 +11,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/string_cast.hpp>
-#include <SOIL.h>
 
 #include <future>
 #include <memory>
@@ -44,7 +43,9 @@ int main(void)
 
     // The 0x0502 error related to meshes might be due to the singleton nature of App.
     // Mesh list should anyways be given to a separate renderer object, not App, so w/e for now.
-    auto plane = Mesh::makePlane(shader_program);
+    auto plane = Mesh::makePlane(
+        shader_program, std::make_shared<Mesh::Material>(), std::make_shared<Texture2D>(Common::texturePath + "cataphract.jpg")
+    );
     plane->setTransformation(
         glm::scale(glm::vec3(10.0f)) * glm::translate(-Util::zFightEpsilon * Util::makeUnitVec3y())
     );

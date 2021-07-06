@@ -6,11 +6,13 @@ Mesh::Mesh(const std::vector<Vertex>& vertices,
            const std::vector<GLuint>& indices,
            const std::shared_ptr<ShaderProgram>& shaderProgram,
            const std::shared_ptr<Material>& material,
+           const std::shared_ptr<Texture2D>& colorTexture,
            GLenum drawMode)
-    : m_material{material},
+    : m_shaderProgram{shaderProgram},
+      m_material{material},
+      m_colorTexture{colorTexture},
       m_drawMode{drawMode},
-      m_shaderProgram{shaderProgram},
-      m_nofIndices{(GLsizei)indices.size()}
+      m_nofIndices{static_cast<GLsizei>(indices.size())}
 {
     GL_CALL(glGenVertexArrays(1, &m_VAO));
     GL_CALL(glGenBuffers(1, &m_VBO));
@@ -92,9 +94,10 @@ std::unique_ptr<Mesh> Mesh::fromFile(const std::string& filename,
 
 std::unique_ptr<Mesh> Mesh::makeCube(const std::shared_ptr<ShaderProgram>& shaderProgram,
                                      const std::shared_ptr<Material>& material,
+                                     const std::shared_ptr<Texture2D>& colorTexture,
                                      GLenum drawMode)
 {
-    const std::vector<Vertex> vertices = {
+    const std::vector<Vertex> vertices{
         // bottom
         { glm::vec3( 0.5f,  0.0f,  0.5f),  Util::makeUnitVec3z(), glm::vec2() },
         { glm::vec3(-0.5f,  0.0f,  0.5f), -Util::makeUnitVec3x(), glm::vec2() },
@@ -107,7 +110,7 @@ std::unique_ptr<Mesh> Mesh::makeCube(const std::shared_ptr<ShaderProgram>& shade
         { glm::vec3( 0.5f,  1.0f, -0.5f),  Util::makeUnitVec3x(), glm::vec2() }
     };
 
-    const std::vector<GLuint> indices = {
+    const std::vector<GLuint> indices{
         // xz-parallel sides
         0, 1, 2, 2, 3, 0,
         4, 5, 6, 6, 7, 4,
@@ -118,27 +121,28 @@ std::unique_ptr<Mesh> Mesh::makeCube(const std::shared_ptr<ShaderProgram>& shade
         3, 0, 7, 7, 4, 0
     };
 
-    return std::make_unique<Mesh>(vertices, indices, shaderProgram, material, drawMode);
+    return std::make_unique<Mesh>(vertices, indices, shaderProgram, material, colorTexture, drawMode);
 }
 
 //------------------------------------------------------------------------
 
 std::unique_ptr<Mesh> Mesh::makePlane(const std::shared_ptr<ShaderProgram>& shaderProgram,
                                       const std::shared_ptr<Material>& material,
+                                      const std::shared_ptr<Texture2D>& colorTexture,
                                       GLenum drawMode)
 {
-    const std::vector<Vertex> vertices = {
-        { glm::vec3( 0.5f,  0.0f,  0.5f), Util::makeUnitVec3y(), glm::vec2() },
-        { glm::vec3(-0.5f,  0.0f,  0.5f), Util::makeUnitVec3y(), glm::vec2() },
-        { glm::vec3(-0.5f,  0.0f, -0.5f), Util::makeUnitVec3y(), glm::vec2() },
-        { glm::vec3( 0.5f,  0.0f, -0.5f), Util::makeUnitVec3y(), glm::vec2() }
+    const std::vector<Vertex> vertices{
+        { glm::vec3( 0.5f,  0.0f,  0.5f), Util::makeUnitVec3y(), glm::vec2(1.0f, 1.0f) },
+        { glm::vec3(-0.5f,  0.0f,  0.5f), Util::makeUnitVec3y(), glm::vec2(0.0f, 1.0f) },
+        { glm::vec3(-0.5f,  0.0f, -0.5f), Util::makeUnitVec3y(), glm::vec2(0.0f, 0.0f) },
+        { glm::vec3( 0.5f,  0.0f, -0.5f), Util::makeUnitVec3y(), glm::vec2(1.0f, 0.0f) }
     };
     
-    const std::vector<GLuint> indices = {
+    const std::vector<GLuint> indices{
         0, 1, 2, 2, 3, 0
     };
 
-    return std::make_unique<Mesh>(vertices, indices, shaderProgram, material, drawMode);
+    return std::make_unique<Mesh>(vertices, indices, shaderProgram, material, colorTexture, drawMode);
 }
 
 //------------------------------------------------------------------------

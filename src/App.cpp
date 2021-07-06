@@ -33,7 +33,6 @@ void App::init()
     GL_CALL(glViewport(0, 0, window_width, window_height));
     GL_CALL(glClearColor(46/255.0f, 68/255.0f, 130/255.0f, 1.0f));
     GL_CALL(glEnable(GL_DEPTH_TEST));
-    GL_CALL(glEnable(GL_FRAMEBUFFER_SRGB));
 }
 
 //------------------------------------------------------------------------
