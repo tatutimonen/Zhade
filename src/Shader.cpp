@@ -10,15 +10,24 @@ const std::map<GLint, Shader::ShaderType> Shader::s_glShaderToCustomShader = {
 
 //------------------------------------------------------------------------
 
+const std::map<GLint, std::string> Shader::s_glShaderToFileExtension = {
+    {GL_VERTEX_SHADER, ".vert"},
+    {GL_FRAGMENT_SHADER, ".frag"}
+};
+
+//------------------------------------------------------------------------
+
 Shader::Shader(GLint glShaderType, const std::string& filename)
 {
     try {
         m_shaderType = s_glShaderToCustomShader.at(glShaderType);
-        parseShaderFile(filename);
-        GL_CALL(m_handle = glCreateShader(glShaderType));
+        const std::string filenameWithRelativePath =
+            Common::shaderPath + (filename != "default" ? filename : filename + s_glShaderToFileExtension.at(glShaderType));
+        parseShaderFile(filenameWithRelativePath);
+        CHECK_GL_ERROR(m_handle = glCreateShader(glShaderType));
         // glShaderSource needs an lvalue.
-        const GLchar* shader_source_ptr = m_shaderSource.c_str();
-        GL_CALL(glShaderSource(m_handle, 1, &shader_source_ptr, nullptr));
+        const GLchar* shaderSourcePtr = m_shaderSource.c_str();
+        CHECK_GL_ERROR(glShaderSource(m_handle, 1, &shaderSourcePtr, nullptr));
         compile();
     }
     catch (const std::out_of_range& e) {
@@ -27,16 +36,20 @@ Shader::Shader(GLint glShaderType, const std::string& filename)
                << "(0x"
                << std::hex << std::setw(4) << std::setfill('0') << glShaderType
                << ")";
-        throw std::runtime_error(e.what() + errMsg.str());
+        std::cerr << e.what() << std::endl;        
+        throw;
     }
     catch (const std::exception& e) {
-        throw std::runtime_error(e.what());
+        std::cerr << e.what() << std::endl;
+        throw;
     }
 }
 
+//------------------------------------------------------------------------
+
 Shader::~Shader()
 {
-    GL_CALL(glDeleteShader(m_handle));
+    CHECK_GL_ERROR(glDeleteShader(m_handle));
 }
 
 //------------------------------------------------------------------------
@@ -57,16 +70,17 @@ void Shader::parseShaderFile(const std::string& filename)
 
 void Shader::compile() const
 {
-    GL_CALL(glCompileShader(m_handle));
+    CHECK_GL_ERROR(glCompileShader(m_handle));
 
     GLint status;
-    GL_CALL(glGetShaderiv(m_handle, GL_COMPILE_STATUS, &status));
+    CHECK_GL_ERROR(glGetShaderiv(m_handle, GL_COMPILE_STATUS, &status));
+
     if (status == GL_FALSE) {
         GLint logLength;
-        GL_CALL(glGetShaderiv(m_handle, GL_INFO_LOG_LENGTH, &logLength));
+        CHECK_GL_ERROR(glGetShaderiv(m_handle, GL_INFO_LOG_LENGTH, &logLength));
         std::string infoLog;
         infoLog.resize(static_cast<std::string::size_type>(logLength - 1));
-        GL_CALL(glGetShaderInfoLog(m_handle, logLength, nullptr, infoLog.data()));
+        CHECK_GL_ERROR(glGetShaderInfoLog(m_handle, logLength, nullptr, infoLog.data()));
         
         std::ostringstream errMsg;
         errMsg << "Error compiling shader with ID "

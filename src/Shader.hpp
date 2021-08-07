@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Common.hpp"
 #include "Util.hpp"
 
 #include <GL/glew.h>
@@ -7,28 +8,29 @@
 #include <fstream>
 #include <iomanip>
 #include <map>
+#include <memory>
 #include <sstream>
 #include <string>
-#include <vector>
 
 //------------------------------------------------------------------------
 
 class Shader {
 public:
     enum ShaderType : unsigned char {
-        VERTEX_SHADER = 0u,
+        VERTEX_SHADER,
         GEOMETRY_SHADER,
         FRAGMENT_SHADER,
         N
     };
 
-    Shader(GLint glShaderType, const std::string& filename);
+    Shader(GLint glShaderType, const std::string& filename = "default");
     ~Shader();
 
     inline GLuint getHandle() const noexcept         { return m_handle; }
     inline ShaderType getShaderType() const noexcept { return m_shaderType; }
 
     static const std::map<GLint, ShaderType> s_glShaderToCustomShader;
+    static const std::map<GLint, std::string> s_glShaderToFileExtension;
     
 private:
     void parseShaderFile(const std::string& filename);

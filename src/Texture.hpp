@@ -11,9 +11,9 @@
 
 //------------------------------------------------------------------------
 
-class ITexture {
+class Texture {
 public:
-    struct Specification {
+    struct Settings {
         GLsizei levels = 1;
         GLenum internalFormat = GL_RGBA8;
         GLsizei width = 1;
@@ -25,13 +25,13 @@ public:
         GLenum mag_filter = GL_LINEAR;
         GLenum wrap_s = GL_CLAMP_TO_EDGE;
 
-        Specification() = default;
-        Specification(GLsizei width)
+        Settings() = default;
+        Settings(GLsizei width)
             : width{width}
         {}
     };
 
-    virtual ~ITexture() = default;
+    virtual ~Texture() = default;
 
     virtual void setData(const void* data) = 0;
 

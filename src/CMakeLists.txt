@@ -2,12 +2,18 @@ add_executable(App
     App.cpp
     Camera.cpp
     Common.cpp
-    ITexture.cpp
+    Texture.cpp
     main.cpp
     Mesh.cpp
+    MeshFactory.cpp
+    Observer.cpp
+    OrthographicCamera.cpp
+    PerspectiveCamera.cpp
     Shader.cpp
     ShaderProgram.cpp
+    Subject.cpp
     Texture2D.cpp
+    Type.cpp
     Util.cpp
 )
 target_link_libraries(App

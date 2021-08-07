@@ -29,57 +29,40 @@ public:
         glm::vec3 diffuse  = glm::vec3(1.0f);
         glm::vec3 specular = glm::vec3(1.0f);
         GLfloat shininess  = 0.4f;
-
-        Material() = default;
+    };
+    struct Settings {
+        std::shared_ptr<ShaderProgram> renderStrategy = std::make_shared<ShaderProgram>();
+        std::shared_ptr<Material> material            = std::make_shared<Material>();
+        std::shared_ptr<Texture2D> colorTexture       = std::shared_ptr<Texture2D>(Texture2D::makeDefault());
+        glm::mat4 transformation                      = glm::mat4(1.0f);
+        GLenum drawMode                               = GL_STATIC_DRAW;
+        GLenum primitiveMode                          = GL_TRIANGLES;
     };
 
     Mesh(const std::vector<Vertex>& vertices,
-         const std::vector<GLuint>& indices,
-         const std::shared_ptr<ShaderProgram>& shaderProgram,
-         const std::shared_ptr<Material>& material = std::make_shared<Material>(),
-         const std::shared_ptr<Texture2D>& colorTexture = std::shared_ptr<Texture2D>(Texture2D::makeDefault()),
-         GLenum draw_mode = GL_STATIC_DRAW);
+        const std::vector<GLuint>& indices,
+        std::unique_ptr<Settings> settings = std::make_unique<Settings>());
     ~Mesh();
 
-    inline void setMaterial(std::shared_ptr<Material> material) noexcept    { m_material = material; }
-    inline void setTransformation(const glm::mat4& transformation) noexcept { m_transformation = transformation; }
-    inline void setPrimitiveMode(GLenum glPrimitiveMode) noexcept           { m_primitiveMode = glPrimitiveMode; }
+    inline const Material& getMaterial() const noexcept        { return *m_settings->material; }
+    inline const glm::mat4& getTransformation() const noexcept { return m_settings->transformation; }
+    inline GLenum getPrimitiveMode() const noexcept            { return m_settings->primitiveMode; }
 
-    inline const std::shared_ptr<Material>& getMaterial() const noexcept { return m_material; }
-    inline const glm::mat4& getTransformation() const noexcept           { return m_transformation; }
-    inline GLenum getPrimitiveMode() const noexcept                      { return m_primitiveMode; }
+    inline void setMaterial(const std::shared_ptr<Material>& material) noexcept { m_settings->material = material; }
+    inline void setTransformation(const glm::mat4& transformation) noexcept     { m_settings->transformation = transformation; }
+    inline void setPrimitiveMode(GLenum glPrimitiveMode) noexcept               { m_settings->primitiveMode = glPrimitiveMode; }
 
     void render() const noexcept;
     void pushModelMatrix() const noexcept;
     void pushMaterial() const noexcept;
 
-    static std::unique_ptr<Mesh> fromFile(const std::string& filename,
-                                          const std::shared_ptr<ShaderProgram>& shader_program,
-                                          const std::shared_ptr<Material>& material = std::make_shared<Material>(),
-                                          GLenum draw_mode = GL_STATIC_DRAW);
-
-    static std::unique_ptr<Mesh> makeCube(const std::shared_ptr<ShaderProgram>& shader_program,
-                                          const std::shared_ptr<Material>& material = std::make_shared<Material>(),
-                                          const std::shared_ptr<Texture2D>& colorTexture = std::shared_ptr<Texture2D>(Texture2D::makeDefault()),
-                                          GLenum draw_mode = GL_STATIC_DRAW);
-
-    static std::unique_ptr<Mesh> makePlane(const std::shared_ptr<ShaderProgram>& shader_program,
-                                           const std::shared_ptr<Material>& material = std::make_shared<Material>(),
-                                           const std::shared_ptr<Texture2D>& colorTexture = std::shared_ptr<Texture2D>(Texture2D::makeDefault()),
-                                           GLenum draw_mode = GL_STATIC_DRAW);
-
 private:
     GLuint m_VAO = 0;
     GLuint m_VBO = 0;
     GLuint m_EBO = 0;
-    GLenum m_drawMode = GL_STATIC_DRAW;
-    GLenum m_primitiveMode = GL_TRIANGLES;
     GLsizei m_nofIndices = 0;
 
-    std::shared_ptr<Material> m_material = nullptr;
-    std::shared_ptr<Texture2D> m_colorTexture = std::shared_ptr<Texture2D>(Texture2D::makeDefault());
-    glm::mat4 m_transformation = glm::mat4(1.0f);
-    std::shared_ptr<ShaderProgram> m_shaderProgram;
+    std::unique_ptr<Settings> m_settings;
 };
 
 //------------------------------------------------------------------------

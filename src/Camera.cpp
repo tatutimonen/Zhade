@@ -2,34 +2,45 @@
 
 //------------------------------------------------------------------------
 
-Camera::Camera(std::unique_ptr<Specification> specification)
-    : m_specification{std::move(specification)}
+Camera::Camera(std::unique_ptr<Settings> settings)
+    : Subject(),
+      m_settings{std::move(settings)}
 {
     updateView();
 }
 
 //------------------------------------------------------------------------
 
+void Camera::tick() noexcept
+{
+    const bool moved = move();
+    const bool rotated = rotate();
+    if (moved || rotated)
+        notify(std::make_pair(m_view, m_projectivity));
+}
+
+//------------------------------------------------------------------------
+
 bool Camera::move()
 {
-    const glm::vec3 position_prev = m_specification->position;
+    const glm::vec3 centerPrev = m_settings->center;
     const auto keys = App::get_instance().get_keys();
     const float camera_speed = s_cameraBaseSpeed * App::get_instance().get_delta_time();
     
     if (keys[GLFW_KEY_W])
-        m_specification->position += camera_speed * m_specification->target;
+        m_settings->center += camera_speed * m_settings->target;
     if (keys[GLFW_KEY_S]) 
-        m_specification->position += camera_speed * -m_specification->target;
+        m_settings->center += camera_speed * -m_settings->target;
     if (keys[GLFW_KEY_D])
-        m_specification->position += camera_speed * glm::normalize(glm::cross(m_specification->target, m_specification->up));
+        m_settings->center += camera_speed * glm::normalize(glm::cross(m_settings->target, m_settings->up));
     if (keys[GLFW_KEY_A])
-        m_specification->position += camera_speed * -glm::normalize(glm::cross(m_specification->target, m_specification->up));
+        m_settings->center += camera_speed * -glm::normalize(glm::cross(m_settings->target, m_settings->up));
     if (keys[GLFW_KEY_SPACE])
-        m_specification->position += camera_speed * Util::makeUnitVec3y();
+        m_settings->center += camera_speed * Util::makeUnitVec3y();
     if (keys[GLFW_KEY_LEFT_SHIFT])
-        m_specification->position += camera_speed * -Util::makeUnitVec3y();
+        m_settings->center += camera_speed * -Util::makeUnitVec3y();
     
-    if (m_specification->position != position_prev) {
+    if (m_settings->center != centerPrev) {
         updateView();
         updateProjectivity();
         return true;
@@ -44,50 +55,20 @@ bool Camera::rotate()
 {
     const float pitch = App::get_instance().get_pitch();
     const float yaw = App::get_instance().get_yaw();
-    const glm::vec3 target_prev = m_specification->target;
+    const glm::vec3 targetPrev = m_settings->target;
     
-    m_specification->target.x = glm::cos(pitch) * glm::cos(yaw);
-    m_specification->target.y = glm::sin(pitch);
-    m_specification->target.z = glm::cos(pitch) * glm::sin(yaw);
-    m_specification->target = glm::normalize(m_specification->target);
+    m_settings->target.x = glm::cos(pitch) * glm::cos(yaw);
+    m_settings->target.y = glm::sin(pitch);
+    m_settings->target.z = glm::cos(pitch) * glm::sin(yaw);
+    m_settings->target = glm::normalize(m_settings->target);
 
-    if (m_specification->target != target_prev) {
+    if (m_settings->target != targetPrev) {
         updateView();
         updateProjectivity();
         return true;
     }
 
     return false;
-}
-
-//------------------------------------------------------------------------
-
-void Camera::pushViewMatrix(ShaderProgram& shaderProgram)
-{
-    shaderProgram.setUniform<glm::mat4>("u_view", glm::value_ptr(m_view));
-}
-
-//------------------------------------------------------------------------
-
-void Camera::pushProjectionMatrix(ShaderProgram& shaderProgram)
-{
-    shaderProgram.setUniform<glm::mat4>("u_projection", glm::value_ptr(m_projectivity));
-}
-
-//------------------------------------------------------------------------
-
-OrthographicCamera::OrthographicCamera(std::unique_ptr<Specification> specification)
-    : Camera{std::move(specification)}
-{
-    updateProjectivity();
-}
-
-//------------------------------------------------------------------------
-
-PerspectiveCamera::PerspectiveCamera(std::unique_ptr<Specification> specification)
-    : Camera{std::move(specification)}
-{
-    updateProjectivity();
 }
 
 //------------------------------------------------------------------------

@@ -1,10 +1,9 @@
 #include "Texture2D.hpp"
-#include <iostream>
 
 //------------------------------------------------------------------------
 
-Texture2D::Texture2D(const std::shared_ptr<Specification>& spec)
-    : m_spec{spec}
+Texture2D::Texture2D(const std::shared_ptr<Settings>& settings)
+    : m_settings{settings}
 {
     setupTexture();
 }
@@ -13,13 +12,13 @@ Texture2D::Texture2D(const std::shared_ptr<Specification>& spec)
 
 Texture2D::Texture2D(const std::string& filename)
 {
-    m_spec = std::make_shared<Specification>();
+    m_settings = std::make_shared<Settings>();
     int channels = 0;
-    unsigned char* imageData = SOIL_load_image(filename.c_str(), &(m_spec->width), &(m_spec->height), &channels, SOIL_LOAD_AUTO);
+    unsigned char* imageData = SOIL_load_image(filename.c_str(), &(m_settings->width), &(m_settings->height), &channels, SOIL_LOAD_AUTO);
 
     if (channels == SOIL_LOAD_RGB) {
-        m_spec->internalFormat = GL_RGB8;
-        m_spec->format = GL_RGB;
+        m_settings->internalFormat = GL_RGB8;
+        m_settings->format = GL_RGB;
     }
     
     setupTexture();
@@ -31,7 +30,7 @@ Texture2D::Texture2D(const std::string& filename)
 
 Texture2D::~Texture2D()
 {
-    GL_CALL(glDeleteTextures(1, &m_handle));
+    CHECK_GL_ERROR(glDeleteTextures(1, &m_handle));
 }
 
 //------------------------------------------------------------------------
@@ -39,10 +38,9 @@ Texture2D::~Texture2D()
 void Texture2D::setData(const void* data)
 {
     this->bind();
-    GL_CALL(glTexSubImage2D(
-        GL_TEXTURE_2D, 0, 0, 0, m_spec->width, m_spec->height, m_spec->format, GL_UNSIGNED_BYTE, (const GLvoid*)data)
-    );
-    GL_CALL(glGenerateMipmap(GL_TEXTURE_2D));
+    CHECK_GL_ERROR(glTexSubImage2D(
+        GL_TEXTURE_2D, 0, 0, 0, m_settings->width, m_settings->height, m_settings->format, GL_UNSIGNED_BYTE, (const GLvoid*)data));
+    CHECK_GL_ERROR(glGenerateMipmap(GL_TEXTURE_2D));
     this->unbind();
 }
 
@@ -50,8 +48,8 @@ void Texture2D::setData(const void* data)
 
 std::unique_ptr<Texture2D> Texture2D::makeDefault()
 {
-    std::shared_ptr<Specification> spec = std::make_shared<Specification>(1, 1);
-    std::unique_ptr<Texture2D> tex = std::make_unique<Texture2D>(spec);
+    std::shared_ptr<Settings> settings = std::make_shared<Settings>(1, 1);
+    std::unique_ptr<Texture2D> tex = std::make_unique<Texture2D>(settings);
     GLuint data = 0xffffffff;
     tex->setData(&data);
     return tex;
@@ -61,13 +59,13 @@ std::unique_ptr<Texture2D> Texture2D::makeDefault()
 
 void Texture2D::setupTexture()
 {
-    GL_CALL(glGenTextures(1, &m_handle));
+    CHECK_GL_ERROR(glGenTextures(1, &m_handle));
     this->bind();
-    GL_CALL(glTexStorage2D(GL_TEXTURE_2D, m_spec->levels, m_spec->internalFormat, m_spec->width, m_spec->height));
-    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, m_spec->wrap_s));
-    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, m_spec->wrap_t));
-    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_spec->min_filter));
-    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_spec->mag_filter));
+    CHECK_GL_ERROR(glTexStorage2D(GL_TEXTURE_2D, m_settings->levels, m_settings->internalFormat, m_settings->width, m_settings->height));
+    CHECK_GL_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, m_settings->wrap_s));
+    CHECK_GL_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, m_settings->wrap_t));
+    CHECK_GL_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_settings->min_filter));
+    CHECK_GL_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_settings->mag_filter));
     this->unbind();
 }
 
