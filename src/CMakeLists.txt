@@ -1,4 +1,5 @@
 add_executable(App
+    AmbientLight.cpp
     App.cpp
     Camera.cpp
     Common.cpp

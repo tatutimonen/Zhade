@@ -10,7 +10,7 @@
 
 class MeshFactory {
 public:
-    MeshFactory() = default;
+    MeshFactory() = delete;
 
     static std::unique_ptr<Mesh> makeCube(
         std::unique_ptr<Mesh::Settings> settings = std::make_unique<Mesh::Settings>());

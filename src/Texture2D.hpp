@@ -9,7 +9,7 @@ public:
     struct Settings : Texture::Settings {
         GLsizei height = 1;
 
-        GLenum wrap_t = GL_CLAMP_TO_EDGE;
+        GLenum wrapT = GL_CLAMP_TO_EDGE;
 
         Settings() = default;
         Settings(GLsizei width, GLsizei height)

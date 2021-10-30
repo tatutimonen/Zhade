@@ -57,7 +57,8 @@ void logGlError(GLenum err, const char* fn, const char* file, int line)
 inline void checkErrors(const char* fn, const char* file, int line)
 {
     GLenum err = glGetError();
-    if (err != GL_NO_ERROR) {
+    if (err != GL_NO_ERROR)
+    {
         logGlError(err, fn, file, line);
         throw std::runtime_error(nullptr);
     }

@@ -9,9 +9,8 @@ public:
         float aspectRatio;
 
         Settings(std::unique_ptr<Camera::Settings> baseSettings = std::make_unique<Camera::Settings>(),
-                      float fov                                 = 70.0f,
-                      float aspectRatio                         = static_cast<float>(App::window_width) /
-                                                                  static_cast<float>(App::window_height))
+            float fov = 70.0f,
+            float aspectRatio = static_cast<float>(App::window_width) / static_cast<float>(App::window_height))
             : Camera::Settings(std::move(*baseSettings)),
               fov{fov},
               aspectRatio{aspectRatio}

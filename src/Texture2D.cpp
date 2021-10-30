@@ -16,7 +16,8 @@ Texture2D::Texture2D(const std::string& filename)
     int channels = 0;
     unsigned char* imageData = SOIL_load_image(filename.c_str(), &(m_settings->width), &(m_settings->height), &channels, SOIL_LOAD_AUTO);
 
-    if (channels == SOIL_LOAD_RGB) {
+    if (channels == SOIL_LOAD_RGB)
+    {
         m_settings->internalFormat = GL_RGB8;
         m_settings->format = GL_RGB;
     }
@@ -30,7 +31,8 @@ Texture2D::Texture2D(const std::string& filename)
 
 Texture2D::~Texture2D()
 {
-    CHECK_GL_ERROR(glDeleteTextures(1, &m_handle));
+    if (glIsTexture(m_handle))
+        CHECK_GL_ERROR(glDeleteTextures(1, &m_handle));
 }
 
 //------------------------------------------------------------------------
@@ -39,7 +41,8 @@ void Texture2D::setData(const void* data)
 {
     this->bind();
     CHECK_GL_ERROR(glTexSubImage2D(
-        GL_TEXTURE_2D, 0, 0, 0, m_settings->width, m_settings->height, m_settings->format, GL_UNSIGNED_BYTE, (const GLvoid*)data));
+        GL_TEXTURE_2D, 0, 0, 0, m_settings->width, m_settings->height, m_settings->format, GL_UNSIGNED_BYTE, (const GLvoid*)data)
+    );
     CHECK_GL_ERROR(glGenerateMipmap(GL_TEXTURE_2D));
     this->unbind();
 }
@@ -62,10 +65,10 @@ void Texture2D::setupTexture()
     CHECK_GL_ERROR(glGenTextures(1, &m_handle));
     this->bind();
     CHECK_GL_ERROR(glTexStorage2D(GL_TEXTURE_2D, m_settings->levels, m_settings->internalFormat, m_settings->width, m_settings->height));
-    CHECK_GL_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, m_settings->wrap_s));
-    CHECK_GL_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, m_settings->wrap_t));
-    CHECK_GL_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_settings->min_filter));
-    CHECK_GL_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_settings->mag_filter));
+    CHECK_GL_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, m_settings->wrapS));
+    CHECK_GL_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, m_settings->wrapT));
+    CHECK_GL_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_settings->minFilter));
+    CHECK_GL_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_settings->magFilter));
     this->unbind();
 }
 

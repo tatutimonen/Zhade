@@ -1,8 +1,6 @@
 #pragma once
 
-#include "Observer.hpp"
 #include "Shader.hpp"
-#include "Type.hpp"
 #include "Util.hpp"
 
 #include <GL/glew.h>
@@ -11,6 +9,7 @@
 
 #include <algorithm>
 #include <array>
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -19,11 +18,11 @@
 
 //------------------------------------------------------------------------
 
-class ShaderProgram : public Observer<Type::Observed::ViewProjection> {
+class ShaderProgram {
 public:
     ShaderProgram(const std::shared_ptr<Shader>& vertexShader = std::make_shared<Shader>(GL_VERTEX_SHADER),
-                  const std::shared_ptr<Shader>& fragmentShader = std::make_shared<Shader>(GL_FRAGMENT_SHADER),
-                  const std::shared_ptr<Shader>& geometryShader = nullptr);
+        const std::shared_ptr<Shader>& fragmentShader = std::make_shared<Shader>(GL_FRAGMENT_SHADER),
+        const std::shared_ptr<Shader>& geometryShader = nullptr);
     ~ShaderProgram();
 
     template<typename T>
@@ -41,7 +40,7 @@ public:
     void detachShaders();
     void link() const;
 
-    virtual void update(const Type::Observed::ViewProjection& message) noexcept override;
+    inline bool operator<(const ShaderProgram& other) const noexcept { return m_handle < other.getHandle(); }
 
 private:    
     GLuint m_handle;

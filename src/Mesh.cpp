@@ -8,6 +8,7 @@ Mesh::Mesh(const std::vector<Vertex>& vertices,
     : m_settings{std::move(settings)},
       m_nofIndices{static_cast<GLsizei>(indices.size())}
 {
+    std::cout << "ctor: " << this << std::endl;
     CHECK_GL_ERROR(glGenVertexArrays(1, &m_VAO));
     CHECK_GL_ERROR(glGenBuffers(1, &m_VBO));
     CHECK_GL_ERROR(glGenBuffers(1, &m_EBO));
@@ -36,9 +37,13 @@ Mesh::Mesh(const std::vector<Vertex>& vertices,
 
 Mesh::~Mesh()
 {
-    CHECK_GL_ERROR(glDeleteVertexArrays(1, &m_VAO));
-    CHECK_GL_ERROR(glDeleteBuffers(1, &m_VBO));
-    CHECK_GL_ERROR(glDeleteBuffers(1, &m_EBO));
+    std::cout << "dtor: " << m_VAO << " " << this << std::endl;
+    if (glIsVertexArray(m_VAO) != GL_FALSE)
+    {
+        CHECK_GL_ERROR(glDeleteVertexArrays(1, &m_VAO));
+        CHECK_GL_ERROR(glDeleteBuffers(1, &m_VBO));
+        CHECK_GL_ERROR(glDeleteBuffers(1, &m_EBO));
+    }
 }
 
 //------------------------------------------------------------------------
@@ -60,7 +65,7 @@ void Mesh::render() const noexcept
 
 void Mesh::pushModelMatrix() const noexcept
 {
-    m_settings->renderStrategy->setUniform<glm::mat4>("u_model", glm::value_ptr(m_settings->transformation));
+    m_settings->renderStrategy->setUniform<glm::mat4>("u_MMatrix", glm::value_ptr(m_settings->transformation));
 }
 
 //------------------------------------------------------------------------

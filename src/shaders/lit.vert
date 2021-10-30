@@ -10,9 +10,19 @@ layout (location = 2) in vec2 a_texCoords;
 
 out VERT_OUT {
     vec2 texCoords;
-} vert_out;
+} VertOut;
 
 //------------------------------------------------------------------------
+
+uniform PointLightSettings {
+    vec3 color;
+    vec3 position;
+    float shininess;
+    float strength;
+    float attenuationConstant;
+    float attenuationLinear;
+    float attenuationQuadratic;
+};
 
 uniform mat4 u_VPMatrix;
 uniform mat4 u_MMatrix;
@@ -22,7 +32,7 @@ uniform mat4 u_MMatrix;
 void main()
 {
     gl_Position = u_VPMatrix * u_MMatrix * vec4(a_position, 1.0);
-    vert_out.texCoords = a_texCoords;
+    VertOut.texCoords = a_texCoords;
 }
 
 //------------------------------------------------------------------------

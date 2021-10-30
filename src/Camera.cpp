@@ -3,20 +3,22 @@
 //------------------------------------------------------------------------
 
 Camera::Camera(std::unique_ptr<Settings> settings)
-    : Subject(),
-      m_settings{std::move(settings)}
+    : m_settings{std::move(settings)}
 {
     updateView();
 }
 
 //------------------------------------------------------------------------
 
-void Camera::tick() noexcept
+void Camera::tick(ShaderProgram& shaderProgram) noexcept
 {
     const bool moved = move();
     const bool rotated = rotate();
     if (moved || rotated)
-        notify(std::make_pair(m_view, m_projectivity));
+    {
+        glm::mat4 VPMatrix = m_projectivity * m_view;
+        shaderProgram.setUniform<glm::mat4>("u_VPMatrix", glm::value_ptr(VPMatrix));
+    }
 }
 
 //------------------------------------------------------------------------
@@ -40,7 +42,8 @@ bool Camera::move()
     if (keys[GLFW_KEY_LEFT_SHIFT])
         m_settings->center += camera_speed * -Util::makeUnitVec3y();
     
-    if (m_settings->center != centerPrev) {
+    if (m_settings->center != centerPrev)
+    {
         updateView();
         updateProjectivity();
         return true;
@@ -62,7 +65,8 @@ bool Camera::rotate()
     m_settings->target.z = glm::cos(pitch) * glm::sin(yaw);
     m_settings->target = glm::normalize(m_settings->target);
 
-    if (m_settings->target != targetPrev) {
+    if (m_settings->target != targetPrev)
+    {
         updateView();
         updateProjectivity();
         return true;

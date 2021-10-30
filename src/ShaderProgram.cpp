@@ -5,7 +5,6 @@
 ShaderProgram::ShaderProgram(const std::shared_ptr<Shader>& vertexShader,
     const std::shared_ptr<Shader>& fragmentShader,
     const std::shared_ptr<Shader>& geometryShader)
-    : Observer()
 {
     CHECK_GL_ERROR(m_handle = glCreateProgram());
 
@@ -114,7 +113,8 @@ GLint ShaderProgram::getAttribLocation(const std::string& name) noexcept
         return m_attribLocationCache.at(name);
     
     CHECK_GL_ERROR(GLint location = glGetAttribLocation(m_handle, name.c_str()));
-    if (location == -1) {
+    if (location == -1)
+    {
         std::ostringstream errMsg;
         errMsg << "Error querying attribute location of "
                << "\"" << name << "\". "
@@ -134,7 +134,8 @@ GLint ShaderProgram::getUniformLocation(const std::string& name) noexcept
         return m_uniformLocationCache.at(name);
 
     CHECK_GL_ERROR(GLint location = glGetUniformLocation(m_handle, name.c_str()));
-    if (location == -1) {
+    if (location == -1)
+    {
         std::ostringstream errMsg;
         errMsg << "Error querying uniform location of "
                << "\"" << name << "\". "
@@ -181,7 +182,8 @@ void ShaderProgram::link() const
     GLint status;
     CHECK_GL_ERROR(glGetProgramiv(m_handle, GL_LINK_STATUS, &status));
     
-    if (!status) {
+    if (!status)
+    {
         GLint logLength;
         CHECK_GL_ERROR(glGetProgramiv(m_handle, GL_INFO_LOG_LENGTH, &logLength));
         std::string infoLog;
@@ -196,14 +198,6 @@ void ShaderProgram::link() const
                << "\n";
         throw std::runtime_error(errMsg.str());
     }
-}
-
-//------------------------------------------------------------------------
-
-void ShaderProgram::update(const Type::Observed::ViewProjection& message) noexcept
-{
-    setUniform<glm::mat4>("u_view", glm::value_ptr(message.first));
-    setUniform<glm::mat4>("u_projection", glm::value_ptr(message.second));
 }
 
 //------------------------------------------------------------------------

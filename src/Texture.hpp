@@ -21,9 +21,9 @@ public:
         GLenum format = GL_RGBA;
         GLenum type = GL_UNSIGNED_BYTE;
 
-        GLenum min_filter = GL_LINEAR_MIPMAP_LINEAR;
-        GLenum mag_filter = GL_LINEAR;
-        GLenum wrap_s = GL_CLAMP_TO_EDGE;
+        GLenum minFilter = GL_LINEAR_MIPMAP_LINEAR;
+        GLenum magFilter = GL_LINEAR;
+        GLenum wrapS = GL_CLAMP_TO_EDGE;
 
         Settings() = default;
         Settings(GLsizei width)

@@ -1,3 +1,4 @@
+#include "AmbientLight.hpp"
 #include "App.hpp"
 #include "Camera.hpp"
 #include "Common.hpp"
@@ -20,7 +21,7 @@
 
 //------------------------------------------------------------------------
 
-int main(void)
+int main()
 {
     App::get_instance().init();
 
@@ -30,7 +31,6 @@ int main(void)
 
     auto cameraSettings = std::make_unique<PerspectiveCamera::Settings>();
     auto camera = PerspectiveCamera(std::move(cameraSettings));
-    camera.attach(shaderProgram);
 
     auto cubeMaterial = std::shared_ptr<Mesh::Material>(new Mesh::Material{
         glm::vec3(0.0f),
@@ -43,6 +43,7 @@ int main(void)
     cubeSettings->renderStrategy = shaderProgram;
     cubeSettings->material = cubeMaterial;
     auto cube = MeshFactory::makeCube(std::move(cubeSettings));
+    cube->setTransformation(glm::scale(glm::vec3(2.0f)) * glm::translate(Util::makeUnitVec3y()));
     App::get_instance().add_mesh(std::move(cube));
 
     auto planeSettings = std::make_unique<Mesh::Settings>();
@@ -52,11 +53,15 @@ int main(void)
     plane->setTransformation(glm::scale(glm::vec3(10.0f)) * glm::translate(-Util::zFightEpsilon * Util::makeUnitVec3y()));
     App::get_instance().add_mesh(std::move(plane));
 
-    while (!glfwWindowShouldClose(App::get_instance().get_gl_ctx())) {
+    auto ambientLight = AmbientLight(glm::vec4(1.0f));
+    ambientLight.uploadAmbient(*shaderProgram);
+
+    while (!glfwWindowShouldClose(App::get_instance().get_gl_ctx()))
+    {
         App::get_instance().update_internal_times();
         
         glfwPollEvents();
-        camera.tick();
+        camera.tick(*shaderProgram);
 
         CHECK_GL_ERROR(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
