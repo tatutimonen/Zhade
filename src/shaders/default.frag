@@ -4,7 +4,7 @@
 
 in VERT_OUT {
     vec2 texCoords;
-} frag_in;
+} FragIn;
 
 //------------------------------------------------------------------------
 
@@ -23,7 +23,7 @@ uniform Material u_material;
 
 void main()
 {
-    vec4 texTerm = texture(u_colorTexture, frag_in.texCoords);
+    vec4 texTerm = texture(u_colorTexture, FragIn.texCoords);
     gl_FragColor = texTerm * vec4(u_material.diffuse, 1.0f);
 }
 

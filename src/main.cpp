@@ -55,6 +55,8 @@ int main()
 
     auto ambientLight = AmbientLight(glm::vec4(1.0f));
     ambientLight.uploadAmbient(*shaderProgram);
+    #include <iostream>
+    std::cout << sizeof(glm::vec3(1.0f)) << std::endl;
 
     while (!glfwWindowShouldClose(App::get_instance().get_gl_ctx()))
     {

@@ -14,7 +14,7 @@ out VERT_OUT {
 
 //------------------------------------------------------------------------
 
-uniform PointLightSettings {
+layout (binding = 0, std140) uniform PointLightSettings {
     vec3 color;
     vec3 position;
     float shininess;
@@ -24,14 +24,14 @@ uniform PointLightSettings {
     float attenuationQuadratic;
 };
 
-uniform mat4 u_VPMatrix;
-uniform mat4 u_MMatrix;
+uniform mat4 u_VP;
+uniform mat4 u_M;
 
 //------------------------------------------------------------------------
 
 void main()
 {
-    gl_Position = u_VPMatrix * u_MMatrix * vec4(a_position, 1.0);
+    gl_Position = u_VP * u_M * vec4(a_position, 1.0);
     VertOut.texCoords = a_texCoords;
 }
 

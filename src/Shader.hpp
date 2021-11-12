@@ -16,7 +16,7 @@
 
 class Shader {
 public:
-    enum ShaderType : unsigned char {
+    enum ShaderType : uint8_t {
         VERTEX_SHADER,
         GEOMETRY_SHADER,
         FRAGMENT_SHADER,

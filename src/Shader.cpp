@@ -3,23 +3,24 @@
 //------------------------------------------------------------------------
 
 const std::map<GLint, Shader::ShaderType> Shader::s_glShaderToCustomShader = {
-    {GL_VERTEX_SHADER, VERTEX_SHADER},
-    {GL_GEOMETRY_SHADER, GEOMETRY_SHADER},
-    {GL_FRAGMENT_SHADER, FRAGMENT_SHADER}
+    { GL_VERTEX_SHADER, VERTEX_SHADER },
+    { GL_GEOMETRY_SHADER, GEOMETRY_SHADER },
+    { GL_FRAGMENT_SHADER, FRAGMENT_SHADER }
 };
 
 //------------------------------------------------------------------------
 
 const std::map<GLint, std::string> Shader::s_glShaderToFileExtension = {
-    {GL_VERTEX_SHADER, ".vert"},
-    {GL_FRAGMENT_SHADER, ".frag"}
+    { GL_VERTEX_SHADER, ".vert" },
+    { GL_FRAGMENT_SHADER, ".frag" }
 };
 
 //------------------------------------------------------------------------
 
 Shader::Shader(GLint glShaderType, const std::string& filename)
 {
-    try {
+    try
+    {
         m_shaderType = s_glShaderToCustomShader.at(glShaderType);
         const std::string filenameWithRelativePath =
             Common::shaderPath + (filename != "default" ? filename : filename + s_glShaderToFileExtension.at(glShaderType));
@@ -30,7 +31,8 @@ Shader::Shader(GLint glShaderType, const std::string& filename)
         CHECK_GL_ERROR(glShaderSource(m_handle, 1, &shaderSourcePtr, nullptr));
         compile();
     }
-    catch (const std::out_of_range& e) {
+    catch (const std::out_of_range& e)
+    {
         std::ostringstream errMsg;
         errMsg << "\nInvalid OpenGL symbolic constant describing shader type "
                << "(0x"
@@ -39,7 +41,8 @@ Shader::Shader(GLint glShaderType, const std::string& filename)
         std::cerr << e.what() << std::endl;        
         throw;
     }
-    catch (const std::exception& e) {
+    catch (const std::exception& e)
+    {
         std::cerr << e.what() << std::endl;
         throw;
     }

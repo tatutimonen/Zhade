@@ -2,6 +2,9 @@
 A demo program implementing different shadow mapping schemes using OpenGL.
 
 <div style="text-align:center">
-<ap href="https://www.codecogs.com/eqnedit.php?latex=\large&space;\mathbf{w}^{\top}&space;\boldsymbol{\Sigma}&space;\mathbf{w}&space;\\&space;\mathsf{P}&space;\!&space;\left(X&space;<&space;\mu&space;\right)&space;\\&space;\mathbf{I}_{3&space;\times&space;3}&space;=&space;\begin{bmatrix}&space;1&space;&&space;0&space;&&space;0&space;\\&space;0&space;&&space;1&space;&&space;0&space;\\&space;0&space;&&space;0&space;&&space;1&space;\end{bmatrix}" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\large&space;\mathbf{w}^{\top}&space;\boldsymbol{\Sigma}&space;\mathbf{w}&space;\\&space;\mathsf{P}&space;\!&space;\left(X&space;<&space;\mu&space;\right)&space;\\&space;\mathbf{I}_{3&space;\times&space;3}&space;=&space;\begin{bmatrix}&space;1&space;&&space;0&space;&&space;0&space;\\&space;0&space;&&space;1&space;&&space;0&space;\\&space;0&space;&&space;0&space;&&space;1&space;\end{bmatrix}" title="\large \mathbf{w}^{\top} \boldsymbol{\Sigma} \mathbf{w} \\ \mathsf{P} \! \left(X < \mu \right) \\ \mathbf{I}_{3 \times 3} = \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}"/>
-</p>
+<ap href="https://www.codecogs.com/eqnedit.php?latex=\begin{aligned}
+\underset{\mathbf{w}}{\mathrm{min.}} \ \frac{1}{2} \mathbf{w}^{\boldsymbol{\top}} \boldsymbol{\Sigma} \mathbf{w} \\
+\mathrm{s.t.} \ \mathbf{1}^{\boldsymbol{\top}} \mathbf{w} = 1 \\
+\mathbf{w}^{\boldsymbol{\top}} \mathbf{r} = \overline{r}
+\end{aligned}"/>
 </div>

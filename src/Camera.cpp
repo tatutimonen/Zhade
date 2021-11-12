@@ -17,7 +17,7 @@ void Camera::tick(ShaderProgram& shaderProgram) noexcept
     if (moved || rotated)
     {
         glm::mat4 VPMatrix = m_projectivity * m_view;
-        shaderProgram.setUniform<glm::mat4>("u_VPMatrix", glm::value_ptr(VPMatrix));
+        shaderProgram.setUniform<glm::mat4>("u_VP", glm::value_ptr(VPMatrix));
     }
 }
 

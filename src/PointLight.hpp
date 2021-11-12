@@ -2,6 +2,7 @@
 
 #include "Mesh.hpp"
 #include "ShaderProgram.hpp"
+#include "UniformBuffer.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -29,7 +30,7 @@ public:
     inline void setColor(const glm::vec3& color) { m_settings.color = color; }
 
 private:
-    Settings m_settings;
+    UniformBuffer m_settings;
 };
 
 //------------------------------------------------------------------------

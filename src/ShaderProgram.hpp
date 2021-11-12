@@ -20,6 +20,21 @@
 
 class ShaderProgram {
 public:
+    struct UseGuard {
+        UseGuard(const ShaderProgram& shaderProgram)
+            : shaderProgram{shaderProgram}
+        {
+            shaderProgram.use();
+        }
+        
+        ~UseGuard()
+        {
+            shaderProgram.unuse();
+        }
+
+        const ShaderProgram& shaderProgram;
+    };
+
     ShaderProgram(const std::shared_ptr<Shader>& vertexShader = std::make_shared<Shader>(GL_VERTEX_SHADER),
         const std::shared_ptr<Shader>& fragmentShader = std::make_shared<Shader>(GL_FRAGMENT_SHADER),
         const std::shared_ptr<Shader>& geometryShader = nullptr);

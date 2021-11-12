@@ -65,7 +65,7 @@ void Mesh::render() const noexcept
 
 void Mesh::pushModelMatrix() const noexcept
 {
-    m_settings->renderStrategy->setUniform<glm::mat4>("u_MMatrix", glm::value_ptr(m_settings->transformation));
+    m_settings->renderStrategy->setUniform<glm::mat4>("u_M", glm::value_ptr(m_settings->transformation));
 }
 
 //------------------------------------------------------------------------
