@@ -25,10 +25,10 @@ Shader::Shader(GLint glShaderType, const std::string& filename)
         const std::string filenameWithRelativePath =
             Common::shaderPath + (filename != "default" ? filename : filename + s_glShaderToFileExtension.at(glShaderType));
         parseShaderFile(filenameWithRelativePath);
-        CHECK_GL_ERROR(m_handle = glCreateShader(glShaderType));
+        m_handle = glCreateShader(glShaderType);
         // glShaderSource needs an lvalue.
         const GLchar* shaderSourcePtr = m_shaderSource.c_str();
-        CHECK_GL_ERROR(glShaderSource(m_handle, 1, &shaderSourcePtr, nullptr));
+        glShaderSource(m_handle, 1, &shaderSourcePtr, nullptr);
         compile();
     }
     catch (const std::out_of_range& e)
@@ -52,7 +52,7 @@ Shader::Shader(GLint glShaderType, const std::string& filename)
 
 Shader::~Shader()
 {
-    CHECK_GL_ERROR(glDeleteShader(m_handle));
+    glDeleteShader(m_handle);
 }
 
 //------------------------------------------------------------------------
@@ -73,18 +73,18 @@ void Shader::parseShaderFile(const std::string& filename)
 
 void Shader::compile() const
 {
-    CHECK_GL_ERROR(glCompileShader(m_handle));
+    glCompileShader(m_handle);
 
     GLint status;
-    CHECK_GL_ERROR(glGetShaderiv(m_handle, GL_COMPILE_STATUS, &status));
+    glGetShaderiv(m_handle, GL_COMPILE_STATUS, &status);
 
     if (status == GL_FALSE)
     {
         GLint logLength;
-        CHECK_GL_ERROR(glGetShaderiv(m_handle, GL_INFO_LOG_LENGTH, &logLength));
+        glGetShaderiv(m_handle, GL_INFO_LOG_LENGTH, &logLength);
         std::string infoLog;
         infoLog.resize(static_cast<std::string::size_type>(logLength - 1));
-        CHECK_GL_ERROR(glGetShaderInfoLog(m_handle, logLength, nullptr, infoLog.data()));
+        glGetShaderInfoLog(m_handle, logLength, nullptr, infoLog.data());
         
         std::ostringstream errMsg;
         errMsg << "Error compiling shader with ID "

@@ -36,56 +36,9 @@ inline glm::vec3 makeUnitVec3z()
     return glm::vec3(0.0f, 0.0f, 1.0f);
 }
 
-// A slightly modified version of the "TypeSize" function from 
-// "OpenGL Programming Guide: The Official Guide to Learning OpenGL, Version 4.3" by Shreiner et al., pp. 66-67
-std::size_t getGlTypeSize(GLenum type)
-{
-    std::size_t size;
-
-    #define CASE(enum, count, type) \
-    case enum: size = count * sizeof(type); break
-
-    switch (type)
-    {
-        CASE(GL_FLOAT,             1,  GLfloat);
-        CASE(GL_FLOAT_VEC2,        2,  GLfloat);
-        CASE(GL_FLOAT_VEC3,        3,  GLfloat);
-        CASE(GL_FLOAT_VEC4,        4,  GLfloat);
-        CASE(GL_INT,               1,  GLint);
-        CASE(GL_INT_VEC2,          2,  GLint);
-        CASE(GL_INT_VEC3,          3,  GLint);
-        CASE(GL_INT_VEC4,          4,  GLint);
-        CASE(GL_UNSIGNED_INT,      1,  GLuint);
-        CASE(GL_UNSIGNED_INT_VEC2, 2,  GLuint);
-        CASE(GL_UNSIGNED_INT_VEC3, 3,  GLuint);
-        CASE(GL_UNSIGNED_INT_VEC4, 4,  GLuint);
-        CASE(GL_BOOL,              1,  GLboolean);
-        CASE(GL_BOOL_VEC2,         2,  GLboolean);
-        CASE(GL_BOOL_VEC3,         3,  GLboolean);
-        CASE(GL_BOOL_VEC4,         4,  GLboolean);
-        CASE(GL_FLOAT_MAT2,        4,  GLfloat);
-        CASE(GL_FLOAT_MAT2x3,      6,  GLfloat);
-        CASE(GL_FLOAT_MAT2x4,      8,  GLfloat);
-        CASE(GL_FLOAT_MAT3,        9,  GLfloat);
-        CASE(GL_FLOAT_MAT3x2,      6,  GLfloat);
-        CASE(GL_FLOAT_MAT3x4,      12, GLfloat);
-        CASE(GL_FLOAT_MAT4,        16, GLfloat);
-        CASE(GL_FLOAT_MAT4x2,      8,  GLfloat);
-        CASE(GL_FLOAT_MAT4x3,      12, GLfloat);
-        
-        #undef CASE
-        
-        default:
-            std::cerr << "Unknown type: 0x" << std::hex << type << std::endl;
-            break;
-    }
-
-    return size;
-}
-
 constexpr float zFightEpsilon = 1e-5f;
 
-} // namespace Util
+}  // namespace Util
 
 //------------------------------------------------------------------------
 
@@ -112,6 +65,6 @@ inline void checkErrors(const char* fn, const char* file, int line)
     }
 }
     
-} // namespace
+}  // namespace
 
 //------------------------------------------------------------------------

@@ -18,11 +18,11 @@
 class Camera {
 public:
     struct Settings {
-        glm::vec3 center      = glm::vec3(0.0f,  1.0f,  3.0f);
-        glm::vec3 target      = glm::vec3(0.0f,  0.0f, -1.0f);
-        glm::vec3 up          = glm::vec3(0.0f,  1.0f,  0.0f);
-        float zNear           = 0.1f;
-        float zFar            = 1000.0f;
+        glm::vec3 center = glm::vec3(0.0f,  1.0f,  3.0f);
+        glm::vec3 target = glm::vec3(0.0f,  0.0f, -1.0f);
+        glm::vec3 up     = glm::vec3(0.0f,  1.0f,  0.0f);
+        float zNear      = 0.1f;
+        float zFar       = 1000.0f;
 
         Settings() = default;
         Settings(Settings&& settings) = default;

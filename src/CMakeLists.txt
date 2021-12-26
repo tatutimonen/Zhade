@@ -14,6 +14,7 @@ add_executable(App
     ShaderProgram.cpp
     Subject.cpp
     Texture2D.cpp
+    UniformBuffer.cpp
     Util.cpp
 )
 target_link_libraries(App

@@ -6,7 +6,7 @@ ShaderProgram::ShaderProgram(const std::shared_ptr<Shader>& vertexShader,
     const std::shared_ptr<Shader>& fragmentShader,
     const std::shared_ptr<Shader>& geometryShader)
 {
-    CHECK_GL_ERROR(m_handle = glCreateProgram());
+    m_handle = glCreateProgram();
 
     m_shaders[Shader::VERTEX_SHADER] = vertexShader;
     attachShader(vertexShader);
@@ -27,7 +27,7 @@ ShaderProgram::ShaderProgram(const std::shared_ptr<Shader>& vertexShader,
  
 ShaderProgram::~ShaderProgram()
 {
-    CHECK_GL_ERROR(glDeleteProgram(m_handle));
+    glDeleteProgram(m_handle);
 }
 
 //------------------------------------------------------------------------
@@ -45,7 +45,7 @@ template<>
 void ShaderProgram::setUniform<GLint>(const std::string& name, const GLvoid* data) noexcept
 {
     use();
-    CHECK_GL_ERROR(glUniform1i(getUniformLocation(name), *((const GLint*)data)))
+    glUniform1i(getUniformLocation(name), *((const GLint*)data));
     unuse();
 }
 
@@ -53,7 +53,7 @@ template<>
 void ShaderProgram::setUniform<GLfloat>(const std::string& name, const GLvoid* data) noexcept
 {
     use();
-    CHECK_GL_ERROR(glUniform1f(getUniformLocation(name), *((const GLfloat*)data)));
+    glUniform1f(getUniformLocation(name), *((const GLfloat*)data));
     unuse();
 }
 
@@ -61,7 +61,7 @@ template<>
 void ShaderProgram::setUniform<glm::vec2>(const std::string& name, const GLvoid* data) noexcept
 {
     use();
-    CHECK_GL_ERROR(glUniform2fv(getUniformLocation(name), 1, (const GLfloat*)data));
+    glUniform2fv(getUniformLocation(name), 1, (const GLfloat*)data);
     unuse();
 }
 
@@ -69,7 +69,7 @@ template<>
 void ShaderProgram::setUniform<glm::vec3>(const std::string& name, const GLvoid* data) noexcept
 {
     use();
-    CHECK_GL_ERROR(glUniform3fv(getUniformLocation(name), 1, (const GLfloat*)data));
+    glUniform3fv(getUniformLocation(name), 1, (const GLfloat*)data);
     unuse();
 }
 
@@ -77,7 +77,7 @@ template<>
 void ShaderProgram::setUniform<glm::vec4>(const std::string& name, const GLvoid* data) noexcept
 {
     use();
-    CHECK_GL_ERROR(glUniform4fv(getUniformLocation(name), 1, (const GLfloat*)data));
+    glUniform4fv(getUniformLocation(name), 1, (const GLfloat*)data);
     unuse();
 }
 
@@ -85,7 +85,7 @@ template<>
 void ShaderProgram::setUniform<glm::mat3>(const std::string& name, const GLvoid* data) noexcept
 {
     use();
-    CHECK_GL_ERROR(glUniformMatrix3fv(getUniformLocation(name), 1, GL_FALSE, (const GLfloat*)data));
+    glUniformMatrix3fv(getUniformLocation(name), 1, GL_FALSE, (const GLfloat*)data);
     unuse();
 }
 
@@ -93,7 +93,7 @@ template<>
 void ShaderProgram::setUniform<glm::mat4x3>(const std::string& name, const GLvoid* data) noexcept
 {
     use();
-    CHECK_GL_ERROR(glUniformMatrix4x3fv(getUniformLocation(name), 1, GL_FALSE, (const GLfloat*)data));
+    glUniformMatrix4x3fv(getUniformLocation(name), 1, GL_FALSE, (const GLfloat*)data);
     unuse();
 }
 
@@ -101,7 +101,7 @@ template<>
 void ShaderProgram::setUniform<glm::mat4>(const std::string& name, const GLvoid* data) noexcept
 {
     use();
-    CHECK_GL_ERROR(glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, (const GLfloat*)data));
+    glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, (const GLfloat*)data);
     unuse();
 }
 
@@ -112,7 +112,7 @@ GLint ShaderProgram::getAttribLocation(const std::string& name) noexcept
     if (m_attribLocationCache.find(name) != m_attribLocationCache.end())
         return m_attribLocationCache.at(name);
     
-    CHECK_GL_ERROR(GLint location = glGetAttribLocation(m_handle, name.c_str()));
+    GLint location = glGetAttribLocation(m_handle, name.c_str());
     if (location == -1)
     {
         std::ostringstream errMsg;
@@ -133,7 +133,7 @@ GLint ShaderProgram::getUniformLocation(const std::string& name) noexcept
     if (m_uniformLocationCache.find(name) != m_uniformLocationCache.end())
         return m_uniformLocationCache.at(name);
 
-    CHECK_GL_ERROR(GLint location = glGetUniformLocation(m_handle, name.c_str()));
+    GLint location = glGetUniformLocation(m_handle, name.c_str());
     if (location == -1)
     {
         std::ostringstream errMsg;
@@ -151,7 +151,7 @@ GLint ShaderProgram::getUniformLocation(const std::string& name) noexcept
 
 void ShaderProgram::attachShader(const std::shared_ptr<Shader>& shader)
 {
-    CHECK_GL_ERROR(glAttachShader(m_handle, shader->getHandle()));
+    glAttachShader(m_handle, shader->getHandle());
 }
 
 //------------------------------------------------------------------------
@@ -161,7 +161,7 @@ void ShaderProgram::detachShader(const std::shared_ptr<Shader>& shader)
     if (shader == nullptr)
         return;
 
-    CHECK_GL_ERROR(glDetachShader(m_handle, shader->getHandle()));
+    glDetachShader(m_handle, shader->getHandle());
     m_shaders[shader->getShaderType()] = nullptr;
 }
 
@@ -177,18 +177,18 @@ void ShaderProgram::detachShaders()
 
 void ShaderProgram::link() const
 {
-    CHECK_GL_ERROR(glLinkProgram(m_handle));
+    glLinkProgram(m_handle);
 
     GLint status;
-    CHECK_GL_ERROR(glGetProgramiv(m_handle, GL_LINK_STATUS, &status));
+    glGetProgramiv(m_handle, GL_LINK_STATUS, &status);
     
     if (!status)
     {
         GLint logLength;
-        CHECK_GL_ERROR(glGetProgramiv(m_handle, GL_INFO_LOG_LENGTH, &logLength));
+        glGetProgramiv(m_handle, GL_INFO_LOG_LENGTH, &logLength);
         std::string infoLog;
         infoLog.resize(static_cast<std::string::size_type>(logLength - 1));
-        CHECK_GL_ERROR(glGetProgramInfoLog(m_handle, logLength, nullptr, infoLog.data()));
+        glGetProgramInfoLog(m_handle, logLength, nullptr, infoLog.data());
         
         std::ostringstream errMsg;
         errMsg << "Error linking shader program with ID "

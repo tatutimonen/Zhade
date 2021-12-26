@@ -8,41 +8,39 @@ Mesh::Mesh(const std::vector<Vertex>& vertices,
     : m_settings{std::move(settings)},
       m_nofIndices{static_cast<GLsizei>(indices.size())}
 {
-    std::cout << "ctor: " << this << std::endl;
-    CHECK_GL_ERROR(glGenVertexArrays(1, &m_VAO));
-    CHECK_GL_ERROR(glGenBuffers(1, &m_VBO));
-    CHECK_GL_ERROR(glGenBuffers(1, &m_EBO));
+    glGenVertexArrays(1, &m_VAO);
+    glGenBuffers(1, &m_VBO);
+    glGenBuffers(1, &m_EBO);
 
-    CHECK_GL_ERROR(glBindVertexArray(m_VAO));
+    glBindVertexArray(m_VAO);
     
-    CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER, m_VBO));
-    CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(Vertex), vertices.data(), m_settings->drawMode));
+    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(Vertex), vertices.data(), m_settings->drawMode);
 
-    CHECK_GL_ERROR(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)0));
-    CHECK_GL_ERROR(glEnableVertexAttribArray(0));
-    CHECK_GL_ERROR(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)offsetof(Vertex, normal)));
-    CHECK_GL_ERROR(glEnableVertexAttribArray(1));
-    CHECK_GL_ERROR(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)offsetof(Vertex, texCoords)));
-    CHECK_GL_ERROR(glEnableVertexAttribArray(2));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)offsetof(Vertex, normal));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)offsetof(Vertex, texCoords));
+    glEnableVertexAttribArray(2);
 
-    CHECK_GL_ERROR(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO));
-    CHECK_GL_ERROR(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size()*sizeof(GLuint), indices.data(), m_settings->drawMode));
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size()*sizeof(GLuint), indices.data(), m_settings->drawMode);
 
-    CHECK_GL_ERROR(glBindVertexArray(0));
-    CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER, 0));
-    CHECK_GL_ERROR(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 //------------------------------------------------------------------------
 
 Mesh::~Mesh()
 {
-    std::cout << "dtor: " << m_VAO << " " << this << std::endl;
     if (glIsVertexArray(m_VAO) != GL_FALSE)
     {
-        CHECK_GL_ERROR(glDeleteVertexArrays(1, &m_VAO));
-        CHECK_GL_ERROR(glDeleteBuffers(1, &m_VBO));
-        CHECK_GL_ERROR(glDeleteBuffers(1, &m_EBO));
+        glDeleteVertexArrays(1, &m_VAO);
+        glDeleteBuffers(1, &m_VBO);
+        glDeleteBuffers(1, &m_EBO);
     }
 }
 
@@ -55,8 +53,8 @@ void Mesh::render() const noexcept
     
     m_settings->renderStrategy->use();
     m_settings->colorTexture->bind();
-    CHECK_GL_ERROR(glBindVertexArray(m_VAO));
-    CHECK_GL_ERROR(glDrawElements(m_settings->primitiveMode, m_nofIndices, GL_UNSIGNED_INT, (const GLvoid*)0));
+    glBindVertexArray(m_VAO);
+    glDrawElements(m_settings->primitiveMode, m_nofIndices, GL_UNSIGNED_INT, (const GLvoid*)0);
     m_settings->colorTexture->unbind();
     m_settings->renderStrategy->unuse();
 }

@@ -26,8 +26,7 @@ void Subject<T>::notify(const T& message) const noexcept
         {
             const std::shared_ptr<Observer<T>> observerShared = observer.lock();
             observerShared->update(message);
-        }
-    );
+        });
 }
 
 //------------------------------------------------------------------------
@@ -43,8 +42,7 @@ void Subject<T>::clearOfflineObservers() noexcept
         [](const std::weak_ptr<Observer<T>>& observer)
         {
             return !observer.expired();
-        }
-    );
+        });
 
     m_observers = onlineObservers;
 }

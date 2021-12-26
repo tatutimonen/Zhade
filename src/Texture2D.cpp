@@ -32,7 +32,7 @@ Texture2D::Texture2D(const std::string& filename)
 Texture2D::~Texture2D()
 {
     if (glIsTexture(m_handle))
-        CHECK_GL_ERROR(glDeleteTextures(1, &m_handle));
+        glDeleteTextures(1, &m_handle);
 }
 
 //------------------------------------------------------------------------
@@ -43,7 +43,7 @@ void Texture2D::setData(const void* data)
     CHECK_GL_ERROR(glTexSubImage2D(
         GL_TEXTURE_2D, 0, 0, 0, m_settings->width, m_settings->height, m_settings->format, GL_UNSIGNED_BYTE, (const GLvoid*)data)
     );
-    CHECK_GL_ERROR(glGenerateMipmap(GL_TEXTURE_2D));
+    glGenerateMipmap(GL_TEXTURE_2D);
     this->unbind();
 }
 
@@ -62,13 +62,13 @@ std::unique_ptr<Texture2D> Texture2D::makeDefault()
 
 void Texture2D::setupTexture()
 {
-    CHECK_GL_ERROR(glGenTextures(1, &m_handle));
+    glGenTextures(1, &m_handle);
     this->bind();
-    CHECK_GL_ERROR(glTexStorage2D(GL_TEXTURE_2D, m_settings->levels, m_settings->internalFormat, m_settings->width, m_settings->height));
-    CHECK_GL_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, m_settings->wrapS));
-    CHECK_GL_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, m_settings->wrapT));
-    CHECK_GL_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_settings->minFilter));
-    CHECK_GL_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_settings->magFilter));
+    glTexStorage2D(GL_TEXTURE_2D, m_settings->levels, m_settings->internalFormat, m_settings->width, m_settings->height);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, m_settings->wrapS);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, m_settings->wrapT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_settings->minFilter);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_settings->magFilter);
     this->unbind();
 }
 

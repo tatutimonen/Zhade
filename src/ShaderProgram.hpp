@@ -47,8 +47,8 @@ public:
     GLint getAttribLocation(const std::string& name) noexcept;
     GLint getUniformLocation(const std::string& name) noexcept;
 
-    inline void use() const noexcept   { CHECK_GL_ERROR(glUseProgram(m_handle)); }
-    inline void unuse() const noexcept { CHECK_GL_ERROR(glUseProgram(0)); };
+    inline void use() const noexcept   { glUseProgram(m_handle); }
+    inline void unuse() const noexcept { glUseProgram(0); };
 
     void attachShader(const std::shared_ptr<Shader>& shader);
     void detachShader(const std::shared_ptr<Shader>& shader);

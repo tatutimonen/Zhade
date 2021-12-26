@@ -7,3 +7,6 @@
 # CMake
 CMakeFiles/
 CMakeCache.txt
+
+# Misc
+memo/

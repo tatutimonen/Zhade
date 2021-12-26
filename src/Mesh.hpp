@@ -11,7 +11,6 @@
 #include <iostream>
 #include <memory>
 #include <string>
-#include <variant>
 #include <vector>
 
 //------------------------------------------------------------------------
@@ -29,6 +28,8 @@ public:
         glm::vec3 diffuse  = glm::vec3(1.0f);
         glm::vec3 specular = glm::vec3(1.0f);
         GLfloat shininess  = 0.4f;
+
+        Material() = default;
     };
     struct Settings {
         std::shared_ptr<ShaderProgram> renderStrategy = std::make_shared<ShaderProgram>();
@@ -37,6 +38,8 @@ public:
         glm::mat4 transformation                      = glm::mat4(1.0f);
         GLenum drawMode                               = GL_STATIC_DRAW;
         GLenum primitiveMode                          = GL_TRIANGLES;
+
+        Settings() = default;
     };
 
     Mesh(const std::vector<Vertex>& vertices,

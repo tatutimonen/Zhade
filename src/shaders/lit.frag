@@ -1,12 +1,15 @@
 #version 460 core
 
 //------------------------------------------------------------------------
+// Inputs from previous pipeline stages.
 
 in VERT_OUT {
     vec2 texCoords;
+    vec3 lighting;
 } FragIn;
 
 //------------------------------------------------------------------------
+// Uniforms.
 
 uniform sampler2D u_colorTexture;
 
@@ -20,16 +23,12 @@ struct Material {
 uniform Material u_material;
 
 //------------------------------------------------------------------------
-
-uniform vec4 u_ambient;
-
-//------------------------------------------------------------------------
+// Computations.
 
 void main()
 {
     vec4 texTerm = texture(u_colorTexture, FragIn.texCoords);
-    vec4 light = u_ambient;
-    gl_FragColor = min(light * texTerm * vec4(u_material.diffuse, 1.0f), vec4(1.0f));
+    gl_FragColor = min(vec4(FragIn.lighting, 1.0f) * texTerm * vec4(u_material.diffuse, 1.0f), vec4(1.0f));
 }
 
 //------------------------------------------------------------------------

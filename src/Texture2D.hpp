@@ -24,8 +24,8 @@ public:
 
     virtual void setData(const void* data) override;
 
-    virtual inline void bind() const noexcept override   { CHECK_GL_ERROR(glBindTexture(GL_TEXTURE_2D, m_handle)); }
-    virtual inline void unbind() const noexcept override { CHECK_GL_ERROR(glBindTexture(GL_TEXTURE_2D, 0)); }
+    virtual inline void bind() const noexcept override   { glBindTexture(GL_TEXTURE_2D, m_handle); }
+    virtual inline void unbind() const noexcept override { glBindTexture(GL_TEXTURE_2D, 0); }
 
     static std::unique_ptr<Texture2D> makeDefault();
 

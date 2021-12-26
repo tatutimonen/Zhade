@@ -7,6 +7,7 @@
 #include "PerspectiveCamera.hpp"
 #include "Shader.hpp"
 #include "ShaderProgram.hpp"
+#include "UniformBuffer.hpp"
 #include "Util.hpp"
 
 #include <GL/glew.h>
@@ -25,14 +26,14 @@ int main()
 {
     App::get_instance().init();
 
-    auto vshader = std::make_shared<Shader>(GL_VERTEX_SHADER);
-    auto fshader = std::make_shared<Shader>(GL_FRAGMENT_SHADER);
+    auto vshader = std::make_shared<Shader>(GL_VERTEX_SHADER, "lit.vert");
+    auto fshader = std::make_shared<Shader>(GL_FRAGMENT_SHADER, "lit.frag");
     auto shaderProgram = std::make_shared<ShaderProgram>(vshader, fshader);
 
     auto cameraSettings = std::make_unique<PerspectiveCamera::Settings>();
     auto camera = PerspectiveCamera(std::move(cameraSettings));
 
-    auto cubeMaterial = std::shared_ptr<Mesh::Material>(new Mesh::Material{
+    auto cubeMaterial = std::make_shared<Mesh::Material>(Mesh::Material{
         glm::vec3(0.0f),
         glm::vec3(0.1745f,   0.01175f,  0.01175f),
         glm::vec3(0.61424f,  0.04136f,  0.04136f),
@@ -53,10 +54,13 @@ int main()
     plane->setTransformation(glm::scale(glm::vec3(10.0f)) * glm::translate(-Util::zFightEpsilon * Util::makeUnitVec3y()));
     App::get_instance().add_mesh(std::move(plane));
 
-    auto ambientLight = AmbientLight(glm::vec4(1.0f));
-    ambientLight.uploadAmbient(*shaderProgram);
-    #include <iostream>
-    std::cout << sizeof(glm::vec3(1.0f)) << std::endl;
+    const auto ambientLightUniformBuffer = std::make_shared<UniformBuffer>(
+        "AmbientLight",
+        0,
+        sizeof(AmbientLight::Settings),
+        GL_STATIC_DRAW
+    );
+    auto ambientLight = AmbientLight(ambientLightUniformBuffer);
 
     while (!glfwWindowShouldClose(App::get_instance().get_gl_ctx()))
     {
@@ -65,7 +69,7 @@ int main()
         glfwPollEvents();
         camera.tick(*shaderProgram);
 
-        CHECK_GL_ERROR(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         for (const auto& mesh : App::get_instance().get_meshes())
             mesh->render();

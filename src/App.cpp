@@ -30,9 +30,9 @@ void App::init()
     glewInit();
 
     // OpenGL
-    CHECK_GL_ERROR(glViewport(0, 0, window_width, window_height));
-    CHECK_GL_ERROR(glClearColor(46/255.0f, 68/255.0f, 130/255.0f, 1.0f));
-    CHECK_GL_ERROR(glEnable(GL_DEPTH_TEST));
+    glViewport(0, 0, window_width, window_height);
+    glClearColor(46/255.0f, 68/255.0f, 130/255.0f, 1.0f);
+    glEnable(GL_DEPTH_TEST);
 }
 
 //------------------------------------------------------------------------
