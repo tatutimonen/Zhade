@@ -3,18 +3,22 @@ add_executable(App
     App.cpp
     Camera.cpp
     Common.cpp
-    Texture.cpp
+    Constants.cpp
+    DirectionalLight.cpp
     main.cpp
     Mesh.cpp
     MeshFactory.cpp
     Observer.cpp
     OrthographicCamera.cpp
     PerspectiveCamera.cpp
+    PointLight.cpp
     Shader.cpp
     ShaderProgram.cpp
     Subject.cpp
+    Texture.cpp
     Texture2D.cpp
     UniformBuffer.cpp
+    UniformBufferStorage.cpp
     Util.cpp
 )
 target_link_libraries(App

@@ -18,6 +18,8 @@ void Camera::tick(ShaderProgram& shaderProgram) noexcept
     {
         glm::mat4 VPMatrix = m_projectivity * m_view;
         shaderProgram.setUniform<glm::mat4>("u_VP", glm::value_ptr(VPMatrix));
+        shaderProgram.setUniform<glm::mat4>("u_P", glm::value_ptr(m_projectivity));
+        notify(m_settings->center);
     }
 }
 

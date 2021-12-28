@@ -1,5 +1,7 @@
 #pragma once
 
+#include "UniformBuffer.hpp"
+
 #include <GL/glew.h>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -35,8 +37,6 @@ inline glm::vec3 makeUnitVec3z()
 {
     return glm::vec3(0.0f, 0.0f, 1.0f);
 }
-
-constexpr float zFightEpsilon = 1e-5f;
 
 }  // namespace Util
 

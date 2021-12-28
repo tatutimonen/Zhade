@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Constants.hpp"
 #include "UniformBuffer.hpp"
 
 #include <glm/glm.hpp>
@@ -10,15 +11,14 @@
 
 //------------------------------------------------------------------------
 
-class AmbientLight final {
+class AmbientLight {
 public:
     struct Settings {
         glm::vec3 ambient = glm::vec3(1.0f);
         GLfloat intensity = 1.0f;
     };
 
-    explicit AmbientLight(const std::shared_ptr<UniformBuffer>& uniformBuffer,
-        const Settings& settings = Settings());
+    explicit AmbientLight(const Settings& settings = Settings(), GLenum usage = GL_STATIC_DRAW);
 
     void set(const Settings& settings) noexcept;
     void setAmbient(const glm::vec3& ambient) noexcept;
@@ -28,8 +28,8 @@ public:
     inline GLfloat getIntensity() const noexcept        { return m_settings.intensity; }
 
 private:
-    std::shared_ptr<UniformBuffer> m_uniformBuffer;
     Settings m_settings;
+    UniformBuffer m_uniformBuffer;
 };
 
 //------------------------------------------------------------------------

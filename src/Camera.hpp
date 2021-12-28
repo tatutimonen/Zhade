@@ -1,7 +1,9 @@
 #pragma once
 
 #include "App.hpp"
+#include "Observer.hpp"
 #include "ShaderProgram.hpp"
+#include "Subject.hpp"
 #include "Util.hpp"
 
 #include <GLFW/glfw3.h>
@@ -15,7 +17,7 @@
 
 //------------------------------------------------------------------------
 
-class Camera {
+class Camera : public Subject<observed::CameraPosition> {
 public:
     struct Settings {
         glm::vec3 center = glm::vec3(0.0f,  1.0f,  3.0f);

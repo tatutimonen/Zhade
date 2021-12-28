@@ -1,10 +1,12 @@
-if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
-    message(FATAL_ERROR "Only out-of-source builds are supported. \
-                         Please use ${CMAKE_SOURCE_DIR}/cmake/InSourceCleanup.cmake \
-                         in ${CMAKE_SOURCE_DIR} before attempting to generate project files again.")
-endif()
-
 cmake_minimum_required(VERSION 3.17)
+
+if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+    message(FATAL_ERROR
+        "Only out-of-source builds are supported. \
+         Please use ${CMAKE_SOURCE_DIR}/cmake/InSourceCleanup.cmake \
+         in ${CMAKE_SOURCE_DIR} before attempting to generate project files again."
+    )
+endif()
 
 project(shadow-mapper)
 

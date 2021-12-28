@@ -20,13 +20,8 @@ void Subject<T>::attach(const std::weak_ptr<Observer<T>>& observer) noexcept
 template<typename T>
 void Subject<T>::notify(const T& message) const noexcept
 {
-    std::for_each(m_observers.cbegin(),
-        m_observers.cend(),
-        [&message](const std::weak_ptr<Observer<T>>& observer)
-        {
-            const std::shared_ptr<Observer<T>> observerShared = observer.lock();
-            observerShared->update(message);
-        });
+    for (const auto& observer : m_observers)
+        observer.lock()->update(message);
 }
 
 //------------------------------------------------------------------------
@@ -36,13 +31,9 @@ void Subject<T>::clearOfflineObservers() noexcept
 {
     std::vector<std::weak_ptr<Observer<T>>> onlineObservers;
 
-    std::copy_if(m_observers.cbegin(),
-        m_observers.cend(),
-        std::back_inserter(onlineObservers),
-        [](const std::weak_ptr<Observer<T>>& observer)
-        {
-            return !observer.expired();
-        });
+    for (const auto& observer : m_observers)
+        if (!observer.expired())
+            onlineObservers.push_back(observer);
 
     m_observers = onlineObservers;
 }

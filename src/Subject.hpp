@@ -2,7 +2,6 @@
 
 #include "Observer.hpp"
 
-#include <algorithm>
 #include <memory>
 #include <vector>
 

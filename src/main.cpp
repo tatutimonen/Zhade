@@ -2,12 +2,16 @@
 #include "App.hpp"
 #include "Camera.hpp"
 #include "Common.hpp"
+#include "Constants.hpp"
+#include "DirectionalLight.hpp"
 #include "Mesh.hpp"
 #include "MeshFactory.hpp"
 #include "PerspectiveCamera.hpp"
+#include "PointLight.hpp"
 #include "Shader.hpp"
 #include "ShaderProgram.hpp"
 #include "UniformBuffer.hpp"
+#include "UniformBufferStorage.hpp"
 #include "Util.hpp"
 
 #include <GL/glew.h>
@@ -16,9 +20,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 
-#include <future>
 #include <memory>
-#include <utility>
 
 //------------------------------------------------------------------------
 
@@ -33,13 +35,15 @@ int main()
     auto cameraSettings = std::make_unique<PerspectiveCamera::Settings>();
     auto camera = PerspectiveCamera(std::move(cameraSettings));
 
-    auto cubeMaterial = std::make_shared<Mesh::Material>(Mesh::Material{
-        glm::vec3(0.0f),
-        glm::vec3(0.1745f,   0.01175f,  0.01175f),
-        glm::vec3(0.61424f,  0.04136f,  0.04136f),
-        glm::vec3(0.727811f, 0.626959f, 0.626959f),
-        0.6f
-    });
+    auto cubeMaterial = std::make_shared<Mesh::Material>(
+        Mesh::Material{
+            glm::vec3(0.0f),
+            glm::vec3(0.1745f,   0.01175f,  0.01175f),
+            glm::vec3(0.61424f,  0.04136f,  0.04136f),
+            glm::vec3(0.727811f, 0.626959f, 0.626959f),
+            0.6f
+        }
+    );
     auto cubeSettings = std::make_unique<Mesh::Settings>();
     cubeSettings->renderStrategy = shaderProgram;
     cubeSettings->material = cubeMaterial;
@@ -51,16 +55,19 @@ int main()
     planeSettings->renderStrategy = shaderProgram;
     planeSettings->colorTexture = std::make_shared<Texture2D>(Common::texturePath + "cataphract.jpg");
     auto plane = MeshFactory::makePlane(std::move(planeSettings));
-    plane->setTransformation(glm::scale(glm::vec3(10.0f)) * glm::translate(-Util::zFightEpsilon * Util::makeUnitVec3y()));
+    plane->setTransformation(glm::scale(glm::vec3(10.0f)) * glm::translate(-Constants::Z_FIGHT_EPSILON * Util::makeUnitVec3y()));
     App::get_instance().add_mesh(std::move(plane));
 
-    const auto ambientLightUniformBuffer = std::make_shared<UniformBuffer>(
-        "AmbientLight",
-        0,
-        sizeof(AmbientLight::Settings),
-        GL_STATIC_DRAW
+    auto ambientLight = AmbientLight();
+    auto directionalLight = std::make_shared<DirectionalLight>();
+    //camera.attach(directionalLight);
+
+    auto pointLightsUniformBuffer = std::make_shared<UniformBuffer>(
+        "PointLights",
+        Constants::POINT_LIGHT_BINDING,
+        sizeof(PointLight::Settings)
     );
-    auto ambientLight = AmbientLight(ambientLightUniformBuffer);
+    auto pointLight = PointLight(UniformBufferStorage(pointLightsUniformBuffer, 0));
 
     while (!glfwWindowShouldClose(App::get_instance().get_gl_ctx()))
     {
