@@ -2,7 +2,6 @@
 
 #include "Mesh.hpp"
 #include "ShaderProgram.hpp"
-#include "Texture2D.hpp"
 
 #include <memory>
 

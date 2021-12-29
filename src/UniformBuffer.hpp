@@ -15,7 +15,8 @@ public:
         GLuint binding,
         GLsizeiptr blockSize,
         uint32_t extent = 1,
-        GLenum usage = GL_DYNAMIC_DRAW);
+        GLenum usage = GL_DYNAMIC_DRAW
+    );
     ~UniformBuffer();
 
     void update(std::size_t offset, const void* data, std::size_t size, std::size_t blockOffset = 0);

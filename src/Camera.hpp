@@ -4,7 +4,7 @@
 #include "Observer.hpp"
 #include "ShaderProgram.hpp"
 #include "Subject.hpp"
-#include "Util.hpp"
+#include "util.hpp"
 
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -17,7 +17,7 @@
 
 //------------------------------------------------------------------------
 
-class Camera : public Subject<observed::CameraPosition> {
+class Camera : public Subject<observed::CameraCenter> {
 public:
     struct Settings {
         glm::vec3 center = glm::vec3(0.0f,  1.0f,  3.0f);

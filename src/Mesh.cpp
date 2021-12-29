@@ -6,7 +6,7 @@ Mesh::Mesh(const std::vector<Vertex>& vertices,
     const std::vector<GLuint>& indices,
     std::unique_ptr<Settings> settings)
     : m_settings{std::move(settings)},
-      m_nofIndices{static_cast<GLsizei>(indices.size())}
+      m_nofIndices{indices.size()}
 {
     glGenVertexArrays(1, &m_VAO);
     glGenBuffers(1, &m_VBO);

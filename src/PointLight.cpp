@@ -12,7 +12,7 @@ PointLight::PointLight(const UniformBufferStorage& uniformBufferStorage, const S
     const auto attenuationLinear = m_settings.attenuationLinear;
     const auto attenuationQuadratic = m_settings.attenuationQuadratic;
     const void* data = std::vector<GLfloat>({
-        color.r, color.g, color.b, Constants::STD_140_PAD_FLOAT,
+        color.r, color.g, color.b, constants::STD_140_PAD_FLOAT,
         position.x, position.y, position.z, m_settings.shininess,
         m_settings.strength, attenuationConstant, attenuationLinear, attenuationQuadratic
     }).data();

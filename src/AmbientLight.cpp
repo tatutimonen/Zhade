@@ -3,7 +3,7 @@
 //------------------------------------------------------------------------
 
 AmbientLight::AmbientLight(const Settings& settings, GLenum usage)
-    : m_uniformBuffer{UniformBuffer("AmbientLight", Constants::AMBIENT_LIGHT_BINDING, sizeof(Settings), 1, usage)}
+    : m_uniformBuffer{UniformBuffer("AmbientLight", constants::AMBIENT_LIGHT_BINDING, sizeof(Settings), 1, usage)}
 {
     set(settings);
 }

@@ -1,8 +1,8 @@
 #include "AmbientLight.hpp"
 #include "App.hpp"
 #include "Camera.hpp"
-#include "Common.hpp"
-#include "Constants.hpp"
+#include "common.hpp"
+#include "constants.hpp"
 #include "DirectionalLight.hpp"
 #include "Mesh.hpp"
 #include "MeshFactory.hpp"
@@ -12,7 +12,7 @@
 #include "ShaderProgram.hpp"
 #include "UniformBuffer.hpp"
 #include "UniformBufferStorage.hpp"
-#include "Util.hpp"
+#include "util.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -48,23 +48,23 @@ int main()
     cubeSettings->renderStrategy = shaderProgram;
     cubeSettings->material = cubeMaterial;
     auto cube = MeshFactory::makeCube(std::move(cubeSettings));
-    cube->setTransformation(glm::scale(glm::vec3(2.0f)) * glm::translate(Util::makeUnitVec3y()));
+    cube->setTransformation(glm::scale(glm::vec3(2.0f)) * glm::translate(util::makeUnitVec3y()));
     App::get_instance().add_mesh(std::move(cube));
 
     auto planeSettings = std::make_unique<Mesh::Settings>();
     planeSettings->renderStrategy = shaderProgram;
-    planeSettings->colorTexture = std::make_shared<Texture2D>(Common::texturePath + "cataphract.jpg");
+    planeSettings->colorTexture = std::make_shared<Texture2D>(common::texturePath + "cataphract.jpg");
     auto plane = MeshFactory::makePlane(std::move(planeSettings));
-    plane->setTransformation(glm::scale(glm::vec3(10.0f)) * glm::translate(-Constants::Z_FIGHT_EPSILON * Util::makeUnitVec3y()));
+    plane->setTransformation(glm::scale(glm::vec3(10.0f)) * glm::translate(-constants::Z_FIGHT_EPSILON * util::makeUnitVec3y()));
     App::get_instance().add_mesh(std::move(plane));
 
     auto ambientLight = AmbientLight();
     auto directionalLight = std::make_shared<DirectionalLight>();
-    //camera.attach(directionalLight);
+    camera.attach(directionalLight);
 
     auto pointLightsUniformBuffer = std::make_shared<UniformBuffer>(
         "PointLights",
-        Constants::POINT_LIGHT_BINDING,
+        constants::POINT_LIGHT_BINDING,
         sizeof(PointLight::Settings)
     );
     auto pointLight = PointLight(UniformBufferStorage(pointLightsUniformBuffer, 0));

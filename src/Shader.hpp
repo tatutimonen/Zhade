@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Common.hpp"
-#include "Util.hpp"
+#include "common.hpp"
 
 #include <GL/glew.h>
 
 #include <fstream>
 #include <iomanip>
+#include <iostream>
 #include <map>
 #include <memory>
 #include <sstream>

@@ -6,15 +6,15 @@ std::unique_ptr<Mesh> MeshFactory::makeCube(std::unique_ptr<Mesh::Settings> sett
 {
     const std::vector<Mesh::Vertex> vertices{
         // bottom
-        { glm::vec3( 0.5f,  0.0f,  0.5f),  Util::makeUnitVec3z(), glm::vec2() },
-        { glm::vec3(-0.5f,  0.0f,  0.5f), -Util::makeUnitVec3x(), glm::vec2() },
-        { glm::vec3(-0.5f,  0.0f, -0.5f), -Util::makeUnitVec3z(), glm::vec2() },
-        { glm::vec3( 0.5f,  0.0f, -0.5f),  Util::makeUnitVec3x(), glm::vec2() },
+        { glm::vec3( 0.5f,  0.0f,  0.5f),  util::makeUnitVec3z(), glm::vec2() },
+        { glm::vec3(-0.5f,  0.0f,  0.5f), -util::makeUnitVec3x(), glm::vec2() },
+        { glm::vec3(-0.5f,  0.0f, -0.5f), -util::makeUnitVec3z(), glm::vec2() },
+        { glm::vec3( 0.5f,  0.0f, -0.5f),  util::makeUnitVec3x(), glm::vec2() },
         // top
-        { glm::vec3( 0.5f,  1.0f,  0.5f),  Util::makeUnitVec3z(), glm::vec2() },
-        { glm::vec3(-0.5f,  1.0f,  0.5f), -Util::makeUnitVec3x(), glm::vec2() },
-        { glm::vec3(-0.5f,  1.0f, -0.5f), -Util::makeUnitVec3z(), glm::vec2() },
-        { glm::vec3( 0.5f,  1.0f, -0.5f),  Util::makeUnitVec3x(), glm::vec2() }
+        { glm::vec3( 0.5f,  1.0f,  0.5f),  util::makeUnitVec3z(), glm::vec2() },
+        { glm::vec3(-0.5f,  1.0f,  0.5f), -util::makeUnitVec3x(), glm::vec2() },
+        { glm::vec3(-0.5f,  1.0f, -0.5f), -util::makeUnitVec3z(), glm::vec2() },
+        { glm::vec3( 0.5f,  1.0f, -0.5f),  util::makeUnitVec3x(), glm::vec2() }
     };
 
     const std::vector<GLuint> indices{
@@ -36,10 +36,10 @@ std::unique_ptr<Mesh> MeshFactory::makeCube(std::unique_ptr<Mesh::Settings> sett
 std::unique_ptr<Mesh> MeshFactory::makePlane(std::unique_ptr<Mesh::Settings> settings)
 {
     const std::vector<Mesh::Vertex> vertices{
-        { glm::vec3( 0.5f,  0.0f,  0.5f), Util::makeUnitVec3y(), glm::vec2(1.0f, 1.0f) },
-        { glm::vec3(-0.5f,  0.0f,  0.5f), Util::makeUnitVec3y(), glm::vec2(0.0f, 1.0f) },
-        { glm::vec3(-0.5f,  0.0f, -0.5f), Util::makeUnitVec3y(), glm::vec2(0.0f, 0.0f) },
-        { glm::vec3( 0.5f,  0.0f, -0.5f), Util::makeUnitVec3y(), glm::vec2(1.0f, 0.0f) }
+        { glm::vec3( 0.5f,  0.0f,  0.5f), util::makeUnitVec3y(), glm::vec2(1.0f, 1.0f) },
+        { glm::vec3(-0.5f,  0.0f,  0.5f), util::makeUnitVec3y(), glm::vec2(0.0f, 1.0f) },
+        { glm::vec3(-0.5f,  0.0f, -0.5f), util::makeUnitVec3y(), glm::vec2(0.0f, 0.0f) },
+        { glm::vec3( 0.5f,  0.0f, -0.5f), util::makeUnitVec3y(), glm::vec2(1.0f, 0.0f) }
     };
     
     const std::vector<GLuint> indices{

@@ -40,9 +40,9 @@ bool Camera::move()
     if (keys[GLFW_KEY_A])
         m_settings->center += camera_speed * -glm::normalize(glm::cross(m_settings->target, m_settings->up));
     if (keys[GLFW_KEY_SPACE])
-        m_settings->center += camera_speed * Util::makeUnitVec3y();
+        m_settings->center += camera_speed * util::makeUnitVec3y();
     if (keys[GLFW_KEY_LEFT_SHIFT])
-        m_settings->center += camera_speed * -Util::makeUnitVec3y();
+        m_settings->center += camera_speed * -util::makeUnitVec3y();
     
     if (m_settings->center != centerPrev)
     {

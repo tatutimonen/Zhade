@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Constants.hpp"
+#include "constants.hpp"
 #include "Observer.hpp"
 #include "UniformBuffer.hpp"
 
@@ -11,7 +11,7 @@
 
 //------------------------------------------------------------------------
 
-class DirectionalLight : public Observer<observed::CameraPosition> {
+class DirectionalLight : public Observer<observed::CameraCenter> {
 public:
     struct Settings {
         glm::vec3 color     = glm::vec3(1.0f);
@@ -21,14 +21,14 @@ public:
                               * glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
         GLfloat strength    = 10.0f;
         glm::vec3 halfway   = glm::vec3(0.0f);
-        GLfloat _1          = Constants::STD_140_PAD_FLOAT;
+        GLfloat _1          = constants::STD_140_PAD_FLOAT;
     };
 
     explicit DirectionalLight(const Settings& = Settings(), GLenum usage = GL_DYNAMIC_DRAW);
 
     void set(const Settings& settings) noexcept;
 
-    virtual void update(const observed::CameraPosition& message) noexcept override;
+    virtual void update(const observed::CameraCenter& message) noexcept override;
 
 private:
     Settings m_settings;

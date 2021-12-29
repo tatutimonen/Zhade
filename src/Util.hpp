@@ -19,8 +19,9 @@
 #define CHECK_GL_ERROR(fn) fn; checkErrors(#fn, __FILE__, __LINE__);
 
 //------------------------------------------------------------------------
+// Utilities.
 
-namespace Util
+namespace util
 {
 
 inline glm::vec3 makeUnitVec3x()
@@ -38,7 +39,7 @@ inline glm::vec3 makeUnitVec3z()
     return glm::vec3(0.0f, 0.0f, 1.0f);
 }
 
-}  // namespace Util
+}  // namespace util
 
 //------------------------------------------------------------------------
 

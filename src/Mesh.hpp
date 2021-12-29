@@ -2,7 +2,7 @@
 
 #include "ShaderProgram.hpp"
 #include "Texture2D.hpp"
-#include "Util.hpp"
+#include "util.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -63,7 +63,7 @@ private:
     GLuint m_VAO = 0;
     GLuint m_VBO = 0;
     GLuint m_EBO = 0;
-    GLsizei m_nofIndices = 0;
+    std::size_t m_nofIndices = 0;
 
     std::unique_ptr<Settings> m_settings;
 };

@@ -2,8 +2,8 @@ add_executable(App
     AmbientLight.cpp
     App.cpp
     Camera.cpp
-    Common.cpp
-    Constants.cpp
+    common.cpp
+    constants.cpp
     DirectionalLight.cpp
     main.cpp
     Mesh.cpp
@@ -19,7 +19,7 @@ add_executable(App
     Texture2D.cpp
     UniformBuffer.cpp
     UniformBufferStorage.cpp
-    Util.cpp
+    util.cpp
 )
 target_link_libraries(App
     PRIVATE libglew_static

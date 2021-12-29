@@ -5,7 +5,7 @@
 //------------------------------------------------------------------------
 
 DirectionalLight::DirectionalLight(const Settings& settings, GLenum usage)
-    : m_uniformBuffer{UniformBuffer("DirectionalLight", Constants::DIRECTIONAL_LIGHT_BINDING, sizeof(Settings), 1, usage)}
+    : m_uniformBuffer{UniformBuffer("DirectionalLight", constants::DIRECTIONAL_LIGHT_BINDING, sizeof(Settings), 1, usage)}
 {
     set(settings);
 }
@@ -28,7 +28,7 @@ void DirectionalLight::set(const Settings& settings) noexcept
 
 //------------------------------------------------------------------------
 
-void DirectionalLight::update(const observed::CameraPosition& message) noexcept
+void DirectionalLight::update(const observed::CameraCenter& message) noexcept
 {
     auto& halfway = m_settings.halfway;
     halfway = glm::normalize(m_settings.direction + message);

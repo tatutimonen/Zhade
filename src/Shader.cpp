@@ -23,7 +23,7 @@ Shader::Shader(GLint glShaderType, const std::string& filename)
     {
         m_shaderType = s_glShaderToCustomShader.at(glShaderType);
         const std::string filenameWithRelativePath =
-            Common::shaderPath + (filename != "default" ? filename : filename + s_glShaderToFileExtension.at(glShaderType));
+            common::shaderPath + (filename != "default" ? filename : filename + s_glShaderToFileExtension.at(glShaderType));
         parseShaderFile(filenameWithRelativePath);
         m_handle = glCreateShader(glShaderType);
         // glShaderSource needs an lvalue.

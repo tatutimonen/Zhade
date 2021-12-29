@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Constants.hpp"
+#include "constants.hpp"
 #include "UniformBuffer.hpp"
 
 #include <glm/glm.hpp>

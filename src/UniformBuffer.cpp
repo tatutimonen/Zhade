@@ -28,7 +28,7 @@ UniformBuffer::~UniformBuffer()
 void UniformBuffer::update(std::size_t offset, const void* data, std::size_t size, std::size_t blockOffset)
 {
     glBindBuffer(GL_UNIFORM_BUFFER, m_handle);
-    GLbyte* buffer = reinterpret_cast<GLbyte*>(glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY));
+    std::byte* buffer = reinterpret_cast<std::byte*>(glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY));
     std::memcpy(buffer + blockOffset * m_blockSize + offset, data, size);
     glUnmapBuffer(GL_UNIFORM_BUFFER);
 }
