@@ -10,10 +10,7 @@
 
 class UniformBufferStorage {
 public:
-    UniformBufferStorage(const std::shared_ptr<UniformBuffer>& buffer, std::size_t blockOffset)
-        : m_buffer{buffer},
-          m_blockOffset{blockOffset}
-    {}
+    UniformBufferStorage(const std::shared_ptr<UniformBuffer>& buffer, std::size_t blockOffset);
 
     void update(std::size_t offset, const void* data, std::size_t size);
 

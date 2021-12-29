@@ -42,9 +42,7 @@ void Texture2D::setData(const void* data)
     this->bind();
     glTexSubImage2D(
         GL_TEXTURE_2D,
-        0,
-        0,
-        0,
+        0, 0, 0,
         m_settings->width,
         m_settings->height,
         m_settings->format,
