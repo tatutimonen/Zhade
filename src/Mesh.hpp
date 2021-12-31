@@ -62,9 +62,9 @@ public:
     void pushMaterial() const noexcept;
 
 private:
-    GLuint m_VAO = 0;
-    GLuint m_VBO = 0;
-    GLuint m_EBO = 0;
+    GLuint m_vao = 0;
+    GLuint m_vbo = 0;
+    GLuint m_ebo = 0;
 
     std::unique_ptr<Settings> m_settings;
     std::size_t m_nofVertices;

@@ -11,13 +11,13 @@ Mesh::Mesh(const std::vector<Vertex>& vertices,
       m_nofVertices{vertices.size()},
       m_nofIndices{indices.size()}
 {
-    glGenVertexArrays(1, &m_VAO);
-    glGenBuffers(1, &m_VBO);
-    glGenBuffers(1, &m_EBO);
+    glGenVertexArrays(1, &m_vao);
+    glGenBuffers(1, &m_vbo);
+    glGenBuffers(1, &m_ebo);
 
-    glBindVertexArray(m_VAO);
+    glBindVertexArray(m_vao);
     
-    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), usage);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const GLvoid*>(offsetof(Vertex, position)));
@@ -27,7 +27,7 @@ Mesh::Mesh(const std::vector<Vertex>& vertices,
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const GLvoid*>(offsetof(Vertex, texCoords)));
     glEnableVertexAttribArray(2);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), usage);
 
     glBindVertexArray(0);
@@ -39,11 +39,11 @@ Mesh::Mesh(const std::vector<Vertex>& vertices,
 
 Mesh::~Mesh()
 {
-    if (glIsVertexArray(m_VAO) != GL_FALSE)
+    if (glIsVertexArray(m_vao) != GL_FALSE)
     {
-        glDeleteVertexArrays(1, &m_VAO);
-        glDeleteBuffers(1, &m_VBO);
-        glDeleteBuffers(1, &m_EBO);
+        glDeleteVertexArrays(1, &m_vao);
+        glDeleteBuffers(1, &m_vbo);
+        glDeleteBuffers(1, &m_ebo);
     }
 }
 
@@ -57,7 +57,7 @@ void Mesh::render() const noexcept
     m_settings->renderStrategy->use();
     m_settings->colorTexture->bind();
 
-    glBindVertexArray(m_VAO);
+    glBindVertexArray(m_vao);
     if (m_settings->indexed)
         glDrawElements(m_settings->mode, m_nofIndices, GL_UNSIGNED_INT, nullptr);
     else
