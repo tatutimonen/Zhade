@@ -24,14 +24,13 @@ public:
     virtual inline void updateProjectivity() override
     {
         const Settings& settings = dynamic_cast<const Settings&>(getSettings());
-        m_projectivity = glm::ortho(
+        m_matrices.P = glm::ortho(
             settings.xRange[0],
             settings.xRange[1],
             settings.yRange[0],
             settings.yRange[1],
             settings.zNear,
-            settings.zFar
-        );
+            settings.zFar);
     }
 
     virtual inline const Camera::Settings& getSettings() const { return *m_settings; }

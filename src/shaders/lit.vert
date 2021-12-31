@@ -17,20 +17,30 @@ layout (location = 2) in vec2 a_texCoords;
 
 out VERT_OUT {
     vec2 texCoords;
+    vec3 normal;
+    vec3 cameraDirection;
 } VertOut;
 
 //------------------------------------------------------------------------
 // Uniforms.
 
+layout (binding = 0, std140) uniform Camera {
+    vec3 center;
+    mat4 V;
+    mat4 P;
+} u_camera;
+
 uniform mat4 u_M;
-uniform mat4 u_VP;
+uniform mat4 u_N;
 
 //------------------------------------------------------------------------
 
 void main()
 {
     VertOut.texCoords = a_texCoords;
-    gl_Position = u_VP * u_M * vec4(a_position, 1.0);
+    VertOut.normal = normalize(mat3(u_N) * a_normal);
+    VertOut.cameraDirection = normalize(u_camera.center - a_position);
+    gl_Position = u_camera.P * u_camera.V * u_M * vec4(a_position, 1.0);
 }
 
 //------------------------------------------------------------------------

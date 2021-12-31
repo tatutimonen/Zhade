@@ -3,23 +3,23 @@
 //------------------------------------------------------------------------
 
 Camera::Camera(std::unique_ptr<Settings> settings)
-    : m_settings{std::move(settings)}
+    : m_settings{std::move(settings)},
+      m_matrices{Matrices()},
+      m_uniformBuffer{UniformBuffer("Camera", constants::CAMERA_BINDING, sizeof(glm::vec4) + sizeof(Matrices), 1)}
 {
     updateView();
 }
 
 //------------------------------------------------------------------------
 
-void Camera::tick(ShaderProgram& shaderProgram) noexcept
+void Camera::tick() noexcept
 {
     const bool moved = move();
     const bool rotated = rotate();
     if (moved || rotated)
     {
-        glm::mat4 VPMatrix = m_projectivity * m_view;
-        shaderProgram.setUniform<glm::mat4>("u_VP", glm::value_ptr(VPMatrix));
-        shaderProgram.setUniform<glm::mat4>("u_P", glm::value_ptr(m_projectivity));
-        notify(m_settings->center);
+        m_uniformBuffer.update(0, glm::value_ptr(m_settings->center), sizeof(glm::vec3));
+        m_uniformBuffer.update(sizeof(glm::vec4), &m_matrices, sizeof(Matrices));
     }
 }
 

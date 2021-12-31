@@ -27,13 +27,3 @@ void DirectionalLight::set(const Settings& settings) noexcept
 }
 
 //------------------------------------------------------------------------
-
-void DirectionalLight::update(const observed::CameraCenter& message) noexcept
-{
-    auto& halfway = m_settings.halfway;
-    halfway = glm::normalize(m_settings.direction + message);
-    const void* data = std::vector<float>({halfway.x, halfway.y, halfway.z}).data();
-    m_uniformBuffer.update(offsetof(Settings, halfway), data, sizeof(glm::vec3));
-}
-
-//------------------------------------------------------------------------

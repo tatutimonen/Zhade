@@ -1,11 +1,13 @@
 #pragma once
 
+#include "constants.hpp"
 #include "ShaderProgram.hpp"
 #include "Texture2D.hpp"
 #include "util.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtx/string_cast.hpp>
 
 #include <iostream>
@@ -36,36 +38,35 @@ public:
         std::shared_ptr<Material> material            = std::make_shared<Material>();
         std::shared_ptr<Texture2D> colorTexture       = std::shared_ptr<Texture2D>(Texture2D::makeDefault());
         glm::mat4 transformation                      = glm::mat4(1.0f);
-        GLenum drawMode                               = GL_STATIC_DRAW;
-        GLenum primitiveMode                          = GL_TRIANGLES;
+        GLenum mode                                   = GL_TRIANGLES;
 
         Settings() = default;
     };
 
     Mesh(const std::vector<Vertex>& vertices,
         const std::vector<GLuint>& indices,
-        std::unique_ptr<Settings> settings = std::make_unique<Settings>());
+        std::unique_ptr<Settings> settings = std::make_unique<Settings>(),
+        GLenum usage = GL_STATIC_DRAW,
+        GLenum mode = GL_TRIANGLES);
     ~Mesh();
 
     inline const Material& getMaterial() const noexcept        { return *m_settings->material; }
     inline const glm::mat4& getTransformation() const noexcept { return m_settings->transformation; }
-    inline GLenum getPrimitiveMode() const noexcept            { return m_settings->primitiveMode; }
 
     inline void setMaterial(const std::shared_ptr<Material>& material) noexcept { m_settings->material = material; }
     inline void setTransformation(const glm::mat4& transformation) noexcept     { m_settings->transformation = transformation; }
-    inline void setPrimitiveMode(GLenum glPrimitiveMode) noexcept               { m_settings->primitiveMode = glPrimitiveMode; }
 
     void render() const noexcept;
-    void pushModelMatrix() const noexcept;
+    void pushMatrices() const noexcept;
     void pushMaterial() const noexcept;
 
 private:
     GLuint m_VAO = 0;
     GLuint m_VBO = 0;
     GLuint m_EBO = 0;
-    std::size_t m_nofIndices = 0;
 
     std::unique_ptr<Settings> m_settings;
+    std::size_t m_nofIndices;
 };
 
 //------------------------------------------------------------------------

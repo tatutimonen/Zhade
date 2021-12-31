@@ -24,7 +24,7 @@ public:
     virtual inline void updateProjectivity() override
     {
         const Settings& settings = dynamic_cast<const Settings&>(getSettings());
-        m_projectivity = glm::perspective(settings.fov, settings.aspectRatio, settings.zNear, settings.zFar);
+        m_matrices.P = glm::perspective(settings.fov, settings.aspectRatio, settings.zNear, settings.zFar);
     }
 
     virtual inline const Camera::Settings& getSettings() const { return *m_settings; }

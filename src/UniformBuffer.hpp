@@ -18,7 +18,7 @@ public:
         GLenum usage = GL_DYNAMIC_DRAW);
     ~UniformBuffer();
 
-    void update(std::size_t offset, const void* data, std::size_t size, std::size_t blockOffset = 0);
+    void update(std::size_t offset, const void* data, std::size_t size, std::size_t blockOffset = 0) const noexcept;
 
 private:
     GLuint m_handle;

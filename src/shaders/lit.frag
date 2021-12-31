@@ -19,12 +19,12 @@ layout (location = 0) out vec4 fragOut;
 
 in VERT_OUT {
     vec2 texCoords;
+    vec3 normal;
+    vec3 cameraDirection;
 } FragIn;
 
 //------------------------------------------------------------------------
 // Uniforms.
-
-uniform mat4 u_P;
 
 uniform sampler2D u_colorTexture;
 
@@ -37,12 +37,11 @@ struct Material {
 };
 uniform Material u_material;
 
-layout (binding = 0, std140) uniform AmbientLight {
-    vec3 color;
-    float intensity;
+layout (binding = 1, std140) uniform AmbientLight {
+    vec4 color;
 } u_ambientLight;
 
-layout (binding = 1, std140) uniform DirectionalLight {
+layout (binding = 2, std140) uniform DirectionalLight {
     vec3 color;
     float shininess;
     vec3 direction;
@@ -58,7 +57,7 @@ struct PointLight {
     float attenuationLinear;
     float attenuationQuadratic;
 };
-layout(binding = 2, std140) uniform PointLights {
+layout(binding = 3, std140) uniform PointLights {
     PointLight u_pointLights[MAX_POINT_LIGHTS];
 };
 
@@ -66,11 +65,20 @@ layout(binding = 2, std140) uniform PointLights {
 
 void main()
 {
-    // For a pinhole camera, it holds P = [K | -t] => [K | -t] * vec4(c, 1.0) = 0 <=> c = t
-    // vec4 cameraCenter = -u_P[3];
-    // vec4 halfway = normalize(u_directionalLight.direction + cameraCenter);
-    vec4 texTerm = texture(u_colorTexture, FragIn.texCoords);
-    fragOut = min(vec4(u_ambientLight.color, 1.0) * texTerm * vec4(u_material.diffuse, 1.0f), vec4(1.0f));
+    vec3 tex = texture(u_colorTexture, FragIn.texCoords).rgb;
+    
+    vec3 ambient = u_ambientLight.color.rgb * tex * u_material.ambient;
+
+    float diffuseFactor = pow(max(0.0, dot(FragIn.normal, u_directionalLight.direction)), u_material.shininess);
+    vec3 diffuse = u_directionalLight.color * diffuseFactor * tex * u_material.diffuse;
+    
+    vec3 halfway = normalize(FragIn.cameraDirection + u_directionalLight.direction);
+    float specularFactor = u_directionalLight.strength \
+        * pow(max(0.0, dot(FragIn.normal, halfway)), u_directionalLight.shininess);
+    vec3 specular = u_directionalLight.color * specularFactor * tex * u_material.specular;
+
+    vec3 lighting = ambient + diffuse + specular;
+    fragOut = vec4(lighting, 1.0);
 }
 
 //------------------------------------------------------------------------

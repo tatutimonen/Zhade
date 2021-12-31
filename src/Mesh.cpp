@@ -4,7 +4,9 @@
 
 Mesh::Mesh(const std::vector<Vertex>& vertices,
     const std::vector<GLuint>& indices,
-    std::unique_ptr<Settings> settings)
+    std::unique_ptr<Settings> settings,
+    GLenum usage,
+    GLenum mode)
     : m_settings{std::move(settings)},
       m_nofIndices{indices.size()}
 {
@@ -15,17 +17,17 @@ Mesh::Mesh(const std::vector<Vertex>& vertices,
     glBindVertexArray(m_VAO);
     
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(Vertex), vertices.data(), m_settings->drawMode);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), usage);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const GLvoid*>(offsetof(Vertex, position)));
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)offsetof(Vertex, normal));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const GLvoid*>(offsetof(Vertex, normal)));
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)offsetof(Vertex, texCoords));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const GLvoid*>(offsetof(Vertex, texCoords)));
     glEnableVertexAttribArray(2);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size()*sizeof(GLuint), indices.data(), m_settings->drawMode);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size()*sizeof(GLuint), indices.data(), usage);
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -48,22 +50,24 @@ Mesh::~Mesh()
 
 void Mesh::render() const noexcept
 {
+    pushMatrices();
     pushMaterial();
-    pushModelMatrix();
     
     m_settings->renderStrategy->use();
     m_settings->colorTexture->bind();
     glBindVertexArray(m_VAO);
-    glDrawElements(m_settings->primitiveMode, m_nofIndices, GL_UNSIGNED_INT, (const GLvoid*)0);
+    glDrawElements(m_settings->mode, m_nofIndices, GL_UNSIGNED_INT, nullptr);
     m_settings->colorTexture->unbind();
     m_settings->renderStrategy->unuse();
 }
 
 //------------------------------------------------------------------------
 
-void Mesh::pushModelMatrix() const noexcept
+void Mesh::pushMatrices() const noexcept
 {
-    m_settings->renderStrategy->setUniform<glm::mat4>("u_M", glm::value_ptr(m_settings->transformation));
+    const auto& M = m_settings->transformation;
+    m_settings->renderStrategy->setUniform<glm::mat4>("u_M", glm::value_ptr(M));
+    m_settings->renderStrategy->setUniform<glm::mat4>("u_N", glm::value_ptr(glm::inverseTranspose(M)));
 }
 
 //------------------------------------------------------------------------
