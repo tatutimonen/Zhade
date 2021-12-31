@@ -4,45 +4,68 @@
 
 std::unique_ptr<Mesh> MeshFactory::makeCube(std::unique_ptr<Mesh::Settings> settings)
 {
-    const std::vector<Mesh::Vertex> vertices{
-        // bottom
-        { glm::vec3( 0.5f,  0.0f,  0.5f),  util::makeUnitVec3z(), glm::vec2() },
-        { glm::vec3(-0.5f,  0.0f,  0.5f), -util::makeUnitVec3x(), glm::vec2() },
-        { glm::vec3(-0.5f,  0.0f, -0.5f), -util::makeUnitVec3z(), glm::vec2() },
+    static const std::vector<Mesh::Vertex> vertices = {
+        // Bottom.
+        { glm::vec3( 0.5f,  0.0f,  0.5f), -util::makeUnitVec3y(), glm::vec2() },
+        { glm::vec3( 0.5f,  0.0f, -0.5f), -util::makeUnitVec3y(), glm::vec2() },
+        { glm::vec3(-0.5f,  0.0f, -0.5f), -util::makeUnitVec3y(), glm::vec2() },
+        { glm::vec3(-0.5f,  0.0f, -0.5f), -util::makeUnitVec3y(), glm::vec2() },
+        { glm::vec3(-0.5f,  0.0f,  0.5f), -util::makeUnitVec3y(), glm::vec2() },
+        { glm::vec3( 0.5f,  0.0f,  0.5f), -util::makeUnitVec3y(), glm::vec2() },
+        // Top.
+        { glm::vec3( 0.5f,  1.0f,  0.5f),  util::makeUnitVec3y(), glm::vec2() },
+        { glm::vec3( 0.5f,  1.0f, -0.5f),  util::makeUnitVec3y(), glm::vec2() },
+        { glm::vec3(-0.5f,  1.0f, -0.5f),  util::makeUnitVec3y(), glm::vec2() },
+        { glm::vec3(-0.5f,  1.0f, -0.5f),  util::makeUnitVec3y(), glm::vec2() },
+        { glm::vec3(-0.5f,  1.0f,  0.5f),  util::makeUnitVec3y(), glm::vec2() },
+        { glm::vec3( 0.5f,  1.0f,  0.5f),  util::makeUnitVec3y(), glm::vec2() },
+        // Right.
+        { glm::vec3( 0.5f,  0.0f,  0.5f),  util::makeUnitVec3x(), glm::vec2() },
         { glm::vec3( 0.5f,  0.0f, -0.5f),  util::makeUnitVec3x(), glm::vec2() },
-        // top
-        { glm::vec3( 0.5f,  1.0f,  0.5f),  util::makeUnitVec3z(), glm::vec2() },
-        { glm::vec3(-0.5f,  1.0f,  0.5f), -util::makeUnitVec3x(), glm::vec2() },
+        { glm::vec3( 0.5f,  1.0f,  0.5f),  util::makeUnitVec3x(), glm::vec2() },
+        { glm::vec3( 0.5f,  1.0f,  0.5f),  util::makeUnitVec3x(), glm::vec2() },
+        { glm::vec3( 0.5f,  1.0f, -0.5f),  util::makeUnitVec3x(), glm::vec2() },
+        { glm::vec3( 0.5f,  0.0f, -0.5f),  util::makeUnitVec3x(), glm::vec2() },
+        // Back.
+        { glm::vec3( 0.5f,  0.0f, -0.5f), -util::makeUnitVec3z(), glm::vec2() },
+        { glm::vec3(-0.5f,  0.0f, -0.5f), -util::makeUnitVec3z(), glm::vec2() },
+        { glm::vec3( 0.5f,  1.0f, -0.5f), -util::makeUnitVec3z(), glm::vec2() },
+        { glm::vec3( 0.5f,  1.0f, -0.5f), -util::makeUnitVec3z(), glm::vec2() },
         { glm::vec3(-0.5f,  1.0f, -0.5f), -util::makeUnitVec3z(), glm::vec2() },
-        { glm::vec3( 0.5f,  1.0f, -0.5f),  util::makeUnitVec3x(), glm::vec2() }
+        { glm::vec3(-0.5f,  0.0f, -0.5f), -util::makeUnitVec3z(), glm::vec2() },
+        // Left.
+        { glm::vec3(-0.5f,  0.0f,  0.5f), -util::makeUnitVec3x(), glm::vec2() },
+        { glm::vec3(-0.5f,  0.0f, -0.5f), -util::makeUnitVec3x(), glm::vec2() },
+        { glm::vec3(-0.5f,  1.0f, -0.5f), -util::makeUnitVec3x(), glm::vec2() },
+        { glm::vec3(-0.5f,  1.0f, -0.5f), -util::makeUnitVec3x(), glm::vec2() },
+        { glm::vec3(-0.5f,  1.0f,  0.5f), -util::makeUnitVec3x(), glm::vec2() },
+        { glm::vec3(-0.5f,  0.0f,  0.5f), -util::makeUnitVec3x(), glm::vec2() },
+        // Front.
+        { glm::vec3(-0.5f,  0.0f,  0.5f),  util::makeUnitVec3z(), glm::vec2() },
+        { glm::vec3( 0.5f,  0.0f,  0.5f),  util::makeUnitVec3z(), glm::vec2() },
+        { glm::vec3( 0.5f,  1.0f,  0.5f),  util::makeUnitVec3z(), glm::vec2() },
+        { glm::vec3( 0.5f,  1.0f,  0.5f),  util::makeUnitVec3z(), glm::vec2() },
+        { glm::vec3(-0.5f,  1.0f,  0.5f),  util::makeUnitVec3z(), glm::vec2() },
+        { glm::vec3(-0.5f,  0.0f,  0.5f),  util::makeUnitVec3z(), glm::vec2() }
     };
 
-    const std::vector<GLuint> indices{
-        // xz-parallel sides
-        0, 1, 2, 2, 3, 0,
-        4, 5, 6, 6, 7, 4,
-        // y-parallel sides
-        0, 1, 4, 4, 5, 1,
-        1, 2, 5, 5, 6, 2,
-        2, 3, 6, 6, 7, 3,
-        3, 0, 7, 7, 4, 0
-    };
+    settings->indexed = false;
 
-    return std::make_unique<Mesh>(vertices, indices, std::move(settings));
+    return std::make_unique<Mesh>(vertices, std::vector<uint32_t>(), std::move(settings));
 }
 
 //------------------------------------------------------------------------
 
 std::unique_ptr<Mesh> MeshFactory::makePlane(std::unique_ptr<Mesh::Settings> settings)
 {
-    const std::vector<Mesh::Vertex> vertices{
+    static const std::vector<Mesh::Vertex> vertices{
         { glm::vec3( 0.5f,  0.0f,  0.5f), util::makeUnitVec3y(), glm::vec2(1.0f, 1.0f) },
         { glm::vec3(-0.5f,  0.0f,  0.5f), util::makeUnitVec3y(), glm::vec2(0.0f, 1.0f) },
         { glm::vec3(-0.5f,  0.0f, -0.5f), util::makeUnitVec3y(), glm::vec2(0.0f, 0.0f) },
         { glm::vec3( 0.5f,  0.0f, -0.5f), util::makeUnitVec3y(), glm::vec2(1.0f, 0.0f) }
     };
     
-    const std::vector<GLuint> indices{
+    static const std::vector<GLuint> indices{
         0, 1, 2, 2, 3, 0
     };
 

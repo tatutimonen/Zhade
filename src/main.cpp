@@ -35,7 +35,8 @@ int main()
     auto cameraSettings = std::make_unique<PerspectiveCamera::Settings>();
     auto camera = PerspectiveCamera(std::move(cameraSettings));
 
-    auto cubeMaterial = std::make_shared<Mesh::Material>(
+    // As described in http://devernay.free.fr/cours/opengl/materials.html
+    auto ruby = std::make_shared<Mesh::Material>(
         Mesh::Material{
             glm::vec3(0.0f),
             glm::vec3(0.1745f,   0.01175f,  0.01175f),
@@ -45,7 +46,7 @@ int main()
         });
     auto cubeSettings = std::make_unique<Mesh::Settings>();
     cubeSettings->renderStrategy = shaderProgram;
-    cubeSettings->material = cubeMaterial;
+    cubeSettings->material = ruby;
     auto cube = MeshFactory::makeCube(std::move(cubeSettings));
     cube->setTransformation(glm::scale(glm::vec3(2.0f)) * glm::translate(util::makeUnitVec3y()));
     App::get_instance().add_mesh(std::move(cube));
@@ -70,7 +71,7 @@ int main()
     auto planeSettings = std::make_unique<Mesh::Settings>();
     planeSettings->renderStrategy = shaderProgram;
     //planeSettings->colorTexture = std::make_shared<Texture2D>(common::texturePath + "cataphract.jpg");
-    planeSettings->material = emerald;
+    planeSettings->material = silver;
     auto plane = MeshFactory::makePlane(std::move(planeSettings));
     plane->setTransformation(glm::scale(glm::vec3(10.0f)) * glm::translate(-constants::Z_FIGHT_EPSILON * util::makeUnitVec3y()));
     App::get_instance().add_mesh(std::move(plane));

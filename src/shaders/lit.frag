@@ -67,7 +67,7 @@ void main()
 {
     vec3 tex = texture(u_colorTexture, FragIn.texCoords).rgb;
     
-    vec3 ambient = u_ambientLight.color.rgb * tex * u_material.ambient;
+    vec3 ambient = u_ambientLight.color.a * u_ambientLight.color.rgb * tex * u_material.ambient;
 
     float diffuseFactor = pow(max(0.0, dot(FragIn.normal, u_directionalLight.direction)), u_material.shininess);
     vec3 diffuse = u_directionalLight.color * diffuseFactor * tex * u_material.diffuse;
@@ -78,7 +78,8 @@ void main()
     vec3 specular = u_directionalLight.color * specularFactor * tex * u_material.specular;
 
     vec3 lighting = ambient + diffuse + specular;
-    fragOut = vec4(lighting, 1.0);
+    float gamma = 2.4;
+    fragOut = pow(vec4(lighting, 1.0), vec4(1.0 / gamma));
 }
 
 //------------------------------------------------------------------------

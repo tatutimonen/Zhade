@@ -39,6 +39,7 @@ public:
         std::shared_ptr<Texture2D> colorTexture       = std::shared_ptr<Texture2D>(Texture2D::makeDefault());
         glm::mat4 transformation                      = glm::mat4(1.0f);
         GLenum mode                                   = GL_TRIANGLES;
+        bool indexed                                  = true;
 
         Settings() = default;
     };
@@ -66,6 +67,7 @@ private:
     GLuint m_EBO = 0;
 
     std::unique_ptr<Settings> m_settings;
+    std::size_t m_nofVertices;
     std::size_t m_nofIndices;
 };
 

@@ -4,6 +4,7 @@
 #include "UniformBuffer.hpp"
 
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <algorithm>
 #include <memory>

@@ -19,10 +19,10 @@ void DirectionalLight::set(const Settings& settings) noexcept
     const auto shininess = m_settings.shininess;
     const auto& direction = m_settings.direction;
     const auto strength = m_settings.strength;
-    const void* data = std::vector<float>({
+    const float data[8] = {
         color.r, color.g, color.b, shininess,
         direction.x, direction.y, direction.z, strength
-    }).data();
+    };
     m_uniformBuffer.update(0, data, sizeof(Settings));
 }
 

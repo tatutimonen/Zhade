@@ -13,8 +13,7 @@ AmbientLight::AmbientLight(const glm::vec4& color, GLenum usage)
 void AmbientLight::set(const glm::vec4& color) noexcept
 {
     m_color = color;
-    const void* data = std::vector<float>({color.r, color.g, color.b, color.a}).data();
-    m_uniformBuffer.update(0, data, sizeof(glm::vec4));
+    m_uniformBuffer.update(0, glm::value_ptr(m_color), sizeof(glm::vec4));
 }
 
 //------------------------------------------------------------------------

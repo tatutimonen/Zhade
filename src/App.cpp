@@ -31,7 +31,9 @@ void App::init()
 
     // OpenGL
     glViewport(0, 0, window_width, window_height);
-    glClearColor(46/255.0f, 68/255.0f, 130/255.0f, 1.0f);
+    // CSM: 15.0f/255.0f, 46.0f/255.0f, 101.0f/255.0f, 1.0f
+    // Midnight Blue: 0.0f, 51.0f/255.0f, 102.0f/255.0f, 1.0f
+    glClearColor(15.0f/255.0f, 46.0f/255.0f, 101.0f/255.0f, 1.0f);
     glEnable(GL_DEPTH_TEST);
 }
 

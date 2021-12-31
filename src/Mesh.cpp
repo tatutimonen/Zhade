@@ -8,6 +8,7 @@ Mesh::Mesh(const std::vector<Vertex>& vertices,
     GLenum usage,
     GLenum mode)
     : m_settings{std::move(settings)},
+      m_nofVertices{vertices.size()},
       m_nofIndices{indices.size()}
 {
     glGenVertexArrays(1, &m_VAO);
@@ -27,7 +28,7 @@ Mesh::Mesh(const std::vector<Vertex>& vertices,
     glEnableVertexAttribArray(2);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size()*sizeof(GLuint), indices.data(), usage);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), usage);
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -55,8 +56,13 @@ void Mesh::render() const noexcept
     
     m_settings->renderStrategy->use();
     m_settings->colorTexture->bind();
+
     glBindVertexArray(m_VAO);
-    glDrawElements(m_settings->mode, m_nofIndices, GL_UNSIGNED_INT, nullptr);
+    if (m_settings->indexed)
+        glDrawElements(m_settings->mode, m_nofIndices, GL_UNSIGNED_INT, nullptr);
+    else
+        glDrawArrays(m_settings->mode, 0, m_nofVertices);
+        
     m_settings->colorTexture->unbind();
     m_settings->renderStrategy->unuse();
 }
