@@ -6,6 +6,7 @@ set(src_files
     App.cpp
     Camera.cpp
     DirectionalLight.cpp
+    Framebuffer.cpp
     Mesh.cpp
     MeshFactory.cpp
     Observer.cpp

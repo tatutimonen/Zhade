@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Framebuffer.hpp"
 #include "Texture.hpp"
 
 #include <stb_image.h>
@@ -9,7 +10,7 @@
 
 //------------------------------------------------------------------------
 
-class Texture2D final : Texture {
+class Texture2D final : public Texture {
 public:
     struct Settings : Texture::Settings {
         GLsizei height = 1;
@@ -28,11 +29,14 @@ public:
     ~Texture2D();
 
     virtual void setData(const void* data) override;
+    virtual inline const Settings& getSettings() override { return *m_settings; }
 
     virtual inline void bind() const noexcept override   { glBindTexture(GL_TEXTURE_2D, m_handle); }
     virtual inline void unbind() const noexcept override { glBindTexture(GL_TEXTURE_2D, 0); }
 
     static std::unique_ptr<Texture2D> makeDefault();
+
+    friend class Framebuffer;
 
 private:
     void setupTexture();

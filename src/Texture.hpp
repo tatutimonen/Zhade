@@ -30,6 +30,7 @@ public:
     virtual ~Texture() = default;
 
     virtual void setData(const void* data) = 0;
+    virtual const Settings& getSettings() = 0;
 
     virtual inline void bind() const = 0;
     virtual inline void unbind() const = 0;
