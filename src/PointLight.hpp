@@ -1,10 +1,10 @@
 #pragma once
 
-#include "constants.hpp"
 #include "Mesh.hpp"
 #include "ShaderProgram.hpp"
 #include "UniformBuffer.hpp"
 #include "UniformBufferStorage.hpp"
+#include "constants.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>

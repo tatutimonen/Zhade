@@ -1,20 +1,16 @@
 #pragma once
 
 #include "Shader.hpp"
-#include "Util.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
 
-#include <algorithm>
 #include <array>
-#include <functional>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <unordered_map>
-#include <utility>
 
 //------------------------------------------------------------------------
 

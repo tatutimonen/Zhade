@@ -11,20 +11,12 @@ Texture2D::Texture2D(const std::shared_ptr<Settings>& settings)
 //------------------------------------------------------------------------
 
 Texture2D::Texture2D(const std::string& filename)
+    : m_settings{std::make_shared<Settings>()}
 {
-    m_settings = std::make_shared<Settings>();
-    int channels = 0;
-    unsigned char* imageData = SOIL_load_image(filename.c_str(), &(m_settings->width), &(m_settings->height), &channels, SOIL_LOAD_AUTO);
-
-    if (channels == SOIL_LOAD_RGB)
-    {
-        m_settings->internalFormat = GL_RGB8;
-        m_settings->format = GL_RGB;
-    }
-    
+    uint8_t* imageData = stbi_load(filename.c_str(), &m_settings->width, &m_settings->height, nullptr, 4);
     setupTexture();
     setData(imageData);
-    SOIL_free_image_data(imageData);
+    stbi_image_free(imageData);
 }
 
 //------------------------------------------------------------------------
@@ -58,7 +50,7 @@ std::unique_ptr<Texture2D> Texture2D::makeDefault()
 {
     std::shared_ptr<Settings> settings = std::make_shared<Settings>(1, 1);
     std::unique_ptr<Texture2D> tex = std::make_unique<Texture2D>(settings);
-    GLuint data = 0xffffffff;
+    uint32_t data = 0xffffffff;
     tex->setData(&data);
     return tex;
 }

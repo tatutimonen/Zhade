@@ -1,10 +1,6 @@
 #pragma once
 
-#include "Common.hpp"
-#include "Util.hpp"
-
 #include <GL/glew.h>
-#include <SOIL.h>
 
 #include <map>
 #include <memory>

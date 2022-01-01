@@ -38,7 +38,6 @@ int main()
     // As described in http://devernay.free.fr/cours/opengl/materials.html
     auto ruby = std::make_shared<Mesh::Material>(
         Mesh::Material{
-            glm::vec3(0.0f),
             glm::vec3(0.1745f,   0.01175f,  0.01175f),
             glm::vec3(0.61424f,  0.04136f,  0.04136f),
             glm::vec3(0.727811f, 0.626959f, 0.626959f),
@@ -54,7 +53,6 @@ int main()
     // As described in http://devernay.free.fr/cours/opengl/materials.html
     auto silver = std::make_shared<Mesh::Material>(
         Mesh::Material{
-            glm::vec3(0.0f),
             glm::vec3(0.19225f),
             glm::vec3(0.50754f),
             glm::vec3(0.508273f),
@@ -62,7 +60,6 @@ int main()
         });
     auto emerald = std::make_shared<Mesh::Material>(
         Mesh::Material{
-            glm::vec3(0.0f),
             glm::vec3(0.0215f, 0.1745f, 0.0215f),
             glm::vec3(0.07568f, 0.61424f, 0.07568f),
             glm::vec3(0.633f, 0.727811f, 0.633f),
@@ -70,8 +67,8 @@ int main()
         });
     auto planeSettings = std::make_unique<Mesh::Settings>();
     planeSettings->renderStrategy = shaderProgram;
-    //planeSettings->colorTexture = std::make_shared<Texture2D>(common::texturePath + "cataphract.jpg");
-    planeSettings->material = silver;
+    planeSettings->colorTexture = std::make_shared<Texture2D>(common::texturePath + "cataphract.jpg");
+    //planeSettings->material = silver;
     auto plane = MeshFactory::makePlane(std::move(planeSettings));
     plane->setTransformation(glm::scale(glm::vec3(10.0f)) * glm::translate(-constants::Z_FIGHT_EPSILON * util::makeUnitVec3y()));
     App::get_instance().add_mesh(std::move(plane));

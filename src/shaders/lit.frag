@@ -29,7 +29,6 @@ in VERT_OUT {
 uniform sampler2D u_colorTexture;
 
 struct Material {
-    vec3 emission;
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
@@ -77,7 +76,7 @@ void main()
         * pow(max(0.0, dot(FragIn.normal, halfway)), u_directionalLight.shininess);
     vec3 specular = u_directionalLight.color * specularFactor * tex * u_material.specular;
 
-    vec3 lighting = ambient + diffuse + specular;
+    vec3 lighting = min(ambient + diffuse + specular, u_directionalLight.color.rgb);
     float gamma = 2.4;
     fragOut = pow(vec4(lighting, 1.0), vec4(1.0 / gamma));
 }

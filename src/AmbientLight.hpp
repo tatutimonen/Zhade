@@ -1,7 +1,7 @@
 #pragma once
 
-#include "constants.hpp"
 #include "UniformBuffer.hpp"
+#include "constants.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>

@@ -4,7 +4,6 @@
 #include "ShaderProgram.hpp"
 
 #include <memory>
-#include <memory_resource>
 
 //------------------------------------------------------------------------
 

@@ -1,11 +1,11 @@
 #pragma once
 
 #include "App.hpp"
-#include "constants.hpp"
 #include "Observer.hpp"
 #include "ShaderProgram.hpp"
 #include "Subject.hpp"
 #include "UniformBuffer.hpp"
+#include "constants.hpp"
 #include "util.hpp"
 
 #include <GLFW/glfw3.h>

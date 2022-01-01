@@ -80,7 +80,6 @@ void Mesh::pushMatrices() const noexcept
 
 void Mesh::pushMaterial() const noexcept
 {
-    m_settings->renderStrategy->setUniform<glm::vec3>("u_material.emission", glm::value_ptr(m_settings->material->emission));
     m_settings->renderStrategy->setUniform<glm::vec3>("u_material.ambient", glm::value_ptr(m_settings->material->ambient));
     m_settings->renderStrategy->setUniform<glm::vec3>("u_material.diffuse", glm::value_ptr(m_settings->material->diffuse));
     m_settings->renderStrategy->setUniform<glm::vec3>("u_material.specular", glm::value_ptr(m_settings->material->specular));

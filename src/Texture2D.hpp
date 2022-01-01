@@ -2,6 +2,11 @@
 
 #include "Texture.hpp"
 
+#include <stb_image.h>
+
+#include <cstdint>
+#include <string>
+
 //------------------------------------------------------------------------
 
 class Texture2D final : Texture {
