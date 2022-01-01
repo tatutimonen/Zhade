@@ -16,14 +16,13 @@ void DirectionalLight::set(const Settings& settings) noexcept
 {
     m_settings = settings;
     const auto& color = m_settings.color;
-    const auto shininess = m_settings.shininess;
     const auto& direction = m_settings.direction;
     const auto strength = m_settings.strength;
-    const float data[8] = {
-        color.r, color.g, color.b, shininess,
-        direction.x, direction.y, direction.z, strength
+    const float data[7] = {
+        color.r, color.g, color.b, strength,
+        direction.x, direction.y, direction.z
     };
-    m_uniformBuffer.update(0, data, sizeof(Settings));
+    m_uniformBuffer.update(0, data, sizeof(data));
 }
 
 //------------------------------------------------------------------------

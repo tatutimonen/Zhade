@@ -42,9 +42,8 @@ layout (binding = 1, std140) uniform AmbientLight {
 
 layout (binding = 2, std140) uniform DirectionalLight {
     vec3 color;
-    float shininess;
-    vec3 direction;
     float strength;
+    vec3 direction;
 } u_directionalLight;
 
 struct PointLight {
@@ -64,7 +63,8 @@ layout(binding = 3, std140) uniform PointLights {
 
 void main()
 {
-    vec3 tex = texture(u_colorTexture, FragIn.texCoords).rgb;
+    float gamma = 2.4;
+    vec3 tex = pow(texture(u_colorTexture, FragIn.texCoords).rgb, vec3(gamma));
     
     vec3 ambient = u_ambientLight.color.a * u_ambientLight.color.rgb * tex * u_material.ambient;
 
@@ -72,12 +72,10 @@ void main()
     vec3 diffuse = u_directionalLight.color * diffuseFactor * tex * u_material.diffuse;
     
     vec3 halfway = normalize(FragIn.cameraDirection + u_directionalLight.direction);
-    float specularFactor = u_directionalLight.strength \
-        * pow(max(0.0, dot(FragIn.normal, halfway)), u_directionalLight.shininess);
+    float specularFactor = u_directionalLight.strength * max(0.0, dot(FragIn.normal, halfway));
     vec3 specular = u_directionalLight.color * specularFactor * tex * u_material.specular;
 
     vec3 lighting = min(ambient + diffuse + specular, u_directionalLight.color.rgb);
-    float gamma = 2.4;
     fragOut = pow(vec4(lighting, 1.0), vec4(1.0 / gamma));
 }
 

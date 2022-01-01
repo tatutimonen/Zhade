@@ -23,8 +23,7 @@ Texture2D::Texture2D(const std::string& filename)
 
 Texture2D::~Texture2D()
 {
-    if (glIsTexture(m_handle))
-        glDeleteTextures(1, &m_handle);
+    glDeleteTextures(1, &m_handle);
 }
 
 //------------------------------------------------------------------------
@@ -32,14 +31,8 @@ Texture2D::~Texture2D()
 void Texture2D::setData(const void* data)
 {
     this->bind();
-    glTexSubImage2D(
-        GL_TEXTURE_2D,
-        0, 0, 0,
-        m_settings->width,
-        m_settings->height,
-        m_settings->format,
-        GL_UNSIGNED_BYTE,
-        data);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_settings->width, m_settings->height,
+        m_settings->format, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
     this->unbind();
 }
