@@ -46,6 +46,7 @@ int main()
     auto cubeSettings = std::make_unique<Mesh::Settings>();
     cubeSettings->renderStrategy = shaderProgram;
     cubeSettings->material = ruby;
+    cubeSettings->colorTexture = std::make_shared<Texture2D>(common::texturePath + "cataphract.jpg");
     auto cube = MeshFactory::makeCube(std::move(cubeSettings));
     cube->setTransformation(glm::scale(glm::vec3(2.0f)) * glm::translate(util::makeUnitVec3y()));
     App::get_instance().add_mesh(std::move(cube));

@@ -18,6 +18,7 @@ void App::init()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    glfwWindowHint(GLFW_SAMPLES, 4);
 
     m_window = glfwCreateWindow(window_width, window_height, name.c_str(), nullptr, nullptr);
     glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -35,6 +36,7 @@ void App::init()
     // Midnight Blue: 0.0f, 51.0f/255.0f, 102.0f/255.0f, 1.0f
     glClearColor(15.0f/255.0f, 46.0f/255.0f, 101.0f/255.0f, 1.0f);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_MULTISAMPLE);
 }
 
 //------------------------------------------------------------------------

@@ -13,6 +13,7 @@ Texture2D::Texture2D(const std::shared_ptr<Settings>& settings)
 Texture2D::Texture2D(const std::string& filename)
     : m_settings{std::make_shared<Settings>()}
 {
+    stbi_set_flip_vertically_on_load(1);
     uint8_t* imageData = stbi_load(filename.c_str(), &m_settings->width, &m_settings->height, nullptr, 4);
     setupTexture();
     setData(imageData);
