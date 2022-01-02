@@ -20,7 +20,8 @@ public:
         const Shader& geometryShader = ShaderNull());
     ~ShaderProgram();
 
-    inline uint32_t getHandle() const noexcept { return m_handle; }
+    inline uint32_t getHandle() const noexcept    { return m_handle; }
+    inline int32_t getLinkStatus() const noexcept { return m_linkStatus; }
     int32_t getAttribLocation(const std::string& name) noexcept;
     int32_t getUniformLocation(const std::string& name) noexcept;
 
