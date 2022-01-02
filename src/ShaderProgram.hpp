@@ -6,7 +6,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
 
-#include <array>
+#include <cstdint>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -16,48 +16,28 @@
 
 class ShaderProgram {
 public:
-    struct UseGuard {
-        UseGuard(const ShaderProgram& shaderProgram)
-            : shaderProgram{shaderProgram}
-        {
-            shaderProgram.use();
-        }
-        
-        ~UseGuard()
-        {
-            shaderProgram.unuse();
-        }
-
-        const ShaderProgram& shaderProgram;
-    };
-
-    ShaderProgram(const std::shared_ptr<Shader>& vertexShader = std::make_shared<Shader>(GL_VERTEX_SHADER),
-        const std::shared_ptr<Shader>& fragmentShader = std::make_shared<Shader>(GL_FRAGMENT_SHADER),
-        const std::shared_ptr<Shader>& geometryShader = nullptr);
+    ShaderProgram(const Shader& vertexShader, const Shader& fragmentShader,
+        const Shader& geometryShader = ShaderNull());
     ~ShaderProgram();
 
-    template<typename T>
-    void setUniform(const std::string& name, const GLvoid* data) noexcept;
-
-    inline GLuint getHandle() const noexcept { return m_handle; }
-    GLint getAttribLocation(const std::string& name) noexcept;
-    GLint getUniformLocation(const std::string& name) noexcept;
+    inline uint32_t getHandle() const noexcept { return m_handle; }
+    int32_t getAttribLocation(const std::string& name) noexcept;
+    int32_t getUniformLocation(const std::string& name) noexcept;
 
     inline void use() const noexcept   { glUseProgram(m_handle); }
     inline void unuse() const noexcept { glUseProgram(0); }
 
-    void attachShader(const std::shared_ptr<Shader>& shader);
-    void detachShader(const std::shared_ptr<Shader>& shader);
-    void detachShaders();
-    void link() const;
-
-    inline bool operator<(const ShaderProgram& other) const noexcept { return m_handle < other.getHandle(); }
+    template<typename T>
+    void setUniform(const std::string& name, const void* data) noexcept;
 
 private:    
-    GLuint m_handle;
-    std::array<std::shared_ptr<Shader>, Shader::N> m_shaders = { nullptr };
-    std::unordered_map<std::string, GLint> m_attribLocationCache;
-    std::unordered_map<std::string, GLint> m_uniformLocationCache;
+    void link() noexcept;
+    void detachShaders() const noexcept;
+
+    uint32_t m_handle;
+    int32_t m_linkStatus;
+    std::unordered_map<std::string, int32_t> m_attribLocationCache;
+    std::unordered_map<std::string, int32_t> m_uniformLocationCache;
 };
 
 //------------------------------------------------------------------------

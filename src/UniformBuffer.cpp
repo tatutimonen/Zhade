@@ -2,11 +2,8 @@
 
 //------------------------------------------------------------------------
 
-UniformBuffer::UniformBuffer(const std::string& blockName,
-    GLuint binding,
-    GLsizeiptr blockSize,
-    uint32_t extent,
-    GLenum usage)
+UniformBuffer::UniformBuffer(const std::string& blockName, uint32_t binding, std::ptrdiff_t blockSize,
+    uint32_t extent, uint32_t usage)
     : m_blockSize{blockSize}
 {
     glGenBuffers(1, &m_handle);
@@ -25,7 +22,7 @@ UniformBuffer::~UniformBuffer()
 
 //------------------------------------------------------------------------
 
-void UniformBuffer::update(std::size_t offset, const void* data, std::size_t size, std::size_t blockOffset) const noexcept
+void UniformBuffer::update(std::ptrdiff_t offset, const void* data, std::size_t size, std::ptrdiff_t blockOffset) const noexcept
 {
     glBindBuffer(GL_UNIFORM_BUFFER, m_handle);
     std::byte* buffer = reinterpret_cast<std::byte*>(glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY));

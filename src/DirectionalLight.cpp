@@ -18,7 +18,7 @@ void DirectionalLight::set(const Settings& settings) noexcept
     const auto& color = m_settings.color;
     const auto& direction = m_settings.direction;
     const auto strength = m_settings.strength;
-    const float data[7] = {
+    const float data[] = {
         color.r, color.g, color.b, strength,
         direction.x, direction.y, direction.z
     };

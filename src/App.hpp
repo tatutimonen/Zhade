@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Mesh.hpp"
-#include "Util.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

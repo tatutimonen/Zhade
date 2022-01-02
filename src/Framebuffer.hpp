@@ -23,12 +23,12 @@ public:
     void bind(uint32_t target = GL_FRAMEBUFFER) const noexcept;
     void unbind(uint32_t target = GL_FRAMEBUFFER) const noexcept;
 
-    void attachTexture2D(const std::shared_ptr<Texture2D>& texture, uint32_t attachment) noexcept;
+    void attachTexture2D(std::shared_ptr<const Texture2D> texture, uint32_t attachment) noexcept;
 
 private:
     uint32_t m_handle;
     glm::uvec2 m_dimensions;
-    std::vector<std::shared_ptr<Texture>> m_textureAttachments;
+    std::vector<std::shared_ptr<const Texture>> m_textureAttachments;
     std::unordered_set<uint32_t> m_textureAttachmentMemo;
 };
 

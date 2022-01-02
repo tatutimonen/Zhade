@@ -7,10 +7,10 @@ std::unique_ptr<Mesh> MeshFactory::makeCube(std::unique_ptr<Mesh::Settings> sett
     static const std::vector<Mesh::Vertex> vertices = {
         // Bottom.
         { glm::vec3( 0.5f,  0.0f,  0.5f), -util::makeUnitVec3y(), glm::vec2(1.0f, 1.0f) },
-        { glm::vec3( 0.5f,  0.0f, -0.5f), -util::makeUnitVec3y(), glm::vec2(1.0f, 0.0f) },
-        { glm::vec3(-0.5f,  0.0f, -0.5f), -util::makeUnitVec3y(), glm::vec2(0.0f, 0.0f) },
-        { glm::vec3(-0.5f,  0.0f, -0.5f), -util::makeUnitVec3y(), glm::vec2(0.0f, 0.0f) },
         { glm::vec3(-0.5f,  0.0f,  0.5f), -util::makeUnitVec3y(), glm::vec2(0.0f, 1.0f) },
+        { glm::vec3(-0.5f,  0.0f, -0.5f), -util::makeUnitVec3y(), glm::vec2(0.0f, 0.0f) },
+        { glm::vec3(-0.5f,  0.0f, -0.5f), -util::makeUnitVec3y(), glm::vec2(0.0f, 0.0f) },
+        { glm::vec3( 0.5f,  0.0f, -0.5f), -util::makeUnitVec3y(), glm::vec2(1.0f, 0.0f) },
         { glm::vec3( 0.5f,  0.0f,  0.5f), -util::makeUnitVec3y(), glm::vec2(1.0f, 1.0f) },
         // Top.
         { glm::vec3( 0.5f,  1.0f,  0.5f),  util::makeUnitVec3y(), glm::vec2(1.0f, 0.0f) },

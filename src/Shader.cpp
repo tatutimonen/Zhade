@@ -2,32 +2,15 @@
 
 //------------------------------------------------------------------------
 
-const std::map<GLint, Shader::ShaderType> Shader::s_glShaderToCustomShader = {
-    { GL_VERTEX_SHADER, VERTEX_SHADER },
-    { GL_GEOMETRY_SHADER, GEOMETRY_SHADER },
-    { GL_FRAGMENT_SHADER, FRAGMENT_SHADER }
-};
-
-//------------------------------------------------------------------------
-
-const std::map<GLint, std::string> Shader::s_glShaderToFileExtension = {
-    { GL_VERTEX_SHADER, ".vert" },
-    { GL_FRAGMENT_SHADER, ".frag" }
-};
-
-//------------------------------------------------------------------------
-
-Shader::Shader(GLint glShaderType, const std::string& filename)
+ShaderImpl::ShaderImpl(uint32_t glShaderType, const std::string& filename)
 {
     try
     {
-        m_shaderType = s_glShaderToCustomShader.at(glShaderType);
-        const std::string filenameWithRelativePath =
-            common::shaderPath + (filename != "default" ? filename : filename + s_glShaderToFileExtension.at(glShaderType));
+        const std::string filenameWithRelativePath = common::shaderPath + filename;
         parseShaderFile(filenameWithRelativePath);
         m_handle = glCreateShader(glShaderType);
         // glShaderSource needs an lvalue.
-        const GLchar* shaderSourcePtr = m_shaderSource.c_str();
+        const char* shaderSourcePtr = m_shaderSource.c_str();
         glShaderSource(m_handle, 1, &shaderSourcePtr, nullptr);
         compile();
     }
@@ -50,14 +33,14 @@ Shader::Shader(GLint glShaderType, const std::string& filename)
 
 //------------------------------------------------------------------------
 
-Shader::~Shader()
+ShaderImpl::~ShaderImpl()
 {
     glDeleteShader(m_handle);
 }
 
 //------------------------------------------------------------------------
 
-void Shader::parseShaderFile(const std::string& filename)
+void ShaderImpl::parseShaderFile(const std::string& filename)
 {
     std::ifstream shaderFile;
     shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -71,16 +54,16 @@ void Shader::parseShaderFile(const std::string& filename)
 
 //------------------------------------------------------------------------
 
-void Shader::compile() const
+void ShaderImpl::compile() const
 {
     glCompileShader(m_handle);
 
-    GLint status;
+    int32_t status;
     glGetShaderiv(m_handle, GL_COMPILE_STATUS, &status);
 
     if (status == GL_FALSE)
     {
-        GLint logLength;
+        int32_t logLength;
         glGetShaderiv(m_handle, GL_INFO_LOG_LENGTH, &logLength);
         std::string infoLog;
         infoLog.resize(static_cast<std::string::size_type>(logLength - 1));

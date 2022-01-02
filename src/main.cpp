@@ -28,8 +28,8 @@ int main()
 {
     App::get_instance().init();
 
-    auto vshader = std::make_shared<Shader>(GL_VERTEX_SHADER, "lit.vert");
-    auto fshader = std::make_shared<Shader>(GL_FRAGMENT_SHADER, "lit.frag");
+    auto vshader = ShaderImpl(GL_VERTEX_SHADER, "lit.vert");
+    auto fshader = ShaderImpl(GL_FRAGMENT_SHADER, "lit.frag");
     auto shaderProgram = std::make_shared<ShaderProgram>(vshader, fshader);
 
     auto cameraSettings = std::make_unique<PerspectiveCamera::Settings>();
@@ -46,7 +46,7 @@ int main()
     auto cubeSettings = std::make_unique<Mesh::Settings>();
     cubeSettings->renderStrategy = shaderProgram;
     cubeSettings->material = ruby;
-    cubeSettings->colorTexture = std::make_shared<Texture2D>(common::texturePath + "cataphract.jpg");
+    //cubeSettings->colorTexture = std::make_shared<Texture2D>(common::texturePath + "cataphract.jpg");
     auto cube = MeshFactory::makeCube(std::move(cubeSettings));
     cube->setTransformation(glm::scale(glm::vec3(2.0f)) * glm::translate(util::makeUnitVec3y()));
     App::get_instance().add_mesh(std::move(cube));
@@ -69,7 +69,7 @@ int main()
     auto planeSettings = std::make_unique<Mesh::Settings>();
     planeSettings->renderStrategy = shaderProgram;
     planeSettings->colorTexture = std::make_shared<Texture2D>(common::texturePath + "cataphract.jpg");
-    //planeSettings->material = silver;
+    //planeSettings->material = emerald;
     auto plane = MeshFactory::makePlane(std::move(planeSettings));
     plane->setTransformation(glm::scale(glm::vec3(10.0f)) * glm::translate(-constants::Z_FIGHT_EPSILON * util::makeUnitVec3y()));
     App::get_instance().add_mesh(std::move(plane));

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "constants.hpp"
 #include "ShaderProgram.hpp"
 #include "Texture2D.hpp"
+#include "constants.hpp"
 #include "util.hpp"
 
 #include <GL/glew.h>
@@ -33,7 +33,7 @@ public:
         Material() = default;
     };
     struct Settings {
-        std::shared_ptr<ShaderProgram> renderStrategy = std::make_shared<ShaderProgram>();
+        std::shared_ptr<ShaderProgram> renderStrategy = nullptr;
         std::shared_ptr<Material> material            = std::make_shared<Material>();
         std::shared_ptr<Texture2D> colorTexture       = std::shared_ptr<Texture2D>(Texture2D::makeDefault());
         glm::mat4 transformation                      = glm::mat4(1.0f);

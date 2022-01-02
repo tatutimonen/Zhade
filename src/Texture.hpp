@@ -2,6 +2,7 @@
 
 #include <GL/glew.h>
 
+#include <cstdint>
 #include <map>
 #include <memory>
 
@@ -10,16 +11,16 @@
 class Texture {
 public:
     struct Settings {
-        GLsizei levels = 1;
-        GLenum internalFormat = GL_RGBA8;
-        GLsizei width = 1;
-        GLint border = 0;
-        GLenum format = GL_RGBA;
-        GLenum type = GL_UNSIGNED_BYTE;
+        int32_t levels = 1;
+        uint32_t internalFormat = GL_RGBA8;
+        int32_t width = 1;
+        int32_t border = 0;
+        uint32_t format = GL_RGBA;
+        uint32_t type = GL_UNSIGNED_BYTE;
 
-        GLenum minFilter = GL_LINEAR_MIPMAP_LINEAR;
-        GLenum magFilter = GL_LINEAR;
-        GLenum wrapS = GL_CLAMP_TO_EDGE;
+        uint32_t minFilter = GL_LINEAR_MIPMAP_LINEAR;
+        uint32_t magFilter = GL_LINEAR;
+        uint32_t wrapS = GL_CLAMP_TO_EDGE;
 
         Settings() = default;
         Settings(GLsizei width)
@@ -27,13 +28,16 @@ public:
         {}
     };
 
+    Texture() = default;
     virtual ~Texture() = default;
 
-    virtual void setData(const void* data) = 0;
-    virtual const Settings& getSettings() = 0;
+    virtual void setData(const void* data) noexcept = 0;
+    virtual void setParameteri(uint32_t pname, int32_t param) const noexcept = 0;
+    virtual const Settings& getSettings() const noexcept = 0;
+    virtual uint32_t getHandle() const noexcept = 0;
 
-    virtual inline void bind() const = 0;
-    virtual inline void unbind() const = 0;
+    virtual inline void bind() const noexcept = 0;
+    virtual inline void unbind() const noexcept = 0;
 };
 
 //------------------------------------------------------------------------
