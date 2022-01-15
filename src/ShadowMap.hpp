@@ -11,10 +11,10 @@
 
 class ShadowMap {
 public:
-    ShadowMap(const glm::ivec2& dimensions = glm::ivec2(2048, 2048));
+    explicit ShadowMap(const glm::uvec2& dimensions = glm::uvec2(2048, 2048));
 
 private:
-    glm::ivec2 m_dimensions;
+    glm::uvec2 m_dimensions;
     Framebuffer m_framebuffer;
     std::shared_ptr<Texture2D> m_depthTexture;
 };

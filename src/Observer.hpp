@@ -16,8 +16,6 @@ public:
 namespace observed
 {
 
-using CameraCenter = glm::vec3;
-
 }  // namespace observed
 
 //------------------------------------------------------------------------

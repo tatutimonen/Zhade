@@ -2,7 +2,7 @@
 
 //------------------------------------------------------------------------
 
-ShadowMap::ShadowMap(const glm::ivec2& dimensions)
+ShadowMap::ShadowMap(const glm::uvec2& dimensions)
     : m_dimensions{dimensions},
       m_framebuffer{Framebuffer(m_dimensions)}
 {

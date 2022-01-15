@@ -23,9 +23,13 @@ public:
         {}
     };
 
-    Texture2D(const std::string& filename);
-    Texture2D(const std::shared_ptr<Settings>& settings);
+    explicit Texture2D(const std::string& filename);
+    explicit Texture2D(const std::shared_ptr<Settings>& settings);
     ~Texture2D();
+    Texture2D(const Texture2D&) = default;
+    Texture2D(Texture2D&&) = default;
+    Texture2D& operator=(const Texture2D&) = default;
+    Texture2D& operator=(Texture2D&&) = default;
 
     virtual void setData(const void* data) noexcept override;
     virtual void setParameteri(uint32_t pname, int32_t param) const noexcept override;
@@ -38,9 +42,9 @@ public:
     static std::unique_ptr<Texture2D> makeDefault() noexcept;
 
 private:
-    void setupTexture() noexcept;
+    void setupTexture() const noexcept;
 
-    uint32_t m_handle;
+    mutable uint32_t m_handle;
     std::shared_ptr<Settings> m_settings;
 };
 

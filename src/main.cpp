@@ -35,43 +35,32 @@ int main()
     auto cameraSettings = std::make_unique<PerspectiveCamera::Settings>();
     auto camera = PerspectiveCamera(std::move(cameraSettings));
 
+    auto cubeSettings = Mesh::Settings();
     // As described in http://devernay.free.fr/cours/opengl/materials.html
     auto ruby = std::make_shared<Mesh::Material>(
         Mesh::Material{
             glm::vec3(0.1745f,   0.01175f,  0.01175f),
             glm::vec3(0.61424f,  0.04136f,  0.04136f),
             glm::vec3(0.727811f, 0.626959f, 0.626959f),
-            0.6f * 128.0f
+            0.6f
         });
-    auto cubeSettings = std::make_unique<Mesh::Settings>();
-    cubeSettings->renderStrategy = shaderProgram;
-    cubeSettings->material = ruby;
-    //cubeSettings->colorTexture = std::make_shared<Texture2D>(common::texturePath + "cataphract.jpg");
-    auto cube = MeshFactory::makeCube(std::move(cubeSettings));
-    cube->setTransformation(glm::scale(glm::vec3(2.0f)) * glm::translate(util::makeUnitVec3y()));
+    cubeSettings.material = ruby;
+    auto cube = MeshFactory::makeCube(cubeSettings);
+    cube->setModelMatrix(glm::scale(glm::vec3(2.0f)) * glm::translate(util::makeUnitVec3y()));
     App::get_instance().add_mesh(std::move(cube));
 
+    auto planeSettings = Mesh::Settings();
     // As described in http://devernay.free.fr/cours/opengl/materials.html
     auto silver = std::make_shared<Mesh::Material>(
         Mesh::Material{
             glm::vec3(0.19225f),
             glm::vec3(0.50754f),
             glm::vec3(0.508273f),
-            0.4f * 128.0f
+            0.4f
         });
-    auto emerald = std::make_shared<Mesh::Material>(
-        Mesh::Material{
-            glm::vec3(0.0215f, 0.1745f, 0.0215f),
-            glm::vec3(0.07568f, 0.61424f, 0.07568f),
-            glm::vec3(0.633f, 0.727811f, 0.633f),
-            0.6f * 128.0f
-        });
-    auto planeSettings = std::make_unique<Mesh::Settings>();
-    planeSettings->renderStrategy = shaderProgram;
-    planeSettings->colorTexture = std::make_shared<Texture2D>(common::texturePath + "cataphract.jpg");
-    //planeSettings->material = emerald;
-    auto plane = MeshFactory::makePlane(std::move(planeSettings));
-    plane->setTransformation(glm::scale(glm::vec3(10.0f)) * glm::translate(-constants::Z_FIGHT_EPSILON * util::makeUnitVec3y()));
+    planeSettings.material = silver;
+    auto plane = MeshFactory::makePlane(planeSettings);
+    plane->setModelMatrix(glm::scale(glm::vec3(10.0f)) * glm::translate(-constants::Z_FIGHT_EPSILON * util::makeUnitVec3y()));
     App::get_instance().add_mesh(std::move(plane));
 
     auto ambientLight = AmbientLight();
@@ -83,6 +72,13 @@ int main()
         sizeof(PointLight::Settings)
     );
     auto pointLight = PointLight(UniformBufferStorage(pointLightsUniformBuffer, 0));
+
+    std::cout << glGetString(GL_VENDOR) << "\n";
+    std::cout << glGetString(GL_RENDERER) << "\n";
+    std::cout << glGetString(GL_VERSION) << "\n";
+    std::cout << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+
+    shaderProgram->use();
 
     while (!glfwWindowShouldClose(App::get_instance().get_gl_ctx()))
     {

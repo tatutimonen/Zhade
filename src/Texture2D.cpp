@@ -31,19 +31,19 @@ Texture2D::~Texture2D()
 
 void Texture2D::setData(const void* data) noexcept
 {
-    this->bind();
+    bind();
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_settings->width, m_settings->height, m_settings->format, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
-    this->unbind();
+    unbind();
 }
 
 //------------------------------------------------------------------------
 
 void Texture2D::setParameteri(uint32_t pname, int32_t param) const noexcept
 {
-    this->bind();
+    bind();
     glTexParameteri(GL_TEXTURE_2D, pname, param);
-    this->unbind();
+    unbind();
 }
 
 //------------------------------------------------------------------------
@@ -59,16 +59,16 @@ std::unique_ptr<Texture2D> Texture2D::makeDefault() noexcept
 
 //------------------------------------------------------------------------
 
-void Texture2D::setupTexture() noexcept
+void Texture2D::setupTexture() const noexcept
 {
     glGenTextures(1, &m_handle);
-    this->bind();
+    bind();
     glTexStorage2D(GL_TEXTURE_2D, m_settings->levels, m_settings->internalFormat, m_settings->width, m_settings->height);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, m_settings->wrapS);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, m_settings->wrapT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_settings->minFilter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_settings->magFilter);
-    this->unbind();
+    unbind();
 }
 
 //------------------------------------------------------------------------

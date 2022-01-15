@@ -53,7 +53,7 @@ public:
     static constexpr float s_cameraBaseSpeed = 5.0f;
 
 protected:
-    Camera(std::unique_ptr<Settings> settings);
+    explicit Camera(std::unique_ptr<Settings> settings);
     bool move();
     bool rotate();
 

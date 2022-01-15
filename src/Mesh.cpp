@@ -2,88 +2,53 @@
 
 //------------------------------------------------------------------------
 
-Mesh::Mesh(const std::vector<Vertex>& vertices,
-    const std::vector<GLuint>& indices,
-    std::unique_ptr<Settings> settings,
-    GLenum usage,
-    GLenum mode)
-    : m_settings{std::move(settings)},
+Mesh::Mesh(const std::vector<Vertex>& vertices, std::shared_ptr<const VertexArray> vertexArray,
+    const Settings& settings, const std::vector<uint32_t>& indices, uint32_t usage)
+    : m_settings{settings},
       m_nofVertices{vertices.size()},
-      m_nofIndices{indices.size()}
+      m_vertexBuffer{VertexBuffer(sizeof(Vertex) * vertices.size(), usage, vertices.data())},
+      zAvg{computeAverageZ(vertices)}
 {
-    glGenVertexArrays(1, &m_vao);
-    glGenBuffers(1, &m_vbo);
-    glGenBuffers(1, &m_ebo);
+    // Compute AABB...
+}
 
-    glBindVertexArray(m_vao);
+//------------------------------------------------------------------------
+
+void Mesh::render(bool colors) const noexcept
+{
+    uploadMatrices();
+    if (colors)
+        uploadMaterial();
     
-    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), usage);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const GLvoid*>(offsetof(Vertex, position)));
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const GLvoid*>(offsetof(Vertex, normal)));
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const GLvoid*>(offsetof(Vertex, texCoords)));
-    glEnableVertexAttribArray(2);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), usage);
-
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-}
-
-//------------------------------------------------------------------------
-
-Mesh::~Mesh()
-{
-    if (glIsVertexArray(m_vao) != GL_FALSE)
-    {
-        glDeleteVertexArrays(1, &m_vao);
-        glDeleteBuffers(1, &m_vbo);
-        glDeleteBuffers(1, &m_ebo);
-    }
-}
-
-//------------------------------------------------------------------------
-
-void Mesh::render() const noexcept
-{
-    pushMatrices();
-    pushMaterial();
+    m_settings.colorTexture->bind();
     
-    m_settings->renderStrategy->use();
-    m_settings->colorTexture->bind();
-
-    glBindVertexArray(m_vao);
-    if (m_settings->indexed)
-        glDrawElements(m_settings->mode, m_nofIndices, GL_UNSIGNED_INT, nullptr);
-    else
-        glDrawArrays(m_settings->mode, 0, m_nofVertices);
-        
-    m_settings->colorTexture->unbind();
-    m_settings->renderStrategy->unuse();
+    m_vertexArray->bind();
+    m_vertexBuffer.bind(sizeof(Vertex));
+    glDrawArrays(m_settings.mode, 0, m_nofVertices);
 }
 
 //------------------------------------------------------------------------
 
-void Mesh::pushMatrices() const noexcept
+void Mesh::uploadMatrices() const noexcept
 {
-    const auto& M = m_settings->transformation;
-    m_settings->renderStrategy->setUniform<glm::mat4>("u_M", glm::value_ptr(M));
-    m_settings->renderStrategy->setUniform<glm::mat4>("u_N", glm::value_ptr(glm::inverseTranspose(M)));
+    m_settings.uboMatrices->update(0, reinterpret_cast<const void*>(offsetof(Settings, M)), 2 * sizeof(glm::mat4));
 }
 
 //------------------------------------------------------------------------
 
-void Mesh::pushMaterial() const noexcept
+void Mesh::uploadMaterial() const noexcept
 {
-    m_settings->renderStrategy->setUniform<glm::vec3>("u_material.ambient", glm::value_ptr(m_settings->material->ambient));
-    m_settings->renderStrategy->setUniform<glm::vec3>("u_material.diffuse", glm::value_ptr(m_settings->material->diffuse));
-    m_settings->renderStrategy->setUniform<glm::vec3>("u_material.specular", glm::value_ptr(m_settings->material->specular));
-    m_settings->renderStrategy->setUniform<GLfloat>("u_material.shininess", &m_settings->material->shininess);
+    m_settings.uboMaterial->update(0, m_settings.material.get(), sizeof(Material));
+}
+
+//------------------------------------------------------------------------
+
+float Mesh::computeAverageZ(const std::vector<Vertex>& vertices)
+{
+    auto result = 0.0f;
+    for (const auto& vertex : vertices)
+        result += vertex.position.z;
+    return result / vertices.size();
 }
 
 //------------------------------------------------------------------------

@@ -4,11 +4,9 @@
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
-#include <glm/gtx/string_cast.hpp>
 
 #include <cstdint>
 #include <iostream>
-#include <memory>
 #include <string>
 #include <unordered_map>
 
@@ -22,23 +20,21 @@ public:
 
     inline uint32_t getHandle() const noexcept    { return m_handle; }
     inline int32_t getLinkStatus() const noexcept { return m_linkStatus; }
-    int32_t getAttribLocation(const std::string& name) noexcept;
-    int32_t getUniformLocation(const std::string& name) noexcept;
+    int32_t getUniformLocation(const std::string& name) const noexcept;
 
     inline void use() const noexcept   { glUseProgram(m_handle); }
     inline void unuse() const noexcept { glUseProgram(0); }
 
     template<typename T>
-    void setUniform(const std::string& name, const void* data) noexcept;
+    void setUniform(const std::string& name, const void* data) const noexcept;
 
 private:    
-    void link() noexcept;
+    void link() const noexcept;
     void detachShaders() const noexcept;
 
     uint32_t m_handle;
-    int32_t m_linkStatus;
-    std::unordered_map<std::string, int32_t> m_attribLocationCache;
-    std::unordered_map<std::string, int32_t> m_uniformLocationCache;
+    mutable int32_t m_linkStatus;
+    mutable std::unordered_map<std::string, int32_t> m_uniformLocationCache;
 };
 
 //------------------------------------------------------------------------

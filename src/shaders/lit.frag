@@ -1,13 +1,13 @@
 #version 460 core
 
 //------------------------------------------------------------------------
-// Pre-compile definitions.
+// Pre-compile definitions and constants.
 
 #pragma optionNV(fastmath on)
 #pragma optionNV(inline all)
 #pragma optionNV(unroll all)
 
-#define MAX_POINT_LIGHTS 4
+const int maxPointLights = 4;
 
 //------------------------------------------------------------------------
 // Outputs.
@@ -20,7 +20,7 @@ layout (location = 0) out vec4 fragOut;
 in VERT_OUT {
     vec2 texCoords;
     vec3 normal;
-    vec3 cameraDirection;
+    vec3 viewDir;
 } FragIn;
 
 //------------------------------------------------------------------------
@@ -36,11 +36,11 @@ struct Material {
 };
 uniform Material u_material;
 
-layout (binding = 1, std140) uniform AmbientLight {
+layout (binding = 2, std140) uniform AmbientLight {
     vec4 color;
 } u_ambientLight;
 
-layout (binding = 2, std140) uniform DirectionalLight {
+layout (binding = 3, std140) uniform DirectionalLight {
     vec3 color;
     float strength;
     vec3 direction;
@@ -55,28 +55,33 @@ struct PointLight {
     float attenuationLinear;
     float attenuationQuadratic;
 };
-layout(binding = 3, std140) uniform PointLights {
-    PointLight u_pointLights[MAX_POINT_LIGHTS];
+layout(binding = 4, std140) uniform PointLights {
+    PointLight u_pointLights[maxPointLights];
 };
 
 //------------------------------------------------------------------------
 
 void main()
 {
-    float gamma = 2.4;
+    float gamma = 2.2;
     vec3 tex = pow(texture(u_colorTexture, FragIn.texCoords).rgb, vec3(gamma));
-    
-    vec3 ambient = u_ambientLight.color.a * u_ambientLight.color.rgb * tex * u_material.ambient;
 
-    float diffuseFactor = pow(max(0.0, dot(FragIn.normal, u_directionalLight.direction)), u_material.shininess);
-    vec3 diffuse = u_directionalLight.color * diffuseFactor * tex * u_material.diffuse;
-    
-    vec3 halfway = normalize(FragIn.cameraDirection + u_directionalLight.direction);
-    float specularFactor = u_directionalLight.strength * max(0.0, dot(FragIn.normal, halfway));
-    vec3 specular = u_directionalLight.color * specularFactor * tex * u_material.specular;
+    float ambientStrength = u_ambientLight.color.a;
+    vec3 ambient = tex * u_material.ambient * ambientStrength * u_ambientLight.color.rgb;
 
-    vec3 lighting = min(ambient + diffuse + specular, u_directionalLight.color.rgb);
-    fragOut = pow(vec4(lighting, 1.0), vec4(1.0 / gamma));
+    float lambertian = max(dot(FragIn.normal, u_directionalLight.direction), 0.0);
+    vec3 diffuse =  tex * u_material.diffuse * lambertian;
+    
+    vec3 specular = vec3(0.0);
+    if (lambertian > 0.0)
+    {
+        vec3 halfway = normalize(FragIn.viewDir + u_directionalLight.direction);
+        float specularFactor = pow(max(dot(FragIn.normal, halfway), 0.0), u_material.shininess);
+        specular = tex * u_material.specular * specularFactor;
+    }
+
+    vec3 color = ambient + (diffuse + specular) * u_directionalLight.strength * u_directionalLight.color;
+    fragOut = pow(vec4(color, 1.0), vec4(1.0 / gamma));
 }
 
 //------------------------------------------------------------------------

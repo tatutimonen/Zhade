@@ -20,6 +20,8 @@ set(src_files
     Texture2D.cpp
     UniformBuffer.cpp
     UniformBufferStorage.cpp
+    VertexArray.cpp
+    VertexBuffer.cpp
     common.cpp
     constants.cpp
     main.cpp

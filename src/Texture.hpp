@@ -30,6 +30,10 @@ public:
 
     Texture() = default;
     virtual ~Texture() = default;
+    Texture(const Texture&) = default;
+    Texture(Texture&&) = default;
+    Texture& operator=(const Texture&) = default;
+    Texture& operator=(Texture&&) = default;
 
     virtual void setData(const void* data) noexcept = 0;
     virtual void setParameteri(uint32_t pname, int32_t param) const noexcept = 0;

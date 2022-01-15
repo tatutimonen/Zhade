@@ -5,7 +5,7 @@
 Camera::Camera(std::unique_ptr<Settings> settings)
     : m_settings{std::move(settings)},
       m_matrices{Matrices()},
-      m_uniformBuffer{UniformBuffer("Camera", constants::CAMERA_BINDING, sizeof(glm::vec4) + sizeof(Matrices), 1)}
+      m_uniformBuffer{UniformBuffer("Camera", constants::CAMERA_BINDING, sizeof(Matrices), 1)}
 {
     updateView();
 }
@@ -18,8 +18,7 @@ void Camera::tick() noexcept
     const bool rotated = rotate();
     if (moved || rotated)
     {
-        m_uniformBuffer.update(0, glm::value_ptr(m_settings->center), sizeof(glm::vec3));
-        m_uniformBuffer.update(sizeof(glm::vec4), &m_matrices, sizeof(Matrices));
+        m_uniformBuffer.update(0, &m_matrices, sizeof(Matrices));
     }
 }
 
