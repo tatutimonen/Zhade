@@ -27,7 +27,7 @@ set(lib_dir ${CMAKE_SOURCE_DIR}/lib)
 
 add_library(stb_image STATIC ${lib_dir}/stb_image/stb_image.cpp)
 
-set(imgui_src_dir, ${lib_dir}/imgui/backends)
+set(imgui_src_dir ${lib_dir}/imgui/backends)
 add_library(imgui STATIC ${imgui_src_dir}/imgui_impl_win32.cpp ${imgui_src_dir}/imgui_impl_opengl3.cpp)
 target_include_directories(imgui PRIVATE ${lib_dir}/imgui)
 
