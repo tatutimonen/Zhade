@@ -26,6 +26,8 @@ find_package(OpenMP REQUIRED)
 set(lib_dir ${CMAKE_SOURCE_DIR}/lib)
 
 add_library(stb_image STATIC ${lib_dir}/stb_image/stb_image.cpp)
+add_library(imgui STATIC ${lib_dir}/imgui/backends/imgui_impl_win32.cpp ${lib_dir}/imgui/backends/imgui_impl_opengl3.cpp)
+target_include_directories(imgui PRIVATE ${lib_dir}/imgui)
 
 add_compile_definitions(GLEW_STATIC)
 add_subdirectory(${lib_dir}/glew EXCLUDE_FROM_ALL)

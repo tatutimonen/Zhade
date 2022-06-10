@@ -34,6 +34,7 @@ target_link_libraries(App
             glm
             stb_image
             assimp
+            imgui
 )
 target_include_directories(App
     PRIVATE ${lib_dir}/glew/include
@@ -41,6 +42,7 @@ target_include_directories(App
             ${lib_dir}/glm/glm
             ${lib_dir}/stb_image
             ${lib_dir}/assimp/include
+            ${lib_dir}/imgui
 )
 
 #-------------------------------------------------------------------------
