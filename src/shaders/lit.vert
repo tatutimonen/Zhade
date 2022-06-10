@@ -1,11 +1,6 @@
 #version 460 core
 
 //------------------------------------------------------------------------
-// Pre-compile definitions.
-
-#pragma optionNV(fastmath on)
-
-//------------------------------------------------------------------------
 // Vertex attributes.
 
 layout (location = 0) in vec3 a_position;

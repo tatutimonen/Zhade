@@ -1,11 +1,13 @@
 #include "VertexBuffer.hpp"
+#include <iostream>
 
 //------------------------------------------------------------------------
 
-VertexBuffer::VertexBuffer(std::size_t sizeBytes, uint32_t usage, const void* data = nullptr)
+VertexBuffer::VertexBuffer(const GLsizeiptr sizeBytes, const void* data, const GLbitfield storageFlags)
+    : m_sizeBytes{sizeBytes}
 {
-    glGenBuffers(1, &m_handle);
-    setData(data);
+    glCreateBuffers(1, &m_handle);
+    glNamedBufferStorage(m_handle, m_sizeBytes, data, storageFlags);
 }
 
 //------------------------------------------------------------------------

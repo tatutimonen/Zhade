@@ -2,15 +2,15 @@
 
 //------------------------------------------------------------------------
 
-ShaderImpl::ShaderImpl(uint32_t glShaderType, const std::string& filename)
+Shader::Shader(const std::uint32_t glShaderType, const std::string& filename)
 {
     try
     {
-        const std::string filenameWithRelativePath = common::shaderPath + filename;
+        const auto filenameWithRelativePath = common::shaderPath + filename;
         parseShaderFile(filenameWithRelativePath);
         m_handle = glCreateShader(glShaderType);
         // glShaderSource needs an lvalue.
-        const char* shaderSourcePtr = m_shaderSource.c_str();
+        const auto shaderSourcePtr = m_shaderSource.c_str();
         glShaderSource(m_handle, 1, &shaderSourcePtr, nullptr);
         compile();
     }
@@ -33,14 +33,14 @@ ShaderImpl::ShaderImpl(uint32_t glShaderType, const std::string& filename)
 
 //------------------------------------------------------------------------
 
-ShaderImpl::~ShaderImpl()
+Shader::~Shader()
 {
     glDeleteShader(m_handle);
 }
 
 //------------------------------------------------------------------------
 
-void ShaderImpl::parseShaderFile(const std::string& filename)
+void Shader::parseShaderFile(const std::string& filename)
 {
     std::ifstream shaderFile;
     shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -54,11 +54,11 @@ void ShaderImpl::parseShaderFile(const std::string& filename)
 
 //------------------------------------------------------------------------
 
-void ShaderImpl::compile() const
+void Shader::compile() const
 {
     glCompileShader(m_handle);
 
-    int32_t status;
+    std::int32_t status;
     glGetShaderiv(m_handle, GL_COMPILE_STATUS, &status);
 
     if (status == GL_FALSE)

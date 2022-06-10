@@ -2,18 +2,18 @@
 
 //------------------------------------------------------------------------
 
-ShaderProgram::ShaderProgram(const Shader& vertexShader, const Shader& fragmentShader, const Shader& geometryShader)
+ShaderProgram::ShaderProgram(const Shader& vertexShader, const Shader& fragmentShader,
+    const std::optional<Shader>& geometryShader)
+    : m_handle{glCreateProgram()}
 {
-    m_handle = glCreateProgram();
-
     vertexShader.attach(m_handle);
-    geometryShader.attach(m_handle);
+    if (geometryShader) geometryShader.value().attach(m_handle);
     fragmentShader.attach(m_handle);
 
     link();
     
     vertexShader.detach(m_handle);
-    geometryShader.detach(m_handle);
+    if (geometryShader) geometryShader.value().detach(m_handle);
     fragmentShader.detach(m_handle);
 }
 
@@ -101,12 +101,12 @@ void ShaderProgram::setUniform<glm::mat4>(const std::string& name, const void* d
 
 //------------------------------------------------------------------------
 
-int32_t ShaderProgram::getUniformLocation(const std::string& name) const noexcept
+GLint ShaderProgram::getUniformLocation(const std::string& name) const noexcept
 {
     if (m_uniformLocationCache.find(name) != m_uniformLocationCache.end())
         return m_uniformLocationCache.at(name);
 
-    int32_t location = glGetUniformLocation(m_handle, name.c_str());
+    GLint location = glGetUniformLocation(m_handle, name.c_str());
     if (location == -1)
     {
         std::ostringstream errMsg;
@@ -129,7 +129,7 @@ void ShaderProgram::link() const noexcept
     
     if (!m_linkStatus)
     {
-        int32_t logLength;
+        GLint logLength;
         glGetProgramiv(m_handle, GL_INFO_LOG_LENGTH, &logLength);
         std::string infoLog;
         infoLog.resize(static_cast<std::string::size_type>(logLength - 1));

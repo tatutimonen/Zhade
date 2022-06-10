@@ -32,8 +32,8 @@ public:
 
     void setColor(const glm::vec3& color) noexcept;
     void setPosition(const glm::vec3& position) noexcept;
-    inline const glm::vec3& getColor() const noexcept    { return m_settings.color; }
-    inline const glm::vec3& getPosition() const noexcept { return m_settings.position; }
+    const glm::vec3& getColor() const noexcept    { return m_settings.color; }
+    const glm::vec3& getPosition() const noexcept { return m_settings.position; }
 
 private:
     UniformBufferStorage m_uniformBufferStorage;

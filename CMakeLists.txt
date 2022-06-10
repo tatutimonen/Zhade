@@ -30,7 +30,8 @@ add_library(stb_image STATIC ${lib_dir}/stb_image/stb_image.cpp)
 add_compile_definitions(GLEW_STATIC)
 add_subdirectory(${lib_dir}/glew EXCLUDE_FROM_ALL)
 add_subdirectory(${lib_dir}/glfw EXCLUDE_FROM_ALL)
-add_subdirectory(${lib_dir}/glm  EXCLUDE_FROM_ALL)
+add_subdirectory(${lib_dir}/glm EXCLUDE_FROM_ALL)
+add_subdirectory(${lib_dir}/assimp EXCLUDE_FROM_ALL)
 
 #-------------------------------------------------------------------------
 

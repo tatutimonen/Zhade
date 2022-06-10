@@ -23,8 +23,8 @@ public:
         {}
     };
 
-    explicit Texture2D(const std::string& filename);
-    explicit Texture2D(const std::shared_ptr<Settings>& settings);
+    Texture2D(const std::string& filename);
+    Texture2D(const std::shared_ptr<Settings>& settings);
     ~Texture2D();
     Texture2D(const Texture2D&) = default;
     Texture2D(Texture2D&&) = default;
@@ -33,11 +33,11 @@ public:
 
     virtual void setData(const void* data) noexcept override;
     virtual void setParameteri(uint32_t pname, int32_t param) const noexcept override;
-    virtual inline const Settings& getSettings() const noexcept override { return *m_settings; }
-    virtual inline uint32_t getHandle() const noexcept override          { return m_handle; }
+    virtual const Settings& getSettings() const noexcept override { return *m_settings; }
+    virtual uint32_t getHandle() const noexcept override          { return m_handle; }
 
-    virtual inline void bind() const noexcept override   { glBindTexture(GL_TEXTURE_2D, m_handle); }
-    virtual inline void unbind() const noexcept override { glBindTexture(GL_TEXTURE_2D, 0); }
+    virtual void bind() const noexcept override   { glBindTexture(GL_TEXTURE_2D, m_handle); }
+    virtual void unbind() const noexcept override { glBindTexture(GL_TEXTURE_2D, 0); }
 
     static std::unique_ptr<Texture2D> makeDefault() noexcept;
 

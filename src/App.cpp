@@ -2,10 +2,10 @@
 
 //------------------------------------------------------------------------
 
-// The elegance of singletons :)
-bool App::m_keys[512];
-float App::m_pitch = 0.0f;
-float App::m_yaw = -glm::half_pi<float>();
+App::~App()
+{
+    glfwTerminate();
+}
 
 //------------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ void App::init()
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     glfwWindowHint(GLFW_SAMPLES, 4);
 
-    m_window = glfwCreateWindow(windowWidth, windowHeight, name.c_str(), nullptr, nullptr);
+    m_window = glfwCreateWindow(s_windowWidth, s_windowHeight, name, nullptr, nullptr);
     glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwMakeContextCurrent(m_window);
     glfwSetKeyCallback(m_window, keyCallback);
@@ -31,12 +31,13 @@ void App::init()
     glewInit();
 
     // OpenGL
-    glViewport(0, 0, windowWidth, windowHeight);
+    glViewport(0, 0, s_windowWidth, s_windowHeight);
     // CSM: 15.0f/255.0f, 46.0f/255.0f, 101.0f/255.0f, 1.0f
     // Midnight Blue: 0.0f, 51.0f/255.0f, 102.0f/255.0f, 1.0f
     glClearColor(15.0f/255.0f, 46.0f/255.0f, 101.0f/255.0f, 1.0f);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
+    glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 }
@@ -45,23 +46,9 @@ void App::init()
 
 void App::updateInternalTimes()
 {
-    float currentFrame = glfwGetTime();
-    m_deltaTime = currentFrame - m_lastFrame;
-    m_lastFrame = currentFrame;
-}
-
-//------------------------------------------------------------------------
-
-void App::addMesh(std::shared_ptr<Mesh> mesh)
-{
-    m_meshes.push_back(mesh);
-}
-
-//------------------------------------------------------------------------
-
-App::~App()
-{
-    glfwTerminate();
+    float frameCurr = glfwGetTime();
+    m_deltaTime = frameCurr - m_framePrev;
+    m_framePrev = frameCurr;
 }
 
 //------------------------------------------------------------------------

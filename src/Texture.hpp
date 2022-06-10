@@ -40,8 +40,8 @@ public:
     virtual const Settings& getSettings() const noexcept = 0;
     virtual uint32_t getHandle() const noexcept = 0;
 
-    virtual inline void bind() const noexcept = 0;
-    virtual inline void unbind() const noexcept = 0;
+    virtual void bind() const noexcept = 0;
+    virtual void unbind() const noexcept = 0;
 };
 
 //------------------------------------------------------------------------

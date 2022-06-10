@@ -1,15 +1,6 @@
 #version 460 core
 
 //------------------------------------------------------------------------
-// Pre-compile definitions and constants.
-
-#pragma optionNV(fastmath on)
-#pragma optionNV(inline all)
-#pragma optionNV(unroll all)
-
-const int maxPointLights = 4;
-
-//------------------------------------------------------------------------
 // Outputs.
 
 layout (location = 0) out vec4 fragOut;
@@ -28,19 +19,18 @@ in VERT_OUT {
 
 uniform sampler2D u_colorTexture;
 
-struct Material {
+layout (binding = 2, std140) uniform Material {
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
     float shininess;
-};
-uniform Material u_material;
+} u_material;
 
-layout (binding = 2, std140) uniform AmbientLight {
+layout (binding = 3, std140) uniform AmbientLight {
     vec4 color;
 } u_ambientLight;
 
-layout (binding = 3, std140) uniform DirectionalLight {
+layout (binding = 4, std140) uniform DirectionalLight {
     vec3 color;
     float strength;
     vec3 direction;
@@ -55,7 +45,7 @@ struct PointLight {
     float attenuationLinear;
     float attenuationQuadratic;
 };
-layout(binding = 4, std140) uniform PointLights {
+layout (binding = 5, std140) uniform PointLights {
     PointLight u_pointLights[maxPointLights];
 };
 

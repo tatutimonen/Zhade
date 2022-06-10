@@ -1,9 +1,7 @@
 #pragma once
 
 #include "App.hpp"
-#include "Observer.hpp"
 #include "ShaderProgram.hpp"
-#include "Subject.hpp"
 #include "UniformBuffer.hpp"
 #include "constants.hpp"
 #include "util.hpp"
@@ -28,10 +26,9 @@ public:
         float zNear      = 0.1f;
         float zFar       = 1000.0f;
 
-        Settings() = default;
-        Settings(Settings&& settings) = default;
         virtual ~Settings() = default;
     };
+
     struct Matrices {
         glm::mat4 V = glm::mat4(1.0f);
         glm::mat4 P = glm::mat4(1.0f);
@@ -39,24 +36,26 @@ public:
 
     virtual ~Camera() = default;
 
-    inline const glm::mat4& getView() const            { return m_matrices.V; }
-    inline const glm::mat4& getProjectivity() const    { return m_matrices.P; }
-    virtual inline const Settings& getSettings() const = 0;
+    inline const glm::mat4& getView() const noexcept { return m_matrices.V; }
+    inline const glm::mat4& getProjectivity() const noexcept { return m_matrices.P; }
+    virtual const Settings& getSettings() const = 0;
 
-    inline void updateView() 
+    inline void updateView()
     {
         m_matrices.V = glm::lookAt(m_settings->center, m_settings->center + m_settings->target, m_settings->up);
     }
     virtual void updateProjectivity() = 0;
+
     void tick() noexcept;
 
-    static constexpr float s_cameraBaseSpeed = 5.0f;
+    static constexpr auto s_cameraBaseSpeed = 5.0f;
 
 protected:
-    explicit Camera(std::unique_ptr<Settings> settings);
+    Camera(std::weak_ptr<const App> app, std::unique_ptr<Settings> settings);
     bool move();
     bool rotate();
 
+    std::weak_ptr<const App> m_app;
     std::unique_ptr<Settings> m_settings;
     Matrices m_matrices;
     UniformBuffer m_uniformBuffer;

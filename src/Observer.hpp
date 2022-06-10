@@ -13,9 +13,4 @@ public:
     virtual void update(const T& message) noexcept = 0;
 };
 
-namespace observed
-{
-
-}  // namespace observed
-
 //------------------------------------------------------------------------

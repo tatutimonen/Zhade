@@ -24,6 +24,8 @@
 namespace util
 {
 
+//------------------------------------------------------------------------
+
 inline glm::vec3 makeUnitVec3x() noexcept
 {
     return glm::vec3(1.0f, 0.0f, 0.0f);
@@ -40,44 +42,44 @@ inline glm::vec3 makeUnitVec3z() noexcept
 }
 
 // Adapted from https://www.gamedev.net/forums/topic/685081-normal-vector-artifacts-with-nvmeshmender/5326137/.
-inline uint32_t vec4_to_INT_2_10_10_10_REV(const glm::vec4& v) noexcept
+inline std::uint32_t vec4_to_INT_2_10_10_10_REV(const glm::vec4& v) noexcept
 {
-    const uint32_t xs = v.x < 0;
-    const uint32_t ys = v.y < 0;
-    const uint32_t zs = v.z < 0;
-    const uint32_t ws = v.w < 0;
-    return ws << 31 | (static_cast<uint32_t>(v.w       + (ws << 1)) &   1) << 30 |
-           zs << 29 | (static_cast<uint32_t>(v.z * 511 + (zs << 9)) & 511) << 20 |
-           ys << 19 | (static_cast<uint32_t>(v.y * 511 + (ys << 9)) & 511) << 10 |
-           xs << 9  | (static_cast<uint32_t>(v.x * 511 + (xs << 9)) & 511);
+    const std::uint32_t xs = v.x < 0;
+    const std::uint32_t ys = v.y < 0;
+    const std::uint32_t zs = v.z < 0;
+    const std::uint32_t ws = v.w < 0;
+    return ws << 31 | (static_cast<std::uint32_t>(v.w       + (ws << 1)) &   1) << 30 |
+           zs << 29 | (static_cast<std::uint32_t>(v.z * 511 + (zs << 9)) & 511) << 20 |
+           ys << 19 | (static_cast<std::uint32_t>(v.y * 511 + (ys << 9)) & 511) << 10 |
+           xs << 9  | (static_cast<std::uint32_t>(v.x * 511 + (xs << 9)) & 511);
 }
 
-inline uint32_t makeUnitVec3xPacked() noexcept
+inline std::uint32_t makeUnitVec3xPacked() noexcept
 {
     return vec4_to_INT_2_10_10_10_REV(glm::vec4(makeUnitVec3x(), 0.0f));
 }
 
-inline uint32_t makeNegUnitVec3xPacked() noexcept
+inline std::uint32_t makeNegUnitVec3xPacked() noexcept
 {
     return vec4_to_INT_2_10_10_10_REV(glm::vec4(-makeUnitVec3x(), 0.0f));
 }
 
-inline uint32_t makeUnitVec3yPacked() noexcept
+inline std::uint32_t makeUnitVec3yPacked() noexcept
 {
     return vec4_to_INT_2_10_10_10_REV(glm::vec4(makeUnitVec3y(), 0.0f));
 }
 
-inline uint32_t makeNegUnitVec3yPacked() noexcept
+inline std::uint32_t makeNegUnitVec3yPacked() noexcept
 {
     return vec4_to_INT_2_10_10_10_REV(glm::vec4(-makeUnitVec3y(), 0.0f));
 }
 
-inline uint32_t makeUnitVec3zPacked() noexcept
+inline std::uint32_t makeUnitVec3zPacked() noexcept
 {
     return vec4_to_INT_2_10_10_10_REV(glm::vec4(makeUnitVec3z(), 0.0f));
 }
 
-inline uint32_t makeNegUnitVec3zPacked() noexcept
+inline std::uint32_t makeNegUnitVec3zPacked() noexcept
 {
     return vec4_to_INT_2_10_10_10_REV(glm::vec4(-makeUnitVec3z(), 0.0f));
 }
@@ -89,6 +91,8 @@ inline uint32_t makeNegUnitVec3zPacked() noexcept
 namespace
 {
 
+//------------------------------------------------------------------------
+
 void logGlError(GLenum err, const char* fn, const char* file, int line) noexcept
 {
     std::ostream& log_stream = std::cout;
@@ -99,7 +103,7 @@ void logGlError(GLenum err, const char* fn, const char* file, int line) noexcept
                << std::endl;
 }
 
-inline void checkErrors(const char* fn, const char* file, int line)
+void checkErrors(const char* fn, const char* file, int line)
 {
     GLenum err = glGetError();
     if (err != GL_NO_ERROR)
@@ -109,6 +113,8 @@ inline void checkErrors(const char* fn, const char* file, int line)
     }
 }
     
+//------------------------------------------------------------------------
+
 }  // namespace
 
 //------------------------------------------------------------------------

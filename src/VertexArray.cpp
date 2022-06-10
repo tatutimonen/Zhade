@@ -1,20 +1,25 @@
 #include "VertexArray.hpp"
 
+#include "Shader.hpp"
+
 //------------------------------------------------------------------------
 
-VertexArray::VertexArray(std::initializer_list<FormatSpecifier> format)
+VertexArray::VertexArray(const VertexFormat& layout)
 {
-    glGenVertexArrays(1, &m_handle);
-    glBindVertexArray(m_handle);
+    glCreateVertexArrays(1, &m_handle);
 
-    for (const auto [location, sizeBytes, type, normalized, offset] : format)
+    GLuint attribIdx = 0;
+    for (const auto& [type, sizeBytes, offset, packed] : layout.getElements())
     {
-        glEnableVertexAttribArray(location);
-        glVertexAttribFormat(location, sizeBytes, type, normalized, offset);
-        glVertexAttribBinding(location, 0);
+        glEnableVertexArrayAttrib(m_handle, attribIdx);
+        glVertexArrayAttribFormat(m_handle,
+                                  attribIdx,
+                                  Shader::getDataTypeNumElements(type),
+                                  Shader::getDataTypeAsGlBaseType(type),
+                                  packed ? GL_TRUE : GL_FALSE,
+                                  offset);
+        glVertexArrayAttribBinding(m_handle, attribIdx++, 0);
     }
-
-    glBindVertexArray(0);
 }
 
 //------------------------------------------------------------------------
