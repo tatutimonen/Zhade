@@ -1,4 +1,4 @@
-## Shadow Mapper
+# Shadow Mapper
 
 A WIP rasterization-based renderer utilizing modern OpenGL. Currently under development:
 
@@ -10,7 +10,7 @@ A WIP rasterization-based renderer utilizing modern OpenGL. Currently under deve
 
 ----
 
-### Running Locally
+## Running Locally
 
    1. Ensure you have CMake version ≥ 3.17
 
@@ -21,3 +21,9 @@ A WIP rasterization-based renderer utilizing modern OpenGL. Currently under deve
    4. Build with, e.g., ```cmake --build .```. Note that some compilers such as MSVC support different build configurations. You may provide these as further options. For example, amend the previous with ```--config Release``` to build with Release configuration on MSVC.
 
    5. Run the executable
+
+----
+
+## Trivia
+
+- The name is a reference to the [Mapper](https://ratchetandclank.fandom.com/wiki/Mapper) item from the game *Ratchet and Clank 2: Going Commando*, developed by Insomniac Games and published by Sony Computer Entertainment in 2003.
