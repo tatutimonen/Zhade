@@ -24,8 +24,6 @@
 namespace util
 {
 
-//------------------------------------------------------------------------
-
 inline glm::vec3 makeUnitVec3x() noexcept
 {
     return glm::vec3(1.0f, 0.0f, 0.0f);

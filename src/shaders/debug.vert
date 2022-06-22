@@ -1,6 +1,11 @@
 #version 460 core
 
 //------------------------------------------------------------------------
+// Constants.
+
+const uint INSTANCE_ID = gl_BaseInstance + gl_InstanceID;
+
+//------------------------------------------------------------------------
 // Vertex attributes.
 
 layout (location = 0) in vec3 a_pos;
@@ -15,23 +20,23 @@ out VERT_OUT {
 } VertOut;
 
 //------------------------------------------------------------------------
-// Uniforms.
+// Uniforms etc.
 
 layout (binding = 0, std140) uniform Camera {
     mat4 V;
     mat4 P;
 } u_camera;
 
-layout (binding = 1, std140) uniform Model {
-    mat4 M;
-} u_model;
+layout (binding = 1, std430) buffer Model {
+    mat4 M[];
+} b_model;
 
 //------------------------------------------------------------------------
 
 void main()
 {
     VertOut.tex = a_tex;
-    gl_Position = u_camera.P * u_camera.V * u_model.M * vec4(a_pos, 1.0);
+    gl_Position = u_camera.P * u_camera.V * b_model.M[INSTANCE_ID] * vec4(a_pos, 1.0);
 }
 
 //------------------------------------------------------------------------

@@ -38,8 +38,8 @@ void App::init()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
     glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
+    //glEnable(GL_CULL_FACE);
+    //glCullFace(GL_BACK);
 }
 
 //------------------------------------------------------------------------

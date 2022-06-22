@@ -4,13 +4,13 @@
 
 UniformBuffer::UniformBuffer(const std::string& blockName, uint32_t binding, std::ptrdiff_t blockSize,
     uint32_t extent, uint32_t usage)
-    : m_blockSize{blockSize}
+    : m_binding{binding},
+      m_blockSize{blockSize}
 {
-    glGenBuffers(1, &m_handle);
+    glCreateBuffers(1, &m_handle);
     glBindBuffer(GL_UNIFORM_BUFFER, m_handle);
     glBufferData(GL_UNIFORM_BUFFER, blockSize * extent, nullptr, usage);
     glBindBufferBase(GL_UNIFORM_BUFFER, binding, m_handle);
-    glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 //------------------------------------------------------------------------
@@ -26,7 +26,6 @@ void UniformBuffer::update(std::ptrdiff_t offset, const void* data, std::size_t 
 {
     glBindBuffer(GL_UNIFORM_BUFFER, m_handle);
     glBufferSubData(GL_UNIFORM_BUFFER, blockOffset * m_blockSize + offset, size, data);
-    glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 //------------------------------------------------------------------------
