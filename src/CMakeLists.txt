@@ -4,6 +4,7 @@
 set(src_files
     App.cpp
     AttributeData.cpp
+    Buffer.cpp
     Camera.cpp
     PerspectiveCamera.cpp
     Shader.cpp

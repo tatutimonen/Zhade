@@ -1,5 +1,6 @@
 #include "App.hpp"
 #include "AttributeData.hpp"
+#include "Buffer.hpp"
 #include "PerspectiveCamera.hpp"
 #include "Shader.hpp"
 #include "ShaderProgram.hpp"
@@ -52,6 +53,8 @@ struct Material {
 
 std::int32_t main()
 {
+    using namespace sm;
+
     const auto app = std::make_shared<App>();;
     app->init();
 
@@ -69,33 +72,43 @@ std::int32_t main()
 
     // Basic vertex data setup.
 
-    std::vector<Vertex> vertices;
-    // Quad.
-    vertices.emplace_back(glm::vec3( 0.5f,  0.0f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f));
-    vertices.emplace_back(glm::vec3( 0.5f,  0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f));
-    vertices.emplace_back(glm::vec3(-0.5f,  0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
-    vertices.emplace_back(glm::vec3(-0.5f,  0.0f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f));
-    // Tri.
-    vertices.emplace_back(glm::vec3( 0.5f,  0.0f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f));
-    vertices.emplace_back(glm::vec3( 0.0f,  0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.5f, 1.0f));
-    vertices.emplace_back(glm::vec3(-0.5f,  0.0f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f));
-    
-    static const std::vector<GLuint> indices{
+    const Vertex quadVerts[] = {
+        { glm::vec3( 0.5f,  0.0f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) },
+        { glm::vec3( 0.5f,  0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f) },
+        { glm::vec3(-0.5f,  0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f) },
+        { glm::vec3(-0.5f,  0.0f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) }
+    };
+    const GLuint quadInds[] = {
         0, 1, 2,
-        2, 3, 0,
+        2, 3, 0
+    };
+
+    const Vertex triVerts[] = {
+        { glm::vec3( 0.5f,  0.0f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) },
+        { glm::vec3( 0.0f,  0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.5f, 1.0f) },
+        { glm::vec3(-0.5f,  0.0f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) }
+    };
+    const GLuint triInds[] = {
         0, 1, 2
     };
 
-    GLuint vbo, ebo;
-    glCreateBuffers(1, &vbo);
-    glNamedBufferStorage(vbo, sizeof(Vertex) * vertices.size(), vertices.data(), GL_DYNAMIC_STORAGE_BIT);
-    glCreateBuffers(1, &ebo);
-    glNamedBufferStorage(ebo, sizeof(GLuint) * indices.size(), indices.data(), GL_DYNAMIC_STORAGE_BIT);
+    const auto vbo = Buffer<Vertex>(GL_ARRAY_BUFFER);
+    const auto ebo = Buffer<GLuint>(GL_ELEMENT_ARRAY_BUFFER);
+
+    /*auto quadVtxSpan = vbo.pushData(quadVerts, 4);
+    auto quadIdxSpan = ebo.pushData(quadInds, 6);
+    auto triVtxSpan = vbo.pushData(triVerts, 3);
+    auto triIdxSpan = ebo.pushData(triInds, 3);*/
+
+    vbo.pushData(quadVerts, 4);
+    ebo.pushData(quadInds, 6);
+    vbo.pushData(triVerts, 3);
+    ebo.pushData(triInds, 3);
 
     GLuint vao;
     glCreateVertexArrays(1, &vao);
-    glVertexArrayVertexBuffer(vao, 0, vbo, 0, sizeof(Vertex));
-    glVertexArrayElementBuffer(vao, ebo);
+    glVertexArrayVertexBuffer(vao, 0, vbo.getHandle(), 0, sizeof(Vertex));
+    glVertexArrayElementBuffer(vao, ebo.getHandle());
 
     glEnableVertexArrayAttrib(vao, 0);
     glEnableVertexArrayAttrib(vao, 1);
@@ -111,15 +124,6 @@ std::int32_t main()
 
     // Create render commands and gather model matrices.
 
-    struct MultiDrawElementsIndirectCommand
-    {
-        GLuint vertexCount;
-        GLuint instanceCount;
-        GLuint firstIndex;
-        GLuint baseVertex;
-        GLuint baseInstance;
-    };
-
     std::vector<glm::mat4> modelMatrices;
     std::vector<MultiDrawElementsIndirectCommand> cmds;
 
@@ -133,6 +137,21 @@ std::int32_t main()
     }
 
     // Quads.
+    /*cmds.push_back({
+        .vertexCount = static_cast<GLuint>(quadIdxSpan.size()),
+        .instanceCount = numQuads,
+        .firstIndex = 0,
+        .baseVertex = 0,
+        .baseInstance = 0
+    });
+    cmds.push_back({
+        .vertexCount = static_cast<GLuint>(triVtxSpan.size()),
+        .instanceCount = numTris,
+        .firstIndex = static_cast<GLuint>(quadIdxSpan.size()),
+        .baseVertex = static_cast<GLuint>(quadVtxSpan.size()),
+        .baseInstance = numQuads
+    });*/
+
     cmds.push_back({
         .vertexCount = 6,
         .instanceCount = numQuads,
@@ -150,20 +169,18 @@ std::int32_t main()
 
     // Upload the model matrices into an SSBO.
 
-    GLuint ssbo;
-    glCreateBuffers(1, &ssbo);
-    glNamedBufferStorage(ssbo, sizeof(glm::mat4) * (numQuads + numTris), modelMatrices.data(), GL_DYNAMIC_STORAGE_BIT);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, constants::MODEL_BINDING, ssbo);
+    const auto ssbo = Buffer<glm::mat4>(GL_SHADER_STORAGE_BUFFER, 1 << 10);
+    ssbo.pushData(modelMatrices.data(), modelMatrices.size());
+    ssbo.bindBase(constants::MODEL_BINDING);
 
     // Setup the indirect draw buffer and the draw IDs.
 
-    GLuint dibo;
-    glCreateBuffers(1, &dibo);
-    glNamedBufferStorage(dibo, sizeof(MultiDrawElementsIndirectCommand) * cmds.size(), cmds.data(), GL_DYNAMIC_STORAGE_BIT);
+    const auto dibo = Buffer<MultiDrawElementsIndirectCommand>(GL_DRAW_INDIRECT_BUFFER, 1 << 10);
+    dibo.pushData(cmds.data(), cmds.size());
 
     shaderProgram.use();
     glBindVertexArray(vao);
-    glBindBuffer(GL_DRAW_INDIRECT_BUFFER, dibo);
+    dibo.bindToTarget();
 
     while (!glfwWindowShouldClose(app->getGlCtx()))
     {
