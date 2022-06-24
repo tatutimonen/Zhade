@@ -100,11 +100,6 @@ std::int32_t main()
     auto triVtxSpan = vbo.pushData(triVerts, 3);
     auto triIdxSpan = ebo.pushData(triInds, 3);
 
-    /*vbo.pushData(quadVerts, 4);
-    ebo.pushData(quadInds, 6);
-    vbo.pushData(triVerts, 3);
-    ebo.pushData(triInds, 3);*/
-
     GLuint vao;
     glCreateVertexArrays(1, &vao);
     glVertexArrayVertexBuffer(vao, 0, vbo.getHandle(), 0, sizeof(Vertex));
@@ -137,7 +132,7 @@ std::int32_t main()
     }
 
     // Quads.
-    cmds.push_back({
+    /*cmds.push_back({
         .vertexCount = static_cast<GLuint>(quadIdxSpan.size()),
         .instanceCount = numQuads,
         .firstIndex = 0,
@@ -150,9 +145,9 @@ std::int32_t main()
         .firstIndex = static_cast<GLuint>(quadIdxSpan.size()),
         .baseVertex = static_cast<GLuint>(quadVtxSpan.size()),
         .baseInstance = numQuads
-    });
+    });*/
 
-    /*cmds.push_back({
+    cmds.push_back({
         .vertexCount = 6,
         .instanceCount = numQuads,
         .firstIndex = 0,
@@ -165,18 +160,18 @@ std::int32_t main()
         .firstIndex = 6,
         .baseVertex = 4,
         .baseInstance = 4
-    });*/
+    });
 
     // Upload the model matrices into an SSBO.
 
     const auto ssbo = Buffer<glm::mat4>(GL_SHADER_STORAGE_BUFFER, 1 << 10);
-    ssbo.pushData(modelMatrices.data(), modelMatrices.size());
+    auto x = ssbo.pushData(modelMatrices.data(), modelMatrices.size());
     ssbo.bindBase(constants::MODEL_BINDING);
 
     // Setup the indirect draw buffer and the draw IDs.
 
     const auto dibo = Buffer<MultiDrawElementsIndirectCommand>(GL_DRAW_INDIRECT_BUFFER, 1 << 10);
-    dibo.pushData(cmds.data(), cmds.size());
+    auto y = dibo.pushData(cmds.data(), cmds.size());
 
     shaderProgram.use();
     glBindVertexArray(vao);

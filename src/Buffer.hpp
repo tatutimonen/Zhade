@@ -28,9 +28,9 @@ template <typename T>
 class Buffer
 {
 public:
-    Buffer(const GLenum target, const GLsizei wholeSizeBytes = 1 << 20, const GLbitfield accessFlags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT)
+    Buffer(const GLenum target, const GLsizei wholeSizeBytes = 1 << 20, const GLbitfield accessFlags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT)
         : m_wholeSizeBytes{wholeSizeBytes},
-          m_accessFlags{accessFlags}
+          m_accessFlags{accessFlags | GL_MAP_PERSISTENT_BIT}
     {
         assert(target == GL_ARRAY_BUFFER
             || target == GL_ELEMENT_ARRAY_BUFFER
@@ -69,11 +69,11 @@ public:
         return std::span<T>(buffer, end);
     }
 
-    inline void pushData(const void* data, const GLsizei size) const noexcept
+    /*inline void pushData(const void* data, const GLsizei size) const noexcept
     {
         setData(data, size, m_writeOffsetBytes);
         m_writeOffsetBytes += computeWriteOffsetIncrement(sizeof(T) * size);
-    }
+    }*/
 
     inline void bindToTarget() const noexcept
     {
