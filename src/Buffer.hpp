@@ -28,7 +28,7 @@ template <typename T>
 class Buffer
 {
 public:
-    Buffer(const GLenum target, const GLsizei wholeSizeBytes = 1 << 20, const GLbitfield accessFlags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT)
+    Buffer(const GLenum target, const GLsizei wholeSizeBytes = 1 << 20, const GLbitfield accessFlags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT)
         : m_wholeSizeBytes{wholeSizeBytes},
           m_accessFlags{accessFlags}
     {
@@ -58,7 +58,7 @@ public:
         glNamedBufferSubData(m_handle, offsetBytes, sizeof(T) * size, data);
     }
 
-    /*[[nodiscard]]
+    [[nodiscard]]
     inline std::span<T> pushData(const void* data, const GLsizei size) const noexcept
     {
         setData(data, size, m_writeOffsetBytes);
@@ -67,7 +67,7 @@ public:
         const auto end = m_writeOffsetBytes - start;
         auto buffer = static_cast<T*>(mapRange(start, sizeof(T) * size));
         return std::span<T>(buffer, end);
-    }*/
+    }
 
     inline void pushData(const void* data, const GLsizei size) const noexcept
     {

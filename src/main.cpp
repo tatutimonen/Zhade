@@ -95,15 +95,15 @@ std::int32_t main()
     const auto vbo = Buffer<Vertex>(GL_ARRAY_BUFFER);
     const auto ebo = Buffer<GLuint>(GL_ELEMENT_ARRAY_BUFFER);
 
-    /*auto quadVtxSpan = vbo.pushData(quadVerts, 4);
+    auto quadVtxSpan = vbo.pushData(quadVerts, 4);
     auto quadIdxSpan = ebo.pushData(quadInds, 6);
     auto triVtxSpan = vbo.pushData(triVerts, 3);
-    auto triIdxSpan = ebo.pushData(triInds, 3);*/
+    auto triIdxSpan = ebo.pushData(triInds, 3);
 
-    vbo.pushData(quadVerts, 4);
+    /*vbo.pushData(quadVerts, 4);
     ebo.pushData(quadInds, 6);
     vbo.pushData(triVerts, 3);
-    ebo.pushData(triInds, 3);
+    ebo.pushData(triInds, 3);*/
 
     GLuint vao;
     glCreateVertexArrays(1, &vao);
@@ -137,7 +137,7 @@ std::int32_t main()
     }
 
     // Quads.
-    /*cmds.push_back({
+    cmds.push_back({
         .vertexCount = static_cast<GLuint>(quadIdxSpan.size()),
         .instanceCount = numQuads,
         .firstIndex = 0,
@@ -150,9 +150,9 @@ std::int32_t main()
         .firstIndex = static_cast<GLuint>(quadIdxSpan.size()),
         .baseVertex = static_cast<GLuint>(quadVtxSpan.size()),
         .baseInstance = numQuads
-    });*/
+    });
 
-    cmds.push_back({
+    /*cmds.push_back({
         .vertexCount = 6,
         .instanceCount = numQuads,
         .firstIndex = 0,
@@ -165,7 +165,7 @@ std::int32_t main()
         .firstIndex = 6,
         .baseVertex = 4,
         .baseInstance = 4
-    });
+    });*/
 
     // Upload the model matrices into an SSBO.
 
