@@ -65,8 +65,7 @@ public:
         const GLsizei sizeBytes = sizeof(T) * size;
         const auto start = m_writeOffsetBytes;
         m_writeOffsetBytes += computeWriteOffsetIncrement(sizeBytes);
-        auto buffer = static_cast<T*>(mapRange(start, sizeBytes));
-        return std::span(buffer, size);
+        return std::span(static_cast<T*>(mapRange(start, sizeBytes)), size);
     }
 
     inline void bindToTarget() const noexcept
