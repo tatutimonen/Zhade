@@ -129,7 +129,7 @@ public:
         return table;
     }
 
-    static const std::map<GLenum, GLint> inline s_alignmentTable = makeAlignmentTable();
+    static inline const std::map<GLenum, GLint> s_alignmentTable = makeAlignmentTable();
 
 private:
     GLsizeiptr computeWriteOffsetIncrement(const GLsizei sizeBytes) const noexcept
