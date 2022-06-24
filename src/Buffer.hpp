@@ -62,11 +62,11 @@ public:
     inline std::span<T> pushData(const void* data, const GLsizei size) const noexcept
     {
         setData(data, size, m_writeOffsetBytes);
+        const GLsizei sizeBytes = sizeof(T) * size;
         const auto start = m_writeOffsetBytes;
-        m_writeOffsetBytes += computeWriteOffsetIncrement(sizeof(T) * size);
-        const auto end = m_writeOffsetBytes - start;
-        auto buffer = static_cast<T*>(mapRange(start, sizeof(T) * size));
-        return std::span(buffer, end);
+        m_writeOffsetBytes += computeWriteOffsetIncrement(sizeBytes);
+        auto buffer = static_cast<T*>(mapRange(start, sizeBytes));
+        return std::span(buffer, size);
     }
 
     inline void bindToTarget() const noexcept
