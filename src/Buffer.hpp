@@ -66,7 +66,7 @@ public:
         m_writeOffsetBytes += computeWriteOffsetIncrement(sizeof(T) * size);
         const auto end = m_writeOffsetBytes - start;
         auto buffer = static_cast<T*>(mapRange(start, sizeof(T) * size));
-        return std::span<T>(buffer, end);
+        return std::span(buffer, end);
     }
 
     inline void bindToTarget() const noexcept
