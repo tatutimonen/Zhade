@@ -39,7 +39,7 @@ public:
             || target == GL_DRAW_INDIRECT_BUFFER);
         m_target = target;
         glCreateBuffers(1, &m_handle);
-        glNamedBufferStorage(m_handle, m_wholeSizeBytes, nullptr, GL_DYNAMIC_STORAGE_BIT | accessFlags);
+        glNamedBufferStorage(m_handle, m_wholeSizeBytes, nullptr, GL_DYNAMIC_STORAGE_BIT | m_accessFlags);
     }
 
     ~Buffer()
