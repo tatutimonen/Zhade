@@ -175,7 +175,7 @@ std::int32_t main()
 
     shaderProgram.use();
     glBindVertexArray(vao);
-    dibo.bindToTarget();
+    dibo.bind();
 
     while (!glfwWindowShouldClose(app->getGlCtx()))
     {

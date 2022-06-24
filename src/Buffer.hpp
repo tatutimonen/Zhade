@@ -68,7 +68,7 @@ public:
         return std::span(static_cast<T*>(mapRange(start, sizeBytes)), size);
     }
 
-    inline void bindToTarget() const noexcept
+    inline void bind() const noexcept
     {
         glBindBuffer(m_target, m_handle);
     }
