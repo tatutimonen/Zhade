@@ -69,12 +69,6 @@ public:
         return std::span<T>(buffer, end);
     }
 
-    /*inline void pushData(const void* data, const GLsizei size) const noexcept
-    {
-        setData(data, size, m_writeOffsetBytes);
-        m_writeOffsetBytes += computeWriteOffsetIncrement(sizeof(T) * size);
-    }*/
-
     inline void bindToTarget() const noexcept
     {
         glBindBuffer(m_target, m_handle);
