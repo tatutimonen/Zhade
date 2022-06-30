@@ -17,6 +17,7 @@ layout (location = 2) in vec2 a_tex;
 
 out VERT_OUT {
     vec2 tex;
+    flat uint instanceID;
 } VertOut;
 
 //------------------------------------------------------------------------
@@ -36,6 +37,7 @@ layout (binding = 1, std430) buffer Model {
 void main()
 {
     VertOut.tex = a_tex;
+    VertOut.instanceID = INSTANCE_ID;
     gl_Position = u_camera.P * u_camera.V * b_model.M[INSTANCE_ID] * vec4(a_pos, 1.0);
 }
 

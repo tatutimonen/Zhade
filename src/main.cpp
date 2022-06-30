@@ -12,6 +12,7 @@
 
 #include <assimp/cimport.h>
 #include <assimp/scene.h>
+#include <stb_image.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -62,9 +63,6 @@ int main()
     const auto app = std::make_shared<App>();;
     app->init();
 
-    auto tex = Texture2D::makeDefault();
-    tex->bind();
-
     auto vshader = Shader(GL_VERTEX_SHADER, "debug.vert");
     auto fshader = Shader(GL_FRAGMENT_SHADER, "debug.frag");
     auto shaderProgram = ShaderProgram(vshader, fshader);
@@ -110,8 +108,6 @@ int main()
         const auto& nrm = mesh->mNormals[i];
         dragonVerts.emplace_back(glm::vec3(pos.x, pos.y, pos.z), glm::vec3(nrm.x, nrm.y, nrm.z), glm::vec2());
     }
-
-    std::cout << sizeof(Vertex) * dragonVerts.size() << " " << (1 << 20) << "\n";
 
     std::array<GLuint, 8192> bufIndices;
     std::pmr::monotonic_buffer_resource rsrcIndices{bufIndices.data(), bufIndices.size()};
@@ -199,6 +195,44 @@ int main()
 
     const auto dibo = Buffer<MultiDrawElementsIndirectCommand, GL_DRAW_INDIRECT_BUFFER>(1 << 10);
     auto y = dibo.pushData(cmds.data(), cmds.size());
+
+    // Setup textures for the quads.
+
+    GLuint tex;
+    glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &tex);
+    glTextureParameteri(tex, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTextureParameteri(tex, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTextureParameteri(tex, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTextureParameteri(tex, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    int width, height;
+
+    stbi_set_flip_vertically_on_load(1);
+    uint8_t* imageData = stbi_load((common::texturePath + "cataphract.jpg").c_str(), &width, &height, nullptr, 4);
+    glTextureStorage3D(tex, 4, GL_RGBA8, width, height, 5);
+    glTextureSubImage3D(tex, 0, 0, 0, 0, width, height, 1, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+    stbi_image_free(imageData);
+    uint8_t* imageData2 = stbi_load((common::texturePath + "berserk.png").c_str(), &width, &height, nullptr, 4);
+    glTextureSubImage3D(tex, 0, 0, 0, 1, width, height, 1, GL_RGBA, GL_UNSIGNED_BYTE, imageData2);
+    stbi_image_free(imageData2);
+    uint8_t* imageData3 = stbi_load((common::texturePath + "longbowman.png").c_str(), &width, &height, nullptr, 4);
+    glTextureSubImage3D(tex, 0, 0, 0, 2, width, height, 1, GL_RGBA, GL_UNSIGNED_BYTE, imageData3);
+    stbi_image_free(imageData3);
+    uint8_t* imageData4 = stbi_load((common::texturePath + "jaguarwarrior.png").c_str(), &width, &height, nullptr, 4);
+    glTextureSubImage3D(tex, 0, 0, 0, 3, width, height, 1, GL_RGBA, GL_UNSIGNED_BYTE, imageData4);
+    stbi_image_free(imageData4);
+    uint32_t jade = 0x0;  // 0.54,      0.89,     0.63
+    jade = jade | ((std::uint32_t)(0.54f * 256) << 0);
+    jade = jade | ((std::uint32_t)(0.89f * 256) << 8);
+    jade = jade | ((std::uint32_t)(0.63f * 256) << 16);
+    uint32_t emerald = 0x0;  //  0.07568, 0.61424,  0.07568
+    emerald |= (std::uint32_t)(0.07568f * 256) << 0;
+    emerald |= (std::uint32_t)(0.61424f * 256) << 8;
+    emerald |= (std::uint32_t)(0.07568f * 256) << 16;
+    glTextureSubImage3D(tex, 0, 0, 0, 4, 1, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &jade);
+
+    glBindTextureUnit(0, tex);
+    glGenerateTextureMipmap(tex);
 
     shaderProgram.use();
     glBindVertexArray(vao);

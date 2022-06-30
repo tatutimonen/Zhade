@@ -10,18 +10,19 @@ layout (location = 0) out vec4 fragOut;
 
 in VERT_OUT {
     vec2 tex;
+    flat uint instanceID;
 } FragIn;
 
 //------------------------------------------------------------------------
 // Uniforms.
 
-uniform sampler2D u_colorTexture;
+uniform sampler2DArray u_diffuseTexture;
 
 //------------------------------------------------------------------------
 
 void main()
 {
-    fragOut = texture(u_colorTexture, FragIn.tex);
+    fragOut = texture(u_diffuseTexture, vec3(FragIn.tex, FragIn.instanceID));
 }
 
 //------------------------------------------------------------------------
