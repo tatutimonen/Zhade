@@ -10,11 +10,14 @@
 #include "constants.hpp"
 #include "util.hpp"
 
+#include <assimp/cimport.h>
+#include <assimp/scene.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 
+#include <array>
 #include <iostream>
 #include <memory>
 #include <memory_resource>
@@ -22,10 +25,11 @@
 //------------------------------------------------------------------------
 
 struct Vertex : AttributeData {
-    glm::vec3 pos;
-    glm::vec3 nrm;
-    glm::vec2 tex;
+    glm::vec3 pos = glm::vec3();
+    glm::vec3 nrm = glm::vec3();
+    glm::vec2 tex = glm::vec2();
 
+    Vertex() = default;
     Vertex(const glm::vec3 pos, const glm::vec3 nrm, const glm::vec2 tex) : pos{pos}, nrm{nrm}, tex{tex} {}
 
     VertexFormat getVertexFormat() const noexcept override
@@ -51,7 +55,7 @@ struct Material {
 
 //------------------------------------------------------------------------
 
-std::int32_t main()
+int main()
 {
     using namespace sm;
 
@@ -92,13 +96,44 @@ std::int32_t main()
         0, 1, 2
     };
 
-    const auto vbo = Buffer<Vertex>(GL_ARRAY_BUFFER);
-    const auto ebo = Buffer<GLuint>(GL_ELEMENT_ARRAY_BUFFER);
+    const auto scene = aiImportFile((common::assetPath + "dragon.obj").c_str(), aiProcessPreset_TargetRealtime_Fast);
+
+    auto mesh = scene->mMeshes[0];
+    
+    std::array<Vertex, 8192> buf;
+    std::pmr::monotonic_buffer_resource rsrc{buf.data(), buf.size()};
+    auto dragonVerts = std::pmr::vector<Vertex>(&rsrc);
+
+    for (auto i = 0u; i < mesh->mNumVertices; ++i)
+    {
+        const auto& pos = mesh->mVertices[i];
+        const auto& nrm = mesh->mNormals[i];
+        dragonVerts.emplace_back(glm::vec3(pos.x, pos.y, pos.z), glm::vec3(nrm.x, nrm.y, nrm.z), glm::vec2());
+    }
+
+    std::cout << sizeof(Vertex) * dragonVerts.size() << " " << (1 << 20) << "\n";
+
+    std::array<GLuint, 8192> bufIndices;
+    std::pmr::monotonic_buffer_resource rsrcIndices{bufIndices.data(), bufIndices.size()};
+    auto dragonIndices = std::pmr::vector<GLuint>(&rsrcIndices);
+
+    for (auto i = 0u; i < mesh->mNumFaces; ++i)
+    {
+        const auto faceIndices = mesh->mFaces[i].mIndices;
+        dragonIndices.push_back(faceIndices[0]);
+        dragonIndices.push_back(faceIndices[1]);
+        dragonIndices.push_back(faceIndices[2]);
+    }
+
+    const auto vbo = Buffer<Vertex, GL_ARRAY_BUFFER>();
+    const auto ebo = Buffer<GLuint, GL_ELEMENT_ARRAY_BUFFER>();
 
     auto quadVtxSpan = vbo.pushData(quadVerts, 4);
     auto quadIdxSpan = ebo.pushData(quadInds, 6);
     auto triVtxSpan = vbo.pushData(triVerts, 3);
     auto triIdxSpan = ebo.pushData(triInds, 3);
+    auto dragonVtxSpan = vbo.pushData(dragonVerts.data(), mesh->mNumVertices);
+    auto dragonIdxSpan = ebo.pushData(dragonIndices.data(), mesh->mNumFaces * 3);
 
     GLuint vao;
     glCreateVertexArrays(1, &vao);
@@ -130,22 +165,7 @@ std::int32_t main()
     {
         modelMatrices.push_back(glm::translate(glm::vec3((float)(i+1), 0.0f, 0.0f)));
     }
-
-    // Quads.
-    /*cmds.push_back({
-        .vertexCount = static_cast<GLuint>(quadIdxSpan.size()),
-        .instanceCount = numQuads,
-        .firstIndex = 0,
-        .baseVertex = 0,
-        .baseInstance = 0
-    });
-    cmds.push_back({
-        .vertexCount = static_cast<GLuint>(triVtxSpan.size()),
-        .instanceCount = numTris,
-        .firstIndex = static_cast<GLuint>(quadIdxSpan.size()),
-        .baseVertex = static_cast<GLuint>(quadVtxSpan.size()),
-        .baseInstance = numQuads
-    });*/
+    modelMatrices.push_back(glm::translate(glm::vec3(0.0f, 5.0f, 0.0f)));
 
     cmds.push_back({
         .vertexCount = 6,
@@ -161,16 +181,23 @@ std::int32_t main()
         .baseVertex = 4,
         .baseInstance = 4
     });
+    cmds.push_back({
+        .vertexCount = mesh->mNumFaces * 3,
+        .instanceCount = 1,
+        .firstIndex = 9,
+        .baseVertex = 7,
+        .baseInstance = numQuads + numTris
+    });
 
     // Upload the model matrices into an SSBO.
 
-    const auto ssbo = Buffer<glm::mat4>(GL_SHADER_STORAGE_BUFFER, 1 << 10);
+    const auto ssbo = Buffer<glm::mat4, GL_SHADER_STORAGE_BUFFER>(1 << 10);
     auto x = ssbo.pushData(modelMatrices.data(), modelMatrices.size());
     ssbo.bindBase(constants::MODEL_BINDING);
 
     // Setup the indirect draw buffer and the draw IDs.
 
-    const auto dibo = Buffer<MultiDrawElementsIndirectCommand>(GL_DRAW_INDIRECT_BUFFER, 1 << 10);
+    const auto dibo = Buffer<MultiDrawElementsIndirectCommand, GL_DRAW_INDIRECT_BUFFER>(1 << 10);
     auto y = dibo.pushData(cmds.data(), cmds.size());
 
     shaderProgram.use();
