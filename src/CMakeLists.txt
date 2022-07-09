@@ -24,11 +24,6 @@ set(src_files
 
 add_executable(App ${src_files})
 
-set_target_properties(App PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED ON
-    CXX_EXTENSIONS OFF
-)
 target_link_libraries(App
     PRIVATE libglew_static
             glfw
