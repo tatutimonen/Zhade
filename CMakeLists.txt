@@ -49,8 +49,10 @@ else()
     list(APPEND imgui_impl_files ${imgui_src_dir}/imgui_impl_glfw.cpp)
 endif()
 add_library(imgui STATIC ${imgui_impl_files})
-target_include_directories(imgui PRIVATE ${lib_dir}/imgui ${lib_dir}/glfw/inlcude)
-target_link_libraries(imgui PRIVATE glfw)
+target_include_directories(imgui PRIVATE ${lib_dir}/imgui)
+if(NOT MSVC)
+    target_link_libraries(imgui PRIVATE glfw)
+endif()
 
 # stb.
 add_library(stb_image STATIC ${lib_dir}/stb_image/stb_image.cpp)
