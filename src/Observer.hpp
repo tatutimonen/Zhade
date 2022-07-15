@@ -5,7 +5,8 @@
 //------------------------------------------------------------------------
 
 template<typename T>
-class Observer {
+class Observer
+{
 public:
     Observer() = default;
     virtual ~Observer() = default;

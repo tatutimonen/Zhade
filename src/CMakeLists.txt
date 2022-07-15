@@ -9,8 +9,8 @@ set(src_files
     PerspectiveCamera.cpp
     Shader.cpp
     ShaderProgram.cpp
-    Texture.cpp
-    Texture2D.cpp
+    TextureStorage.cpp
+    TextureView.cpp
     UniformBuffer.cpp
     VertexFormat.cpp
     common.cpp
