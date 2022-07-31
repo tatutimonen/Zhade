@@ -8,7 +8,8 @@
 //------------------------------------------------------------------------
 
 template<typename T>
-class Subject {
+class Subject
+{
 public:
     Subject() = default;
     Subject(const std::vector<std::weak_ptr<Observer<T>>>& observers)
@@ -16,7 +17,7 @@ public:
     {}
     virtual ~Subject() = default;
 
-    void attach(const std::weak_ptr<Observer<T>>& observer) noexcept
+    void attach(std::weak_ptr<Observer<T>> observer) noexcept
     {
         m_observers.push_back(observer);
     }

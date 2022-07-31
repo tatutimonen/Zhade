@@ -4,7 +4,8 @@
 #include "PerspectiveCamera.hpp"
 #include "Shader.hpp"
 #include "ShaderProgram.hpp"
-#include "Texture2D.hpp"
+#include "TextureStorage.hpp"
+#include "TextureView.hpp"
 #include "UniformBuffer.hpp"
 #include "common.hpp"
 #include "constants.hpp"
@@ -198,41 +199,23 @@ int main()
 
     // Setup textures for the quads.
 
-    GLuint tex;
-    glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &tex);
-    glTextureParameteri(tex, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTextureParameteri(tex, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTextureParameteri(tex, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTextureParameteri(tex, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    auto texStorage = TextureStorage();
 
-    int width, height;
+    auto cataView = texStorage.pushDataFromFile(common::texturePath + "cataphract.jpg").value();
+    auto berserkView = texStorage.pushDataFromFile(common::texturePath + "berserk.png").value();
+    auto longbowView = texStorage.pushDataFromFile(common::texturePath + "longbowman.png").value();
+    auto jagView = texStorage.pushDataFromFile(common::texturePath + "jaguarwarrior.png").value();
 
-    stbi_set_flip_vertically_on_load(1);
-    uint8_t* imageData = stbi_load((common::texturePath + "cataphract.jpg").c_str(), &width, &height, nullptr, 4);
-    glTextureStorage3D(tex, 4, GL_RGBA8, width, height, 5);
-    glTextureSubImage3D(tex, 0, 0, 0, 0, width, height, 1, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
-    stbi_image_free(imageData);
-    uint8_t* imageData2 = stbi_load((common::texturePath + "berserk.png").c_str(), &width, &height, nullptr, 4);
-    glTextureSubImage3D(tex, 0, 0, 0, 1, width, height, 1, GL_RGBA, GL_UNSIGNED_BYTE, imageData2);
-    stbi_image_free(imageData2);
-    uint8_t* imageData3 = stbi_load((common::texturePath + "longbowman.png").c_str(), &width, &height, nullptr, 4);
-    glTextureSubImage3D(tex, 0, 0, 0, 2, width, height, 1, GL_RGBA, GL_UNSIGNED_BYTE, imageData3);
-    stbi_image_free(imageData3);
-    uint8_t* imageData4 = stbi_load((common::texturePath + "jaguarwarrior.png").c_str(), &width, &height, nullptr, 4);
-    glTextureSubImage3D(tex, 0, 0, 0, 3, width, height, 1, GL_RGBA, GL_UNSIGNED_BYTE, imageData4);
-    stbi_image_free(imageData4);
+
     uint32_t jade = 0x0;  // 0.54,      0.89,     0.63
-    jade = jade | ((std::uint32_t)(0.54f * 256) << 0);
-    jade = jade | ((std::uint32_t)(0.89f * 256) << 8);
-    jade = jade | ((std::uint32_t)(0.63f * 256) << 16);
-    uint32_t emerald = 0x0;  //  0.07568, 0.61424,  0.07568
-    emerald |= (std::uint32_t)(0.07568f * 256) << 0;
-    emerald |= (std::uint32_t)(0.61424f * 256) << 8;
-    emerald |= (std::uint32_t)(0.07568f * 256) << 16;
-    glTextureSubImage3D(tex, 0, 0, 0, 4, 1, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &jade);
+    jade = jade | ((uint32_t)(0.54f * 256) << 0);
+    jade = jade | ((uint32_t)(0.89f * 256) << 8);
+    jade = jade | ((uint32_t)(0.63f * 256) << 16);
+    // Two triangles after the four quads.
+    texStorage.setDataByOffset(&jade, 6);
 
-    glBindTextureUnit(0, tex);
-    glGenerateTextureMipmap(tex);
+    texStorage.bindToUnit(0);
+    texStorage.generateMipmap();
 
     shaderProgram.use();
     glBindVertexArray(vao);
