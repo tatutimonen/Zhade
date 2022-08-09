@@ -59,8 +59,6 @@ struct Material {
 
 int main()
 {
-    using namespace sm;
-
     const auto app = std::make_shared<App>();;
     app->init();
 

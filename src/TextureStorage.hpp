@@ -4,12 +4,11 @@
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
-#include <stb_image.h>
 
 #include <cstdint>
 #include <memory>
 #include <optional>
-#include <string>
+#include <string_view>
 
 //------------------------------------------------------------------------
 
@@ -91,29 +90,11 @@ public:
     }
 
     std::optional<TextureView> setDataByOffset(const void* data, const GLsizeiptr offsetDepth) const noexcept;
-    std::optional<TextureView> setDataFromFileByOffset(const std::string& filename, const GLsizeiptr offsetDepth) const noexcept;
+    std::optional<TextureView> setDataFromFileByOffset(std::string_view filename, const GLsizeiptr offsetDepth) const noexcept;
     std::optional<TextureView> pushData(const void* data) const noexcept;
-    std::optional<TextureView> pushDataFromFile(const std::string& filename) const noexcept;
+    std::optional<TextureView> pushDataFromFile(std::string_view filename) const noexcept;
 
 private:
-    // RAII wrapper for stb_image functionality.
-    struct StbImageResource
-    {
-        StbImageResource(const std::string& filename)
-        {
-            stbi_set_flip_vertically_on_load(1);
-            int width, height;
-            data = stbi_load(filename.c_str(), &width, &height, nullptr, 4);
-        }
-
-        ~StbImageResource()
-        {
-            stbi_image_free(data);
-        }
-
-        uint8_t* data;
-    };
-
     std::optional<TextureView> setData(const void* data, const GLsizeiptr offsetDepth) const noexcept;
 
     GLuint m_handle;

@@ -7,11 +7,12 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <stb_image.h>
 
 #include <cstdlib>
 #include <iostream>
 #include <iomanip>
-#include <string>
+#include <string_view>
 
 //------------------------------------------------------------------------
 // Macros.
@@ -23,6 +24,86 @@
 
 namespace util
 {
+
+//------------------------------------------------------------------------
+
+template<typename T>
+concept IsValidStbImageDataFormat = (
+    std::is_same_v<T, stbi_uc> || std::is_same_v<T, stbi_us> || std::is_same_v<T, float>
+);
+
+//------------------------------------------------------------------------
+// RAII wrapper for stb_image load & load_from_memory functionality.
+
+template<typename T = stbi_uc>
+requires IsValidStbImageDataFormat<T>
+class StbImageResource
+{
+public:
+    StbImageResource(std::string_view filename)
+    {
+        stbi_set_flip_vertically_on_load(1);
+        m_data = load(filename.data());
+    }
+
+    StbImageResource(const T* data, const int size)
+    {
+        stbi_set_flip_vertically_on_load(1);
+        m_data = loadFromMemory(data, len);
+    }
+
+    ~StbImageResource()
+    {
+        stbi_image_free(m_data);
+    }
+
+    inline int getWidth() const noexcept
+    {
+        return m_width;
+    }
+
+    inline int getHeight() const noexcept
+    {
+        return m_height;
+    }
+
+    inline T* mutData() const noexcept
+    {
+        return m_data;
+    }
+
+    inline const T* data() const noexcept
+    {
+        return m_data;
+    }
+
+private:
+    inline T* load(const char* filename) noexcept
+    {
+        if constexpr (std::is_same_v<T, stbi_uc>)
+            return stbi_load(filename, &m_width, &m_height, nullptr, 4);
+        else if (std::is_same_v<T, stbi_us>)
+            return stbi_load_16(filename, &m_width, &m_height, nullptr, 4);
+        else
+            return stbi_loadf(filename, &m_width, &m_height, nullptr, 4);
+    }
+
+    inline T* loadFromMemory(const T* buffer, const int len) noexcept
+    {
+        if constexpr (std::is_same_v<T, stbi_uc>)
+            return stbi_load_from_memory(buffer, len, &m_width, &m_height, nullptr, 4);
+        else if (std::is_same_v<T, stbi_us>)
+            return stbi_load_16_from_memory(buffer, len, &m_width, &m_height, nullptr, 4);
+        else
+            return stbi_loadf_from_memory(buffer, len, &m_width, &m_height, nullptr, 4);
+    }
+
+    int m_width = 0;
+    int m_height = 0;
+    T* m_data = nullptr;
+};
+
+//------------------------------------------------------------------------
 
 inline glm::vec3 makeUnitVec3x() noexcept
 {
@@ -81,6 +162,8 @@ inline std::uint32_t makeNegUnitVec3zPacked() noexcept
 {
     return vec4_to_INT_2_10_10_10_REV(glm::vec4(-makeUnitVec3z(), 0.0f));
 }
+
+//------------------------------------------------------------------------
 
 }  // namespace util
 

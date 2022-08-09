@@ -6,10 +6,6 @@
 #include <map>
 #include <span>
 
-
-namespace sm
-{
-
 //------------------------------------------------------------------------
 // As per https://www.khronos.org/opengl/wiki/Vertex_Rendering#Indirect_rendering
 
@@ -70,7 +66,7 @@ public:
         const GLsizei sizeBytes = sizeof(T) * size;
         const auto start = m_writeOffsetBytes;
         m_writeOffsetBytes += computeWriteOffsetIncrement(sizeBytes);
-        return std::span(static_cast<T*>(mapRange(start, sizeBytes)), size);
+        return std::span(mapRange(start, sizeBytes), size);
     }
 
     inline void bind() const noexcept
@@ -83,17 +79,17 @@ public:
         glBindBufferBase(BufferType, bindingIndex, m_handle);
     }
 
+    inline T* map() const noexcept
+    {
+        return static_cast<T*>(glMapNamedBuffer(m_handle, m_accessFlags));
+    }
+
+    inline T* mapRange(const GLintptr offsetBytes, const GLsizei size) const noexcept
+    {
+        return static_cast<T*>(glMapNamedBufferRange(m_handle, offsetBytes, size, m_accessFlags));
+    }
+
     // Persistently mapped buffers only, thus unmapping would serve no purpose.
-
-    inline void* map() const noexcept
-    {
-        return glMapNamedBuffer(m_handle, m_accessFlags);
-    }
-
-    inline void* mapRange(const GLintptr offsetBytes, const GLsizei size) const noexcept
-    {
-        return glMapNamedBufferRange(m_handle, offsetBytes, size, m_accessFlags);
-    }
 
     inline GLuint getHandle() const noexcept
     {
@@ -142,5 +138,3 @@ private:
 };
 
 //------------------------------------------------------------------------
-
-}  // namespace sm

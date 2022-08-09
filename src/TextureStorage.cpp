@@ -1,5 +1,7 @@
 #include "TextureStorage.hpp"
 
+#include "util.hpp"
+
 //------------------------------------------------------------------------
 
 TextureStorage::TextureStorage(const Settings& settings)
@@ -39,13 +41,13 @@ std::optional<TextureView> TextureStorage::setDataByOffset(const void* data, con
 
 //------------------------------------------------------------------------
 
-std::optional<TextureView> TextureStorage::setDataFromFileByOffset(const std::string& filename, const GLsizeiptr offsetDepth) const noexcept
+std::optional<TextureView> TextureStorage::setDataFromFileByOffset(std::string_view filename, const GLsizeiptr offsetDepth) const noexcept
 {
     if (offsetDepth < 0 || m_settings.depth < offsetDepth)
         return std::nullopt;
 
-    const auto image = StbImageResource(filename);
-    return setData(image.data, offsetDepth);
+    const auto image = util::StbImageResource<>(filename);
+    return setData(image.data(), offsetDepth);
 }
 
 //------------------------------------------------------------------------
@@ -60,13 +62,13 @@ std::optional<TextureView> TextureStorage::pushData(const void* data) const noex
 
 //------------------------------------------------------------------------
 
-std::optional<TextureView> TextureStorage::pushDataFromFile(const std::string& filename) const noexcept
+std::optional<TextureView> TextureStorage::pushDataFromFile(std::string_view filename) const noexcept
 {
     if (!fits())
         return std::nullopt;
 
-    const auto image = StbImageResource(filename);
-    return setData(image.data, m_writeOffsetDepth++);
+    const auto image = util::StbImageResource<>(filename);
+    return setData(image.data(), m_writeOffsetDepth++);
 }
 
 //------------------------------------------------------------------------
