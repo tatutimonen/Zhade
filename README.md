@@ -1,4 +1,4 @@
-# Shadow Mapper
+# Zhade
 
 A WIP rasterization-based renderer utilizing modern OpenGL. Currently under development:
 
