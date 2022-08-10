@@ -7,7 +7,7 @@
 #include <span>
 
 //------------------------------------------------------------------------
-// As per https://www.khronos.org/opengl/wiki/Vertex_Rendering#Indirect_rendering
+// As per https://www.khronos.org/opengl/wiki/Vertex_Rendering#Indirect_rendering.
 
 struct MultiDrawElementsIndirectCommand
 {
@@ -28,8 +28,6 @@ concept IsSupportedGlBufferEnum = (
         || BufferType == GL_SHADER_STORAGE_BUFFER
         || BufferType == GL_DRAW_INDIRECT_BUFFER
 );
-
-//------------------------------------------------------------------------
 
 template<typename T, const GLenum BufferType>
 requires IsSupportedGlBufferEnum<BufferType>

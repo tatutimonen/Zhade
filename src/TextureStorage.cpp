@@ -84,10 +84,7 @@ std::optional<TextureView> TextureStorage::setData(const void* data, const GLsiz
         data
     );
 
-    const auto view = TextureView({
-        .underlying = weak_from_this(),
-        .offset = offsetDepth
-    });
+    const auto view = TextureView({ .underlying = weak_from_this(), .offset = offsetDepth });
     glTextureView(
         view.getHandle(),
         GL_TEXTURE_2D,

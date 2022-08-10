@@ -13,15 +13,7 @@ class TextureStorage;
 class TextureView
 {
 public:
-    inline GLuint getHandle() const noexcept
-    {
-        return m_handle;
-    }
-
-    inline void generateMipmap() const noexcept
-    {
-        glGenerateTextureMipmap(m_handle);
-    }
+    inline GLuint getHandle() const noexcept { return m_handle; }
 
 private:
     struct StorageDetails

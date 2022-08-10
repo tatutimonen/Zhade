@@ -20,7 +20,7 @@ void App::init()
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     glfwWindowHint(GLFW_SAMPLES, 4);
 
-    m_window = glfwCreateWindow(s_windowWidth, s_windowHeight, name, nullptr, nullptr);
+    m_window = glfwCreateWindow(s_windowWidth, s_windowHeight, name.data(), nullptr, nullptr);
     glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwMakeContextCurrent(m_window);
     glfwSetKeyCallback(m_window, keyCallback);

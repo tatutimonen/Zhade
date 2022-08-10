@@ -17,9 +17,11 @@
 
 //------------------------------------------------------------------------
 
-class Camera {
+class Camera
+{
 public:
-    struct Settings {
+    struct Settings
+    {
         glm::vec3 center = glm::vec3(0.0f,  1.0f,  3.0f);
         glm::vec3 target = glm::vec3(0.0f,  0.0f, -1.0f);
         glm::vec3 up     = glm::vec3(0.0f,  1.0f,  0.0f);
@@ -29,7 +31,8 @@ public:
         virtual ~Settings() = default;
     };
 
-    struct Matrices {
+    struct Matrices
+    {
         glm::mat4 V = glm::mat4(1.0f);
         glm::mat4 P = glm::mat4(1.0f);
     };

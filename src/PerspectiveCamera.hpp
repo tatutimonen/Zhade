@@ -2,15 +2,16 @@
 
 //------------------------------------------------------------------------
 
-class PerspectiveCamera final : public Camera {
+class PerspectiveCamera final : public Camera
+{
 public:
-    struct Settings final : Camera::Settings {
+    struct Settings final : Camera::Settings
+    {
         float fov;
         float aspectRatio;
 
-        Settings(std::unique_ptr<Camera::Settings> baseSettings = std::make_unique<Camera::Settings>(),
-            float fov = 70.0f,
-            float aspectRatio = static_cast<float>(App::s_windowWidth) / static_cast<float>(App::s_windowHeight))
+        Settings(std::unique_ptr<Camera::Settings> baseSettings = std::make_unique<Camera::Settings>(), const float fov = 70.0f,
+                 const float aspectRatio = static_cast<float>(App::s_windowWidth) / static_cast<float>(App::s_windowHeight))
             : Camera::Settings(std::move(*baseSettings)),
               fov{fov},
               aspectRatio{aspectRatio}
