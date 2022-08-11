@@ -30,7 +30,6 @@ target_link_libraries(App
             glfw
             glm::glm
             assimp::assimp
-            ${STB_INCLUDE_DIRS}
             imgui::imgui
 )
 
