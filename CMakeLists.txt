@@ -26,9 +26,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Libraries.
 
 find_package(GLEW CONFIG REQUIRED)
-find_package(glfw3 3.3.6 CONFIG REQUIRED)
+find_package(glfw3 CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
-find_package(assimp 5.0.1 CONFIG REQUIRED)
+find_package(assimp CONFIG REQUIRED)
 find_path(STB_INCLUDE_DIRS "stb_c_lexer.h")
 find_package(imgui CONFIG REQUIRED)
 
