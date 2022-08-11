@@ -1,0 +1,10 @@
+{
+    "dependencies": [
+        { "name": "glew" },
+        { "name": "glfw3" },
+        { "name": "glm" },
+        { "name": "assimp" },
+        { "name": "stb" },
+        { "name": "imgui" }
+    ]
+}
