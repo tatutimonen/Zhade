@@ -5,7 +5,6 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string_view>

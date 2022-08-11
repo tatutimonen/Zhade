@@ -1,6 +1,6 @@
 #include "TextureStorage.hpp"
 
-#include "util.hpp"
+#include "StbImageResource.hpp"
 
 //------------------------------------------------------------------------
 
@@ -46,7 +46,7 @@ std::optional<TextureView> TextureStorage::setDataFromFileByOffset(std::string_v
     if (offsetDepth < 0 || m_settings.depth < offsetDepth)
         return std::nullopt;
 
-    const auto image = util::StbImageResource<>(filename);
+    const auto image = StbImageResource<>(filename);
     return setData(image.data(), offsetDepth);
 }
 
@@ -67,7 +67,7 @@ std::optional<TextureView> TextureStorage::pushDataFromFile(std::string_view fil
     if (!fits())
         return std::nullopt;
 
-    const auto image = util::StbImageResource<>(filename);
+    const auto image = StbImageResource<>(filename);
     return setData(image.data(), m_writeOffsetDepth++);
 }
 
