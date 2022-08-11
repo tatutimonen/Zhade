@@ -14,9 +14,9 @@ A WIP rasterization-based renderer utilizing modern OpenGL. Currently under deve
 
    1. Ensure you have CMake version ≥ 3.17
 
-   2. Clone the repository, along with its submodules: ```git clone --recurse-submodules```
+   2. Clone the repository, along with its submodules
 
-   3. Do ```mkdir build; cd build; cmake ..``` to generate platform-specific project files
+   3. Do ```mkdir build; cd build; cmake ..``` to generate platform-specific project files. Note that on Windows you need to specify the target architecture for CMake as ```Win32```.
 
    4. Build with, e.g., ```cmake --build .```. Note that some compilers such as MSVC support different build configurations. You may provide these as further options. For example, amend the previous with ```--config Release``` to build with Release configuration on MSVC.
 
