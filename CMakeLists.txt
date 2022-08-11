@@ -25,7 +25,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #-------------------------------------------------------------------------
 # Libraries.
 
-find_package(OpenGL REQUIRED)
 find_package(GLEW CONFIG REQUIRED)
 find_package(glfw3 3.3.6 CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
