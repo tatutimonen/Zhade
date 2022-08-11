@@ -12,50 +12,26 @@ if(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
 #-------------------------------------------------------------------------
-# Project definition, modules, packages.
+# Toolchain, project definition, modules, packages.
 
-project(shadow-mapper CXX)
+set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+    CACHE STRING "Vcpkg toolchain file"
+)
+
+project(Zhade CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-list(APPEND CMAKE_MODULE_PATH "{CMAKE_SOURCE_DIR}/cmake")
-
-find_package(OpenMP REQUIRED)
 
 #-------------------------------------------------------------------------
 # Libraries.
 
-set(lib_dir ${CMAKE_SOURCE_DIR}/lib)
-
-# GLEW.
-add_compile_definitions(GLEW_STATIC)
-add_subdirectory(${lib_dir}/glew EXCLUDE_FROM_ALL)
-
-# GLFW.
-add_subdirectory(${lib_dir}/glfw EXCLUDE_FROM_ALL)
-
-# GLM.
-add_subdirectory(${lib_dir}/glm EXCLUDE_FROM_ALL)
-
-# Assimp.
-add_subdirectory(${lib_dir}/assimp EXCLUDE_FROM_ALL)
-
-# ImGui.
-set(imgui_src_dir ${lib_dir}/imgui/backends)
-set(imgui_impl_files ${imgui_src_dir}/imgui_impl_opengl3.cpp)
-if(MSVC)
-    list(APPEND imgui_impl_files ${imgui_src_dir}/imgui_impl_win32.cpp)
-else()
-    list(APPEND imgui_impl_files ${imgui_src_dir}/imgui_impl_glfw.cpp)
-endif()
-add_library(imgui STATIC ${imgui_impl_files})
-target_include_directories(imgui PRIVATE ${lib_dir}/imgui)
-if(NOT MSVC)
-    target_link_libraries(imgui PRIVATE glfw)
-endif()
-
-# stb.
-add_library(stb_image STATIC ${lib_dir}/stb_image/stb_image.cpp)
+find_package(OpenGL REQUIRED)
+find_package(GLEW CONFIG REQUIRED)
+find_package(glfw3 3.3.6 CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
+find_package(assimp 5.0.1 CONFIG REQUIRED)
+find_path(STB_INCLUDE_DIRS "stb_c_lexer.h")
+find_package(imgui CONFIG REQUIRED)
 
 #-------------------------------------------------------------------------
 

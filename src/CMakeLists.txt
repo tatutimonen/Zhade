@@ -9,6 +9,7 @@ set(src_files
     PerspectiveCamera.cpp
     Shader.cpp
     ShaderProgram.cpp
+    StbImageResource.cpp
     TextureStorage.cpp
     TextureView.cpp
     UniformBuffer.cpp
@@ -25,20 +26,12 @@ set(src_files
 add_executable(App ${src_files})
 
 target_link_libraries(App
-    PRIVATE libglew_static
+    PRIVATE GLEW::GLEW
             glfw
-            glm
-            stb_image
-            assimp
-            imgui
-)
-target_include_directories(App
-    PRIVATE ${lib_dir}/glew/include
-            ${lib_dir}/glfw/include
-            ${lib_dir}/glm/glm
-            ${lib_dir}/stb_image
-            ${lib_dir}/assimp/include
-            ${lib_dir}/imgui
+            glm::glm
+            assimp::assimp
+            ${STB_INCLUDE_DIRS}
+            imgui::imgui
 )
 
 #-------------------------------------------------------------------------

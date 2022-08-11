@@ -1,12 +1,12 @@
-# Editor
+# Editor.
 .vscode/
 
-# Build
+# Build.
 [Bb]uild/
 
-# CMake
+# CMake.
 CMakeFiles/
 CMakeCache.txt
 
-# Misc
+# Misc.
 memo/
