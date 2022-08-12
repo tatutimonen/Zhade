@@ -4,8 +4,6 @@
 
 #include <GL/glew.h>
 
-#include <cassert>
-#include <cstdint>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -98,10 +96,10 @@ public:
 
     template<DataType T>
     static constexpr GLenum getDataTypeAsGlEnum()
-	{
-		switch constexpr (T)
-		{
-		case DataType::Float:
+    {
+        switch constexpr (T)
+        {
+        case DataType::Float:
         case DataType::Vec2f:
         case DataType::Vec3f:
         case DataType::Vec4f:
@@ -119,8 +117,8 @@ public:
                                             return GL_UNSIGNED_INT_2_10_10_10_REV;
         default:
                                             return 0;
-		}
-	}
+        }
+    }
 
     Shader(std::string_view filename)
     {
