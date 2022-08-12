@@ -16,8 +16,10 @@ A WIP rasterization-based renderer utilizing modern OpenGL. Currently under deve
 
    2. Clone the repository, along with its submodules
 
-   3. Do ```mkdir build; cd build; cmake ..``` to generate platform-specific project files. Note that on Windows you need to specify the target architecture for CMake as ```Win32```.
+   3. Do ```./vcpkg/vcpkg/bootstrap-vcpkg.sh -disableMetrics``` or ```.\vcpkg\bootstrap-vcpkg.bat``` depending on your platform
 
-   4. Build with, e.g., ```cmake --build .```. Note that some compilers such as MSVC support different build configurations. You may provide these as further options. For example, amend the previous with ```--config Release``` to build with Release configuration on MSVC.
+   4. Do ```mkdir build; cd build; cmake ..``` to generate platform-specific project files. Note that on Windows you need to specify the target architecture for CMake as ```Win32```.
 
-   5. Run the executable
+   5. Build with, e.g., ```cmake --build .```. Note that some compilers such as MSVC support different build configurations. You may provide these as further options. For example, amend the previous with ```--config Release``` to build with Release configuration on MSVC.
+
+   6. Run the executable
