@@ -29,6 +29,9 @@ concept IsSupportedGlBufferEnum = (
         || BufferType == GL_DRAW_INDIRECT_BUFFER
 );
 
+//------------------------------------------------------------------------
+// Generic OpenGL buffer. Persistently mapped.
+
 template<typename T, const GLenum BufferType>
 requires IsSupportedGlBufferEnum<BufferType>
 class Buffer
@@ -53,12 +56,12 @@ public:
     Buffer& operator=(const Buffer&) = delete;
     Buffer& operator=(Buffer&&) = default;
 
-    inline void setData(const void* data, const GLsizei size, const GLintptr offsetBytes) const noexcept
+    void setData(const void* data, const GLsizei size, const GLintptr offsetBytes) const noexcept
     {
         glNamedBufferSubData(m_handle, offsetBytes, sizeof(T) * size, data);
     }
 
-    [[nodiscard]] inline std::span<T> pushData(const void* data, const GLsizei size) const noexcept
+    [[nodiscard]] std::span<T> pushData(const void* data, const GLsizei size) const noexcept
     {
         setData(data, size, m_writeOffsetBytes);
         const GLsizei sizeBytes = sizeof(T) * size;
@@ -67,41 +70,39 @@ public:
         return std::span(mapRange(start, sizeBytes), size);
     }
 
-    inline void bind() const noexcept
+    void bind() const noexcept
     {
         glBindBuffer(BufferType, m_handle);
     }
 
-    inline void bindBase(const GLuint bindingIndex) const noexcept
+    void bindBase(const GLuint bindingIndex) const noexcept
     {
         glBindBufferBase(BufferType, bindingIndex, m_handle);
     }
 
-    inline T* map() const noexcept
+    [[nodiscard]] T* map() const noexcept
     {
         return static_cast<T*>(glMapNamedBuffer(m_handle, m_accessFlags));
     }
 
-    inline T* mapRange(const GLintptr offsetBytes, const GLsizei size) const noexcept
+    [[nodiscard]] T* mapRange(const GLintptr offsetBytes, const GLsizei size) const noexcept
     {
         return static_cast<T*>(glMapNamedBufferRange(m_handle, offsetBytes, size, m_accessFlags));
     }
 
-    // Persistently mapped buffers only, thus unmapping would serve no purpose.
-
-    inline GLuint getHandle() const noexcept
+    [[nodiscard]] GLuint getHandle() const noexcept
     {
         return m_handle;
     }
 
-    inline bool fits(const GLsizei sizeBytes) const noexcept
+    [[nodiscard]] bool fits(const GLsizei sizeBytes) const noexcept
     {
         return m_writeOffsetBytes + sizeBytes <= m_wholeSizeBytes;
     }
 
     // GL functions are C and thus not constexpr-compliant, which means alignment info is unavailable at compile-time.
 
-    static inline std::map<GLenum, GLint> makeAlignmentTable() noexcept
+    [[nodiscard]] static std::map<GLenum, GLint> makeAlignmentTable() noexcept
     {
         auto table = std::map<GLenum, GLint>{
             { GL_ARRAY_BUFFER, 1 },
@@ -123,7 +124,7 @@ public:
     static inline const std::map<GLenum, GLint> s_alignmentTable = makeAlignmentTable();
 
 private:
-    GLsizeiptr computeWriteOffsetIncrement(const GLsizei sizeBytes) const noexcept
+    [[nodiscard]] GLsizeiptr computeWriteOffsetIncrement(const GLsizei sizeBytes) const noexcept
     {
         return static_cast<GLsizeiptr>(std::ceil(static_cast<float>(sizeBytes) / m_alignment) * m_alignment);
     }

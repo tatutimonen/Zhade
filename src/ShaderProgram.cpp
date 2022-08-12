@@ -2,8 +2,8 @@
 
 //------------------------------------------------------------------------
 
-ShaderProgram::ShaderProgram(const Shader& vertexShader, const Shader& fragmentShader,
-    const std::optional<Shader>& geometryShader)
+ShaderProgram::ShaderProgram(const Shader<GL_VERTEX_SHADER>& vertexShader, const Shader<GL_FRAGMENT_SHADER>& fragmentShader,
+        const std::optional<Shader<GL_GEOMETRY_SHADER>>& geometryShader)
     : m_handle{glCreateProgram()}
 {
     vertexShader.attach(m_handle);
@@ -26,84 +26,9 @@ ShaderProgram::~ShaderProgram()
 
 //------------------------------------------------------------------------
 
-template<typename T>
-void ShaderProgram::setUniform(const std::string& name, const void* data) const noexcept
-{
-    std::ostringstream errMsg;
-    errMsg << "Invalid uniform variable type "
-           << "(" << typeid(T).name() << ")\n";
-    std::cerr << errMsg.str();
-}
-
-template<>
-void ShaderProgram::setUniform<int32_t>(const std::string& name, const void* data) const noexcept
-{
-    use();
-    glUniform1i(getUniformLocation(name), *reinterpret_cast<const int32_t*>(data));
-    unuse();
-}
-
-template<>
-void ShaderProgram::setUniform<float>(const std::string& name, const void* data) const noexcept
-{
-    use();
-    glUniform1f(getUniformLocation(name), *reinterpret_cast<const float*>(data));
-    unuse();
-}
-
-template<>
-void ShaderProgram::setUniform<glm::vec2>(const std::string& name, const void* data) const noexcept
-{
-    use();
-    glUniform2fv(getUniformLocation(name), 1, reinterpret_cast<const float*>(data));
-    unuse();
-}
-
-template<>
-void ShaderProgram::setUniform<glm::vec3>(const std::string& name, const void* data) const noexcept
-{
-    use();
-    glUniform3fv(getUniformLocation(name), 1, reinterpret_cast<const float*>(data));
-    unuse();
-}
-
-template<>
-void ShaderProgram::setUniform<glm::vec4>(const std::string& name, const void* data) const noexcept
-{
-    use();
-    glUniform4fv(getUniformLocation(name), 1, reinterpret_cast<const float*>(data));
-    unuse();
-}
-
-template<>
-void ShaderProgram::setUniform<glm::mat3>(const std::string& name, const void* data) const noexcept
-{
-    use();
-    glUniformMatrix3fv(getUniformLocation(name), 1, GL_FALSE, reinterpret_cast<const float*>(data));
-    unuse();
-}
-
-template<>
-void ShaderProgram::setUniform<glm::mat4x3>(const std::string& name, const void* data) const noexcept
-{
-    use();
-    glUniformMatrix4x3fv(getUniformLocation(name), 1, GL_FALSE, reinterpret_cast<const float*>(data));
-    unuse();
-}
-
-template<>
-void ShaderProgram::setUniform<glm::mat4>(const std::string& name, const void* data) const noexcept
-{
-    use();
-    glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, reinterpret_cast<const float*>(data));
-    unuse();
-}
-
-//------------------------------------------------------------------------
-
 GLint ShaderProgram::getUniformLocation(const std::string& name) const noexcept
 {
-    if (m_uniformLocationCache.find(name) != m_uniformLocationCache.end())
+    if (m_uniformLocationCache.contains(name))
         return m_uniformLocationCache.at(name);
 
     GLint location = glGetUniformLocation(m_handle, name.c_str());
@@ -124,9 +49,7 @@ GLint ShaderProgram::getUniformLocation(const std::string& name) const noexcept
 void ShaderProgram::link() const noexcept
 {
     glLinkProgram(m_handle);
-
     glGetProgramiv(m_handle, GL_LINK_STATUS, &m_linkStatus);
-    
     if (!m_linkStatus)
     {
         GLint logLength;

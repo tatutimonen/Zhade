@@ -23,25 +23,25 @@ public:
     StbImageResource(std::string_view filename)
     {
         stbi_set_flip_vertically_on_load(1);
-        m_data = load(filename.data());
+        m_data = load(filename);
     }
 
     ~StbImageResource() { stbi_image_free(m_data); }
 
-    inline int getWidth() const noexcept { return m_width; }
-    inline int getHeight() const noexcept { return m_height; }
-    inline T* mutData() const noexcept { return m_data; }
-    inline const T* data() const noexcept { return m_data; }
+    [[nodiscard]] int getWidth() const noexcept { return m_width; }
+    [[nodiscard]] int getHeight() const noexcept { return m_height; }
+    [[nodiscard]] T* mutData() const noexcept { return m_data; }
+    [[nodiscard]] const T* data() const noexcept { return m_data; }
 
 private:
-    inline T* load(const char* filename) noexcept
+    [[nodiscard]] T* load(std::string_view filename) const noexcept
     {
         if constexpr (std::is_same_v<T, stbi_uc>)
-            return stbi_load(filename, &m_width, &m_height, nullptr, 4);
+            return stbi_load(filename.data(), &m_width, &m_height, nullptr, 4);
         else if (std::is_same_v<T, stbi_us>)
-            return stbi_load_16(filename, &m_width, &m_height, nullptr, 4);
-        else
-            return stbi_loadf(filename, &m_width, &m_height, nullptr, 4);
+            return stbi_load_16(filename.data(), &m_width, &m_height, nullptr, 4);
+        else if (std::is_same_v<T, float>)
+            return stbi_loadf(filename.data(), &m_width, &m_height, nullptr, 4);
     }
 
     int m_width = 0;
