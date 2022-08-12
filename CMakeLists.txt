@@ -34,6 +34,6 @@ find_package(imgui CONFIG REQUIRED)
 
 #-------------------------------------------------------------------------
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/src App)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src ${PROJECT_NAME})
 
 #-------------------------------------------------------------------------

@@ -23,9 +23,8 @@ set(src_files
 #-------------------------------------------------------------------------
 # Executable definition, library linking, etc.
 
-add_executable(App ${src_files})
-
-target_link_libraries(App
+add_executable(${PROJECT_NAME} ${src_files})
+target_link_libraries(${PROJECT_NAME}
     PRIVATE GLEW::GLEW
             glfw
             glm::glm
