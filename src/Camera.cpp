@@ -1,5 +1,8 @@
 #include "Camera.hpp"
 
+#include "constants.hpp"
+#include "util.hpp"
+
 //------------------------------------------------------------------------
 
 namespace Zhade

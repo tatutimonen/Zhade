@@ -5,7 +5,6 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-#include <memory>
 #include <optional>
 #include <string_view>
 
@@ -34,19 +33,19 @@ public:
     */
     struct Settings
     {
-        const GLsizei levels;
-        const GLenum internalformat;
-        const GLsizei width;
-        const GLsizei height;
-        const GLsizei depth;
+        GLsizei levels;
+        GLenum internalformat;
+        GLsizei width;
+        GLsizei height;
+        GLsizei depth;
 
-        const GLenum format;
-        const GLenum type;
+        GLenum format;
+        GLenum type;
 
-        const GLenum minFilter;
-        const GLenum magFilter;
-        const GLenum wrapS;
-        const GLenum wrapT;
+        GLenum minFilter;
+        GLenum magFilter;
+        GLenum wrapS;
+        GLenum wrapT;
 
         static Settings makeDefaultOfSize(const glm::ivec3& dims)
         {
@@ -68,30 +67,16 @@ public:
 
     TextureStorage(const Settings& settings = Settings::makeDefaultOfSize(glm::ivec3(256, 256, 128)));
     ~TextureStorage();
+
     TextureStorage(const TextureStorage&) = delete;
     TextureStorage(TextureStorage&&) = default;
     TextureStorage& operator=(const TextureStorage&) = delete;
     TextureStorage& operator=(TextureStorage&&) = default;
 
-    inline const Settings& getSettings()
-    {
-        return m_settings;
-    }
-
-    inline void bindToUnit(const GLuint unit) const noexcept
-    {
-        glBindTextureUnit(unit, m_handle);
-    }
-
-    inline void generateMipmap() const noexcept
-    {
-        glGenerateTextureMipmap(m_handle);
-    }
-
-    inline bool fits(const uint32_t numTextures = 1) const noexcept
-    {
-        return numTextures < m_settings.depth - m_writeOffsetDepth;
-    }
+    const Settings& getSettings() const noexcept { return m_settings; }
+    void bindToUnit(const GLuint unit) const noexcept { glBindTextureUnit(unit, m_handle); }
+    void generateMipmap() const noexcept { glGenerateTextureMipmap(m_handle); }
+    bool fits(const uint32_t numTextures = 1) const noexcept { return numTextures < m_settings.depth - m_writeOffsetDepth; }
 
     std::optional<TextureView> setDataByOffset(const void* data, const GLsizeiptr offsetDepth) const noexcept;
     std::optional<TextureView> setDataFromFileByOffset(std::string_view filename, const GLsizeiptr offsetDepth) const noexcept;

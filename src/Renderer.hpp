@@ -1,19 +1,10 @@
 #pragma once
 
-#include "Mesh.hpp"
 #include "ShaderProgram.hpp"
 
 #include <GL/glew.h>
 
 #include <memory>
-
-//------------------------------------------------------------------------
-
-struct RenderingTask {
-    GLuint target = 0;  // 0 = default framebuffer
-    GLuint program;
-    std::shared_ptr<Mesh> mesh;
-};
 
 //------------------------------------------------------------------------
 

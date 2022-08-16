@@ -3,17 +3,11 @@
 #include "App.hpp"
 #include "ShaderProgram.hpp"
 #include "UniformBuffer.hpp"
-#include "constants.hpp"
-#include "util.hpp"
 
-#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <algorithm>
 #include <memory>
-#include <set>
 
 //------------------------------------------------------------------------
 
@@ -52,6 +46,7 @@ public:
     {
         m_matrices.V = glm::lookAt(m_settings->center, m_settings->center + m_settings->target, m_settings->up);
     }
+
     virtual void updateProjectivity() = 0;
 
     void tick() noexcept;

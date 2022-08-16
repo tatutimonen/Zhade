@@ -1,5 +1,7 @@
 #include "ShaderProgram.hpp"
 
+#include <iostream>
+
 //------------------------------------------------------------------------
 
 namespace Zhade

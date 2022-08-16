@@ -5,14 +5,11 @@
 #include "ShaderProgram.hpp"
 #include "TextureStorage.hpp"
 #include "TextureView.hpp"
-#include "UniformBuffer.hpp"
 #include "common.hpp"
 #include "constants.hpp"
-#include "util.hpp"
 
 #include <assimp/cimport.h>
 #include <assimp/scene.h>
-#include <stb_image.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>

@@ -6,7 +6,6 @@
 #include <glm/gtc/constants.hpp>
 
 #include <array>
-#include <memory>
 #include <string_view>
 
 //------------------------------------------------------------------------
