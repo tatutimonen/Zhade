@@ -12,9 +12,108 @@
 #include <string_view>
 
 //------------------------------------------------------------------------
+
+namespace Zhade
+{
+
+//------------------------------------------------------------------------
+
+enum class ShaderDataType
+{
+    Float, Vec2f, Vec3f, Vec4f, Mat3f, Mat4f,
+    Int,   Vec2i, Vec3i, Vec4i,
+    Bool,
+    Uint_2_10_10_10_Rev
+};
+
+template<ShaderDataType T>
+static constexpr size_t getShaderDataTypeSizeBytes()
+{
+    switch constexpr (T)
+    {
+    case ShaderDataType::Float:
+    case ShaderDataType::Int:
+    case ShaderDataType::Uint_2_10_10_10_Rev:
+                                              return 4;
+    case ShaderDataType::Vec2f:
+    case ShaderDataType::Vec2i:
+                                              return 4 * 2;
+    case ShaderDataType::Vec3f:
+    case ShaderDataType::Vec3i:
+                                              return 4 * 3;
+    case ShaderDataType::Vec4f:
+    case ShaderDataType::Vec4i:
+                                              return 4 * 4;
+    case ShaderDataType::Mat3f:
+                                              return 4 * 3 * 3;
+    case ShaderDataType::Mat4f:
+                                              return 4 * 4 * 4;
+    case ShaderDataType::Bool:
+                                              return 1;
+    default:
+                                              return 0;
+    }
+}
+
+template<ShaderDataType T>
+static constexpr size_t getShaderShaderDataTypeSize()
+{
+    switch constexpr (T)
+    {
+    case ShaderDataType::Float:
+    case ShaderDataType::Int:
+                                              return 1;
+    case ShaderDataType::Vec2f:
+    case ShaderDataType::Vec2i:
+                                              return 2;
+    case ShaderDataType::Vec3f:
+    case ShaderDataType::Vec3i:
+                                              return 3;
+    case ShaderDataType::Vec4f:
+    case ShaderDataType::Vec4i:
+    case ShaderDataType::Uint_2_10_10_10_Rev:
+                                              return 4;
+    case ShaderDataType::Mat3f:
+                                              return 3 * 3;
+    case ShaderDataType::Mat4f:
+                                              return 4 * 4;
+    case ShaderDataType::Bool:
+                                              return 1;
+    default:
+                                              return 0;
+    }
+}
+
+template<ShaderDataType T>
+static constexpr GLenum getShaderShaderDataTypeAsGlEnum()
+{
+    switch constexpr (T)
+    {
+    case ShaderDataType::Float:
+    case ShaderDataType::Vec2f:
+    case ShaderDataType::Vec3f:
+    case ShaderDataType::Vec4f:
+    case ShaderDataType::Mat3f:
+    case ShaderDataType::Mat4f:
+                                              return GL_FLOAT;
+    case ShaderDataType::Int:
+    case ShaderDataType::Vec2i:
+    case ShaderDataType::Vec3i:
+    case ShaderDataType::Vec4i:
+                                              return GL_INT;
+    case ShaderDataType::Bool:
+                                              return GL_BOOL;
+    case ShaderDataType::Uint_2_10_10_10_Rev:
+                                              return GL_UNSIGNED_INT_2_10_10_10_REV;
+    default:
+                                              return 0;
+    }
+}
+
+//------------------------------------------------------------------------
 // Only support geometry stage as extra at this point.
 
-template<const GLenum ShaderType>
+template<GLenum ShaderType>
 concept IsValidGlShaderType = (
     ShaderType == GL_VERTEX_SHADER
         || ShaderType == GL_GEOMETRY_SHADER
@@ -23,116 +122,24 @@ concept IsValidGlShaderType = (
 
 //------------------------------------------------------------------------
 
-template<const GLenum ShaderType>
+template<GLenum ShaderType>
 requires IsValidGlShaderType<ShaderType>
 class Shader
 {
 public:
-    enum class DataType
-    {
-        Float, Vec2f, Vec3f, Vec4f, Mat3f, Mat4f,
-        Int,   Vec2i, Vec3i, Vec4i,
-        Bool,
-        Uint_2_10_10_10_Rev
-    };
-
-    template<DataType T>
-    static constexpr size_t getDataTypeSizeBytes()
-    {
-        switch constexpr (T)
-        {
-        case DataType::Float:
-        case DataType::Int:
-        case DataType::Uint_2_10_10_10_Rev:
-                                            return 4;
-        case DataType::Vec2f:
-        case DataType::Vec2i:
-                                            return 4 * 2;
-        case DataType::Vec3f:
-        case DataType::Vec3i:
-                                            return 4 * 3;
-        case DataType::Vec4f:
-        case DataType::Vec4i:
-                                            return 4 * 4;
-        case DataType::Mat3f:
-                                            return 4 * 3 * 3;
-        case DataType::Mat4f:
-                                            return 4 * 4 * 4;
-        case DataType::Bool:
-                                            return 1;
-        default:
-                                            return 0;
-        }
-    }
-
-    template<DataType T>
-    static constexpr uint32_t getDataTypeNumElements()
-    {
-        switch constexpr (T)
-        {
-        case DataType::Float:
-        case DataType::Int:
-                                            return 1;
-        case DataType::Vec2f:
-        case DataType::Vec2i:
-                                            return 2;
-        case DataType::Vec3f:
-        case DataType::Vec3i:
-                                            return 3;
-        case DataType::Vec4f:
-        case DataType::Vec4i:
-        case DataType::Uint_2_10_10_10_Rev:
-                                            return 4;
-        case DataType::Mat3f:
-                                            return 3 * 3;
-        case DataType::Mat4f:
-                                            return 4 * 4;
-        case DataType::Bool:
-                                            return 1;
-        default:
-                                            return 0;
-        }
-    }
-
-    template<DataType T>
-    static constexpr GLenum getDataTypeAsGlEnum()
-    {
-        switch constexpr (T)
-        {
-        case DataType::Float:
-        case DataType::Vec2f:
-        case DataType::Vec3f:
-        case DataType::Vec4f:
-        case DataType::Mat3f:
-        case DataType::Mat4f:
-                                            return GL_FLOAT;
-        case DataType::Int:
-        case DataType::Vec2i:
-        case DataType::Vec3i:
-        case DataType::Vec4i:
-                                            return GL_INT;
-        case DataType::Bool:
-                                            return GL_BOOL;
-        case DataType::Uint_2_10_10_10_Rev:
-                                            return GL_UNSIGNED_INT_2_10_10_10_REV;
-        default:
-                                            return 0;
-        }
-    }
-
     Shader(std::string_view filename)
     {
         parseShaderFile(filename);
         m_handle = glCreateShader(ShaderType);
         // glShaderSource needs an lvalue.
-        const char* shaderSourcePtr = m_shaderSource.c_str();
+        const auto shaderSourcePtr = m_shaderSource.c_str();
         glShaderSource(m_handle, 1, &shaderSourcePtr, nullptr);
         compile();
     }
 
     ~Shader()
     {
-        glDeleteShader(m_handle)
+        glDeleteShader(m_handle);
     }
 
     Shader(const Shader&) = default;
@@ -151,7 +158,7 @@ private:
         std::ifstream shaderFile;
         shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         
-        shaderFile.open(filename);
+        shaderFile.open(filename.data());
         std::ostringstream osstream;
         osstream << shaderFile.rdbuf();
         m_shaderSource = osstream.str();
@@ -161,7 +168,7 @@ private:
     void compile() const
     {
         glCompileShader(m_handle);
-        Glint status;
+        GLint status;
         glGetShaderiv(m_handle, GL_COMPILE_STATUS, &status);
         if (status == GL_FALSE)
         {
@@ -183,5 +190,9 @@ private:
     GLuint m_handle;
     std::string m_shaderSource;
 };
+
+//------------------------------------------------------------------------
+
+}  // namespace Zhade
 
 //------------------------------------------------------------------------

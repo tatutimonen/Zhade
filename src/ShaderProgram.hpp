@@ -13,6 +13,11 @@
 
 //------------------------------------------------------------------------
 
+namespace Zhade
+{
+
+//------------------------------------------------------------------------
+
 template<typename T>
 concept IsValidGlShaderDataType = (
     std::is_same_v<T, GLint>
@@ -33,6 +38,11 @@ public:
     ShaderProgram(const Shader<GL_VERTEX_SHADER>& vertexShader, const Shader<GL_FRAGMENT_SHADER>& fragmentShader,
         const std::optional<Shader<GL_GEOMETRY_SHADER>>& geometryShader = std::nullopt);
     ~ShaderProgram();
+
+    ShaderProgram(const ShaderProgram&) = delete;
+    ShaderProgram& operator=(const ShaderProgram&) = delete;
+    ShaderProgram(ShaderProgram&&) = default;
+    ShaderProgram& operator=(ShaderProgram&&) = default;
 
     [[nodiscard]] GLint getHandle() const noexcept { return m_handle; }
     [[nodiscard]] GLint getLinkStatus() const noexcept { return m_linkStatus; }
@@ -72,5 +82,9 @@ private:
     mutable GLint m_linkStatus;
     mutable std::map<std::string, GLint> m_uniformLocationCache;
 };
+
+//------------------------------------------------------------------------
+
+}  // namespace Zhade
 
 //------------------------------------------------------------------------

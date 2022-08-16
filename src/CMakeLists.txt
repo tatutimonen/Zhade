@@ -3,7 +3,6 @@
 
 set(src_files
     App.cpp
-    AttributeData.cpp
     Buffer.cpp
     Camera.cpp
     PerspectiveCamera.cpp
@@ -13,7 +12,6 @@ set(src_files
     TextureStorage.cpp
     TextureView.cpp
     UniformBuffer.cpp
-    VertexFormat.cpp
     common.cpp
     constants.cpp
     main.cpp

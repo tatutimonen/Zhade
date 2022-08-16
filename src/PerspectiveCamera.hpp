@@ -2,6 +2,11 @@
 
 //------------------------------------------------------------------------
 
+namespace Zhade
+{
+
+//------------------------------------------------------------------------
+
 class PerspectiveCamera final : public Camera
 {
 public:
@@ -11,7 +16,7 @@ public:
         float aspectRatio;
 
         Settings(std::unique_ptr<Camera::Settings> baseSettings = std::make_unique<Camera::Settings>(), const float fov = 70.0f,
-                 const float aspectRatio = static_cast<float>(App::s_windowWidth) / static_cast<float>(App::s_windowHeight))
+                 const float aspectRatio = static_cast<float>(App::s_windowWidth) / App::s_windowHeight)
             : Camera::Settings(std::move(*baseSettings)),
               fov{fov},
               aspectRatio{aspectRatio}
@@ -30,5 +35,9 @@ public:
 
     virtual inline const Camera::Settings& getSettings() const noexcept override { return *m_settings; }
 };
+
+//------------------------------------------------------------------------
+
+}  // namespace Zhade
 
 //------------------------------------------------------------------------

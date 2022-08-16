@@ -17,6 +17,11 @@
 
 //------------------------------------------------------------------------
 
+namespace Zhade
+{
+
+//------------------------------------------------------------------------
+
 class Camera
 {
 public:
@@ -39,11 +44,11 @@ public:
 
     virtual ~Camera() = default;
 
-    inline const glm::mat4& getView() const noexcept { return m_matrices.V; }
-    inline const glm::mat4& getProjectivity() const noexcept { return m_matrices.P; }
+    const glm::mat4& getView() const noexcept { return m_matrices.V; }
+    const glm::mat4& getProjectivity() const noexcept { return m_matrices.P; }
     virtual const Settings& getSettings() const = 0;
 
-    inline void updateView()
+    void updateView()
     {
         m_matrices.V = glm::lookAt(m_settings->center, m_settings->center + m_settings->target, m_settings->up);
     }
@@ -63,5 +68,9 @@ protected:
     Matrices m_matrices;
     UniformBuffer m_uniformBuffer;
 };
+
+//------------------------------------------------------------------------
+
+}  // namespace Zhade
 
 //------------------------------------------------------------------------

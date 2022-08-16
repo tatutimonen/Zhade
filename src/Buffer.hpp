@@ -20,7 +20,7 @@ struct MultiDrawElementsIndirectCommand
 
 //------------------------------------------------------------------------
 
-template<const GLenum BufferType>
+template<GLenum BufferType>
 concept IsSupportedGlBufferEnum = (
     BufferType == GL_ARRAY_BUFFER
         || BufferType == GL_ELEMENT_ARRAY_BUFFER
@@ -32,7 +32,7 @@ concept IsSupportedGlBufferEnum = (
 //------------------------------------------------------------------------
 // Generic OpenGL buffer. Persistently mapped.
 
-template<typename T, const GLenum BufferType>
+template<typename T, GLenum BufferType>
 requires IsSupportedGlBufferEnum<BufferType>
 class Buffer
 {

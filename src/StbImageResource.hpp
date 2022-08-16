@@ -7,6 +7,11 @@
 
 //------------------------------------------------------------------------
 
+namespace Zhade
+{
+
+//------------------------------------------------------------------------
+
 template<typename T>
 concept IsValidStbImageDataFormat = (
     std::is_same_v<T, stbi_uc> || std::is_same_v<T, stbi_us> || std::is_same_v<T, float>
@@ -34,7 +39,7 @@ public:
     [[nodiscard]] const T* data() const noexcept { return m_data; }
 
 private:
-    [[nodiscard]] T* load(std::string_view filename) const noexcept
+    [[nodiscard]] T* load(std::string_view filename) noexcept
     {
         if constexpr (std::is_same_v<T, stbi_uc>)
             return stbi_load(filename.data(), &m_width, &m_height, nullptr, 4);
@@ -48,5 +53,9 @@ private:
     int m_height = 0;
     T* m_data = nullptr;
 };
+
+//------------------------------------------------------------------------
+
+}  // namespace Zhade
 
 //------------------------------------------------------------------------

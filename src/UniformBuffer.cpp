@@ -2,8 +2,12 @@
 
 //------------------------------------------------------------------------
 
-UniformBuffer::UniformBuffer(const std::string& blockName, uint32_t binding, std::ptrdiff_t blockSize,
-    uint32_t extent, uint32_t usage)
+namespace Zhade
+{
+
+//------------------------------------------------------------------------
+
+UniformBuffer::UniformBuffer(const GLuint binding, const GLsizeiptr blockSize, const GLsizeiptr extent, const GLuint usage)
     : m_binding{binding},
       m_blockSize{blockSize}
 {
@@ -22,10 +26,14 @@ UniformBuffer::~UniformBuffer()
 
 //------------------------------------------------------------------------
 
-void UniformBuffer::update(std::ptrdiff_t offset, const void* data, std::size_t size, std::ptrdiff_t blockOffset) const noexcept
+void UniformBuffer::update(const GLsizeiptr offset, const void* data, const size_t size, const GLsizeiptr blockOffset) const noexcept
 {
     glBindBuffer(GL_UNIFORM_BUFFER, m_handle);
     glBufferSubData(GL_UNIFORM_BUFFER, blockOffset * m_blockSize + offset, size, data);
 }
+
+//------------------------------------------------------------------------
+
+}  // namespace Zhade
 
 //------------------------------------------------------------------------

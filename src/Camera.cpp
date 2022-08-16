@@ -2,11 +2,16 @@
 
 //------------------------------------------------------------------------
 
+namespace Zhade
+{
+
+//------------------------------------------------------------------------
+
 Camera::Camera(std::weak_ptr<const App> app, std::unique_ptr<Settings> settings)
     : m_app{app},
       m_settings{std::move(settings)},
       m_matrices{Matrices()},
-      m_uniformBuffer{UniformBuffer("Camera", constants::CAMERA_BINDING, sizeof(Matrices))}
+      m_uniformBuffer{UniformBuffer(constants::CAMERA_BINDING, sizeof(Matrices))}
 {
     updateView();
 }
@@ -80,5 +85,9 @@ bool Camera::rotate()
 
     return false;
 }
+
+//------------------------------------------------------------------------
+
+}  // namespace Zhade
 
 //------------------------------------------------------------------------

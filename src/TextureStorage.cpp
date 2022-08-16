@@ -4,6 +4,11 @@
 
 //------------------------------------------------------------------------
 
+namespace Zhade
+{
+
+//------------------------------------------------------------------------
+
 TextureStorage::TextureStorage(const Settings& settings)
     : m_settings{settings}
 {
@@ -96,5 +101,9 @@ std::optional<TextureView> TextureStorage::setData(const void* data, const GLsiz
 
     return std::make_optional(view);
 }
+
+//------------------------------------------------------------------------
+
+}  // namespace Zhade
 
 //------------------------------------------------------------------------

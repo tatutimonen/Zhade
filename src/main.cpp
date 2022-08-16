@@ -1,5 +1,4 @@
 #include "App.hpp"
-#include "AttributeData.hpp"
 #include "Buffer.hpp"
 #include "PerspectiveCamera.hpp"
 #include "Shader.hpp"
@@ -26,44 +25,24 @@
 
 //------------------------------------------------------------------------
 
-struct Vertex : AttributeData {
+struct Vertex
+{
     glm::vec3 pos = glm::vec3();
     glm::vec3 nrm = glm::vec3();
     glm::vec2 tex = glm::vec2();
-
-    Vertex() = default;
-    Vertex(const glm::vec3 pos, const glm::vec3 nrm, const glm::vec2 tex) : pos{pos}, nrm{nrm}, tex{tex} {}
-
-    VertexFormat getVertexFormat() const noexcept override
-    {
-        return {
-            { Shader::DataType::Vec3f },
-            { Shader::DataType::Vec3f },
-            { Shader::DataType::Vec2f }
-        };
-    }
-};
-
-//------------------------------------------------------------------------
-
-struct Material {
-    glm::vec3 ambient  = glm::vec3(1.0f);
-    float _1           = constants::STD_140_PAD_FLOAT;
-    glm::vec3 diffuse  = glm::vec3(1.0f);
-    float _2           = constants::STD_140_PAD_FLOAT;
-    glm::vec3 specular = glm::vec3(1.0f);
-    float shininess    = 0.4f;
 };
 
 //------------------------------------------------------------------------
 
 int main()
 {
+    using namespace Zhade;
+
     const auto app = std::make_shared<App>();;
     app->init();
 
-    auto vshader = Shader(GL_VERTEX_SHADER, "debug.vert");
-    auto fshader = Shader(GL_FRAGMENT_SHADER, "debug.frag");
+    auto vshader = Shader<GL_VERTEX_SHADER>(common::shaderPath + "debug.vert");
+    auto fshader = Shader<GL_FRAGMENT_SHADER>(common::shaderPath + "debug.frag");
     auto shaderProgram = ShaderProgram(vshader, fshader);
 
     auto camera = PerspectiveCamera(app);
@@ -105,7 +84,7 @@ int main()
     {
         const auto& pos = mesh->mVertices[i];
         const auto& nrm = mesh->mNormals[i];
-        dragonVerts.emplace_back(glm::vec3(pos.x, pos.y, pos.z), glm::vec3(nrm.x, nrm.y, nrm.z), glm::vec2());
+        dragonVerts.push_back({ glm::vec3(pos.x, pos.y, pos.z), glm::vec3(nrm.x, nrm.y, nrm.z), glm::vec2() });
     }
 
     std::array<GLuint, 8192> bufIndices;
@@ -203,7 +182,6 @@ int main()
     auto berserkView = texStorage.pushDataFromFile(common::texturePath + "berserk.png").value();
     auto longbowView = texStorage.pushDataFromFile(common::texturePath + "longbowman.png").value();
     auto jagView = texStorage.pushDataFromFile(common::texturePath + "jaguarwarrior.png").value();
-
 
     uint32_t jade = 0x0;  // 0.54,      0.89,     0.63
     jade = jade | ((uint32_t)(0.54f * 256) << 0);

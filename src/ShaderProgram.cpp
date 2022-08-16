@@ -2,8 +2,13 @@
 
 //------------------------------------------------------------------------
 
+namespace Zhade
+{
+
+//------------------------------------------------------------------------
+
 ShaderProgram::ShaderProgram(const Shader<GL_VERTEX_SHADER>& vertexShader, const Shader<GL_FRAGMENT_SHADER>& fragmentShader,
-        const std::optional<Shader<GL_GEOMETRY_SHADER>>& geometryShader)
+    const std::optional<Shader<GL_GEOMETRY_SHADER>>& geometryShader)
     : m_handle{glCreateProgram()}
 {
     vertexShader.attach(m_handle);
@@ -65,5 +70,9 @@ void ShaderProgram::link() const noexcept
                   << "\n";
     }
 }
+
+//------------------------------------------------------------------------
+
+}  // namespace Zhade
 
 //------------------------------------------------------------------------
