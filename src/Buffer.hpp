@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include <map>
+#include <mutex>
 #include <span>
 
 //------------------------------------------------------------------------
@@ -30,7 +31,7 @@ concept IsSupportedGlBufferEnum = (
 );
 
 //------------------------------------------------------------------------
-// Generic OpenGL buffer. Persistently mapped.
+// Generic OpenGL buffer, persistently and coherently mapped.
 
 template<typename T, GLenum BufferType>
 requires IsSupportedGlBufferEnum<BufferType>
@@ -52,22 +53,21 @@ public:
     }
 
     Buffer(const Buffer&) = delete;
-    Buffer(Buffer&&) = default;
     Buffer& operator=(const Buffer&) = delete;
+    Buffer(Buffer&&) = default;
     Buffer& operator=(Buffer&&) = default;
-
-    void setData(const void* data, const GLsizei size, const GLintptr offsetBytes) const noexcept
-    {
-        glNamedBufferSubData(m_handle, offsetBytes, sizeof(T) * size, data);
-    }
 
     [[nodiscard]] std::span<T> pushData(const void* data, const GLsizei size) const noexcept
     {
+        std::lock_guard lg{m_mtx};
         setData(data, size, m_writeOffsetBytes);
+        const GLsizeiptr start = m_writeOffsetBytes;
         const GLsizei sizeBytes = sizeof(T) * size;
-        const auto start = m_writeOffsetBytes;
+        T* dataPtr = mapRange(start, sizeBytes);
+        const auto span = std::span(dataPtr, size);
+        unmap();
         m_writeOffsetBytes += computeWriteOffsetIncrement(sizeBytes);
-        return std::span(mapRange(start, sizeBytes), size);
+        return span;
     }
 
     void bind() const noexcept
@@ -85,9 +85,14 @@ public:
         return static_cast<T*>(glMapNamedBuffer(m_handle, m_accessFlags));
     }
 
-    [[nodiscard]] T* mapRange(const GLintptr offsetBytes, const GLsizei size) const noexcept
+    [[nodiscard]] T* mapRange(const GLintptr offsetBytes, const GLsizei sizeBytes) const noexcept
     {
-        return static_cast<T*>(glMapNamedBufferRange(m_handle, offsetBytes, size, m_accessFlags));
+        return static_cast<T*>(glMapNamedBufferRange(m_handle, offsetBytes, sizeBytes, m_accessFlags));
+    }
+
+    void unmap() const noexcept
+    {
+        glUnmapNamedBuffer(m_handle);
     }
 
     [[nodiscard]] GLuint getHandle() const noexcept
@@ -124,6 +129,11 @@ public:
     static inline const std::map<GLenum, GLint> s_alignmentTable = makeAlignmentTable();
 
 private:
+    void setData(const void* data, const GLsizei size, const GLintptr offsetBytes) const noexcept
+    {
+        glNamedBufferSubData(m_handle, offsetBytes, sizeof(T) * size, data);
+    }
+
     [[nodiscard]] GLsizeiptr computeWriteOffsetIncrement(const GLsizei sizeBytes) const noexcept
     {
         return static_cast<GLsizeiptr>(std::ceil(static_cast<float>(sizeBytes) / m_alignment) * m_alignment);
@@ -134,6 +144,7 @@ private:
     const GLbitfield m_accessFlags;
     const GLint m_alignment;
     mutable GLsizeiptr m_writeOffsetBytes = 0;
+    mutable std::mutex m_mtx;
 };
 
 //------------------------------------------------------------------------

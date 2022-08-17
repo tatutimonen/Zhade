@@ -18,7 +18,7 @@ class TextureStorage;
 class TextureView
 {
 public:
-    inline GLuint getHandle() const noexcept { return m_handle; }
+    [[nodiscard]] GLuint getHandle() const noexcept { return m_handle; }
 
 private:
     struct StorageDetails

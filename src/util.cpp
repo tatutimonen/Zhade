@@ -79,36 +79,3 @@ GLuint makeNegUnitVec3zPacked() noexcept
 }  // namespace Zhade
 
 //------------------------------------------------------------------------
-
-namespace
-{
-
-//------------------------------------------------------------------------
-
-void logGlError(GLenum err, const char* fn, const char* file, int line) noexcept
-{
-    std::ostream& log_stream = std::cout;
-    log_stream << "OpenGL Error "
-               << "0x" << std::hex << std::setw(4) << std::setfill('0') << err
-               << " in call \"" << fn << "\" in "
-               << file << ":" << std::dec << line 
-               << std::endl;
-}
-
-//------------------------------------------------------------------------
-
-void checkErrors(const char* fn, const char* file, int line)
-{
-    GLenum err = glGetError();
-    if (err != GL_NO_ERROR)
-    {
-        logGlError(err, fn, file, line);
-        throw std::runtime_error(nullptr);
-    }
-}
-
-//------------------------------------------------------------------------
-
-}  // namespace
-
-//------------------------------------------------------------------------

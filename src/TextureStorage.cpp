@@ -1,6 +1,10 @@
 #include "TextureStorage.hpp"
 
 #include "StbImageResource.hpp"
+#include <iostream>
+#include "util.hpp"
+
+#include <memory>
 
 //------------------------------------------------------------------------
 
@@ -80,25 +84,16 @@ std::optional<TextureView> TextureStorage::pushDataFromFile(std::string_view fil
 
 std::optional<TextureView> TextureStorage::setData(const void* data, const GLsizeiptr offsetDepth) const noexcept
 {
-    glTextureSubImage3D(
+    CHECK_GL_ERROR(glTextureSubImage3D(
         m_handle, 0,
         0, 0, offsetDepth,
         m_settings.width, m_settings.height, 1,
         m_settings.format,
         m_settings.type,
         data
-    );
-
-    const auto view = TextureView({ .underlying = weak_from_this(), .offset = offsetDepth });
-    glTextureView(
-        view.getHandle(),
-        GL_TEXTURE_2D,
-        m_handle,
-        m_settings.internalformat,
-        0, m_settings.levels,
-        offsetDepth, 1
-    );
-
+    ));
+    TextureView::StorageDetails setts = { .underlying = weak_from_this(), .offset = offsetDepth };
+    const auto view = TextureView(std::move(setts));
     return std::make_optional(view);
 }
 

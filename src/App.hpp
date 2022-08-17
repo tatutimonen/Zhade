@@ -66,7 +66,7 @@ public:
         yPosPrev = yPos;
     }
 
-    static constexpr std::string_view name = "Shadow Mapper";
+    static constexpr std::string_view name = "Zhade";
     static constexpr uint32_t s_windowWidth = 800u;
     static constexpr uint32_t s_windowHeight = 800u;
     static constexpr float mouse_sensitivity = 0.002f;

@@ -18,19 +18,6 @@ namespace Zhade
 class TextureStorage : public std::enable_shared_from_this<TextureStorage>
 {
 public:
-    /*
-    Apple guidelines (maybe irrelevant):
-
-    Optimal Data Formats and Types
-    The best format and data type combinations to use for texture data are:
-
-    GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV
-    GL_BGRA, GL_UNSIGNED_SHORT_1_5_5_5_REV)
-    GL_YCBCR_422_APPLE, GL_UNSIGNED_SHORT_8_8_REV_APPLE
-    The combination GL_RGBA and GL_UNSIGNED_BYTE needs to be swizzled by many cards when the data is loaded, so it's not recommended.
-
-    [https://developer.apple.com/library/archive/documentation/GraphicsImaging/Conceptual/OpenGL-MacProgGuide/opengl_texturedata/opengl_texturedata.html]
-    */
     struct Settings
     {
         GLsizei levels;
@@ -73,7 +60,8 @@ public:
     TextureStorage& operator=(const TextureStorage&) = delete;
     TextureStorage& operator=(TextureStorage&&) = default;
 
-    const Settings& getSettings() const noexcept { return m_settings; }
+    [[nodiscard]] GLuint getHandle() const noexcept { return m_handle; }
+    [[nodiscard]] const Settings& getSettings() const noexcept { return m_settings; }
     void bindToUnit(const GLuint unit) const noexcept { glBindTextureUnit(unit, m_handle); }
     void generateMipmap() const noexcept { glGenerateTextureMipmap(m_handle); }
     bool fits(const uint32_t numTextures = 1) const noexcept { return numTextures < m_settings.depth - m_writeOffsetDepth; }

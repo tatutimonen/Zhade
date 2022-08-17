@@ -7,6 +7,8 @@
 #include "TextureView.hpp"
 #include "common.hpp"
 #include "constants.hpp"
+#include "StbImageResource.hpp"
+#include "util.hpp"
 
 #include <assimp/cimport.h>
 #include <assimp/scene.h>
@@ -18,7 +20,7 @@
 #include <array>
 #include <iostream>
 #include <memory>
-#include <memory_resource>
+#include <vector>
 
 //------------------------------------------------------------------------
 
@@ -73,9 +75,8 @@ int main()
 
     auto mesh = scene->mMeshes[0];
     
-    std::array<Vertex, 8192> buf;
-    std::pmr::monotonic_buffer_resource rsrc{buf.data(), buf.size()};
-    auto dragonVerts = std::pmr::vector<Vertex>(&rsrc);
+    auto dragonVerts = std::vector<Vertex>();
+    //auto dragonVerts = std::vector<Vertex>();
 
     for (auto i = 0u; i < mesh->mNumVertices; ++i)
     {
@@ -84,9 +85,7 @@ int main()
         dragonVerts.push_back({ glm::vec3(pos.x, pos.y, pos.z), glm::vec3(nrm.x, nrm.y, nrm.z), glm::vec2() });
     }
 
-    std::array<GLuint, 8192> bufIndices;
-    std::pmr::monotonic_buffer_resource rsrcIndices{bufIndices.data(), bufIndices.size()};
-    auto dragonIndices = std::pmr::vector<GLuint>(&rsrcIndices);
+    auto dragonIndices = std::vector<GLuint>();
 
     for (auto i = 0u; i < mesh->mNumFaces; ++i)
     {
@@ -173,26 +172,63 @@ int main()
 
     // Setup textures for the quads.
 
-    auto texStorage = TextureStorage();
+    GLuint tex;
+    glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &tex);
+    glTextureStorage3D(tex, 4, GL_RGBA8, 256, 256, 4);
+    glTextureParameteri(tex, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTextureParameteri(tex, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTextureParameteri(tex, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTextureParameteri(tex, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    const auto img = StbImageResource<>(common::texturePath + "cataphract.jpg");
+    CHECK_GL_ERROR(glTextureSubImage3D(
+        tex, 0,
+        0, 0, 0,
+        256, 256, 1,
+        GL_RGBA,
+        GL_UNSIGNED_BYTE,
+        img.data()
+    ));
+    GLuint view;
+    glGenTextures(1, &view);
+    CHECK_GL_ERROR(glTextureView(
+        view, GL_TEXTURE_2D,
+        tex, GL_RGBA8,
+        0, 4,
+        0, 1
+    ));
+    const auto img2 = StbImageResource<>(common::texturePath + "berserk.png");
+    CHECK_GL_ERROR(glTextureSubImage3D(
+        tex, 0,
+        0, 0, 1,
+        256, 256, 1,
+        GL_RGBA,
+        GL_UNSIGNED_BYTE,
+        img2.data()
+    ));  // 0x0502
+    CHECK_GL_ERROR(glBindTextureUnit(0, tex));
+    CHECK_GL_ERROR(glGenerateTextureMipmap(tex));
 
-    auto cataView = texStorage.pushDataFromFile(common::texturePath + "cataphract.jpg").value();
-    auto berserkView = texStorage.pushDataFromFile(common::texturePath + "berserk.png").value();
-    auto longbowView = texStorage.pushDataFromFile(common::texturePath + "longbowman.png").value();
-    auto jagView = texStorage.pushDataFromFile(common::texturePath + "jaguarwarrior.png").value();
+    auto texStorage = std::make_shared<TextureStorage>();
 
-    uint32_t jade = 0x0;  // 0.54,      0.89,     0.63
+    auto cataView = texStorage->pushDataFromFile(common::texturePath + "cataphract.jpg").value();
+    auto berserkView = texStorage->pushDataFromFile(common::texturePath + "berserk.png").value();
+    auto longbowView = texStorage->pushDataFromFile(common::texturePath + "longbowman.png").value();
+    auto jagView = texStorage->pushDataFromFile(common::texturePath + "jaguarwarrior.png").value();
+
+    /*uint32_t jade = 0x0;  // 0.54,      0.89,     0.63
     jade = jade | ((uint32_t)(0.54f * 256) << 0);
     jade = jade | ((uint32_t)(0.89f * 256) << 8);
     jade = jade | ((uint32_t)(0.63f * 256) << 16);
     // Two triangles after the four quads.
-    texStorage.setDataByOffset(&jade, 6);
+    texStorage->setDataByOffset(&jade, 6);*/
 
-    texStorage.bindToUnit(0);
-    texStorage.generateMipmap();
+    texStorage->bindToUnit(0);
+    texStorage->generateMipmap();
 
     shaderProgram.use();
     glBindVertexArray(vao);
     dibo.bind();
+
 
     while (!glfwWindowShouldClose(app->getGlCtx()))
     {
