@@ -84,14 +84,14 @@ std::optional<TextureView> TextureStorage::pushDataFromFile(std::string_view fil
 
 std::optional<TextureView> TextureStorage::setData(const void* data, const GLsizeiptr offsetDepth) const noexcept
 {
-    CHECK_GL_ERROR(glTextureSubImage3D(
+    glTextureSubImage3D(
         m_handle, 0,
         0, 0, offsetDepth,
         m_settings.width, m_settings.height, 1,
         m_settings.format,
         m_settings.type,
         data
-    ));
+    );
     TextureView::StorageDetails setts = { .underlying = weak_from_this(), .offset = offsetDepth };
     const auto view = TextureView(std::move(setts));
     return std::make_optional(view);
