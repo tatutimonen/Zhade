@@ -69,6 +69,7 @@ public:
     
     [[nodiscard]] bool fits(const uint32_t numTextures = 1) const noexcept
     {
+        std::lock_guard lg{m_mtx};
         return numTextures < m_settings.depth - m_writeOffsetDepth;
     }
 
@@ -77,6 +78,8 @@ public:
     [[nodiscard]] std::optional<TextureView<TextureFormat>> setDataByOffset(const void* data,
         const GLsizeiptr offsetDepth) const noexcept
     {
+        std::lock_guard lg{m_mtx};
+
         if (offsetDepth < 0 || m_settings.depth < offsetDepth)
             return std::nullopt;
 
@@ -88,6 +91,8 @@ public:
     [[nodiscard]] std::optional<TextureView<TextureFormat>> setDataFromFileByOffset(std::string_view filename,
         const GLsizeiptr offsetDepth) const noexcept
     {
+        std::lock_guard lg{m_mtx};
+
         if (offsetDepth < 0 || m_settings.depth < offsetDepth)
             return std::nullopt;
 
@@ -99,6 +104,8 @@ public:
     requires IsValidViewOrigTargetCombination<TextureFormat, GL_TEXTURE_2D_ARRAY>
     [[nodiscard]] std::optional<TextureView<TextureFormat>> pushData(const void* data) const noexcept
     {
+        std::lock_guard lg{m_mtx};
+
         if (!fits())
             return std::nullopt;
 
@@ -109,6 +116,8 @@ public:
     requires IsValidViewOrigTargetCombination<TextureFormat, GL_TEXTURE_2D_ARRAY>
     [[nodiscard]] std::optional<TextureView<TextureFormat>> pushDataFromFile(std::string_view filename) const noexcept
     {
+        std::lock_guard lg{m_mtx};
+
         if (!fits())
             return std::nullopt;
 
@@ -136,7 +145,7 @@ private:
     GLuint m_handle;
     Settings m_settings;
     mutable GLsizeiptr m_writeOffsetDepth = 0;
-    mutable std::mutex m_mtx;
+    mutable std::recursive_mutex m_mtx;
 };
 
 //------------------------------------------------------------------------
