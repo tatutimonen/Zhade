@@ -1,10 +1,6 @@
 #include "TextureStorage.hpp"
 
 #include "StbImageResource.hpp"
-#include <iostream>
-#include "util.hpp"
-
-#include <memory>
 
 //------------------------------------------------------------------------
 

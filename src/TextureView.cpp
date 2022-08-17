@@ -1,7 +1,6 @@
 #include "TextureView.hpp"
 
 #include "TextureStorage.hpp"
-#include "util.hpp"
 
 //------------------------------------------------------------------------
 
