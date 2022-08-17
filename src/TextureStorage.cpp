@@ -92,8 +92,7 @@ std::optional<TextureView> TextureStorage::setData(const void* data, const GLsiz
         m_settings.type,
         data
     );
-    TextureView::StorageDetails setts = { .underlying = weak_from_this(), .offset = offsetDepth };
-    const auto view = TextureView(std::move(setts));
+    const auto view = TextureView({ .underlying = weak_from_this(), .offset = offsetDepth });
     return std::make_optional(view);
 }
 
