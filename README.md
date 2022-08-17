@@ -12,7 +12,7 @@ A WIP rasterization-based renderer utilizing modern OpenGL. Currently under deve
 
 ## Running Locally
 
-   1. Clone the repository, along with its submodules
+   1. Clone the repository, along with its submodules (```--recurse-submodules```)
 
    2. Do ```./vcpkg/vcpkg/bootstrap-vcpkg.sh -disableMetrics``` or ```.\vcpkg\bootstrap-vcpkg.bat -disableMetrics``` depending on your platform
 
