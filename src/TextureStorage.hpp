@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TextureView.hpp"
+#include "StbImageResource.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -64,15 +65,62 @@ public:
     [[nodiscard]] const Settings& getSettings() const noexcept { return m_settings; }
     void bindToUnit(const GLuint unit) const noexcept { glBindTextureUnit(unit, m_handle); }
     void generateMipmap() const noexcept { glGenerateTextureMipmap(m_handle); }
-    bool fits(const uint32_t numTextures = 1) const noexcept { return numTextures < m_settings.depth - m_writeOffsetDepth; }
+    [[nodiscard]] bool fits(const uint32_t numTextures = 1) const noexcept { return numTextures < m_settings.depth - m_writeOffsetDepth; }
 
-    std::optional<TextureView> setDataByOffset(const void* data, const GLsizeiptr offsetDepth) const noexcept;
-    std::optional<TextureView> setDataFromFileByOffset(std::string_view filename, const GLsizeiptr offsetDepth) const noexcept;
-    std::optional<TextureView> pushData(const void* data) const noexcept;
-    std::optional<TextureView> pushDataFromFile(std::string_view filename) const noexcept;
+    template<GLenum TextureFormat = GL_TEXTURE_2D>
+    [[nodiscard]] std::optional<TextureView<TextureFormat>> setDataByOffset(const void* data, const GLsizeiptr offsetDepth) const noexcept
+    {
+        if (offsetDepth < 0 || m_settings.depth < offsetDepth)
+            return std::nullopt;
+
+        return setData<TextureFormat>(data, offsetDepth);
+    }
+
+    template<GLenum TextureFormat = GL_TEXTURE_2D>
+    [[nodiscard]] std::optional<TextureView<TextureFormat>> setDataFromFileByOffset(std::string_view filename, const GLsizeiptr offsetDepth) const noexcept
+    {
+        if (offsetDepth < 0 || m_settings.depth < offsetDepth)
+            return std::nullopt;
+
+        const auto image = StbImageResource<>(filename);
+        return setData<TextureFormat>(image.data(), offsetDepth);
+    }
+
+    template<GLenum TextureFormat = GL_TEXTURE_2D>
+    [[nodiscard]] std::optional<TextureView<TextureFormat>> pushData(const void* data) const noexcept
+    {
+        if (!fits())
+            return std::nullopt;
+
+        return setData<TextureFormat>(data, m_writeOffsetDepth++);
+    }
+
+    template<GLenum TextureFormat = GL_TEXTURE_2D>
+    requires IsValidViewOrigTargetCombination<TextureFormat, GL_TEXTURE_2D_ARRAY>
+    [[nodiscard]] std::optional<TextureView<TextureFormat>> pushDataFromFile(std::string_view filename) const noexcept
+    {
+        if (!fits())
+            return std::nullopt;
+
+        const auto image = StbImageResource<>(filename);
+        return setData<TextureFormat>(image.data(), m_writeOffsetDepth++);
+    }
 
 private:
-    std::optional<TextureView> setData(const void* data, const GLsizeiptr offsetDepth) const noexcept;
+    template<GLenum TextureFormat = GL_TEXTURE_2D>
+    [[nodiscard]] std::optional<TextureView<TextureFormat>> setData(const void* data, const GLsizeiptr offsetDepth) const noexcept
+    {
+        glTextureSubImage3D(
+            m_handle, 0,
+            0, 0, offsetDepth,
+            m_settings.width, m_settings.height, 1,
+            m_settings.format,
+            m_settings.type,
+            data
+        );
+        const auto view = TextureView<TextureFormat>({ .underlying = weak_from_this(), .offset = offsetDepth });
+        return std::make_optional(view);
+    }
 
     GLuint m_handle;
     Settings m_settings;

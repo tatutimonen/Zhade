@@ -36,64 +36,6 @@ TextureStorage::~TextureStorage()
 
 //------------------------------------------------------------------------
 
-std::optional<TextureView> TextureStorage::setDataByOffset(const void* data, const GLsizeiptr offsetDepth) const noexcept
-{
-    if (offsetDepth < 0 || m_settings.depth < offsetDepth)
-        return std::nullopt;
-
-    return setData(data, offsetDepth);
-}
-
-//------------------------------------------------------------------------
-
-std::optional<TextureView> TextureStorage::setDataFromFileByOffset(std::string_view filename, const GLsizeiptr offsetDepth) const noexcept
-{
-    if (offsetDepth < 0 || m_settings.depth < offsetDepth)
-        return std::nullopt;
-
-    const auto image = StbImageResource<>(filename);
-    return setData(image.data(), offsetDepth);
-}
-
-//------------------------------------------------------------------------
-
-std::optional<TextureView> TextureStorage::pushData(const void* data) const noexcept
-{
-    if (!fits())
-        return std::nullopt;
-
-    return setData(data, m_writeOffsetDepth++);
-}
-
-//------------------------------------------------------------------------
-
-std::optional<TextureView> TextureStorage::pushDataFromFile(std::string_view filename) const noexcept
-{
-    if (!fits())
-        return std::nullopt;
-
-    const auto image = StbImageResource<>(filename);
-    return setData(image.data(), m_writeOffsetDepth++);
-}
-
-//------------------------------------------------------------------------
-
-std::optional<TextureView> TextureStorage::setData(const void* data, const GLsizeiptr offsetDepth) const noexcept
-{
-    glTextureSubImage3D(
-        m_handle, 0,
-        0, 0, offsetDepth,
-        m_settings.width, m_settings.height, 1,
-        m_settings.format,
-        m_settings.type,
-        data
-    );
-    const auto view = TextureView({ .underlying = weak_from_this(), .offset = offsetDepth });
-    return std::make_optional(view);
-}
-
-//------------------------------------------------------------------------
-
 }  // namespace Zhade
 
 //------------------------------------------------------------------------
