@@ -6,6 +6,7 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
+#include <mutex>
 #include <optional>
 #include <string_view>
 
@@ -90,7 +91,7 @@ public:
         if (offsetDepth < 0 || m_settings.depth < offsetDepth)
             return std::nullopt;
 
-        const auto image = StbImageResource<>(filename);
+        const auto image = StbImageResource(filename);
         return setData<TextureFormat>(image.data(), offsetDepth);
     }
 
@@ -111,7 +112,7 @@ public:
         if (!fits())
             return std::nullopt;
 
-        const auto image = StbImageResource<>(filename);
+        const auto image = StbImageResource(filename);
         return setData<TextureFormat>(image.data(), m_writeOffsetDepth++);
     }
 
@@ -135,6 +136,7 @@ private:
     GLuint m_handle;
     Settings m_settings;
     mutable GLsizeiptr m_writeOffsetDepth = 0;
+    mutable std::mutex m_mtx;
 };
 
 //------------------------------------------------------------------------
