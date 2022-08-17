@@ -172,42 +172,6 @@ int main()
 
     // Setup textures for the quads.
 
-    GLuint tex;
-    glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &tex);
-    glTextureStorage3D(tex, 4, GL_RGBA8, 256, 256, 4);
-    glTextureParameteri(tex, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTextureParameteri(tex, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTextureParameteri(tex, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTextureParameteri(tex, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    const auto img = StbImageResource<>(common::texturePath + "cataphract.jpg");
-    CHECK_GL_ERROR(glTextureSubImage3D(
-        tex, 0,
-        0, 0, 0,
-        256, 256, 1,
-        GL_RGBA,
-        GL_UNSIGNED_BYTE,
-        img.data()
-    ));
-    GLuint view;
-    glGenTextures(1, &view);
-    CHECK_GL_ERROR(glTextureView(
-        view, GL_TEXTURE_2D,
-        tex, GL_RGBA8,
-        0, 4,
-        0, 1
-    ));
-    const auto img2 = StbImageResource<>(common::texturePath + "berserk.png");
-    CHECK_GL_ERROR(glTextureSubImage3D(
-        tex, 0,
-        0, 0, 1,
-        256, 256, 1,
-        GL_RGBA,
-        GL_UNSIGNED_BYTE,
-        img2.data()
-    ));  // 0x0502
-    CHECK_GL_ERROR(glBindTextureUnit(0, tex));
-    CHECK_GL_ERROR(glGenerateTextureMipmap(tex));
-
     auto texStorage = std::make_shared<TextureStorage>();
 
     auto cataView = texStorage->pushDataFromFile(common::texturePath + "cataphract.jpg").value();
