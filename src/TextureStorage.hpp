@@ -20,14 +20,13 @@ namespace Zhade
 //------------------------------------------------------------------------
 
 template<typename T>
-concept IsValidGlTextureDataSourceType = (
+concept ValidGlTextureDataSourceType = (
     std::is_unsigned_v<T> && sizeof(T) <= 4 || std::is_same_v<T, int32_t> || std::is_same_v<T, float>
 );
 
 //------------------------------------------------------------------------
 
-template<typename T>
-requires IsValidGlTextureDataSourceType<T>
+template<ValidGlTextureDataSourceType T>
 static constexpr GLenum getGlTextureDataTypeOfPrimitive32BitType()
 {
     if constexpr (std::is_same_v<T, uint8_t>)
@@ -101,8 +100,8 @@ public:
         return numTextures < m_settings.depth - m_writeOffsetDepth;
     }
 
-    template<typename T, GLenum TextureTarget = GL_TEXTURE_2D>
-    requires IsValidGlTextureDataSourceType<T> && IsValidGlTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
+    template<ValidGlTextureDataSourceType T, GLenum TextureTarget = GL_TEXTURE_2D>
+    requires ValidGlTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
     [[nodiscard]] std::optional<TextureView<TextureTarget>> pushData(const T* data) const noexcept
     {
         std::lock_guard lg{m_mtx};
@@ -113,8 +112,8 @@ public:
         return setData<T, TextureTarget>(data, m_writeOffsetDepth++);
     }
 
-    template<typename T = stbi_uc, GLenum TextureTarget = GL_TEXTURE_2D>
-    requires IsValidStbImageDataFormat<T> && IsValidGlTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
+    template<StbImageDataFormat T = stbi_uc, GLenum TextureTarget = GL_TEXTURE_2D>
+    requires ValidGlTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
     [[nodiscard]] std::optional<TextureView<TextureTarget>> pushDataFromFile(std::string_view filename) const noexcept
     {
         std::lock_guard lg{m_mtx};
@@ -126,8 +125,8 @@ public:
         return setData<T, TextureTarget>(image.data(), m_writeOffsetDepth++);
     }
 
-    template<typename T, GLenum TextureTarget = GL_TEXTURE_2D>
-    requires IsValidGlTextureDataSourceType<T> && IsValidGlTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
+    template<ValidGlTextureDataSourceType T, GLenum TextureTarget = GL_TEXTURE_2D>
+    requires ValidGlTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
     [[nodiscard]] std::optional<TextureView<TextureTarget>> setDataByOffset(const T* data,
         const GLsizeiptr offsetDepth) const noexcept
     {
@@ -139,8 +138,8 @@ public:
         return setData<T, TextureTarget>(data, offsetDepth);
     }
 
-    template<typename T = stbi_uc, GLenum TextureTarget = GL_TEXTURE_2D>
-    requires IsValidStbImageDataFormat<T> && IsValidGlTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
+    template<StbImageDataFormat T = stbi_uc, GLenum TextureTarget = GL_TEXTURE_2D>
+    requires ValidGlTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
     [[nodiscard]] std::optional<TextureView<TextureTarget>> setDataFromFileByOffset(std::string_view filename,
         const GLsizeiptr offsetDepth) const noexcept
     {
@@ -154,8 +153,8 @@ public:
     }
 
 private:
-    template<typename T, GLenum TextureTarget = GL_TEXTURE_2D>
-    requires IsValidGlTextureDataSourceType<T> && IsValidGlTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
+    template<ValidGlTextureDataSourceType T, GLenum TextureTarget = GL_TEXTURE_2D>
+    requires ValidGlTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
     [[nodiscard]] std::optional<TextureView<TextureTarget>> setData(const T* data, const GLsizeiptr offsetDepth) const noexcept
     {
         const GLenum textureDataType = getGlTextureDataTypeOfPrimitive32BitType<T>();

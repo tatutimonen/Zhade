@@ -7,6 +7,7 @@
 #include <cmath>
 #include <map>
 #include <mutex>
+#include <optional>
 #include <span>
 
 //------------------------------------------------------------------------
@@ -77,6 +78,11 @@ public:
         return span;
     }
 
+    void setData(const void* data, const GLsizei size, const GLintptr offsetBytes) const noexcept
+    {
+        glNamedBufferSubData(m_handle, offsetBytes, sizeof(T) * size, data);
+    }
+
     void bind() const noexcept
     {
         glBindBuffer(BufferType, m_handle);
@@ -143,11 +149,6 @@ public:
     static inline const std::map<GLenum, GLint> s_alignmentTable = makeAlignmentTable();
 
 private:
-    void setData(const void* data, const GLsizei size, const GLintptr offsetBytes) const noexcept
-    {
-        glNamedBufferSubData(m_handle, offsetBytes, sizeof(T) * size, data);
-    }
-
     [[nodiscard]] GLsizeiptr computeWriteOffsetIncrement(const GLsizei sizeBytes) const noexcept
     {
         return static_cast<GLsizeiptr>(std::ceil(static_cast<float>(sizeBytes) / m_alignment) * m_alignment);

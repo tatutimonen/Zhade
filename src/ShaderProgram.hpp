@@ -18,7 +18,7 @@ namespace Zhade
 //------------------------------------------------------------------------
 
 template<typename T>
-concept IsValidGlShaderDataType = (
+concept ValidGlShaderDataType = (
     std::is_same_v<T, GLint>
         || std::is_same_v<T, GLfloat>
         || std::is_same_v<T, glm::vec2>
@@ -50,8 +50,7 @@ public:
     void use() const noexcept { glUseProgram(m_handle); }
     void unuse() const noexcept { glUseProgram(0); }
 
-    template<typename T>
-    requires IsValidGlShaderDataType<T>
+    template<ValidGlShaderDataType T>
     void setUniform(const std::string& name, const void* data) const noexcept
     {
         const GLint location = getUniformLocation(name);

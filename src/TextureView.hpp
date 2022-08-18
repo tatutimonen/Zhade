@@ -16,16 +16,15 @@ class TextureStorage;
 //------------------------------------------------------------------------
 
 template<GLenum TextureTarget>
-concept IsSupportedGlTextureTarget = (
-    TextureTarget == GL_TEXTURE_2D
-        || TextureTarget == GL_TEXTURE_2D_ARRAY
+concept SupportedGlTextureTarget = (
+    TextureTarget == GL_TEXTURE_2D || TextureTarget == GL_TEXTURE_2D_ARRAY
 );
 
 //------------------------------------------------------------------------
 
 template<GLenum TextureTarget, GLenum OrigTextureTarget>
-concept IsValidGlTextureViewTargetCombination = (
-    IsSupportedGlTextureTarget<TextureTarget> && IsSupportedGlTextureTarget<OrigTextureTarget>
+concept ValidGlTextureViewTargetCombination = (
+    SupportedGlTextureTarget<TextureTarget> && SupportedGlTextureTarget<OrigTextureTarget>
         && ((OrigTextureTarget == GL_TEXTURE_2D || OrigTextureTarget == GL_TEXTURE_2D_ARRAY)
             && (TextureTarget == GL_TEXTURE_2D || TextureTarget == GL_TEXTURE_2D_ARRAY))
 );
@@ -33,7 +32,7 @@ concept IsValidGlTextureViewTargetCombination = (
 //------------------------------------------------------------------------
 
 template<GLenum TextureTarget = GL_TEXTURE_2D, GLenum OrigTextureTarget = GL_TEXTURE_2D_ARRAY>
-requires IsValidGlTextureViewTargetCombination<TextureTarget, OrigTextureTarget>
+requires ValidGlTextureViewTargetCombination<TextureTarget, OrigTextureTarget>
 class TextureView
 {
 public:

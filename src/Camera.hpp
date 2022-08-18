@@ -63,7 +63,6 @@ protected:
     std::unique_ptr<Settings> m_settings;
     Matrices m_matrices;
     Buffer<Matrices, GL_UNIFORM_BUFFER> m_uniformBuffer;
-    Matrices* m_uniformPtr;
 };
 
 //------------------------------------------------------------------------

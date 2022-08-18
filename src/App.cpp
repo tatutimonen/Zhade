@@ -1,5 +1,7 @@
 #include "App.hpp"
 
+#include "StbImageResource.hpp"
+
 //------------------------------------------------------------------------
 
 namespace Zhade
@@ -16,7 +18,7 @@ App::~App()
 
 void App::init()
 {
-    // GLFW
+    // GLFW.
     glfwInit();
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -31,11 +33,11 @@ void App::init()
     glfwSetKeyCallback(m_window, keyCallback);
     glfwSetCursorPosCallback(m_window, mouseCallback);
 
-    // GLEW
+    // GLEW.
     glewExperimental = GL_TRUE;
     glewInit();
 
-    // OpenGL
+    // OpenGL.
     glViewport(0, 0, s_windowWidth, s_windowHeight);
     // CSM: 15.0f/255.0f, 46.0f/255.0f, 101.0f/255.0f, 1.0f
     // Midnight Blue: 0.0f, 51.0f/255.0f, 102.0f/255.0f, 1.0f
@@ -45,6 +47,9 @@ void App::init()
     glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
     //glEnable(GL_CULL_FACE);
     //glCullFace(GL_BACK);
+
+    // Other.
+    StbImageResource<>::setFlipY();
 }
 
 //------------------------------------------------------------------------

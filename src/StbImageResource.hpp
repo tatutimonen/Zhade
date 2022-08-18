@@ -2,6 +2,7 @@
 
 #include <stb_image.h>
 
+#include <iostream>
 #include <string_view>
 #include <type_traits>
 
@@ -13,44 +14,54 @@ namespace Zhade
 //------------------------------------------------------------------------
 
 template<typename T>
-concept IsValidStbImageDataFormat = (
+concept StbImageDataFormat = (
     std::is_same_v<T, stbi_uc> || std::is_same_v<T, stbi_us> || std::is_same_v<T, float>
 );
 
 //------------------------------------------------------------------------
 // RAII wrapper for selected stb_image functionality.
 
-template<typename T = stbi_uc>
-requires IsValidStbImageDataFormat<T>
+template<StbImageDataFormat T = stbi_uc>
 class StbImageResource
 {
 public:
     StbImageResource(std::string_view filename)
     {
-        stbi_set_flip_vertically_on_load(1);
-        m_data = load(filename);
+        load(filename);
     }
 
     ~StbImageResource() { stbi_image_free(m_data); }
 
-    [[nodiscard]] int getWidth() const noexcept { return m_width; }
-    [[nodiscard]] int getHeight() const noexcept { return m_height; }
+    [[nodiscard]] int32_t getWidth() const noexcept { return m_width; }
+    [[nodiscard]] int32_t getHeight() const noexcept { return m_height; }
     [[nodiscard]] T* mutData() const noexcept { return m_data; }
     [[nodiscard]] const T* data() const noexcept { return m_data; }
 
-private:
-    [[nodiscard]] T* load(std::string_view filename) noexcept
+    [[nodiscard]] bool isValid() const noexcept { return m_data != nullptr; }
+
+    static void setFlipY() noexcept
     {
-        if constexpr (std::is_same_v<T, stbi_uc>)
-            return stbi_load(filename.data(), &m_width, &m_height, nullptr, 4);
-        else if (std::is_same_v<T, stbi_us>)
-            return stbi_load_16(filename.data(), &m_width, &m_height, nullptr, 4);
-        else if (std::is_same_v<T, float>)
-            return stbi_loadf(filename.data(), &m_width, &m_height, nullptr, 4);
+        static bool flip = true;
+        stbi_set_flip_vertically_on_load(flip);
+        flip = !flip;
     }
 
-    int m_width = 0;
-    int m_height = 0;
+private:
+    [[nodiscard]] void load(std::string_view filename) noexcept
+    {
+        if constexpr (std::is_same_v<T, stbi_uc>)
+            m_data = stbi_load(filename.data(), &m_width, &m_height, nullptr, 4);
+        else if (std::is_same_v<T, stbi_us>)
+            m_data = stbi_load_16(filename.data(), &m_width, &m_height, nullptr, 4);
+        else if (std::is_same_v<T, float>)
+            m_data = stbi_loadf(filename.data(), &m_width, &m_height, nullptr, 4);
+        
+        if (!isValid())
+            std::cerr << filename << " yielded invalid data!" << std::endl;
+    }
+
+    int32_t m_width = 0;
+    int32_t m_height = 0;
     T* m_data = nullptr;
 };
 

@@ -112,7 +112,7 @@ static constexpr GLenum getShaderShaderDataTypeAsGlEnum()
 // Only support geometry stage as extra at this point.
 
 template<GLenum ShaderType>
-concept IsValidGlShaderType = (
+concept ValidGlShaderType = (
     ShaderType == GL_VERTEX_SHADER
         || ShaderType == GL_GEOMETRY_SHADER
         || ShaderType == GL_FRAGMENT_SHADER
@@ -121,7 +121,7 @@ concept IsValidGlShaderType = (
 //------------------------------------------------------------------------
 
 template<GLenum ShaderType>
-requires IsValidGlShaderType<ShaderType>
+requires ValidGlShaderType<ShaderType>
 class Shader
 {
 public:

@@ -19,7 +19,6 @@ Camera::Camera(std::weak_ptr<const App> app, std::unique_ptr<Settings> settings)
       m_uniformBuffer{Buffer<Matrices, GL_UNIFORM_BUFFER>(sizeof(Matrices))}
 {
     m_uniformBuffer.bindBase(constants::CAMERA_BINDING);
-    m_uniformPtr = m_uniformBuffer.map();
     updateView();
 }
 
@@ -32,7 +31,7 @@ void Camera::tick() noexcept
 
     if (moved || rotated)
     {
-        std::memcpy(m_uniformPtr, &m_matrices, sizeof(Matrices));
+        m_uniformBuffer.setData(&m_matrices, 1, 0);;
     }
 }
 
