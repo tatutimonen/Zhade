@@ -179,13 +179,13 @@ int main()
     auto longbowView = texStorage->pushDataFromFile(common::texturePath + "longbowman.png").value();
     auto jagView = texStorage->pushDataFromFile(common::texturePath + "jaguarwarrior.png").value();
 
-    auto materialStorage = std::make_shared<TextureStorage>(1, 1, 1, 1);
+    /*auto materialStorage = std::make_shared<TextureStorage>(1, 1, 1, 1);
     uint32_t jade = 0x0;  // 0.54,      0.89,     0.63
     jade = jade | ((uint32_t)(0.54f * 256) << 0);
     jade = jade | ((uint32_t)(0.89f * 256) << 8);
     jade = jade | ((uint32_t)(0.63f * 256) << 16);
     // Two triangles after the four quads.
-    auto jadeView = materialStorage->pushData(&jade);
+    auto jadeView = materialStorage->pushData(&jade);*/
 
     texStorage->bindToUnit(0);
     texStorage->generateMipmap();
@@ -193,7 +193,6 @@ int main()
     shaderProgram.use();
     glBindVertexArray(vao);
     dibo.bind();
-
 
     while (!glfwWindowShouldClose(app->getGlCtx()))
     {

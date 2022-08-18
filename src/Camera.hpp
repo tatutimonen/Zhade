@@ -1,13 +1,14 @@
 #pragma once
 
 #include "App.hpp"
+#include "Buffer.hpp"
 #include "ShaderProgram.hpp"
-#include "UniformBuffer.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <memory>
+#include <span>
 
 //------------------------------------------------------------------------
 
@@ -61,7 +62,8 @@ protected:
     std::weak_ptr<const App> m_app;
     std::unique_ptr<Settings> m_settings;
     Matrices m_matrices;
-    UniformBuffer m_uniformBuffer;
+    Buffer<Matrices, GL_UNIFORM_BUFFER> m_uniformBuffer;
+    Matrices* m_uniformPtr;
 };
 
 //------------------------------------------------------------------------

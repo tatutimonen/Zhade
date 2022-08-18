@@ -11,7 +11,6 @@ set(src_files
     StbImageResource.cpp
     TextureStorage.cpp
     TextureView.cpp
-    UniformBuffer.cpp
     common.cpp
     constants.cpp
     main.cpp

@@ -21,7 +21,7 @@ namespace Zhade
 
 template<typename T>
 concept IsValidGlTextureDataSourceType = (
-    (std::is_unsigned_v<T> && sizeof(T) <= 4) || std::is_same_v<T, int32_t> || std::is_same_v<T, float>
+    std::is_unsigned_v<T> && sizeof(T) <= 4 || std::is_same_v<T, int32_t> || std::is_same_v<T, float>
 );
 
 //------------------------------------------------------------------------
@@ -82,7 +82,7 @@ public:
     };
 
     TextureStorage(const Settings& settings = Settings::makeDefaultOfSize(glm::ivec4(256, 256, 128, 4)));
-    TextureStorage(const GLint x, const GLint y, const GLint z, const GLint w);
+    TextureStorage(const GLint width, const GLint height, const GLint depth, const GLint levels);
     ~TextureStorage();
 
     TextureStorage(const TextureStorage&) = delete;

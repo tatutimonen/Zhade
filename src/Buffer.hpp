@@ -1,11 +1,18 @@
 #pragma once
 
+#include "util.hpp"
+
 #include <GL/glew.h>
 
 #include <cmath>
 #include <map>
 #include <mutex>
 #include <span>
+
+//------------------------------------------------------------------------
+
+namespace Zhade
+{
 
 //------------------------------------------------------------------------
 // As per https://www.khronos.org/opengl/wiki/Vertex_Rendering#Indirect_rendering.
@@ -38,9 +45,9 @@ requires IsSupportedGlBufferEnum<BufferType>
 class Buffer
 {
 public:
-    Buffer(const GLsizei wholeSizeBytes = 1 << 27, const GLbitfield accessFlags = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT)
+    Buffer(const GLsizei wholeSizeBytes = 1 << 27)
         : m_wholeSizeBytes{wholeSizeBytes},
-          m_accessFlags{accessFlags | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT},
+          m_accessFlags{GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT},
           m_alignment{s_alignmentTable.at(BufferType)}
     {
         glCreateBuffers(1, &m_handle);
@@ -76,18 +83,25 @@ public:
     }
 
     void bindBase(const GLuint bindingIndex) const noexcept
+    requires (BufferType == GL_UNIFORM_BUFFER || BufferType == GL_SHADER_STORAGE_BUFFER)
     {
         glBindBufferBase(BufferType, bindingIndex, m_handle);
     }
 
+    void bindRange(const GLuint bindingIndex, const GLintptr offsetBytes, const GLsizeiptr sizeBytes) const noexcept
+    requires (BufferType == GL_UNIFORM_BUFFER || BufferType == GL_SHADER_STORAGE_BUFFER)
+    {
+        glBindBufferRange(BufferType, bindingIndex, m_handle, offsetBytes, sizeBytes);
+    }
+
     [[nodiscard]] T* map() const noexcept
     {
-        return static_cast<T*>(glMapNamedBuffer(m_handle, m_accessFlags));
+        return static_cast<T*>(glMapNamedBuffer(m_handle, GL_READ_WRITE));
     }
 
     [[nodiscard]] T* mapRange(const GLintptr offsetBytes, const GLsizei sizeBytes) const noexcept
     {
-        return static_cast<T*>(glMapNamedBufferRange(m_handle, offsetBytes, sizeBytes, m_accessFlags));
+        return static_cast<T*>(glMapNamedBufferRange(m_handle, offsetBytes, sizeBytes, GL_READ_WRITE));
     }
 
     void unmap() const noexcept
@@ -144,7 +158,12 @@ private:
     const GLbitfield m_accessFlags;
     const GLint m_alignment;
     mutable GLsizeiptr m_writeOffsetBytes = 0;
+    mutable GLuint m_bindingIndex;
     mutable std::mutex m_mtx;
 };
+
+//------------------------------------------------------------------------
+
+}  // namespace Zhade
 
 //------------------------------------------------------------------------

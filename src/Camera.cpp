@@ -3,6 +3,8 @@
 #include "constants.hpp"
 #include "util.hpp"
 
+#include <cstring>
+
 //------------------------------------------------------------------------
 
 namespace Zhade
@@ -14,8 +16,10 @@ Camera::Camera(std::weak_ptr<const App> app, std::unique_ptr<Settings> settings)
     : m_app{app},
       m_settings{std::move(settings)},
       m_matrices{Matrices()},
-      m_uniformBuffer{UniformBuffer(constants::CAMERA_BINDING, sizeof(Matrices))}
+      m_uniformBuffer{Buffer<Matrices, GL_UNIFORM_BUFFER>(sizeof(Matrices))}
 {
+    m_uniformBuffer.bindBase(constants::CAMERA_BINDING);
+    m_uniformPtr = m_uniformBuffer.map();
     updateView();
 }
 
@@ -28,7 +32,7 @@ void Camera::tick() noexcept
 
     if (moved || rotated)
     {
-        m_uniformBuffer.update(0, &m_matrices, sizeof(Matrices));
+        std::memcpy(m_uniformPtr, &m_matrices, sizeof(Matrices));
     }
 }
 

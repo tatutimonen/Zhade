@@ -29,9 +29,9 @@ TextureStorage::TextureStorage(const Settings& settings)
 
 //------------------------------------------------------------------------
 
-TextureStorage::TextureStorage(const GLint x, const GLint y, const GLint z, const GLint w)
+TextureStorage::TextureStorage(const GLint width, const GLint height, const GLint depth, const GLint levels)
 {
-    TextureStorage(Settings::makeDefaultOfSize(glm::ivec4(x, y, z, w)));
+    TextureStorage(Settings::makeDefaultOfSize(glm::ivec4(width, height, depth, levels)));
 }
 
 //------------------------------------------------------------------------
