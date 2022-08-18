@@ -15,25 +15,25 @@ class TextureStorage;
 
 //------------------------------------------------------------------------
 
-template<GLenum TextureFormat>
-concept IsSupportedGlTextureFormat = (
-    TextureFormat == GL_TEXTURE_2D
-        || TextureFormat == GL_TEXTURE_2D_ARRAY
+template<GLenum TextureTarget>
+concept IsSupportedGlTextureTarget = (
+    TextureTarget == GL_TEXTURE_2D
+        || TextureTarget == GL_TEXTURE_2D_ARRAY
 );
 
 //------------------------------------------------------------------------
 
-template<GLenum TextureFormat, GLenum OrigTextureFormat>
-concept IsValidViewOrigTargetCombination = (
-    IsSupportedGlTextureFormat<TextureFormat> && IsSupportedGlTextureFormat<OrigTextureFormat>
-        && ((OrigTextureFormat == GL_TEXTURE_2D || OrigTextureFormat == GL_TEXTURE_2D_ARRAY)
-            && (TextureFormat == GL_TEXTURE_2D || TextureFormat == GL_TEXTURE_2D_ARRAY))
+template<GLenum TextureTarget, GLenum OrigTextureTarget>
+concept IsValidGlTextureViewTargetCombination = (
+    IsSupportedGlTextureTarget<TextureTarget> && IsSupportedGlTextureTarget<OrigTextureTarget>
+        && ((OrigTextureTarget == GL_TEXTURE_2D || OrigTextureTarget == GL_TEXTURE_2D_ARRAY)
+            && (TextureTarget == GL_TEXTURE_2D || TextureTarget == GL_TEXTURE_2D_ARRAY))
 );
 
 //------------------------------------------------------------------------
 
-template<GLenum TextureFormat = GL_TEXTURE_2D, GLenum OrigTextureFormat = GL_TEXTURE_2D_ARRAY>
-requires IsValidViewOrigTargetCombination<TextureFormat, OrigTextureFormat>
+template<GLenum TextureTarget = GL_TEXTURE_2D, GLenum OrigTextureTarget = GL_TEXTURE_2D_ARRAY>
+requires IsValidGlTextureViewTargetCombination<TextureTarget, OrigTextureTarget>
 class TextureView
 {
 public:

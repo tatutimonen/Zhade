@@ -29,6 +29,13 @@ TextureStorage::TextureStorage(const Settings& settings)
 
 //------------------------------------------------------------------------
 
+TextureStorage::TextureStorage(const GLint x, const GLint y, const GLint z, const GLint w)
+{
+    TextureStorage(Settings::makeDefaultOfSize(glm::ivec4(x, y, z, w)));
+}
+
+//------------------------------------------------------------------------
+
 TextureStorage::~TextureStorage()
 {
     glDeleteTextures(1, &m_handle);
