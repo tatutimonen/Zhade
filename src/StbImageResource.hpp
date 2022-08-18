@@ -25,11 +25,7 @@ template<StbImageDataFormat T = stbi_uc>
 class StbImageResource
 {
 public:
-    StbImageResource(std::string_view filename)
-    {
-        load(filename);
-    }
-
+    StbImageResource(std::string_view filename) { load(filename); }
     ~StbImageResource() { stbi_image_free(m_data); }
 
     [[nodiscard]] int32_t getWidth() const noexcept { return m_width; }
