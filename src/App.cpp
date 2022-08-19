@@ -49,7 +49,7 @@ void App::init()
     //glCullFace(GL_BACK);
 
     // Other.
-    StbImageResource<>::setFlipY();
+    StbImageResource<>::setGlobalFlipY();
 }
 
 //------------------------------------------------------------------------

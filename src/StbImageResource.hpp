@@ -35,7 +35,7 @@ public:
 
     [[nodiscard]] bool isValid() const noexcept { return m_data != nullptr; }
 
-    static void setFlipY() noexcept
+    static void setGlobalFlipY() noexcept
     {
         static bool flip = true;
         stbi_set_flip_vertically_on_load(flip);

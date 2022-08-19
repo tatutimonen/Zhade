@@ -6,7 +6,6 @@
 
 #include <cmath>
 #include <map>
-#include <mutex>
 #include <optional>
 #include <span>
 
@@ -30,7 +29,7 @@ struct MultiDrawElementsIndirectCommand
 //------------------------------------------------------------------------
 
 template<GLenum BufferType>
-concept IsSupportedGlBufferEnum = (
+concept SupportedGlBufferEnum = (
     BufferType == GL_ARRAY_BUFFER
         || BufferType == GL_ELEMENT_ARRAY_BUFFER
         || BufferType == GL_UNIFORM_BUFFER
@@ -42,7 +41,7 @@ concept IsSupportedGlBufferEnum = (
 // Generic OpenGL buffer, persistently and coherently mapped.
 
 template<typename T, GLenum BufferType>
-requires IsSupportedGlBufferEnum<BufferType>
+requires SupportedGlBufferEnum<BufferType>
 class Buffer
 {
 public:
@@ -67,7 +66,6 @@ public:
 
     [[nodiscard]] std::span<T> pushData(const void* data, const GLsizei size) const noexcept
     {
-        std::lock_guard lg{m_mtx};
         setData(data, size, m_writeOffsetBytes);
         const GLsizeiptr start = m_writeOffsetBytes;
         const GLsizei sizeBytes = sizeof(T) * size;
@@ -160,7 +158,6 @@ private:
     const GLint m_alignment;
     mutable GLsizeiptr m_writeOffsetBytes = 0;
     mutable GLuint m_bindingIndex;
-    mutable std::mutex m_mtx;
 };
 
 //------------------------------------------------------------------------

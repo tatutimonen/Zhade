@@ -31,40 +31,51 @@ concept ValidGlTextureViewTargetCombination = (
 
 //------------------------------------------------------------------------
 
-template<GLenum TextureTarget = GL_TEXTURE_2D, GLenum OrigTextureTarget = GL_TEXTURE_2D_ARRAY>
-requires ValidGlTextureViewTargetCombination<TextureTarget, OrigTextureTarget>
+template<GLenum ViewInternalFormat>
+concept ValidGlInternalFormat = (
+    ViewInternalFormat == GL_RGBA8
+);
+
+//------------------------------------------------------------------------
+
+template<GLenum InternalFormat = GL_RGBA8, GLenum TextureTarget = GL_TEXTURE_2D, GLenum OrigTextureTarget = GL_TEXTURE_2D_ARRAY>
+requires ValidGlInternalFormat<InternalFormat> && ValidGlTextureViewTargetCombination<TextureTarget, OrigTextureTarget>
 class TextureView
 {
 public:
-    struct StorageDetails;
+    struct StorageDetails
+    {
+        GLuint handle;
+        GLsizeiptr storageOffset;
+    };
 
     TextureView(const StorageDetails& storageDetails)
         : m_storageDetails{storageDetails}
     {
         glGenTextures(1, &m_handle);
-        const auto underlying = m_storageDetails.underlying.lock();
-        const auto& settings = underlying->getSettings();
         glTextureView(
             m_handle,
             GL_TEXTURE_2D,
             underlying->getHandle(),
-            settings.internalformat,
+            InternalFormat,
             0, settings.levels,
             m_storageDetails.offset, 1
         );
     }
 
+    ~TextureView() { glDeleteTextures(1, &m_handle); }
+
+    TextureView(const TextureView&) = delete;
+    TextureView& operator=(const TextureView&) = delete;
+    TextureView(TextureView&&) = default;
+    TextureView& operator=(TextureView&&) = default;
+
     [[nodiscard]] GLuint getHandle() const noexcept { return m_handle; }
+    [[nodiscard]] bool isValid() const noexcept { return glIsTexture(m_storageDetails.handle) && glIsTexture(m_handle); }
 
 private:
-    struct StorageDetails
-    {
-        std::weak_ptr<const TextureStorage> underlying;
-        const GLsizeiptr offset;
-    };
-
     GLuint m_handle;
-    StorageDetails m_storageDetails;
+    const StorageDetails m_storageDetails;
 
     friend class TextureStorage;
 };

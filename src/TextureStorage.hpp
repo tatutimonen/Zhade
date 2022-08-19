@@ -2,12 +2,10 @@
 
 #include "StbImageResource.hpp"
 #include "TextureView.hpp"
-#include "util.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-#include <mutex>
 #include <optional>
 #include <string_view>
 #include <type_traits>
@@ -33,8 +31,8 @@ static constexpr GLenum getGlTextureDataTypeOfPrimitive32BitType()
         return GL_UNSIGNED_BYTE;
     else if (std::is_same_v<T, uint16_t>)
         return GL_UNSIGNED_SHORT;
-    else if (std::is_same_v<T, uint32_t>)  // Assume 32-bit unsigned integers to be packed.
-        return GL_UNSIGNED_INT_8_8_8_8_REV;
+    else if (std::is_same_v<T, uint32_t>)
+        return GL_UNSIGNED_INT_8_8_8_8_REV;  // Assume 32-bit unsigned integers to be packed.
     else if (std::is_same_v<T, int32_t>)
         return GL_INT;
     else
@@ -43,7 +41,32 @@ static constexpr GLenum getGlTextureDataTypeOfPrimitive32BitType()
 
 //------------------------------------------------------------------------
 
-class TextureStorage : public std::enable_shared_from_this<TextureStorage>
+template<GLenum InternalFormat>
+concept SupportedGlInternalFormat = (
+    InternalFormat == GL_RGBA8
+        || InternalFormat == GL_DEPTH_COMPONENT32
+);
+
+//------------------------------------------------------------------------
+
+template<GLenum InternalFormat>
+requires SupportedGlInternalFormat<InternalFormat>
+static constexpr GLenum getGlTextureFormatOfInternalFormat()
+{
+    switch constexpr (InternalFormat)
+    {
+    case GL_RGBA8:
+                               return GL_RGBA;
+    case GL_DEPTH_COMPONENT32:
+                               return GL_DEPTH_COMPONENT;
+    }
+}
+
+//------------------------------------------------------------------------
+
+template<GLenum InternalFormat = GL_RGBA8>
+requires SupportedGlInternalFormat<InternalFormat>
+class TextureStorage
 {
 public:
     struct Settings
@@ -54,7 +77,6 @@ public:
         GLsizei height;
         GLsizei depth;
 
-        GLenum format;
         GLenum type;
 
         GLenum minFilter;
@@ -66,11 +88,10 @@ public:
         {
             return {
                 .levels = dims.w,
-                .internalformat = GL_RGBA8,
                 .width = dims.x,
                 .height = dims.y,
                 .depth = dims.z,
-                .format = GL_RGBA,
+                .format = getGlTextureFormatOfInternalFormat<InternalFormat>(),
                 .type = GL_UNSIGNED_BYTE,
                 .minFilter = GL_LINEAR_MIPMAP_LINEAR,
                 .magFilter = GL_LINEAR,
@@ -96,7 +117,6 @@ public:
     
     [[nodiscard]] bool fits(const uint32_t numTextures = 1) const noexcept
     {
-        std::lock_guard lg{m_mtx};
         return numTextures < m_settings.depth - m_writeOffsetDepth;
     }
 
@@ -104,8 +124,6 @@ public:
     requires ValidGlTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
     [[nodiscard]] std::optional<TextureView<TextureTarget>> pushData(const T* data) const noexcept
     {
-        std::lock_guard lg{m_mtx};
-
         if (!fits())
             return std::nullopt;
 
@@ -116,8 +134,6 @@ public:
     requires ValidGlTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
     [[nodiscard]] std::optional<TextureView<TextureTarget>> pushDataFromFile(std::string_view filename) const noexcept
     {
-        std::lock_guard lg{m_mtx};
-
         if (!fits())
             return std::nullopt;
 
@@ -130,8 +146,6 @@ public:
     [[nodiscard]] std::optional<TextureView<TextureTarget>> setDataByOffset(const T* data,
         const GLsizeiptr offsetDepth) const noexcept
     {
-        std::lock_guard lg{m_mtx};
-
         if (offsetDepth < 0 || m_settings.depth < offsetDepth)
             return std::nullopt;
 
@@ -143,8 +157,6 @@ public:
     [[nodiscard]] std::optional<TextureView<TextureTarget>> setDataFromFileByOffset(std::string_view filename,
         const GLsizeiptr offsetDepth) const noexcept
     {
-        std::lock_guard lg{m_mtx};
-
         if (offsetDepth < 0 || m_settings.depth < offsetDepth)
             return std::nullopt;
 
@@ -166,14 +178,13 @@ private:
             getGlTextureDataTypeOfPrimitive32BitType<T>(),
             data
         );
-        const auto view = TextureView<TextureTarget>({ .underlying = weak_from_this(), .offset = offsetDepth });
+        const auto view = TextureView<TextureTarget>({ .handle = m_handle, .storageOffset = offsetDepth });
         return std::make_optional(view);
     }
 
     GLuint m_handle;
     Settings m_settings;
     mutable GLsizeiptr m_writeOffsetDepth = 0;
-    mutable std::recursive_mutex m_mtx;
 };
 
 //------------------------------------------------------------------------
