@@ -1,6 +1,6 @@
 #pragma once
 
-#include "util.hpp"
+#include "Renderer.hpp"
 
 #include <GL/glew.h>
 
@@ -13,18 +13,6 @@
 
 namespace Zhade
 {
-
-//------------------------------------------------------------------------
-// As per https://www.khronos.org/opengl/wiki/Vertex_Rendering#Indirect_rendering.
-
-struct MultiDrawElementsIndirectCommand
-{
-    GLuint vertexCount;
-    GLuint instanceCount;
-    GLuint firstIndex;
-    GLuint baseVertex;
-    GLuint baseInstance;
-};
 
 //------------------------------------------------------------------------
 
@@ -45,13 +33,13 @@ requires SupportedGlBufferEnum<BufferType>
 class Buffer
 {
 public:
-    Buffer(const GLsizei wholeSizeBytes = 1 << 27)
-        : m_wholeSizeBytes{wholeSizeBytes},
-          m_accessFlags{GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT},
+    Buffer(GLsizei sizeBytes = 1 << 27)
+        : m_wholeSizeBytes{sizeBytes},
           m_alignment{s_alignmentTable.at(BufferType)}
     {
         glCreateBuffers(1, &m_handle);
-        glNamedBufferStorage(m_handle, m_wholeSizeBytes, nullptr, GL_DYNAMIC_STORAGE_BIT | m_accessFlags);
+        const GLbitfield access = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
+        glNamedBufferStorage(m_handle, m_wholeSizeBytes, nullptr, GL_DYNAMIC_STORAGE_BIT | access);
     }
 
     ~Buffer()
@@ -64,7 +52,7 @@ public:
     Buffer(Buffer&&) = default;
     Buffer& operator=(Buffer&&) = default;
 
-    [[nodiscard]] std::span<T> pushData(const void* data, const GLsizei size) const noexcept
+    [[nodiscard]] std::span<T> pushData(const void* data, GLsizei size) const noexcept
     {
         setData(data, size, m_writeOffsetBytes);
         const GLsizeiptr start = m_writeOffsetBytes;
@@ -76,7 +64,7 @@ public:
         return span;
     }
 
-    void setData(const void* data, const GLsizei size, const GLintptr offsetBytes) const noexcept
+    void setData(const void* data, GLsizei size, GLintptr offsetBytes) const noexcept
     {
         glNamedBufferSubData(m_handle, offsetBytes, sizeof(T) * size, data);
     }
@@ -86,13 +74,13 @@ public:
         glBindBuffer(BufferType, m_handle);
     }
 
-    void bindBase(const GLuint bindingIndex) const noexcept
+    void bindBase(GLuint bindingIndex) const noexcept
     requires (BufferType == GL_UNIFORM_BUFFER || BufferType == GL_SHADER_STORAGE_BUFFER)
     {
         glBindBufferBase(BufferType, bindingIndex, m_handle);
     }
 
-    void bindRange(const GLuint bindingIndex, const GLintptr offsetBytes, const GLsizeiptr sizeBytes) const noexcept
+    void bindRange(GLuint bindingIndex, GLintptr offsetBytes, GLsizeiptr sizeBytes) const noexcept
     requires (BufferType == GL_UNIFORM_BUFFER || BufferType == GL_SHADER_STORAGE_BUFFER)
     {
         glBindBufferRange(BufferType, bindingIndex, m_handle, offsetBytes, sizeBytes);
@@ -103,7 +91,7 @@ public:
         return static_cast<T*>(glMapNamedBuffer(m_handle, GL_READ_WRITE));
     }
 
-    [[nodiscard]] T* mapRange(const GLintptr offsetBytes, const GLsizei sizeBytes) const noexcept
+    [[nodiscard]] T* mapRange(GLintptr offsetBytes, GLsizei sizeBytes) const noexcept
     {
         return static_cast<T*>(glMapNamedBufferRange(m_handle, offsetBytes, sizeBytes, GL_READ_WRITE));
     }
@@ -118,7 +106,7 @@ public:
         return m_handle;
     }
 
-    [[nodiscard]] bool fits(const GLsizei sizeBytes) const noexcept
+    [[nodiscard]] bool fits(GLsizei sizeBytes) const noexcept
     {
         return m_writeOffsetBytes + sizeBytes <= m_wholeSizeBytes;
     }
@@ -130,7 +118,7 @@ public:
         auto table = std::map<GLenum, GLint>{
             { GL_ARRAY_BUFFER, 1 },
             { GL_ELEMENT_ARRAY_BUFFER, 1 },
-            { GL_DRAW_INDIRECT_BUFFER, static_cast<GLint>(sizeof(MultiDrawElementsIndirectCommand)) }
+            { GL_DRAW_INDIRECT_BUFFER, static_cast<GLint>(sizeof(Zhade::MultiDrawElementsIndirectCommand)) }
         };
 
         GLint uniformBufferAlignment;
@@ -147,17 +135,15 @@ public:
     static inline const std::map<GLenum, GLint> s_alignmentTable = makeAlignmentTable();
 
 private:
-    [[nodiscard]] GLsizeiptr computeWriteOffsetIncrement(const GLsizei sizeBytes) const noexcept
+    [[nodiscard]] GLsizeiptr computeWriteOffsetIncrement(GLsizei sizeBytes) const noexcept
     {
         return static_cast<GLsizeiptr>(std::ceil(static_cast<float>(sizeBytes) / m_alignment) * m_alignment);
     }
 
     GLuint m_handle;
     const GLsizei m_wholeSizeBytes;
-    const GLbitfield m_accessFlags;
     const GLint m_alignment;
     mutable GLsizeiptr m_writeOffsetBytes = 0;
-    mutable GLuint m_bindingIndex;
 };
 
 //------------------------------------------------------------------------

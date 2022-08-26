@@ -22,10 +22,16 @@ concept ValidGlTextureDataSourceType = (
     std::is_unsigned_v<T> && sizeof(T) <= 4 || std::is_same_v<T, int32_t> || std::is_same_v<T, float>
 );
 
+template<GLenum InternalFormat>
+concept SupportedGlInternalFormat = (
+    InternalFormat == GL_RGBA8
+        || InternalFormat == GL_DEPTH_COMPONENT32
+);
+
 //------------------------------------------------------------------------
 
 template<ValidGlTextureDataSourceType T>
-static constexpr GLenum getGlTextureDataTypeOfPrimitive32BitType()
+static constexpr GLenum getGlTextureDataTypeOfSourceType()
 {
     if constexpr (std::is_same_v<T, uint8_t>)
         return GL_UNSIGNED_BYTE;
@@ -39,21 +45,11 @@ static constexpr GLenum getGlTextureDataTypeOfPrimitive32BitType()
         return GL_FLOAT;
 }
 
-//------------------------------------------------------------------------
-
-template<GLenum InternalFormat>
-concept SupportedGlInternalFormat = (
-    InternalFormat == GL_RGBA8
-        || InternalFormat == GL_DEPTH_COMPONENT32
-);
-
-//------------------------------------------------------------------------
-
 template<GLenum InternalFormat>
 requires SupportedGlInternalFormat<InternalFormat>
 static constexpr GLenum getGlTextureFormatOfInternalFormat()
 {
-    switch constexpr (InternalFormat)
+    switch (InternalFormat)
     {
     case GL_RGBA8:
                                return GL_RGBA;
@@ -71,26 +67,16 @@ class TextureStorage
 public:
     struct Settings
     {
-        GLsizei levels;
-        GLenum internalformat;
-        GLsizei width;
-        GLsizei height;
-        GLsizei depth;
-
-        GLenum type;
-
-        GLenum minFilter;
-        GLenum magFilter;
-        GLenum wrapS;
-        GLenum wrapT;
+        GLsizei width, height, depth, levels;
+        GLenum type, minFilter, magFilter, wrapS, wrapT;
 
         static Settings makeDefaultOfSize(const glm::ivec4& dims)
         {
             return {
-                .levels = dims.w,
                 .width = dims.x,
                 .height = dims.y,
                 .depth = dims.z,
+                .levels = dims.w,
                 .format = getGlTextureFormatOfInternalFormat<InternalFormat>(),
                 .type = GL_UNSIGNED_BYTE,
                 .minFilter = GL_LINEAR_MIPMAP_LINEAR,
@@ -101,7 +87,24 @@ public:
         }
     };
 
-    TextureStorage(const Settings& settings = Settings::makeDefaultOfSize(glm::ivec4(256, 256, 128, 4)));
+    TextureStorage(const Settings& settings = Settings::makeDefaultOfSize(glm::ivec4(256, 256, 128, 4)))
+        : m_settings{settings}
+    {
+        glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &m_handle);
+        glTextureStorage3D(
+            m_handle,
+            m_settings.levels,
+            InternalFormat,
+            m_settings.width,
+            m_settings.height,
+            m_settings.depth
+        );
+        glTextureParameteri(m_handle, GL_TEXTURE_MIN_FILTER, m_settings.minFilter);
+        glTextureParameteri(m_handle, GL_TEXTURE_MAG_FILTER, m_settings.magFilter);
+        glTextureParameteri(m_handle, GL_TEXTURE_WRAP_S, m_settings.wrapS);
+        glTextureParameteri(m_handle, GL_TEXTURE_WRAP_T, m_settings.wrapT);
+    }
+
     TextureStorage(const GLint width, const GLint height, const GLint depth, const GLint levels);
     ~TextureStorage();
 

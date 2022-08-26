@@ -56,7 +56,7 @@ public:
         glTextureView(
             m_handle,
             GL_TEXTURE_2D,
-            underlying->getHandle(),
+            m_storageDetails.handle,
             InternalFormat,
             0, settings.levels,
             m_storageDetails.offset, 1

@@ -8,6 +8,23 @@
 
 //------------------------------------------------------------------------
 
+namespace Zhade
+{
+
+//------------------------------------------------------------------------
+// As per https://www.khronos.org/opengl/wiki/Vertex_Rendering#Indirect_rendering.
+
+struct MultiDrawElementsIndirectCommand
+{
+    GLuint vertexCount;
+    GLuint instanceCount;
+    GLuint firstIndex;
+    GLuint baseVertex;
+    GLuint baseInstance;
+};
+
+//------------------------------------------------------------------------
+
 class Renderer;
 
 // Some resources:
@@ -38,5 +55,9 @@ class Renderer;
 //   https://realtimecollisiondetection.net/blog/?p=86
 // - sort according to the keys before looping through it and making the draw calls
 // - or maybe separate queues for different types of objects?
+
+//------------------------------------------------------------------------
+
+}  // namespace Zhade
 
 //------------------------------------------------------------------------

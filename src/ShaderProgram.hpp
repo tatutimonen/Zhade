@@ -54,10 +54,10 @@ public:
     void setUniform(const std::string& name, const void* data) const noexcept
     {
         const GLint location = getUniformLocation(name);
-        if constexpr (std::is_same_v<T, GLint>)
-            glUniform1i(location, *static_cast<const GLint*>(data));
-        else if (std::is_same_v<T, GLfloat>)
+        if constexpr (std::is_same_v<T, GLfloat>)
             glUniform1f(location, *static_cast<const GLfloat*>(data));
+        else if (std::is_same_v<T, GLint>)
+            glUniform1i(location, *static_cast<const GLint*>(data));
         else if (std::is_same_v<T, glm::vec2>)
             glUniform2fv(location, 1, static_cast<const GLfloat*>(data));
         else if (std::is_same_v<T, glm::vec3>)
@@ -65,11 +65,11 @@ public:
         else if (std::is_same_v<T, glm::vec4>)
             glUniform4fv(location, 1, static_cast<const GLfloat*>(data));
         else if (std::is_same_v<T, glm::mat3>)
-            glUniformMatrix3fv(location, 1, static_cast<const GLfloat*>(data));
+            glUniformMatrix3fv(location, 1, GL_FALSE, static_cast<const GLfloat*>(data));
         else if (std::is_same_v<T, glm::mat4x3>)
-            glUniformMatrix4x3fv(location, 1, static_cast<const GLfloat*>(data));
+            glUniformMatrix4x3fv(location, 1, GL_FALSE, static_cast<const GLfloat*>(data));
         else if (std::is_same_v<T, glm::mat4>)
-            glUniformMatrix4fv(location, 1, static_cast<const GLfloat*>(data));
+            glUniformMatrix4fv(location, 1, GL_FALSE, static_cast<const GLfloat*>(data));
     }
 
 private:    

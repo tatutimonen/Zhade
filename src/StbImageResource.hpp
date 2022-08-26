@@ -2,7 +2,7 @@
 
 #include <stb_image.h>
 
-#include <iostream>
+#include <format>
 #include <string_view>
 #include <type_traits>
 
@@ -35,15 +35,13 @@ public:
 
     [[nodiscard]] bool isValid() const noexcept { return m_data != nullptr; }
 
-    static void setGlobalFlipY() noexcept
+    static void setGlobalFlipY(bool flip) noexcept
     {
-        static bool flip = true;
         stbi_set_flip_vertically_on_load(flip);
-        flip = !flip;
     }
 
 private:
-    [[nodiscard]] void load(std::string_view filename) noexcept
+    void load(std::string_view filename)
     {
         if constexpr (std::is_same_v<T, stbi_uc>)
             m_data = stbi_load(filename.data(), &m_width, &m_height, nullptr, 4);
@@ -52,13 +50,12 @@ private:
         else if (std::is_same_v<T, float>)
             m_data = stbi_loadf(filename.data(), &m_width, &m_height, nullptr, 4);
         
-        if (!isValid())
-            std::cerr << filename << " yielded invalid data!" << std::endl;
+        isValid() || throw std::runtime_error(std::format("Error loading data from '{}'", filename));
     }
 
-    int32_t m_width = 0;
-    int32_t m_height = 0;
-    T* m_data = nullptr;
+    int32_t m_width;
+    int32_t m_height;
+    T* m_data;
 };
 
 //------------------------------------------------------------------------

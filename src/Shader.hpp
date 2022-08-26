@@ -27,7 +27,7 @@ enum class ShaderDataType
 template<ShaderDataType T>
 static constexpr size_t getShaderDataTypeSizeBytes()
 {
-    switch constexpr (T)
+    switch (T)
     {
     case ShaderDataType::Float:
     case ShaderDataType::Int:
@@ -54,9 +54,9 @@ static constexpr size_t getShaderDataTypeSizeBytes()
 }
 
 template<ShaderDataType T>
-static constexpr size_t getShaderShaderDataTypeSize()
+static constexpr size_t getShaderDataTypeSize()
 {
-    switch constexpr (T)
+    switch (T)
     {
     case ShaderDataType::Float:
     case ShaderDataType::Int:
@@ -83,9 +83,9 @@ static constexpr size_t getShaderShaderDataTypeSize()
 }
 
 template<ShaderDataType T>
-static constexpr GLenum getShaderShaderDataTypeAsGlEnum()
+static constexpr GLenum getShaderDataTypeAsGLenum()
 {
-    switch constexpr (T)
+    switch (T)
     {
     case ShaderDataType::Float:
     case ShaderDataType::Vec2f:
