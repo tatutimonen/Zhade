@@ -32,7 +32,6 @@ public:
     [[nodiscard]] int32_t getHeight() const noexcept { return m_height; }
     [[nodiscard]] T* mutData() const noexcept { return m_data; }
     [[nodiscard]] const T* data() const noexcept { return m_data; }
-    [[nodiscard]] bool isValid() const noexcept { return m_data != nullptr; }
 
     static void setGlobalFlipY(bool flip) noexcept { stbi_set_flip_vertically_on_load(flip); }
 
@@ -46,7 +45,7 @@ private:
         else if (std::is_same_v<T, float>)
             m_data = stbi_loadf(filename.data(), &m_width, &m_height, nullptr, 4);
         
-        if (!isValid())
+        if (m_data == nullptr)
             throw std::runtime_error(std::format("Error loading data from '{}'", filename));
     }
 
