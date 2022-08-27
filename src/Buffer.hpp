@@ -68,7 +68,10 @@ public:
         glNamedBufferSubData(m_handle, offsetBytes, sizeof(T) * size, data);
     }
 
-    void bind() const noexcept { glBindBuffer(BufferType, m_handle); }
+    void bind() const noexcept
+    {
+        glBindBuffer(BufferType, m_handle);
+    }
 
     void bindBase(GLuint bindingIndex) const noexcept
     requires (BufferType == GL_UNIFORM_BUFFER || BufferType == GL_SHADER_STORAGE_BUFFER)
@@ -92,7 +95,10 @@ public:
         return static_cast<T*>(glMapNamedBufferRange(m_handle, offsetBytes, sizeBytes, GL_READ_WRITE));
     }
 
-    void unmap() const noexcept { glUnmapNamedBuffer(m_handle); }
+    void unmap() const noexcept
+    {
+        glUnmapNamedBuffer(m_handle);
+    }
 
     [[nodiscard]] bool fits(GLsizei sizeBytes) const noexcept
     {
