@@ -140,6 +140,7 @@ private:
         return static_cast<GLsizeiptr>(std::ceil(static_cast<float>(sizeBytes) / m_alignment) * m_alignment);
     }
 
+
     GLuint m_handle;
     const GLsizei m_wholeSizeBytes;
     const GLint m_alignment;
