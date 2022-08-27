@@ -60,7 +60,7 @@ static constexpr GLenum getGlTextureFormatOfInternalFormat()
 
 //------------------------------------------------------------------------
 
-template<GLenum InternalFormat = GL_RGBA8>
+template<ValidGlTextureDataSourceType T, GLenum InternalFormat = GL_RGBA8>
 requires SupportedGlInternalFormat<InternalFormat>
 class TextureStorage
 {
@@ -72,18 +72,23 @@ public:
 
         static Settings makeDefaultOfSize(const glm::ivec4& dims)
         {
-            return {
-                .width = dims.x,
-                .height = dims.y,
-                .depth = dims.z,
-                .levels = dims.w,
-                .format = getGlTextureFormatOfInternalFormat<InternalFormat>(),
-                .type = GL_UNSIGNED_BYTE,
-                .minFilter = GL_LINEAR_MIPMAP_LINEAR,
-                .magFilter = GL_LINEAR,
-                .wrapS = GL_CLAMP_TO_EDGE,
-                .wrapT = GL_CLAMP_TO_EDGE
-            };
+            switch (InternalFormat)
+            {
+            case GL_RGBA8:
+                return {
+                    .width = dims.x, .height = dims.y, .depth = dims.z, .levels = dims.w,
+                    .type = getGlTextureDataTypeOfSourceType<T>(),
+                    .minFilter = GL_LINEAR_MIPMAP_LINEAR, .magFilter = GL_LINEAR,
+                    .wrapS = GL_CLAMP_TO_EDGE, .wrapT = GL_CLAMP_TO_EDGE
+                };
+            case GL_DEPTH_COMPONENT32:
+                return {
+                    .width = dims.x, .height = dims.y, .depth = dims.z, .levels = dims.w,
+                    .type = GL_FLOAT,
+                    .minFilter = GL_LINEAR, .magFilter = GL_LINEAR,
+                    .wrapS = GL_CLAMP_TO_EDGE, .wrapT = GL_CLAMP_TO_EDGE
+                };
+            }
         }
     };
 
@@ -91,21 +96,20 @@ public:
         : m_settings{settings}
     {
         glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &m_handle);
-        glTextureStorage3D(
-            m_handle,
-            m_settings.levels,
-            InternalFormat,
-            m_settings.width,
-            m_settings.height,
-            m_settings.depth
-        );
+        glTextureStorage3D(m_handle, m_settings.levels, InternalFormat,
+            m_settings.width, m_settings.height, m_settings.depth);
         glTextureParameteri(m_handle, GL_TEXTURE_MIN_FILTER, m_settings.minFilter);
         glTextureParameteri(m_handle, GL_TEXTURE_MAG_FILTER, m_settings.magFilter);
         glTextureParameteri(m_handle, GL_TEXTURE_WRAP_S, m_settings.wrapS);
         glTextureParameteri(m_handle, GL_TEXTURE_WRAP_T, m_settings.wrapT);
+        if constexpr (InternalFormat == GL_DEPTH_COMPONENT32)  // Depth texture?
+        {
+            glTextureParameteri(m_handle, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+            glTextureParameteri(m_handle, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+        }
     }
 
-    TextureStorage(const GLint width, const GLint height, const GLint depth, const GLint levels);
+    TextureStorage(GLint width, GLint height, GLint depth, GLint levels);
     ~TextureStorage();
 
     TextureStorage(const TextureStorage&) = delete;
@@ -115,10 +119,11 @@ public:
 
     [[nodiscard]] GLuint getHandle() const noexcept { return m_handle; }
     [[nodiscard]] const Settings& getSettings() const noexcept { return m_settings; }
-    void bindToUnit(const GLuint unit) const noexcept { glBindTextureUnit(unit, m_handle); }
+
+    void bindToUnit(GLuint unit) const noexcept { glBindTextureUnit(unit, m_handle); }
     void generateMipmap() const noexcept { glGenerateTextureMipmap(m_handle); }
     
-    [[nodiscard]] bool fits(const uint32_t numTextures = 1) const noexcept
+    [[nodiscard]] bool fits(uint32_t numTextures = 1) const noexcept
     {
         return numTextures < m_settings.depth - m_writeOffsetDepth;
     }

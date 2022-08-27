@@ -11,6 +11,8 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
+template<GLenum InternalFormat>
+requires SupportedGlInternalFormat<InternalFormat>
 class TextureStorage;
 
 //------------------------------------------------------------------------
