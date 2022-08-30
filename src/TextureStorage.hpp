@@ -18,20 +18,19 @@ namespace Zhade
 //------------------------------------------------------------------------
 
 template<typename T>
-concept ValidGlTextureDataSourceType = (
-    std::is_unsigned_v<T> && sizeof(T) <= 4 || std::is_same_v<T, int32_t> || std::is_same_v<T, float>
+concept ValidGLTextureDataSourceType = (
+    StbImageDataFormat<T> || std::is_unsigned_v<T> && sizeof(T) <= 4 || std::is_same_v<T, int32_t> || std::is_same_v<T, float>
 );
 
 template<GLenum InternalFormat>
-concept SupportedGlInternalFormat = (
-    InternalFormat == GL_RGBA8
-        || InternalFormat == GL_DEPTH_COMPONENT32
+concept SupportedGLInternalFormat = (
+    InternalFormat == GL_RGBA8 || InternalFormat == GL_DEPTH_COMPONENT32
 );
 
 //------------------------------------------------------------------------
 
-template<ValidGlTextureDataSourceType T>
-static constexpr GLenum getGlTextureDataTypeOfSourceType()
+template<ValidGLTextureDataSourceType T>
+inline constexpr GLenum textureDataSourceType2GLenum()
 {
     if constexpr (std::is_same_v<T, uint8_t>)
         return GL_UNSIGNED_BYTE;
@@ -46,22 +45,19 @@ static constexpr GLenum getGlTextureDataTypeOfSourceType()
 }
 
 template<GLenum InternalFormat>
-requires SupportedGlInternalFormat<InternalFormat>
-static constexpr GLenum getGlTextureFormatOfInternalFormat()
+requires SupportedGLInternalFormat<InternalFormat>
+inline constexpr GLenum textureInternalFormat2Format()
 {
-    switch (InternalFormat)
-    {
-    case GL_RGBA8:
-                               return GL_RGBA;
-    case GL_DEPTH_COMPONENT32:
-                               return GL_DEPTH_COMPONENT;
-    }
+    if constexpr (InternalFormat == GL_RGBA8)
+        return GL_RGBA;
+    else if (InternalFormat == GL_DEPTH_COMPONENT32)
+        return GL_DEPTH_COMPONENT;
 }
 
 //------------------------------------------------------------------------
 
-template<ValidGlTextureDataSourceType T, GLenum InternalFormat = GL_RGBA8>
-requires SupportedGlInternalFormat<InternalFormat>
+template<ValidGLTextureDataSourceType T = stbi_uc, GLenum InternalFormat = GL_RGBA8>
+requires SupportedGLInternalFormat<InternalFormat>
 class TextureStorage
 {
 public:
@@ -70,38 +66,39 @@ public:
         GLsizei width, height, depth, levels;
         GLenum type, minFilter, magFilter, wrapS, wrapT;
 
-        static Settings makeDefaultOfSize(const glm::ivec4& dims)
+        static Settings makeDefault(const glm::ivec4& dims)
         {
-            switch (InternalFormat)
-            {
-            case GL_RGBA8:
+            if constexpr (InternalFormat == GL_RGBA8)
                 return {
                     .width = dims.x, .height = dims.y, .depth = dims.z, .levels = dims.w,
-                    .type = getGlTextureDataTypeOfSourceType<T>(),
+                    .type = textureDataSourceType2GLenum<T>(),
                     .minFilter = GL_LINEAR_MIPMAP_LINEAR, .magFilter = GL_LINEAR,
                     .wrapS = GL_CLAMP_TO_EDGE, .wrapT = GL_CLAMP_TO_EDGE
                 };
-            case GL_DEPTH_COMPONENT32:
+            else if (InternalFormat == GL_DEPTH_COMPONENT32)
                 return {
                     .width = dims.x, .height = dims.y, .depth = dims.z, .levels = dims.w,
                     .type = GL_FLOAT,
                     .minFilter = GL_LINEAR, .magFilter = GL_LINEAR,
                     .wrapS = GL_CLAMP_TO_EDGE, .wrapT = GL_CLAMP_TO_EDGE
                 };
-            }
         }
     };
 
-    TextureStorage(const Settings& settings = Settings::makeDefaultOfSize(glm::ivec4(256, 256, 128, 4)))
+    TextureStorage(const Settings& settings = Settings::makeDefault(glm::ivec4(256, 256, 128, 4)))
         : m_settings{settings}
     {
         glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &m_handle);
-        glTextureStorage3D(m_handle, m_settings.levels, InternalFormat,
-            m_settings.width, m_settings.height, m_settings.depth);
+        glTextureStorage3D(
+            m_handle,
+            m_settings.levels, InternalFormat,
+            m_settings.width, m_settings.height, m_settings.depth
+        );
         glTextureParameteri(m_handle, GL_TEXTURE_MIN_FILTER, m_settings.minFilter);
         glTextureParameteri(m_handle, GL_TEXTURE_MAG_FILTER, m_settings.magFilter);
         glTextureParameteri(m_handle, GL_TEXTURE_WRAP_S, m_settings.wrapS);
         glTextureParameteri(m_handle, GL_TEXTURE_WRAP_T, m_settings.wrapT);
+
         if constexpr (InternalFormat == GL_DEPTH_COMPONENT32)  // Depth texture?
         {
             glTextureParameteri(m_handle, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
@@ -109,8 +106,15 @@ public:
         }
     }
 
-    TextureStorage(GLint width, GLint height, GLint depth, GLint levels);
-    ~TextureStorage();
+    TextureStorage(GLint width, GLint height, GLint depth, GLint levels)
+    {
+        TextureStorage(Settings::makeDefault(glm::ivec4(width, height, depth, levels)));
+    }
+    
+    ~TextureStorage()
+    {
+        glDeleteTextures(1, &m_handle);
+    }
 
     TextureStorage(const TextureStorage&) = delete;
     TextureStorage& operator=(const TextureStorage&) = delete;
@@ -128,42 +132,45 @@ public:
         return numTextures < m_settings.depth - m_writeOffsetDepth;
     }
 
-    template<ValidGlTextureDataSourceType T, GLenum TextureTarget = GL_TEXTURE_2D>
-    requires ValidGlTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
-    [[nodiscard]] std::optional<TextureView<TextureTarget>> pushData(const T* data) const noexcept
+    template<GLenum TextureTarget>
+    using ViewOpt = std::optional<TextureView<TextureTarget>>;
+
+    template<GLenum TextureTarget = GL_TEXTURE_2D>
+    requires ValidGLTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
+    [[nodiscard]] ViewOpt<TextureTarget> pushData(const T* data) const noexcept
     {
         if (!fits())
             return std::nullopt;
 
-        return setData<T, TextureTarget>(data, m_writeOffsetDepth++);
+        return setData<TextureTarget>(data, m_writeOffsetDepth++);
     }
 
-    template<StbImageDataFormat T = stbi_uc, GLenum TextureTarget = GL_TEXTURE_2D>
-    requires ValidGlTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
-    [[nodiscard]] std::optional<TextureView<TextureTarget>> pushDataFromFile(std::string_view filename) const noexcept
+    template< GLenum TextureTarget = GL_TEXTURE_2D>
+    requires ValidGLTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
+    [[nodiscard]] ViewOpt<TextureTarget> setDataByOffset(const T* data, GLsizeiptr offsetDepth) const noexcept
+    {
+        if (offsetDepth < 0 || m_settings.depth < offsetDepth)
+            return std::nullopt;
+
+        return setData<TextureTarget>(data, offsetDepth);
+    }
+
+    template<GLenum TextureTarget = GL_TEXTURE_2D>
+    requires ValidGLTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
+    [[nodiscard]] ViewOpt<TextureTarget> pushDataFromFile(std::string_view filename) const noexcept
+    requires StbImageDataFormat<T>
     {
         if (!fits())
             return std::nullopt;
 
         const auto image = StbImageResource<T>(filename);
-        return setData<T, TextureTarget>(image.data(), m_writeOffsetDepth++);
+        return setData<TextureTarget>(image.data(), m_writeOffsetDepth++);
     }
 
-    template<ValidGlTextureDataSourceType T, GLenum TextureTarget = GL_TEXTURE_2D>
-    requires ValidGlTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
-    [[nodiscard]] std::optional<TextureView<TextureTarget>> setDataByOffset(const T* data,
-        const GLsizeiptr offsetDepth) const noexcept
-    {
-        if (offsetDepth < 0 || m_settings.depth < offsetDepth)
-            return std::nullopt;
-
-        return setData<T, TextureTarget>(data, offsetDepth);
-    }
-
-    template<StbImageDataFormat T = stbi_uc, GLenum TextureTarget = GL_TEXTURE_2D>
-    requires ValidGlTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
-    [[nodiscard]] std::optional<TextureView<TextureTarget>> setDataFromFileByOffset(std::string_view filename,
-        const GLsizeiptr offsetDepth) const noexcept
+    template<GLenum TextureTarget = GL_TEXTURE_2D>
+    requires ValidGLTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
+    [[nodiscard]] ViewOpt<TextureTarget> setDataFromFileByOffset(std::string_view filename, GLsizeiptr offsetDepth) const noexcept
+    requires StbImageDataFormat<T>
     {
         if (offsetDepth < 0 || m_settings.depth < offsetDepth)
             return std::nullopt;
@@ -173,21 +180,24 @@ public:
     }
 
 private:
-    template<ValidGlTextureDataSourceType T, GLenum TextureTarget = GL_TEXTURE_2D>
-    requires ValidGlTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
-    [[nodiscard]] std::optional<TextureView<TextureTarget>> setData(const T* data, const GLsizeiptr offsetDepth) const noexcept
+    template<GLenum TextureTarget = GL_TEXTURE_2D>
+    requires ValidGLTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
+    [[nodiscard]] ViewOpt<TextureTarget> setData(const T* data, GLsizeiptr offsetDepth) const noexcept
     {
-        const GLenum textureDataType = getGlTextureDataTypeOfPrimitive32BitType<T>();
         glTextureSubImage3D(
             m_handle, 0,
             0, 0, offsetDepth,
             m_settings.width, m_settings.height, 1,
-            m_settings.format,
-            getGlTextureDataTypeOfPrimitive32BitType<T>(),
+            textureInternalFormat2Format<InternalFormat>(),
+            textureDataSourceType2GLenum<T>(),
             data
         );
-        const auto view = TextureView<TextureTarget>({ .handle = m_handle, .storageOffset = offsetDepth });
-        return std::make_optional(view);
+        return ViewOpt<TextureTarget>(
+            TextureView<TextureTarget>(
+                { .handle = m_handle, .internalFormat = InternalFormat, .storageOffset = offsetDepth },
+                m_settings.levels
+            )
+        );
     }
 
     GLuint m_handle;

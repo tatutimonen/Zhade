@@ -25,7 +25,7 @@ enum class ShaderDataType
 };
 
 template<ShaderDataType T>
-static constexpr size_t getShaderDataTypeSizeBytes()
+inline constexpr size_t shaderDataType2SizeBytes()
 {
     switch (T)
     {
@@ -54,7 +54,7 @@ static constexpr size_t getShaderDataTypeSizeBytes()
 }
 
 template<ShaderDataType T>
-static constexpr size_t getShaderDataTypeSize()
+inline constexpr size_t shaderDataType2NumElements()
 {
     switch (T)
     {
@@ -83,7 +83,7 @@ static constexpr size_t getShaderDataTypeSize()
 }
 
 template<ShaderDataType T>
-static constexpr GLenum getShaderDataTypeAsGLenum()
+inline constexpr GLenum shaderDataType2GLenum()
 {
     switch (T)
     {
@@ -147,8 +147,8 @@ public:
 
     [[nodiscard]] GLuint getHandle() const noexcept { return m_handle; }
 
-    void attach(const GLuint program) const noexcept { glAttachShader(program, m_handle); }
-    void detach(const GLuint program) const noexcept { glDetachShader(program, m_handle); }
+    void attach(GLuint program) const noexcept { glAttachShader(program, m_handle); }
+    void detach(GLuint program) const noexcept { glDetachShader(program, m_handle); }
     
 private:
     void parseShaderFile(std::string_view filename)

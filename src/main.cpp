@@ -172,12 +172,12 @@ int main()
 
     // Setup textures for the quads.
 
-    auto texStorage = std::make_shared<TextureStorage>();
+    auto texStorage = TextureStorage();
 
-    auto cataView = texStorage->pushDataFromFile(common::texturePath + "cataphract.jpg").value();
-    auto berserkView = texStorage->pushDataFromFile(common::texturePath + "berserk.png").value();
-    auto longbowView = texStorage->pushDataFromFile(common::texturePath + "longbowman.png").value();
-    auto jagView = texStorage->pushDataFromFile(common::texturePath + "jaguarwarrior.png").value();
+    auto cataView = texStorage.pushDataFromFile(common::texturePath + "cataphract.jpg").value();
+    auto berserkView = texStorage.pushDataFromFile(common::texturePath + "berserk.png").value();
+    auto longbowView = texStorage.pushDataFromFile(common::texturePath + "longbowman.png").value();
+    auto jagView = texStorage.pushDataFromFile(common::texturePath + "jaguarwarrior.png").value();
 
     /*auto materialStorage = std::make_shared<TextureStorage>(1, 1, 1, 1);
     uint32_t jade = 0x0;  // 0.54,      0.89,     0.63
@@ -187,8 +187,8 @@ int main()
     // Two triangles after the four quads.
     auto jadeView = materialStorage->pushData(&jade);*/
 
-    texStorage->bindToUnit(0);
-    texStorage->generateMipmap();
+    texStorage.bindToUnit(0);
+    texStorage.generateMipmap();
 
     const auto img = StbImageResource(common::texturePath + "berserk.png");
     glTextureSubImage2D(

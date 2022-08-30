@@ -33,9 +33,9 @@ public:
     App& operator=(const App&) = delete;
     App& operator=(App&&) = default;
            
-    inline GLFWwindow* getGlCtx() const noexcept { return m_window; }
-    inline float getDeltaTime() const noexcept { return m_deltaTime; }
-    inline const GLFWState& getGLFWState() const noexcept { return s_state; }
+    GLFWwindow* getGlCtx() const noexcept { return m_window; }
+    float getDeltaTime() const noexcept { return m_deltaTime; }
+    const GLFWState& getGLFWState() const noexcept { return s_state; }
 
     void init();
     void updateInternalTimes();
@@ -66,7 +66,7 @@ public:
         yPosPrev = yPos;
     }
 
-    static constexpr std::string_view name = "Zhade";
+    static constexpr std::string_view name = "Zhade - ESC to quit";
     static constexpr uint32_t s_windowWidth = 800u;
     static constexpr uint32_t s_windowHeight = 800u;
     static constexpr float mouse_sensitivity = 0.002f;

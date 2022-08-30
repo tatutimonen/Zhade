@@ -49,7 +49,7 @@ public:
     Buffer(Buffer&&) = default;
     Buffer& operator=(Buffer&&) = default;
 
-    [[nodiscard]] Gluint getHandle() const noexcept { return m_handle; }
+    [[nodiscard]] GLuint getHandle() const noexcept { return m_handle; }
 
     [[nodiscard]] std::span<T> pushData(const void* data, GLsizei size) const noexcept
     {

@@ -11,47 +11,35 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
-template<GLenum InternalFormat>
-requires SupportedGlInternalFormat<InternalFormat>
-class TextureStorage;
-
-//------------------------------------------------------------------------
-
 template<GLenum TextureTarget>
-concept SupportedGlTextureTarget = (
+concept SupportedGLTextureTarget = (
     TextureTarget == GL_TEXTURE_2D || TextureTarget == GL_TEXTURE_2D_ARRAY
 );
 
 //------------------------------------------------------------------------
 
 template<GLenum TextureTarget, GLenum OrigTextureTarget>
-concept ValidGlTextureViewTargetCombination = (
-    SupportedGlTextureTarget<TextureTarget> && SupportedGlTextureTarget<OrigTextureTarget>
+concept ValidGLTextureViewTargetCombination = (
+    SupportedGLTextureTarget<TextureTarget> && SupportedGLTextureTarget<OrigTextureTarget>
         && ((OrigTextureTarget == GL_TEXTURE_2D || OrigTextureTarget == GL_TEXTURE_2D_ARRAY)
             && (TextureTarget == GL_TEXTURE_2D || TextureTarget == GL_TEXTURE_2D_ARRAY))
 );
 
 //------------------------------------------------------------------------
 
-template<GLenum ViewInternalFormat>
-concept ValidGlInternalFormat = (
-    ViewInternalFormat == GL_RGBA8
-);
-
-//------------------------------------------------------------------------
-
-template<GLenum InternalFormat = GL_RGBA8, GLenum TextureTarget = GL_TEXTURE_2D, GLenum OrigTextureTarget = GL_TEXTURE_2D_ARRAY>
-requires ValidGlInternalFormat<InternalFormat> && ValidGlTextureViewTargetCombination<TextureTarget, OrigTextureTarget>
+template<GLenum TextureTarget = GL_TEXTURE_2D, GLenum OrigTextureTarget = GL_TEXTURE_2D_ARRAY>
+requires ValidGLTextureViewTargetCombination<TextureTarget, OrigTextureTarget>
 class TextureView
 {
 public:
     struct StorageDetails
     {
         GLuint handle;
+        GLenum internalFormat;
         GLsizeiptr storageOffset;
     };
 
-    TextureView(const StorageDetails& storageDetails)
+    TextureView(const StorageDetails& storageDetails, GLsizei levels)
         : m_storageDetails{storageDetails}
     {
         glGenTextures(1, &m_handle);
@@ -59,9 +47,9 @@ public:
             m_handle,
             GL_TEXTURE_2D,
             m_storageDetails.handle,
-            InternalFormat,
-            0, settings.levels,
-            m_storageDetails.offset, 1
+            m_storageDetails.internalFormat,
+            0, levels,
+            m_storageDetails.storageOffset, 1
         );
     }
 
@@ -78,8 +66,6 @@ public:
 private:
     GLuint m_handle;
     const StorageDetails m_storageDetails;
-
-    friend class TextureStorage;
 };
 
 //------------------------------------------------------------------------
