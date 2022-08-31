@@ -114,7 +114,7 @@ inline constexpr GLenum shaderDataType2GLenum()
 // Only support geometry stage as extra at this point.
 
 template<GLenum ShaderType>
-concept ValidGlShaderType = (
+concept ValidGLShaderType = (
     ShaderType == GL_VERTEX_SHADER
         || ShaderType == GL_GEOMETRY_SHADER
         || ShaderType == GL_FRAGMENT_SHADER
@@ -123,7 +123,7 @@ concept ValidGlShaderType = (
 //------------------------------------------------------------------------
 
 template<GLenum ShaderType>
-requires ValidGlShaderType<ShaderType>
+requires ValidGLShaderType<ShaderType>
 class Shader
 {
 public:
@@ -131,8 +131,7 @@ public:
     {
         parseShaderFile(filename);
         m_handle = glCreateShader(ShaderType);
-        // glShaderSource needs an lvalue.
-        const auto shaderSourcePtr = m_shaderSource.c_str();
+        const auto shaderSourcePtr = m_shaderSource.c_str();  // glShaderSource needs an lvalue.
         glShaderSource(m_handle, 1, &shaderSourcePtr, nullptr);
         compile();
     }

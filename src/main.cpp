@@ -76,7 +76,6 @@ int main()
     auto mesh = scene->mMeshes[0];
     
     auto dragonVerts = std::vector<Vertex>();
-    //auto dragonVerts = std::vector<Vertex>();
 
     for (auto i = 0u; i < mesh->mNumVertices; ++i)
     {
