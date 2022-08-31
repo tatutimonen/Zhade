@@ -124,18 +124,18 @@ int main()
 
     // Create render commands and gather model matrices.
 
-    std::vector<glm::mat4> modelMatrices;
+    std::vector<glm::mat3x4> modelMatrices;
     std::vector<MultiDrawElementsIndirectCommand> cmds;
 
     for (auto i = 0u; i < numQuads; ++i)
     {
-        modelMatrices.push_back(glm::translate(glm::vec3(0.0f, (float)i, 0.0f)));
+        modelMatrices.push_back(glm::mat3x4(glm::transpose(glm::translate(glm::vec3(0.0f, (float)i, 0.0f)))));
     }
     for (auto i = 0u; i < numTris; ++i)
     {
-        modelMatrices.push_back(glm::translate(glm::vec3((float)(i+1), 0.0f, 0.0f)));
+        modelMatrices.push_back(glm::mat3x4(glm::transpose(glm::translate(glm::vec3((float)(i+1), 0.0f, 0.0f)))));
     }
-    modelMatrices.push_back(glm::translate(glm::vec3(0.0f, 5.0f, 0.0f)));
+    modelMatrices.push_back(glm::mat3x4(glm::transpose(glm::translate(glm::vec3(0.0f, 5.0f, 0.0f)))));
 
     cmds.push_back({
         .vertexCount = 6,
@@ -161,7 +161,7 @@ int main()
 
     // Upload the model matrices into an SSBO.
 
-    const auto ssbo = Buffer<glm::mat4, GL_SHADER_STORAGE_BUFFER>(1 << 10);
+    const auto ssbo = Buffer<glm::mat4x3, GL_SHADER_STORAGE_BUFFER>(1 << 10);
     auto x = ssbo.pushData(modelMatrices.data(), modelMatrices.size());
     ssbo.bindBase(constants::MODEL_BINDING);
 

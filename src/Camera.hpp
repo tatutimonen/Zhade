@@ -33,19 +33,21 @@ public:
 
     struct Matrices
     {
-        glm::mat4 V = glm::mat4(1.0f);
+        glm::mat3x4 V = glm::mat3x4(1.0f);  // Row-major.
         glm::mat4 P = glm::mat4(1.0f);
     };
 
     virtual ~Camera() = default;
 
-    const glm::mat4& getView() const noexcept { return m_matrices.V; }
+    const glm::mat3x4& getView() const noexcept { return m_matrices.V; }
     const glm::mat4& getProjectivity() const noexcept { return m_matrices.P; }
     virtual const Settings& getSettings() const = 0;
 
     void updateView()
     {
-        m_matrices.V = glm::lookAt(m_settings->center, m_settings->center + m_settings->target, m_settings->up);
+        m_matrices.V = glm::mat3x4(
+            glm::transpose(glm::lookAt(m_settings->center, m_settings->center + m_settings->target, m_settings->up))
+        );
     }
 
     virtual void updateProjectivity() = 0;

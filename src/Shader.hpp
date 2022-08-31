@@ -4,7 +4,9 @@
 
 #include <GL/glew.h>
 
+#include <iostream>
 #include <fstream>
+#include <format>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -175,13 +177,9 @@ private:
             std::string infoLog;
             infoLog.resize(static_cast<std::string::size_type>(logLength - 1));
             glGetShaderInfoLog(m_handle, logLength, nullptr, infoLog.data());
-            
-            std::ostringstream errMsg;
-            errMsg << "Error compiling shader with ID "
-                    << m_handle
-                    << ": "
-                    << infoLog;
-            throw std::runtime_error(errMsg.str());
+            const auto errMsg = std::format("Error compiling shader with ID {}: {}", m_handle, infoLog);
+            std::cerr << errMsg << std::endl;
+            throw std::runtime_error(errMsg);
         }
     }
 
