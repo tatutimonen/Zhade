@@ -16,7 +16,7 @@ App::~App()
 
 //------------------------------------------------------------------------
 
-void App::init()
+void App::init() const noexcept
 {
     // GLFW.
     glfwInit();
@@ -54,7 +54,7 @@ void App::init()
 
 //------------------------------------------------------------------------
 
-void App::updateInternalTimes()
+void App::updateInternalTimes() const noexcept
 {
     float frameCurr = glfwGetTime();
     m_deltaTime = frameCurr - m_framePrev;

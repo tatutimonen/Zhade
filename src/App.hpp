@@ -29,16 +29,16 @@ public:
     ~App();
 
     App(const App&) = delete;
-    App(App&&) = default;
     App& operator=(const App&) = delete;
+    App(App&&) = default;
     App& operator=(App&&) = default;
            
     GLFWwindow* getGlCtx() const noexcept { return m_window; }
     float getDeltaTime() const noexcept { return m_deltaTime; }
     const GLFWState& getGLFWState() const noexcept { return s_state; }
 
-    void init();
-    void updateInternalTimes();
+    void init() const noexcept;
+    void updateInternalTimes() const noexcept;
 
     // According to the GLFW input reference.
     static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
@@ -74,9 +74,9 @@ public:
 private:
     inline static GLFWState s_state;
 
-    GLFWwindow* m_window;
-    float m_deltaTime = 0.0f;
-    float m_framePrev = 0.0f;
+    mutable GLFWwindow* m_window;
+    mutable float m_deltaTime = 0.0f;
+    mutable float m_framePrev = 0.0f;
 };
 
 //------------------------------------------------------------------------

@@ -12,7 +12,7 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
-Camera::Camera(std::weak_ptr<const App> app, std::unique_ptr<Settings> settings)
+Camera::Camera(const App& app, std::unique_ptr<Settings> settings)
     : m_app{app},
       m_settings{std::move(settings)},
       m_matrices{Matrices()},
@@ -39,9 +39,8 @@ void Camera::tick() noexcept
 
 bool Camera::move()
 {
-    const auto app = m_app.lock();
-    const auto& [keys, pitch, yaw] = app->getGLFWState();
-    const auto cameraSpeed = s_cameraBaseSpeed * app->getDeltaTime();
+    const auto& [keys, pitch, yaw] = m_app.getGLFWState();
+    const auto cameraSpeed = s_cameraBaseSpeed * m_app.getDeltaTime();
 
     const auto centerPrev = m_settings->center;
     
@@ -72,8 +71,7 @@ bool Camera::move()
 
 bool Camera::rotate()
 {
-    const auto app = m_app.lock();
-    [[maybe_unused]] const auto& [keys, pitch, yaw] = app->getGLFWState();
+    [[maybe_unused]] const auto& [keys, pitch, yaw] = m_app.getGLFWState();
 
     const auto targetPrev = m_settings->target;
     

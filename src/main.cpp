@@ -37,8 +37,8 @@ int main()
 {
     using namespace Zhade;
 
-    const auto app = std::make_shared<App>();;
-    app->init();
+    const auto app = App();
+    app.init();
 
     auto vshader = Shader<GL_VERTEX_SHADER>(common::shaderPath + "debug.vert");
     auto fshader = Shader<GL_FRAGMENT_SHADER>(common::shaderPath + "debug.frag");
@@ -161,7 +161,7 @@ int main()
 
     // Upload the model matrices into an SSBO.
 
-    const auto ssbo = Buffer<glm::mat4x3, GL_SHADER_STORAGE_BUFFER>(1 << 10);
+    const auto ssbo = Buffer<glm::mat3x4, GL_SHADER_STORAGE_BUFFER>(1 << 10);
     auto x = ssbo.pushData(modelMatrices.data(), modelMatrices.size());
     ssbo.bindBase(constants::MODEL_BINDING);
 
@@ -204,9 +204,9 @@ int main()
     glBindVertexArray(vao);
     dibo.bind();
 
-    while (!glfwWindowShouldClose(app->getGlCtx()))
+    while (!glfwWindowShouldClose(app.getGlCtx()))
     {
-        app->updateInternalTimes();
+        app.updateInternalTimes();
         
         glfwPollEvents();
         camera.tick();
@@ -215,7 +215,7 @@ int main()
 
         glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, cmds.size(), 0);
 
-        glfwSwapBuffers(app->getGlCtx());
+        glfwSwapBuffers(app.getGlCtx());
     }
 
     glBindVertexArray(0);

@@ -57,11 +57,11 @@ public:
     static constexpr auto s_cameraBaseSpeed = 5.0f;
 
 protected:
-    Camera(std::weak_ptr<const App> app, std::unique_ptr<Settings> settings);
+    Camera(const App& app, std::unique_ptr<Settings> settings);
     bool move();
     bool rotate();
 
-    std::weak_ptr<const App> m_app;
+    const App& m_app;
     std::unique_ptr<Settings> m_settings;
     Matrices m_matrices;
     Buffer<Matrices, GL_UNIFORM_BUFFER> m_uniformBuffer;

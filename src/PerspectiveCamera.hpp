@@ -15,8 +15,8 @@ public:
         float fov;
         float aspectRatio;
 
-        Settings(std::unique_ptr<Camera::Settings> baseSettings = std::make_unique<Camera::Settings>(), const float fov = 70.0f,
-                 const float aspectRatio = static_cast<float>(App::s_windowWidth) / App::s_windowHeight)
+        Settings(std::unique_ptr<Camera::Settings> baseSettings = std::make_unique<Camera::Settings>(), float fov = 70.0f,
+                 float aspectRatio = static_cast<float>(App::s_windowWidth) / App::s_windowHeight)
             : Camera::Settings(std::move(*baseSettings)),
               fov{fov},
               aspectRatio{aspectRatio}
@@ -25,7 +25,7 @@ public:
         }
     };
 
-    PerspectiveCamera(std::weak_ptr<const App> app, std::unique_ptr<Settings> settings = std::make_unique<Settings>());
+    PerspectiveCamera(const App& app, std::unique_ptr<Settings> settings = std::make_unique<Settings>());
 
     virtual void updateProjectivity() override
     {
