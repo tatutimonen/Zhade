@@ -12,6 +12,8 @@ namespace Zhade
 {
 
 //------------------------------------------------------------------------
+// Because std::stack is horrendously slow and std::pmr::deque with
+// a std::pmr::monotonic_buffer_resource is not always applicable as a remedy.
 
 template<typename T>
 requires std::copyable<T> || std::movable<T>
