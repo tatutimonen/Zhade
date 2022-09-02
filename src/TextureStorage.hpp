@@ -192,11 +192,9 @@ private:
             textureDataSourceType2GLenum<T>(),
             data
         );
-        return ViewOpt<TextureTarget>(
-            TextureView<TextureTarget>(
-                { .handle = m_handle, .internalFormat = InternalFormat, .storageOffset = offsetDepth },
-                m_settings.levels
-            )
+        return TextureView<TextureTarget>(
+            { .handle = m_handle, .internalFormat = InternalFormat, .storageOffset = offsetDepth },
+            m_settings.levels
         );
     }
 
