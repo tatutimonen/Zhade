@@ -73,7 +73,7 @@ public:
     }
 
     template<typename... Args>
-    bool pushEmplace(Args&& ...args) noexcept
+    bool emplace(Args&& ...args) noexcept
     requires std::is_constructible_v<T, Args...>
     {
         if (m_size == m_maxSize)
