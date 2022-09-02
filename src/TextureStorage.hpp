@@ -32,9 +32,9 @@ concept SupportedGLInternalFormat = (
 template<ValidGLTextureDataSourceType T>
 inline constexpr GLenum textureDataSourceType2GLenum()
 {
-    if constexpr (std::is_same_v<T, uint8_t>)
+    if constexpr (std::is_same_v<T, uint8_t> || std::is_same_v<T, stbi_uc>)
         return GL_UNSIGNED_BYTE;
-    else if (std::is_same_v<T, uint16_t>)
+    else if (std::is_same_v<T, uint16_t> || std::is_same_v<T, stbi_us>)
         return GL_UNSIGNED_SHORT;
     else if (std::is_same_v<T, uint32_t>)
         return GL_UNSIGNED_INT_8_8_8_8_REV;  // Assume 32-bit unsigned integers to be packed.

@@ -96,6 +96,7 @@ int main()
 
     const auto vbo = Buffer<Vertex, GL_ARRAY_BUFFER>();
     const auto ebo = Buffer<GLuint, GL_ELEMENT_ARRAY_BUFFER>();
+    const auto vbo2 = Buffer<Vertex, GL_ARRAY_BUFFER>(64);
 
     auto quadVtxSpan = vbo.pushData(quadVerts, 4);
     auto quadIdxSpan = ebo.pushData(quadInds, 6);
@@ -106,7 +107,8 @@ int main()
 
     GLuint vao;
     glCreateVertexArrays(1, &vao);
-    glVertexArrayVertexBuffer(vao, 0, vbo.getHandle(), 0, sizeof(Vertex));
+    glVertexArrayVertexBuffer(vao, 1, vbo.getHandle(), 0, sizeof(Vertex));
+    glVertexArrayVertexBuffer(vao, 0, vbo2.getHandle(), 0, sizeof(Vertex));
     glVertexArrayElementBuffer(vao, ebo.getHandle());
 
     glEnableVertexArrayAttrib(vao, 0);
@@ -120,6 +122,11 @@ int main()
     glVertexArrayAttribBinding(vao, 0, 0);
     glVertexArrayAttribBinding(vao, 1, 0);
     glVertexArrayAttribBinding(vao, 2, 0);
+    glVertexArrayAttribBinding(vao, 0, 1);
+    glVertexArrayAttribBinding(vao, 1, 1);
+    glVertexArrayAttribBinding(vao, 2, 1);
+
+    vbo2.bind();
 
     // Create render commands and gather model matrices.
 

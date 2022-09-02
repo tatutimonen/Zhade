@@ -5,9 +5,11 @@ set(src_files
     App.cpp
     Buffer.cpp
     Camera.cpp
+    ObjectPool.cpp
     PerspectiveCamera.cpp
     Shader.cpp
     ShaderProgram.cpp
+    Stack.cpp
     StbImageResource.cpp
     TextureStorage.cpp
     TextureView.cpp
