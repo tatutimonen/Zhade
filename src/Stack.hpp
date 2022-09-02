@@ -1,10 +1,8 @@
 #pragma once
 
-#include <concepts>
 #include <functional>
 #include <memory>
 #include <optional>
-#include <type_traits>
 
 //------------------------------------------------------------------------
 
@@ -16,7 +14,6 @@ namespace Zhade
 // a std::pmr::monotonic_buffer_resource is not always applicable as a remedy.
 
 template<typename T>
-requires std::copyable<T> || std::movable<T>
 class Stack
 {
 public:

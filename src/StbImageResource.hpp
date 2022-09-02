@@ -1,10 +1,12 @@
 #pragma once
 
-#include <stb_image.h>
-
 #include <format>
 #include <string_view>
-#include <type_traits>
+
+extern "C" {
+#include <stb_image.h>
+#include <stdint.h>
+}
 
 //------------------------------------------------------------------------
 
