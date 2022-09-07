@@ -54,9 +54,8 @@ public:
     [[nodiscard]] std::span<T> pushData(const void* data, GLsizei size) const noexcept
     {
         setData(data, size, m_writeOffsetBytes);
-        const GLsizeiptr start = m_writeOffsetBytes;
         const GLsizei sizeBytes = sizeof(T) * size;
-        T* dataPtr = mapRange(start, sizeBytes);
+        T* dataPtr = mapRange(m_writeOffsetBytes, sizeBytes);
         const auto span = std::span(dataPtr, size);
         unmap();
         m_writeOffsetBytes += computeWriteOffsetIncrement(sizeBytes);
