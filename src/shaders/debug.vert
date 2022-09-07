@@ -24,12 +24,12 @@ out VERT_OUT {
 // Uniforms etc.
 
 layout (binding = 0, std140) uniform Camera {
-    mat3x4 V;
+    mat3x4 VT;
     mat4 P;
 } u_camera;
 
 layout (binding = 1, std430) buffer Model {
-    mat3x4 M[];
+    mat3x4 MT[];
 } b_model;
 
 //------------------------------------------------------------------------
@@ -38,8 +38,8 @@ void main()
 {
     VertOut.tex = a_tex;
     VertOut.instanceID = INSTANCE_ID;
-    vec3 modelPos = vec4(a_pos, 1.0) * b_model.M[INSTANCE_ID];
-    vec3 viewModel = vec4(modelPos, 1.0) * u_camera.V;
+    vec3 modelPos = vec4(a_pos, 1.0) * b_model.MT[INSTANCE_ID];
+    vec3 viewModel = vec4(modelPos, 1.0) * u_camera.VT;
     gl_Position = u_camera.P * vec4(viewModel, 1.0);
 }
 
