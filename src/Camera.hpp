@@ -35,7 +35,7 @@ public:
 
     struct Matrices
     {
-        glm::mat3x4 V = glm::mat3x4(1.0f);  // Row-major.
+        glm::mat3x4 V = glm::mat3x4(1.0f);
         glm::mat4 P = glm::mat4(1.0f);
     };
 
