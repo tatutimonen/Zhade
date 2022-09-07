@@ -23,6 +23,8 @@ public:
         std::array<bool, 512> keys = { false };
         float pitch = 0.0f;
         float yaw = -glm::half_pi<float>();
+
+        GLFWState() = default;
     };
 
     App() = default;

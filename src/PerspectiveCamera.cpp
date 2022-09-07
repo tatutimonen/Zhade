@@ -7,7 +7,7 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
-PerspectiveCamera::PerspectiveCamera(const App& app, std::unique_ptr<Settings> settings)
+PerspectiveCamera::PerspectiveCamera(const App& app, const Settings& settings)
     : Camera{app, std::move(settings)}
 {
     updateProjectivity();

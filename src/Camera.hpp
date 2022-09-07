@@ -2,13 +2,9 @@
 
 #include "App.hpp"
 #include "Buffer.hpp"
-#include "ShaderProgram.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
-#include <memory>
-#include <span>
 
 //------------------------------------------------------------------------
 
@@ -33,20 +29,20 @@ public:
 
     struct Matrices
     {
-        glm::mat3x4 V = glm::mat3x4(1.0f);
+        glm::mat3x4 VT = glm::mat3x4(1.0f);
         glm::mat4 P = glm::mat4(1.0f);
     };
 
     virtual ~Camera() = default;
 
-    const glm::mat3x4& getView() const noexcept { return m_matrices.V; }
+    const glm::mat3x4& getView() const noexcept { return m_matrices.VT; }
     const glm::mat4& getProjectivity() const noexcept { return m_matrices.P; }
     virtual const Settings& getSettings() const = 0;
 
     void updateView()
     {
-        m_matrices.V = glm::mat3x4(
-            glm::transpose(glm::lookAt(m_settings->center, m_settings->center + m_settings->target, m_settings->up))
+        m_matrices.VT = glm::mat3x4(
+            glm::transpose(glm::lookAt(m_settings.center, m_settings.center + m_settings.target, m_settings.up))
         );
     }
 
@@ -57,12 +53,12 @@ public:
     static constexpr auto s_cameraBaseSpeed = 5.0f;
 
 protected:
-    Camera(const App& app, std::unique_ptr<Settings> settings);
+    Camera(const App& app, const Settings& settings);
     bool move();
     bool rotate();
 
     const App& m_app;
-    std::unique_ptr<Settings> m_settings;
+    Settings m_settings;
     Matrices m_matrices;
     Buffer<Matrices, GL_UNIFORM_BUFFER> m_uniformBuffer;
 };

@@ -15,25 +15,23 @@ public:
         float fov;
         float aspectRatio;
 
-        Settings(std::unique_ptr<Camera::Settings> baseSettings = std::make_unique<Camera::Settings>(), float fov = 70.0f,
-                 float aspectRatio = static_cast<float>(App::s_windowWidth) / App::s_windowHeight)
-            : Camera::Settings(std::move(*baseSettings)),
+        Settings(const Camera::Settings& baseSettings = Camera::Settings(), float fov = 70.0f,
+            float aspectRatio = static_cast<float>(App::s_windowWidth) / App::s_windowHeight)
+            : Camera::Settings(std::move(baseSettings)),
               fov{fov},
               aspectRatio{aspectRatio}
-        {
-            baseSettings.release();
-        }
+        {}
     };
 
-    PerspectiveCamera(const App& app, std::unique_ptr<Settings> settings = std::make_unique<Settings>());
+    PerspectiveCamera(const App& app, const Settings& settings = Settings());
 
     virtual void updateProjectivity() override
     {
-        const auto& settings = dynamic_cast<const Settings&>(getSettings());
+        const auto& settings = static_cast<Settings>(getSettings());
         m_matrices.P = glm::perspective(settings.fov, settings.aspectRatio, settings.zNear, settings.zFar);
     }
 
-    virtual inline const Camera::Settings& getSettings() const noexcept override { return *m_settings; }
+    virtual const Camera::Settings& getSettings() const noexcept override { return m_settings; }
 };
 
 //------------------------------------------------------------------------
