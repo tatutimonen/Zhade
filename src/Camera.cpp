@@ -3,6 +3,7 @@
 #include "constants.hpp"
 #include "util.hpp"
 
+#include <array>
 #include <cstring>
 
 //------------------------------------------------------------------------
@@ -31,7 +32,7 @@ void Camera::tick() noexcept
 
     if (moved || rotated)
     {
-        m_uniformBuffer.setData(&m_matrices, 1, 0);;
+        m_uniformBuffer.setData(&m_matrices, 1, 0);
     }
 }
 

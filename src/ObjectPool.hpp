@@ -3,11 +3,8 @@
 #include "Handle.hpp"
 #include "Stack.hpp"
 
+#include <cstdint>
 #include <memory>
-
-extern "C" {
-#include <stdint.h>
-}
 
 //------------------------------------------------------------------------
 
@@ -39,6 +36,15 @@ public:
     ObjectPool(ObjectPool&& other) = default;
     ObjectPool& operator=(ObjectPool&& other) = default;
 
+    template<typename... Args>
+    [[nodiscard]] Handle<T> allocate(Args&& ...args) const
+    requires std::is_constructible_v<T, Args...>
+    {
+        const auto handle = getHandleToNextFree();
+        new (&m_pool[handle.m_index]) T(std::forward<Args>(args)...);
+        return handle;
+    }
+
     [[nodiscard]] Handle<T> allocate(const T& item) const
     requires std::copyable<T>
     {
@@ -52,15 +58,6 @@ public:
     {
         const auto handle = getHandleToNextFree();
         m_pool[handle.m_index] = std::move(item);
-        return handle;
-    }
-
-    template<typename... Args>
-    [[nodiscard]] Handle<T> allocate(Args&& ...args) const
-    requires std::is_constructible_v<T, Args...>
-    {
-        const auto handle = getHandleToNextFree();
-        m_pool[handle.m_index] = T(std::forward<Args>(args)...);
         return handle;
     }
 

@@ -31,15 +31,15 @@ concept SupportedGLInternalFormat = (
 template<ValidGLTextureDataSourceType T>
 inline constexpr GLenum textureDataSourceType2GLenum()
 {
-    if constexpr (std::is_same_v<T, uint8_t> || std::is_same_v<T, stbi_uc>)
+    if constexpr (std::is_same_v<T, uint8_t>)
         return GL_UNSIGNED_BYTE;
-    else if (std::is_same_v<T, uint16_t> || std::is_same_v<T, stbi_us>)
+    else if (std::is_same_v<T, uint16_t>)
         return GL_UNSIGNED_SHORT;
     else if (std::is_same_v<T, uint32_t>)
         return GL_UNSIGNED_INT_8_8_8_8_REV;  // Assume 32-bit unsigned integers to be packed.
     else if (std::is_same_v<T, int32_t>)
         return GL_INT;
-    else
+    else if (std::is_same_v<T, float>)
         return GL_FLOAT;
 }
 
@@ -77,7 +77,7 @@ public:
             else if (InternalFormat == GL_DEPTH_COMPONENT32)
                 return {
                     .width = dims.x, .height = dims.y, .depth = dims.z, .levels = dims.w,
-                    .type = GL_FLOAT,
+                    .type = textureDataSourceType2GLenum<T>(),
                     .minFilter = GL_LINEAR, .magFilter = GL_LINEAR,
                     .wrapS = GL_CLAMP_TO_EDGE, .wrapT = GL_CLAMP_TO_EDGE
                 };

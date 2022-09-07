@@ -49,6 +49,8 @@ int main()
     static constexpr auto numQuads = 4;
     static constexpr auto numTris = 2;
 
+    auto test = TextureStorage<float, GL_DEPTH_COMPONENT32>::Settings::makeDefault(glm::ivec4(1, 1, 1, 1));
+
     // Basic vertex data setup.
 
     const Vertex quadVerts[] = {
@@ -125,8 +127,6 @@ int main()
     glVertexArrayAttribBinding(vao, 0, 1);
     glVertexArrayAttribBinding(vao, 1, 1);
     glVertexArrayAttribBinding(vao, 2, 1);
-
-    vbo2.bind();
 
     // Create render commands and gather model matrices.
 
