@@ -76,7 +76,7 @@ public:
         if (m_size == m_maxSize)
             return false;
 
-        m_underlying[m_size++] = T(std::forward<Args>(args)...);
+        new (&m_underlying[m_size++]) T(std::forward<Args>(args)...);
         return true;
     }
 
