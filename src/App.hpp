@@ -35,7 +35,7 @@ public:
     App(App&&) = default;
     App& operator=(App&&) = default;
            
-    GLFWwindow* getGlCtx() const noexcept { return m_window; }
+    GLFWwindow* getGLCtx() const noexcept { return m_window; }
     float getDeltaTime() const noexcept { return m_deltaTime; }
     const GLFWState& getGLFWState() const noexcept { return s_state; }
 
@@ -57,8 +57,8 @@ public:
         static float xPosPrev = xPos;
         static float yPosPrev = yPos;
 
-        float xOffset = mouse_sensitivity * (xPos - xPosPrev);
-        float yOffset = mouse_sensitivity * (yPosPrev - yPos);
+        float xOffset = s_mouseSensitivity * (xPos - xPosPrev);
+        float yOffset = s_mouseSensitivity * (yPosPrev - yPos);
 
         static constexpr float pitchBound = glm::half_pi<float>() - 0.01f;
         s_state.pitch = glm::clamp(s_state.pitch + yOffset, -pitchBound, pitchBound);
@@ -68,13 +68,13 @@ public:
         yPosPrev = yPos;
     }
 
-    static constexpr std::string_view name = "Zhade - ESC to quit";
+    static constexpr std::string_view s_title = "Zhade - ESC to quit";
     static constexpr uint32_t s_windowWidth = 800u;
     static constexpr uint32_t s_windowHeight = 800u;
-    static constexpr float mouse_sensitivity = 0.002f;
+    static constexpr float s_mouseSensitivity = 0.002f;
 
 private:
-    inline static GLFWState s_state;
+    static inline GLFWState s_state;
 
     mutable GLFWwindow* m_window;
     mutable float m_deltaTime = 0.0f;

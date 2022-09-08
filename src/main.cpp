@@ -211,7 +211,7 @@ int main()
     glBindVertexArray(vao);
     dibo.bind();
 
-    while (!glfwWindowShouldClose(app.getGlCtx()))
+    while (!glfwWindowShouldClose(app.getGLCtx()))
     {
         app.updateInternalTimes();
         
@@ -222,7 +222,7 @@ int main()
 
         glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, cmds.size(), 0);
 
-        glfwSwapBuffers(app.getGlCtx());
+        glfwSwapBuffers(app.getGLCtx());
     }
 
     glBindVertexArray(0);
