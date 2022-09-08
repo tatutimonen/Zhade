@@ -194,18 +194,18 @@ int main()
     // Two triangles after the four quads.
     auto jadeView = materialStorage->pushData(&jade);*/
 
-    texStorage.bindToUnit(0);
-    texStorage.generateMipmap();
-
     const auto img = StbImageResource(common::texturePath + "berserk.png");
     glTextureSubImage2D(
-        cataView.getHandle(), 0,
+        jagView.getHandle(), 0,
         0, 0, 256, 256,
         GL_RGBA,
         GL_UNSIGNED_BYTE,
         img.data()
     );
-    glGenerateTextureMipmap(cataView.getHandle());
+    glGenerateTextureMipmap(jagView.getHandle());
+
+    texStorage.bindToUnit(0);
+    texStorage.generateMipmap();
 
     shaderProgram.use();
     glBindVertexArray(vao);
