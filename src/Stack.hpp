@@ -81,7 +81,7 @@ public:
     }
 
 private:
-    const size_t m_maxSize;
+    size_t m_maxSize;
     std::unique_ptr<T[]> m_underlying;
     size_t m_size = 0;
 };
