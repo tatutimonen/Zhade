@@ -25,7 +25,7 @@ concept ValidGLShaderDataType = (
         || std::is_same_v<T, glm::vec3>
         || std::is_same_v<T, glm::vec4>
         || std::is_same_v<T, glm::mat3>
-        || std::is_same_v<T, glm::mat4x3>
+        || std::is_same_v<T, glm::mat3x4>
         || std::is_same_v<T, glm::mat4>
 );
 
