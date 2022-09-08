@@ -63,21 +63,19 @@ public:
     struct Settings
     {
         GLsizei width, height, depth, levels;
-        GLenum type, minFilter, magFilter, wrapS, wrapT;
+        GLenum minFilter, magFilter, wrapS, wrapT;
 
         static Settings makeDefault(const glm::ivec4& dims)
         {
             if constexpr (InternalFormat == GL_RGBA8)
                 return {
                     .width = dims.x, .height = dims.y, .depth = dims.z, .levels = dims.w,
-                    .type = textureDataSourceType2GLenum<T>(),
                     .minFilter = GL_LINEAR_MIPMAP_LINEAR, .magFilter = GL_LINEAR,
                     .wrapS = GL_CLAMP_TO_EDGE, .wrapT = GL_CLAMP_TO_EDGE
                 };
             else if (InternalFormat == GL_DEPTH_COMPONENT32)
                 return {
                     .width = dims.x, .height = dims.y, .depth = dims.z, .levels = dims.w,
-                    .type = textureDataSourceType2GLenum<T>(),
                     .minFilter = GL_LINEAR, .magFilter = GL_LINEAR,
                     .wrapS = GL_CLAMP_TO_EDGE, .wrapT = GL_CLAMP_TO_EDGE
                 };
