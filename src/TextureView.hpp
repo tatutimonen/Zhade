@@ -45,7 +45,7 @@ public:
         glGenTextures(1, &m_handle);
         glTextureView(
             m_handle,
-            GL_TEXTURE_2D,
+            TextureTarget,
             m_storageDetails.handle,
             m_storageDetails.internalFormat,
             0, levels,
@@ -61,7 +61,7 @@ public:
     TextureView& operator=(TextureView&&) = default;
 
     [[nodiscard]] GLuint getHandle() const noexcept { return m_handle; }
-    [[nodiscard]] bool isValid() const noexcept { return glIsTexture(m_storageDetails.handle) && glIsTexture(m_handle); }
+    [[nodiscard]] bool isValid() const noexcept { return glIsTexture(m_handle) && glIsTexture(m_storageDetails.handle); }
 
 private:
     GLuint m_handle;

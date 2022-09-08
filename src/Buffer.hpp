@@ -38,8 +38,7 @@ public:
           m_alignment{s_alignmentTable.at(BufferType)}
     {
         glCreateBuffers(1, &m_handle);
-        static constexpr GLbitfield access = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
-        glNamedBufferStorage(m_handle, m_wholeSizeBytes, nullptr, GL_DYNAMIC_STORAGE_BIT | access);
+        glNamedBufferStorage(m_handle, m_wholeSizeBytes, nullptr, GL_DYNAMIC_STORAGE_BIT | s_access);
     }
 
     ~Buffer() { glDeleteBuffers(1, &m_handle); }
@@ -86,12 +85,12 @@ public:
 
     [[nodiscard]] T* map() const noexcept
     {
-        return static_cast<T*>(glMapNamedBuffer(m_handle, GL_READ_WRITE));
+        return static_cast<T*>(glMapNamedBuffer(m_handle, s_access));
     }
 
     [[nodiscard]] T* mapRange(GLintptr offsetBytes, GLsizei sizeBytes) const noexcept
     {
-        return static_cast<T*>(glMapNamedBufferRange(m_handle, offsetBytes, sizeBytes, GL_READ_WRITE));
+        return static_cast<T*>(glMapNamedBufferRange(m_handle, offsetBytes, sizeBytes, s_access));
     }
 
     void unmap() const noexcept
@@ -126,6 +125,8 @@ public:
     }
 
     static inline const std::map<GLenum, GLint> s_alignmentTable = makeAlignmentTable();
+
+    static constexpr GLbitfield s_access = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
 
 private:
     [[nodiscard]] GLsizeiptr computeWriteOffsetIncrement(GLsizei sizeBytes) const noexcept

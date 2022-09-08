@@ -2,6 +2,7 @@
 
 #include "StbImageResource.hpp"
 #include "TextureView.hpp"
+#include "util.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -188,8 +189,10 @@ private:
             textureDataSourceType2GLenum<T>(),
             data
         );
-        return TextureView<TextureTarget>(
-            { .handle = m_handle, .internalFormat = InternalFormat, .storageOffset = offsetDepth },
+        return std::make_optional<TextureView<TextureTarget>>(
+            TextureView<>::StorageDetails{
+                .handle = m_handle, .internalFormat = InternalFormat, .storageOffset = offsetDepth
+            },
             m_settings.levels
         );
     }
