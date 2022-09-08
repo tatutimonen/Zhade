@@ -55,7 +55,7 @@ inline constexpr GLenum textureInternalFormat2Format()
 
 //------------------------------------------------------------------------
 
-template<ValidGLTextureDataSourceType T = stbi_uc, GLenum InternalFormat = GL_RGBA8>
+template<GLenum InternalFormat = GL_RGBA8, ValidGLTextureDataSourceType T = stbi_uc>
 requires SupportedGLInternalFormat<InternalFormat>
 class TextureStorage
 {

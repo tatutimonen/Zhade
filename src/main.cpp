@@ -49,7 +49,7 @@ int main()
     static constexpr auto numQuads = 4;
     static constexpr auto numTris = 2;
 
-    auto test = TextureStorage<float, GL_DEPTH_COMPONENT32>::Settings::makeDefault(glm::ivec4(1, 1, 1, 1));
+    auto test = TextureStorage<GL_DEPTH_COMPONENT32, float>::Settings::makeDefault(glm::ivec4(1, 1, 1, 1));
 
     // Basic vertex data setup.
 
