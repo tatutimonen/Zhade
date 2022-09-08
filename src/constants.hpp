@@ -25,6 +25,8 @@ inline constexpr GLint POINT_LIGHT_BINDING       = 5;
 inline constexpr int32_t ASSIMP_LOAD_FLAGS = aiProcess_Triangulate | aiProcess_GenSmoothNormals
     | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
 
+//------------------------------------------------------------------------
+
 }  // namespace constants
 
 //------------------------------------------------------------------------
