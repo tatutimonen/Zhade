@@ -40,9 +40,10 @@ int main()
     const auto app = App();
     app.init();
 
-    auto vshader = Shader<GL_VERTEX_SHADER>(common::shaderPath + "debug.vert");
-    auto fshader = Shader<GL_FRAGMENT_SHADER>(common::shaderPath + "debug.frag");
-    auto shaderProgram = ShaderProgram(vshader, fshader);
+    auto shaderProgram = ShaderProgram(
+        Shader<GL_VERTEX_SHADER>(common::shaderPath + "debug.vert"),
+        Shader<GL_FRAGMENT_SHADER>(common::shaderPath + "debug.frag")
+    );
 
     auto camera = PerspectiveCamera(app);
 
