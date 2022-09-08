@@ -40,12 +40,12 @@ int main()
     const auto app = App();
     app.init();
 
-    auto shaderProgram = ShaderProgram(
+    const auto shaderProgram = ShaderProgram(
         Shader<GL_VERTEX_SHADER>(common::shaderPath + "debug.vert"),
         Shader<GL_FRAGMENT_SHADER>(common::shaderPath + "debug.frag")
     );
 
-    auto camera = PerspectiveCamera(app);
+    const auto camera = PerspectiveCamera(app);
 
     static constexpr auto numQuads = 4;
     static constexpr auto numTris = 2;

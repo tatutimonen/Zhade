@@ -25,7 +25,7 @@ public:
 
     PerspectiveCamera(const App& app, const Settings& settings = Settings());
 
-    virtual void updateProjectivity() override
+    virtual void updateProjectivity() const noexcept override
     {
         const auto& settings = static_cast<Settings>(getSettings());
         m_matrices.P = glm::perspective(settings.fov, settings.aspectRatio, settings.zNear, settings.zFar);

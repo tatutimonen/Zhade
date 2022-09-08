@@ -22,7 +22,7 @@ Camera::Camera(const App& app, const Settings& settings)
 
 //------------------------------------------------------------------------
 
-void Camera::tick() noexcept
+void Camera::tick() const noexcept
 {
     const bool moved = move();
     const bool rotated = rotate();
@@ -35,7 +35,7 @@ void Camera::tick() noexcept
 
 //------------------------------------------------------------------------
 
-bool Camera::move()
+bool Camera::move() const noexcept
 {
     const auto& [keys, pitch, yaw] = m_app.getGLFWState();
     const float cameraSpeed = s_cameraBaseSpeed * m_app.getDeltaTime();
@@ -67,7 +67,7 @@ bool Camera::move()
 
 //------------------------------------------------------------------------
 
-bool Camera::rotate()
+bool Camera::rotate() const noexcept
 {
     [[maybe_unused]] const auto& [keys, pitch, yaw] = m_app.getGLFWState();
 

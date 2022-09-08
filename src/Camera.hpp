@@ -37,30 +37,30 @@ public:
 
     const glm::mat3x4& getView() const noexcept { return m_matrices.VT; }
     const glm::mat4& getProjectivity() const noexcept { return m_matrices.P; }
-    virtual const Settings& getSettings() const = 0;
+    virtual const Settings& getSettings() const noexcept = 0;
 
-    void updateView()
+    void updateView() const noexcept
     {
         m_matrices.VT = glm::mat3x4(
             glm::transpose(glm::lookAt(m_settings.center, m_settings.center + m_settings.target, m_settings.up))
         );
     }
 
-    virtual void updateProjectivity() = 0;
+    virtual void updateProjectivity() const noexcept = 0;
 
-    void tick() noexcept;
+    void tick() const noexcept;
 
     static constexpr auto s_cameraBaseSpeed = 5.0f;
 
 protected:
     Camera(const App& app, const Settings& settings);
-    bool move();
-    bool rotate();
+    bool move() const noexcept;
+    bool rotate() const noexcept;
 
     const App& m_app;
-    Settings m_settings;
-    Matrices m_matrices;
-    Buffer<Matrices, GL_UNIFORM_BUFFER> m_uniformBuffer;
+    mutable Settings m_settings;
+    mutable Matrices m_matrices;
+    mutable Buffer<Matrices, GL_UNIFORM_BUFFER> m_uniformBuffer;
 };
 
 //------------------------------------------------------------------------
