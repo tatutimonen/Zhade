@@ -10,7 +10,7 @@
 #include "StbImageResource.hpp"
 #include "util.hpp"
 
-#include <assimp/cimport.h>
+#include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -18,8 +18,11 @@
 #include <glm/gtx/transform.hpp>
 
 #include <array>
+#include <bit>
+#include <format>
 #include <iostream>
 #include <memory>
+#include <ranges>
 #include <vector>
 
 //------------------------------------------------------------------------
@@ -38,6 +41,7 @@ int main()
     using namespace Zhade;
 
     const auto app = App();
+
     app.init();
     {
         const auto shaderProgram = ShaderProgram(
@@ -72,17 +76,19 @@ int main()
             0, 1, 2
         };
 
-        const auto scene = aiImportFile((common::assetPath + "dragon.obj").c_str(), aiProcessPreset_TargetRealtime_Fast);
+        auto importer = Assimp::Importer();
+        const aiScene* scene = importer.ReadFile(common::assetPath + "BoxTextured.glb", aiProcessPreset_TargetRealtime_Fast);
 
         auto mesh = scene->mMeshes[0];
-        
-        auto dragonVerts = std::vector<Vertex>();
+
+        auto importVerts = std::vector<Vertex>();
 
         for (auto i = 0u; i < mesh->mNumVertices; ++i)
         {
             const auto& pos = mesh->mVertices[i];
             const auto& nrm = mesh->mNormals[i];
-            dragonVerts.push_back({ glm::vec3(pos.x, pos.y, pos.z), glm::vec3(nrm.x, nrm.y, nrm.z), glm::vec2() });
+            const auto& tex = mesh->mTextureCoords[0][i];
+            importVerts.push_back({ glm::vec3(pos.x, pos.y, pos.z), glm::vec3(nrm.x, nrm.y, nrm.z), glm::vec2(tex.x, tex.y) });
         }
 
         auto dragonIndices = std::vector<GLuint>();
@@ -102,7 +108,7 @@ int main()
         auto quadIdxSpan = ebo.pushData(quadInds, 6);
         auto triVtxSpan = vbo.pushData(triVerts, 3);
         auto triIdxSpan = ebo.pushData(triInds, 3);
-        auto dragonVtxSpan = vbo.pushData(dragonVerts.data(), mesh->mNumVertices);
+        auto dragonVtxSpan = vbo.pushData(importVerts.data(), mesh->mNumVertices);
         auto dragonIdxSpan = ebo.pushData(dragonIndices.data(), mesh->mNumFaces * 3);
 
         GLuint vao;
@@ -179,10 +185,20 @@ int main()
         const auto& longbowViewOpt = texStorage.pushDataFromFile(common::texturePath + "longbowman.png");
         const auto& jagViewOpt = texStorage.pushDataFromFile(common::texturePath + "jaguarwarrior.png");
 
+        auto material = scene->mMaterials[0];
+        aiString texFile;
+        material->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE, 0), texFile);
+        auto mat = scene->GetEmbeddedTexture(texFile.C_Str());
+        if (mat != nullptr) std::cout << std::format("{} {}\n", mat->mWidth, mat->mHeight);
+        StbImageResource<>::setGlobalFlipY(false);
+        const auto img = StbImageResource(common::texturePath + "berserk.png");
+        const auto& importViewOpt = texStorage.setDataByOffset(
+            img.data(), 6
+        );
+
         texStorage.bindToUnit(0);
         texStorage.generateMipmap();
 
-        const auto img = StbImageResource(common::texturePath + "berserk.png");
         glTextureSubImage2D(
             cataViewOpt->getHandle(), 0,
             0, 0, 256, 256,

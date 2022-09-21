@@ -17,11 +17,7 @@ template<typename T>
 class Stack
 {
 public:
-    Stack(size_t maxSize)
-        : m_maxSize{maxSize},
-          m_underlying{std::make_unique<T[]>(m_maxSize)}
-    {}
-
+    Stack(size_t maxSize) : m_maxSize{maxSize}, m_underlying{std::make_unique<T[]>(m_maxSize)} {}
     ~Stack() = default;
 
     Stack(const Stack&) = default;
