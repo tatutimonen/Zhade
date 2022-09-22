@@ -77,9 +77,11 @@ int main()
         };
 
         auto importer = Assimp::Importer();
-        const aiScene* scene = importer.ReadFile(common::assetPath + "BoxTextured.glb", aiProcessPreset_TargetRealtime_Fast);
+        const aiScene* scene = importer.ReadFile(common::assetPath + "sponza/sponza.obj", aiProcessPreset_TargetRealtime_Fast);
 
-        auto mesh = scene->mMeshes[0];
+        std::cout << std::format("{} {}\n", scene->mNumMeshes, scene->mNumMaterials);
+
+        auto mesh = scene->mMeshes[1];
 
         auto importVerts = std::vector<Vertex>();
 
@@ -87,8 +89,7 @@ int main()
         {
             const auto& pos = mesh->mVertices[i];
             const auto& nrm = mesh->mNormals[i];
-            const auto& tex = mesh->mTextureCoords[0][i];
-            importVerts.push_back({ glm::vec3(pos.x, pos.y, pos.z), glm::vec3(nrm.x, nrm.y, nrm.z), glm::vec2(tex.x, tex.y) });
+            importVerts.push_back({ glm::vec3(pos.x, pos.y, pos.z), glm::vec3(nrm.x, nrm.y, nrm.z), glm::vec2() });
         }
 
         auto dragonIndices = std::vector<GLuint>();
@@ -141,7 +142,7 @@ int main()
         {
             modelMatrices.push_back(glm::mat3x4(glm::transpose(glm::translate(glm::vec3((float)(i+1), 0.0f, 0.0f)))));
         }
-        modelMatrices.push_back(glm::mat3x4(glm::transpose(glm::translate(glm::vec3(0.0f, 5.0f, 0.0f)))));
+        modelMatrices.push_back(glm::mat3x4(glm::transpose(glm::scale(glm::vec3(0.03f)))));
 
         cmds.push_back({
             .vertexCount = 6,
@@ -185,28 +186,8 @@ int main()
         const auto& longbowViewOpt = texStorage.pushDataFromFile(common::texturePath + "longbowman.png");
         const auto& jagViewOpt = texStorage.pushDataFromFile(common::texturePath + "jaguarwarrior.png");
 
-        auto material = scene->mMaterials[0];
-        aiString texFile;
-        material->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE, 0), texFile);
-        auto mat = scene->GetEmbeddedTexture(texFile.C_Str());
-        if (mat != nullptr) std::cout << std::format("{} {}\n", mat->mWidth, mat->mHeight);
-        StbImageResource<>::setGlobalFlipY(false);
-        const auto img = StbImageResource(common::texturePath + "berserk.png");
-        const auto& importViewOpt = texStorage.setDataByOffset(
-            img.data(), 6
-        );
-
         texStorage.bindToUnit(0);
         texStorage.generateMipmap();
-
-        glTextureSubImage2D(
-            cataViewOpt->getHandle(), 0,
-            0, 0, 256, 256,
-            GL_RGBA,
-            GL_UNSIGNED_BYTE,
-            img.data()
-        );
-        glGenerateTextureMipmap(cataViewOpt->getHandle());
 
         shaderProgram.use();
         glBindVertexArray(vao);
