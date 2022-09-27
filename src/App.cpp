@@ -1,4 +1,5 @@
 #include "App.hpp"
+#include "util.hpp"
 
 #include "StbImageResource.hpp"
 
@@ -25,6 +26,7 @@ void App::init() const noexcept
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
     m_window = glfwCreateWindow(s_windowWidth, s_windowHeight, s_title.data(), nullptr, nullptr);
     glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -37,6 +39,7 @@ void App::init() const noexcept
     glewInit();
 
     // OpenGL.
+    glDebugMessageCallback(debugCallback, nullptr);
     glViewport(0, 0, s_windowWidth, s_windowHeight);
     // CSM: 15.0f/255.0f, 46.0f/255.0f, 101.0f/255.0f, 1.0f
     // Midnight Blue: 0.0f, 51.0f/255.0f, 102.0f/255.0f, 1.0f
