@@ -113,7 +113,7 @@ int main()
         auto dragonIdxSpan = ebo.pushData(dragonIndices.data(), mesh->mNumFaces * 3);
 
         GLuint vao;
-        CHECK_GL_ERROR(glCreateVertexArrays(1, &vao));
+        glCreateVertexArrays(1, &vao);
         glVertexArrayVertexBuffer(vao, 0, vbo.getHandle(), 0, sizeof(Vertex));
         glVertexArrayElementBuffer(vao, ebo.getHandle());
 
