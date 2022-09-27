@@ -10,7 +10,7 @@
 #include "StbImageResource.hpp"
 #include "util.hpp"
 
-#include <assimp/cimport.h>
+#include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -18,8 +18,11 @@
 #include <glm/gtx/transform.hpp>
 
 #include <array>
+#include <bit>
+#include <format>
 #include <iostream>
 #include <memory>
+#include <ranges>
 #include <vector>
 
 //------------------------------------------------------------------------
@@ -38,6 +41,7 @@ int main()
     using namespace Zhade;
 
     const auto app = App();
+
     app.init();
     {
         const auto shaderProgram = ShaderProgram(
@@ -72,17 +76,20 @@ int main()
             0, 1, 2
         };
 
-        const auto scene = aiImportFile((common::assetPath + "dragon.obj").c_str(), aiProcessPreset_TargetRealtime_Fast);
+        auto importer = Assimp::Importer();
+        const aiScene* scene = importer.ReadFile(common::assetPath + "sponza/sponza.obj", aiProcessPreset_TargetRealtime_Fast);
 
-        auto mesh = scene->mMeshes[0];
-        
-        auto dragonVerts = std::vector<Vertex>();
+        std::cout << std::format("{} {}\n", scene->mNumMeshes, scene->mNumMaterials);
+
+        auto mesh = scene->mMeshes[1];
+
+        auto importVerts = std::vector<Vertex>();
 
         for (auto i = 0u; i < mesh->mNumVertices; ++i)
         {
             const auto& pos = mesh->mVertices[i];
             const auto& nrm = mesh->mNormals[i];
-            dragonVerts.push_back({ glm::vec3(pos.x, pos.y, pos.z), glm::vec3(nrm.x, nrm.y, nrm.z), glm::vec2() });
+            importVerts.push_back({ glm::vec3(pos.x, pos.y, pos.z), glm::vec3(nrm.x, nrm.y, nrm.z), glm::vec2() });
         }
 
         auto dragonIndices = std::vector<GLuint>();
@@ -102,11 +109,11 @@ int main()
         auto quadIdxSpan = ebo.pushData(quadInds, 6);
         auto triVtxSpan = vbo.pushData(triVerts, 3);
         auto triIdxSpan = ebo.pushData(triInds, 3);
-        auto dragonVtxSpan = vbo.pushData(dragonVerts.data(), mesh->mNumVertices);
+        auto dragonVtxSpan = vbo.pushData(importVerts.data(), mesh->mNumVertices);
         auto dragonIdxSpan = ebo.pushData(dragonIndices.data(), mesh->mNumFaces * 3);
 
         GLuint vao;
-        CHECK_GL_ERROR(glCreateVertexArrays(1, &vao));
+        glCreateVertexArrays(1, &vao);
         glVertexArrayVertexBuffer(vao, 0, vbo.getHandle(), 0, sizeof(Vertex));
         glVertexArrayElementBuffer(vao, ebo.getHandle());
 
@@ -135,7 +142,7 @@ int main()
         {
             modelMatrices.push_back(glm::mat3x4(glm::transpose(glm::translate(glm::vec3((float)(i+1), 0.0f, 0.0f)))));
         }
-        modelMatrices.push_back(glm::mat3x4(glm::transpose(glm::translate(glm::vec3(0.0f, 5.0f, 0.0f)))));
+        modelMatrices.push_back(glm::mat3x4(glm::transpose(glm::scale(glm::vec3(0.03f)))));
 
         cmds.push_back({
             .vertexCount = 6,
@@ -181,16 +188,6 @@ int main()
 
         texStorage.bindToUnit(0);
         texStorage.generateMipmap();
-
-        const auto img = StbImageResource(common::texturePath + "berserk.png");
-        glTextureSubImage2D(
-            cataViewOpt->getHandle(), 0,
-            0, 0, 256, 256,
-            GL_RGBA,
-            GL_UNSIGNED_BYTE,
-            img.data()
-        );
-        glGenerateTextureMipmap(cataViewOpt->getHandle());
 
         shaderProgram.use();
         glBindVertexArray(vao);

@@ -35,7 +35,7 @@ class ShaderProgram
 {
 public:
     ShaderProgram(const Shader<GL_VERTEX_SHADER>& vertexShader, const Shader<GL_FRAGMENT_SHADER>& fragmentShader,
-        const std::optional<Shader<GL_GEOMETRY_SHADER>>& geometryShader = std::nullopt);
+                  const std::optional<Shader<GL_GEOMETRY_SHADER>>& geometryShader = std::nullopt);
     ~ShaderProgram();
 
     ShaderProgram(const ShaderProgram&) = delete;

@@ -4,11 +4,6 @@
 #include <glm/glm.hpp>
 
 #include <iostream>
-#include <iomanip>
-
-//------------------------------------------------------------------------
-
-#define CHECK_GL_ERROR(fn) fn; checkErrors(#fn, __FILE__, __LINE__);
 
 //------------------------------------------------------------------------
 
@@ -50,26 +45,12 @@ namespace
 
 //------------------------------------------------------------------------
 
-void logGlError(GLenum err, const char* fn, const char* file, int line) noexcept
+void debugCallback([[maybe_unused]] GLenum source, [[maybe_unused]] GLenum type, [[maybe_unused]] GLuint id,
+                   GLenum severity, [[maybe_unused]] GLsizei length, const char* message,
+                   [[maybe_unused]] const void* userParam) noexcept
 {
-    std::ostream& log_stream = std::cout;
-    log_stream << "OpenGL Error "
-               << "0x" << std::hex << std::setw(4) << std::setfill('0') << err
-               << " in call \"" << fn << "\" in "
-               << file << ":" << std::dec << line 
-               << std::endl;
-}
-
-//------------------------------------------------------------------------
-
-void checkErrors(const char* fn, const char* file, int line)
-{
-    const GLenum err = glGetError();
-    if (err != GL_NO_ERROR)
-    {
-        logGlError(err, fn, file, line);
-        throw std::runtime_error(nullptr);
-    }
+    if (severity == GL_DEBUG_SEVERITY_MEDIUM || severity == GL_DEBUG_SEVERITY_HIGH)
+        std::cerr << message << std::endl;
 }
 
 //------------------------------------------------------------------------
