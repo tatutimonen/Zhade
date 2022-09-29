@@ -1,10 +1,10 @@
 #pragma once
 
+#include "AlignedResource.hpp"
 #include "Handle.hpp"
 #include "Stack.hpp"
 
 #include <cstdint>
-#include <memory>
 
 //------------------------------------------------------------------------
 
@@ -18,8 +18,8 @@ class ObjectPool
 {
 public:
     ObjectPool()
-        : m_pool{std::make_unique<T[]>(s_size)},
-          m_generations{std::make_unique<uint32_t[]>(s_size)},
+        : m_pool{AlignedResource<T>(s_size)},
+          m_generations{AlignedResource<uint32_t>(s_size)},
           m_freeStack{Stack<uint32_t>(s_size)}
     {
         for (uint32_t i = 0; i < s_size; ++i)
@@ -37,8 +37,8 @@ public:
     ObjectPool& operator=(ObjectPool&& other) = default;
 
     template<typename... Args>
-    [[nodiscard]] Handle<T> allocate(Args&& ...args) const
     requires std::is_constructible_v<T, Args...>
+    [[nodiscard]] Handle<T> allocate(Args&& ...args) const
     {
         const auto handle = getHandleToNextFree();
         new (&m_pool[handle.m_index]) T(std::forward<Args>(args)...);
@@ -90,8 +90,8 @@ private:
         return Handle<T>(nextFreeIdx, ++m_generations[nextFreeIdx]);
     }
 
-    mutable std::unique_ptr<T[]> m_pool;
-    mutable std::unique_ptr<uint32_t[]> m_generations;
+    mutable AlignedResource<T> m_pool;
+    mutable AlignedResource<uint32_t> m_generations;
     mutable Stack<uint32_t> m_freeStack;
 };
 

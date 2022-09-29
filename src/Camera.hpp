@@ -60,7 +60,7 @@ protected:
     const App& m_app;
     mutable Settings m_settings;
     mutable Matrices m_matrices;
-    mutable Buffer<Matrices, GL_UNIFORM_BUFFER> m_uniformBuffer;
+    mutable Buffer m_uniformBuffer;
 };
 
 //------------------------------------------------------------------------

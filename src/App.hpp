@@ -25,7 +25,7 @@ public:
         float pitch = 0.0f;
         float yaw = -glm::half_pi<float>();
 
-        GLFWState() = default;
+        GLFWState() {};  // Clang, for example, has issues with "= default."
     };
 
     App() = default;
@@ -46,7 +46,7 @@ public:
     // According to the GLFW input reference.
     static void keyCallback(GLFWwindow* window, int key, [[maybe_unused]] int scancode, int action, int mode)
     {
-        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) [[unlikely]]
             glfwSetWindowShouldClose(window, GL_TRUE);
     
         s_state.keys[key] = static_cast<bool>(action);
@@ -72,7 +72,7 @@ public:
     static void debugCallback([[maybe_unused]] GLenum source, [[maybe_unused]] GLenum type, [[maybe_unused]] GLuint id,
         GLenum severity, [[maybe_unused]] GLsizei length, const char* message, [[maybe_unused]] const void* userParam) noexcept
     {
-        if (severity == GL_DEBUG_SEVERITY_MEDIUM || severity == GL_DEBUG_SEVERITY_HIGH)
+        if (severity == GL_DEBUG_SEVERITY_MEDIUM || severity == GL_DEBUG_SEVERITY_HIGH) [[unlikely]]
             std::cerr << message << std::endl;
     }
 

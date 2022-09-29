@@ -2,11 +2,14 @@
 # Source files.
 
 set(src_files
+    AlignedResource.cpp
     App.cpp
     Buffer.cpp
     Camera.cpp
+    Handle.cpp
     ObjectPool.cpp
     PerspectiveCamera.cpp
+    ResourceManager.cpp
     Shader.cpp
     ShaderProgram.cpp
     Stack.cpp

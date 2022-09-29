@@ -1,8 +1,10 @@
 #pragma once
 
-#include <functional>
-#include <memory>
+#include "AlignedResource.hpp"
+
 #include <optional>
+#include <type_traits>
+#include <utility>
 
 //------------------------------------------------------------------------
 
@@ -17,7 +19,7 @@ template<typename T>
 class Stack
 {
 public:
-    Stack(size_t maxSize) : m_maxSize{maxSize}, m_underlying{std::make_unique<T[]>(m_maxSize)} {}
+    Stack(size_t maxSize) : m_maxSize{maxSize}, m_underlying{AlignedResource<T>(m_maxSize)} {}
     ~Stack() = default;
 
     Stack(const Stack&) = default;
@@ -30,15 +32,15 @@ public:
 
     [[nodiscard]] std::optional<std::reference_wrapper<const T>> top() const noexcept
     {
-        if (m_size == 0)
+        if (m_size == 0) [[unlikely]]
             return std::nullopt;
 
-        return m_underlying[m_size - 1];
+        return m_underlying.at(m_size - 1);
     }
 
     bool pop() noexcept
     {
-        if (m_size == 0)
+        if (m_size == 0) [[unlikely]]
             return false;
 
         --m_size;
@@ -48,7 +50,7 @@ public:
     bool push(const T& item) noexcept
     requires std::copyable<T>
     {
-        if (m_size == m_maxSize)
+        if (m_size == m_maxSize) [[unlikely]]
             return false;
 
         m_underlying[m_size++] = item;
@@ -58,7 +60,7 @@ public:
     bool push(T&& item) noexcept
     requires std::movable<T>
     {
-        if (m_size == m_maxSize)
+        if (m_size == m_maxSize) [[unlikely]]
             return false;
 
         m_underlying[m_size++] = std::move(item);
@@ -66,10 +68,10 @@ public:
     }
 
     template<typename... Args>
-    bool emplace(Args&& ...args) noexcept
     requires std::is_constructible_v<T, Args...>
+    bool emplace(Args&& ...args) noexcept
     {
-        if (m_size == m_maxSize)
+        if (m_size == m_maxSize) [[unlikely]]
             return false;
 
         new (&m_underlying[m_size++]) T(std::forward<Args>(args)...);
@@ -78,7 +80,7 @@ public:
 
 private:
     size_t m_maxSize;
-    std::unique_ptr<T[]> m_underlying;
+    AlignedResource<T> m_underlying;
     size_t m_size = 0;
 };
 

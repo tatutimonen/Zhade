@@ -1,6 +1,7 @@
 #include "App.hpp"
 #include "Buffer.hpp"
 #include "PerspectiveCamera.hpp"
+#include "ResourceManager.hpp"
 #include "Shader.hpp"
 #include "ShaderProgram.hpp"
 #include "TextureStorage.hpp"
@@ -44,6 +45,8 @@ int main()
 
     app.init();
     {
+        ResourceManager mngr;
+
         const auto shaderProgram = ShaderProgram(
             Shader<GL_VERTEX_SHADER>(common::shaderPath + "debug.vert"),
             Shader<GL_FRAGMENT_SHADER>(common::shaderPath + "debug.frag")
@@ -102,20 +105,22 @@ int main()
             dragonIndices.push_back(faceIndices[2]);
         }
 
-        const auto vbo = Buffer<Vertex, GL_ARRAY_BUFFER>();
-        const auto ebo = Buffer<GLuint, GL_ELEMENT_ARRAY_BUFFER>();
+        const auto vboHandle = mngr.createBuffer(GL_ARRAY_BUFFER);
+        const auto vbo = mngr.getBuffer(vboHandle);
+        const auto eboHandle = mngr.createBuffer(GL_ELEMENT_ARRAY_BUFFER);
+        const auto ebo = mngr.getBuffer(eboHandle);
 
-        auto quadVtxSpan = vbo.pushData(quadVerts, 4);
-        auto quadIdxSpan = ebo.pushData(quadInds, 6);
-        auto triVtxSpan = vbo.pushData(triVerts, 3);
-        auto triIdxSpan = ebo.pushData(triInds, 3);
-        auto dragonVtxSpan = vbo.pushData(importVerts.data(), mesh->mNumVertices);
-        auto dragonIdxSpan = ebo.pushData(dragonIndices.data(), mesh->mNumFaces * 3);
+        auto quadVtxSpan = vbo->pushData<Vertex>(quadVerts, 4);
+        auto quadIdxSpan = ebo->pushData<GLuint>(quadInds, 6);
+        auto triVtxSpan = vbo->pushData<Vertex>(triVerts, 3);
+        auto triIdxSpan = ebo->pushData<GLuint>(triInds, 3);
+        auto dragonVtxSpan = vbo->pushData<Vertex>(importVerts.data(), mesh->mNumVertices);
+        auto dragonIdxSpan = ebo->pushData<GLuint>(dragonIndices.data(), mesh->mNumFaces * 3);
 
         GLuint vao;
         glCreateVertexArrays(1, &vao);
-        glVertexArrayVertexBuffer(vao, 0, vbo.getHandle(), 0, sizeof(Vertex));
-        glVertexArrayElementBuffer(vao, ebo.getHandle());
+        glVertexArrayVertexBuffer(vao, 0, vbo->getHandle(), 0, sizeof(Vertex));
+        glVertexArrayElementBuffer(vao, ebo->getHandle());
 
         glEnableVertexArrayAttrib(vao, 0);
         glEnableVertexArrayAttrib(vao, 1);
@@ -168,14 +173,14 @@ int main()
 
         // Upload the model matrices into an SSBO.
 
-        const auto ssbo = Buffer<glm::mat3x4, GL_SHADER_STORAGE_BUFFER>(1 << 10);
-        auto x = ssbo.pushData(modelMatrices.data(), modelMatrices.size());
+        const auto ssbo = Buffer(GL_SHADER_STORAGE_BUFFER, 1 << 10);
+        auto x = ssbo.pushData<glm::mat3x4>(modelMatrices.data(), modelMatrices.size());
         ssbo.bindBase(constants::MODEL_BINDING);
 
         // Setup the indirect draw buffer and the draw IDs.
 
-        const auto dibo = Buffer<MultiDrawElementsIndirectCommand, GL_DRAW_INDIRECT_BUFFER>(1 << 10);
-        auto y = dibo.pushData(cmds.data(), cmds.size());
+        const auto dibo = Buffer(GL_DRAW_INDIRECT_BUFFER, 1 << 10);
+        auto y = dibo.pushData<MultiDrawElementsIndirectCommand>(cmds.data(), cmds.size());
 
         // Setup textures for the quads.
 

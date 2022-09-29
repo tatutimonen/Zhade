@@ -30,6 +30,22 @@ public:
     StbImageResource(std::string_view filename) { load(filename); }
     ~StbImageResource() { stbi_image_free(m_data); }
 
+    StbImageResource(const StbImageResource&) = delete;
+    StbImageResource& operator=(const StbImageResource&) = delete;
+    
+    StbImageResource(StbImageResource&& other)
+    {
+        m_data = other.m_data;
+        other.m_data = nullptr;
+    }
+    
+    StbImageResource& operator=(StbImageResource&& other)
+    {
+        m_data = other.m_data;
+        other.m_data = nullptr;
+        return *this;
+    }
+
     [[nodiscard]] int32_t getWidth() const noexcept { return m_width; }
     [[nodiscard]] int32_t getHeight() const noexcept { return m_height; }
     [[nodiscard]] T* mutData() const noexcept { return m_data; }
@@ -47,7 +63,7 @@ private:
         else if (std::is_same_v<T, float>)
             m_data = stbi_loadf(filename.data(), &m_width, &m_height, nullptr, 4);
         
-        if (m_data == nullptr)
+        if (m_data == nullptr) [[unlikely]]
             throw std::runtime_error(std::format("Error loading data from '{}'", filename));
     }
 

@@ -169,7 +169,7 @@ private:
         glCompileShader(m_handle);
         GLint status;
         glGetShaderiv(m_handle, GL_COMPILE_STATUS, &status);
-        if (status == GL_FALSE)
+        if (status == GL_FALSE) [[unlikely]]
         {
             GLint logLength;
             glGetShaderiv(m_handle, GL_INFO_LOG_LENGTH, &logLength);

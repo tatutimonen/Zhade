@@ -136,7 +136,7 @@ public:
     requires ValidGLTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
     [[nodiscard]] ViewOpt<TextureTarget> pushData(const T* data) const noexcept
     {
-        if (!fits())
+        if (!fits()) [[unlikely]]
             return std::nullopt;
 
         return setData<TextureTarget>(data, m_writeOffsetDepth++);
@@ -146,18 +146,17 @@ public:
     requires ValidGLTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
     [[nodiscard]] ViewOpt<TextureTarget> setDataByOffset(const T* data, GLsizeiptr offsetDepth) const noexcept
     {
-        if (offsetDepth < 0 || m_settings.depth < offsetDepth)
+        if (offsetDepth < 0 || m_settings.depth < offsetDepth) [[unlikely]]
             return std::nullopt;
 
         return setData<TextureTarget>(data, offsetDepth);
     }
 
     template<GLenum TextureTarget = GL_TEXTURE_2D>
-    requires ValidGLTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
+    requires ValidGLTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY> && StbImageDataFormat<T>
     [[nodiscard]] ViewOpt<TextureTarget> pushDataFromFile(std::string_view filename) const noexcept
-    requires StbImageDataFormat<T>
     {
-        if (!fits())
+        if (!fits()) [[unlikely]]
             return std::nullopt;
 
         const auto image = StbImageResource<T>(filename);
@@ -165,11 +164,10 @@ public:
     }
 
     template<GLenum TextureTarget = GL_TEXTURE_2D>
-    requires ValidGLTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY>
+    requires ValidGLTextureViewTargetCombination<TextureTarget, GL_TEXTURE_2D_ARRAY> && StbImageDataFormat<T>
     [[nodiscard]] ViewOpt<TextureTarget> setDataFromFileByOffset(std::string_view filename, GLsizeiptr offsetDepth) const noexcept
-    requires StbImageDataFormat<T>
     {
-        if (offsetDepth < 0 || m_settings.depth < offsetDepth)
+        if (offsetDepth < 0 || m_settings.depth < offsetDepth) [[unlikely]]
             return std::nullopt;
 
         const auto image = StbImageResource<T>(filename);
