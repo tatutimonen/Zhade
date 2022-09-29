@@ -1,5 +1,6 @@
 #include "ShaderProgram.hpp"
 
+#include <format>
 #include <iostream>
 
 //------------------------------------------------------------------------
@@ -40,12 +41,7 @@ GLint ShaderProgram::getUniformLocation(const std::string& name) const noexcept
 
     GLint location = glGetUniformLocation(m_handle, name.c_str());
     if (location == -1)
-    {
-        std::ostringstream errMsg;
-        std::cerr << "Error querying uniform location of "
-                  << "\"" << name << "\". "
-                  << "Did it go unused?\n";
-    }
+        std::cerr << std::format("Error querying uniform location for \"{}\". Did it go unused?", name) << std::endl;
 
     m_uniformLocationCache[name] = location;
     return location;
@@ -64,12 +60,7 @@ void ShaderProgram::link() const noexcept
         std::string infoLog;
         infoLog.resize(static_cast<std::string::size_type>(logLength - 1));
         glGetProgramInfoLog(m_handle, logLength, nullptr, infoLog.data());
-        
-        std::cerr << "Error linking shader program with ID "
-                  << m_handle
-                  << ": "
-                  << infoLog
-                  << "\n";
+        std::cerr << std::format("Error linking shader program with ID {}: {}", m_handle, infoLog) << std::endl;
     }
 }
 

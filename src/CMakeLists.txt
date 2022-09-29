@@ -29,6 +29,7 @@ target_link_libraries(${PROJECT_NAME}
             glm::glm
             assimp::assimp
             imgui::imgui
+            robin_hood::robin_hood
 )
 
 #-------------------------------------------------------------------------

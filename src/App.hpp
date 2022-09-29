@@ -6,6 +6,7 @@
 #include <glm/gtc/constants.hpp>
 
 #include <array>
+#include <iostream>
 #include <string_view>
 
 //------------------------------------------------------------------------
@@ -43,7 +44,7 @@ public:
     void updateInternalTimes() const noexcept;
 
     // According to the GLFW input reference.
-    static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
+    static void keyCallback(GLFWwindow* window, int key, [[maybe_unused]] int scancode, int action, int mode)
     {
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
             glfwSetWindowShouldClose(window, GL_TRUE);
@@ -52,7 +53,7 @@ public:
     }
 
     // According to the GLFW input reference.
-    static void mouseCallback(GLFWwindow* window, double xPos, double yPos)
+    static void mouseCallback([[maybe_unused]] GLFWwindow* window, double xPos, double yPos)
     {
         static float xPosPrev = xPos;
         static float yPosPrev = yPos;
@@ -66,6 +67,13 @@ public:
 
         xPosPrev = xPos;
         yPosPrev = yPos;
+    }
+
+    static void debugCallback([[maybe_unused]] GLenum source, [[maybe_unused]] GLenum type, [[maybe_unused]] GLuint id,
+        GLenum severity, [[maybe_unused]] GLsizei length, const char* message, [[maybe_unused]] const void* userParam) noexcept
+    {
+        if (severity == GL_DEBUG_SEVERITY_MEDIUM || severity == GL_DEBUG_SEVERITY_HIGH)
+            std::cerr << message << std::endl;
     }
 
     static constexpr std::string_view s_title = "Zhade - ESC to quit";

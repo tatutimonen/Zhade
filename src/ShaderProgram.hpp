@@ -4,6 +4,7 @@
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+#include <robin_hood.h>
 
 #include <map>
 #include <optional>
@@ -35,7 +36,7 @@ class ShaderProgram
 {
 public:
     ShaderProgram(const Shader<GL_VERTEX_SHADER>& vertexShader, const Shader<GL_FRAGMENT_SHADER>& fragmentShader,
-                  const std::optional<Shader<GL_GEOMETRY_SHADER>>& geometryShader = std::nullopt);
+        const std::optional<Shader<GL_GEOMETRY_SHADER>>& geometryShader = std::nullopt);
     ~ShaderProgram();
 
     ShaderProgram(const ShaderProgram&) = delete;
@@ -78,7 +79,7 @@ private:
 
     GLuint m_handle;
     mutable GLint m_linkStatus;
-    mutable std::map<std::string, GLint> m_uniformLocationCache;
+    mutable robin_hood::unordered_map<std::string, GLint> m_uniformLocationCache;
 };
 
 //------------------------------------------------------------------------
