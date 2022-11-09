@@ -10,13 +10,13 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
-Camera::Camera(const App& app, const Settings& settings)
+Camera::Camera(ResourceManager& mngr, const App& app, const Settings& settings)
     : m_app{app},
       m_settings{std::move(settings)},
       m_matrices{Matrices()},
-      m_uniformBuffer{Buffer(GL_UNIFORM_BUFFER, sizeof(Matrices))}
+      m_uniformBuffer{mngr.getBuffer(mngr.createBuffer(GL_UNIFORM_BUFFER, sizeof(Matrices)))}
 {
-    m_uniformBuffer.bindBase(constants::CAMERA_BINDING);
+    m_uniformBuffer->bindBase(constants::CAMERA_BINDING);
     updateView();
 }
 
@@ -29,7 +29,7 @@ void Camera::tick() const noexcept
 
     if (moved || rotated)
     {
-        m_uniformBuffer.setData<Matrices>(&m_matrices, 1, 0);
+        m_uniformBuffer->setData<Matrices>(&m_matrices, 1, 0);
     }
 }
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "App.hpp"
-#include "Buffer.hpp"
+#include "ResourceManager.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -53,14 +53,14 @@ public:
     static constexpr auto s_cameraBaseSpeed = 5.0f;
 
 protected:
-    Camera(const App& app, const Settings& settings);
+    Camera(ResourceManager& mngr, const App& app, const Settings& settings);
     bool move() const noexcept;
     bool rotate() const noexcept;
 
     const App& m_app;
     mutable Settings m_settings;
     mutable Matrices m_matrices;
-    mutable Buffer m_uniformBuffer;
+    const Buffer* m_uniformBuffer;
 };
 
 //------------------------------------------------------------------------

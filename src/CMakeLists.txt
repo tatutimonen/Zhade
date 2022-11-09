@@ -2,7 +2,6 @@
 # Source files.
 
 set(src_files
-    AlignedResource.cpp
     App.cpp
     Buffer.cpp
     Camera.cpp

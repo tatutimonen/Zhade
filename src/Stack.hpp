@@ -1,10 +1,12 @@
 #pragma once
 
-#include "AlignedResource.hpp"
-
+#include <format>
 #include <optional>
+#include <stdexcept>
 #include <type_traits>
 #include <utility>
+#include <vector>
+#include <iostream>
 
 //------------------------------------------------------------------------
 
@@ -19,7 +21,7 @@ template<typename T>
 class Stack
 {
 public:
-    Stack(size_t maxSize) : m_maxSize{maxSize}, m_underlying{AlignedResource<T>(m_maxSize)} {}
+    Stack(size_t maxSize) : m_maxSize{maxSize} { m_underlying.resize(m_maxSize); }
     ~Stack() = default;
 
     Stack(const Stack&) = default;
@@ -38,49 +40,66 @@ public:
         return m_underlying.at(m_size - 1);
     }
 
-    bool pop() noexcept
+    void pop() noexcept
     {
         if (m_size == 0) [[unlikely]]
-            return false;
+            return;
 
         --m_size;
-        return true;
     }
 
-    bool push(const T& item) noexcept
+    void push(const T& item) noexcept
     requires std::copyable<T>
     {
         if (m_size == m_maxSize) [[unlikely]]
-            return false;
+            resize();
 
         m_underlying[m_size++] = item;
-        return true;
     }
 
-    bool push(T&& item) noexcept
+    void push(T&& item) noexcept
     requires std::movable<T>
     {
         if (m_size == m_maxSize) [[unlikely]]
-            return false;
+            resize();
 
         m_underlying[m_size++] = std::move(item);
-        return true;
     }
 
     template<typename... Args>
     requires std::is_constructible_v<T, Args...>
-    bool emplace(Args&& ...args) noexcept
+    void emplace(Args&& ...args) noexcept
     {
         if (m_size == m_maxSize) [[unlikely]]
-            return false;
+            resize();
 
         new (&m_underlying[m_size++]) T(std::forward<Args>(args)...);
-        return true;
+    }
+
+    [[nodiscard]] T& at(size_t pos)
+    {
+        return m_underlying.at(pos);
+    }
+
+    [[nodiscard]] const T& at(size_t pos) const
+    {
+        return m_underlying.at(pos);
+    }
+
+    [[nodiscard]] T& operator[](size_t pos)
+    {
+        return m_underlying.at(pos);
+    }
+
+    void resize()
+    {
+        m_maxSize *= 2;
+        m_underlying.resize(m_maxSize);
     }
 
 private:
     size_t m_maxSize;
-    AlignedResource<T> m_underlying;
+    std::vector<T> m_underlying;
     size_t m_size = 0;
 };
 

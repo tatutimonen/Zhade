@@ -22,6 +22,8 @@ namespace Zhade
 class Buffer
 {
 public:
+    Buffer() = default;
+
     Buffer(GLenum target, GLsizei sizeBytes = 1 << 27)
         : m_target{target},
           m_wholeSizeBytes{sizeBytes},
@@ -39,6 +41,8 @@ public:
     Buffer& operator=(Buffer&&) = default;
 
     [[nodiscard]] GLuint getHandle() const noexcept { return m_handle; }
+
+    [[nodiscard]] bool isValid() const noexcept { return glIsBuffer(m_handle); }
 
     template<typename T>
     [[nodiscard]] std::span<T> pushData(const void* data, GLsizei size) const noexcept
@@ -134,10 +138,10 @@ private:
         return static_cast<GLsizeiptr>(std::ceil(static_cast<float>(sizeBytes) / m_alignment) * m_alignment);
     }
 
-    GLuint m_handle;
-    const GLenum m_target;
-    const GLsizei m_wholeSizeBytes;
-    const GLint m_alignment;
+    GLuint m_handle = 0;
+    const GLenum m_target = 0;
+    const GLsizei m_wholeSizeBytes = 0;
+    const GLint m_alignment = 0;
     mutable GLsizeiptr m_writeOffsetBytes = 0;
 };
 

@@ -7,8 +7,8 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
-PerspectiveCamera::PerspectiveCamera(const App& app, const Settings& settings)
-    : Camera{app, std::move(settings)}
+PerspectiveCamera::PerspectiveCamera(ResourceManager& mngr, const App& app, const Settings& settings)
+    : Camera{mngr, app, std::move(settings)}
 {
     updateProjectivity();
 }

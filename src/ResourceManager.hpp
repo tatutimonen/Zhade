@@ -4,8 +4,9 @@
 #include "Handle.hpp"
 #include "ObjectPool.hpp"
 
-#include <type_traits>
+#include <concepts>
 #include <utility>
+#include <iostream>
 
 //------------------------------------------------------------------------
 
@@ -27,8 +28,8 @@ public:
     ResourceManager& operator=(ResourceManager&&) = default;
 
     template<typename... Args>
-    requires std::is_constructible_v<Buffer, Args...>
-    [[nodiscard]] Handle<Buffer> createBuffer(Args&& ...args) const
+    requires std::constructible_from<Buffer, Args...>
+    [[nodiscard]] Handle<Buffer> createBuffer(Args&& ...args)
     {
         return m_buffers.allocate(std::forward<Args>(args)...);
     }

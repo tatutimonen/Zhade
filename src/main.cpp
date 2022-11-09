@@ -52,7 +52,7 @@ int main()
             Shader<GL_FRAGMENT_SHADER>(common::shaderPath + "debug.frag")
         );
 
-        const auto camera = PerspectiveCamera(app);
+        const auto camera = PerspectiveCamera(mngr, app);
 
         static constexpr auto numQuads = 4;
         static constexpr auto numTris = 2;
@@ -81,8 +81,6 @@ int main()
 
         auto importer = Assimp::Importer();
         const aiScene* scene = importer.ReadFile(common::assetPath + "sponza/sponza.obj", aiProcessPreset_TargetRealtime_Fast);
-
-        std::cout << std::format("{} {}\n", scene->mNumMeshes, scene->mNumMaterials);
 
         auto mesh = scene->mMeshes[1];
 
@@ -173,14 +171,16 @@ int main()
 
         // Upload the model matrices into an SSBO.
 
-        const auto ssbo = Buffer(GL_SHADER_STORAGE_BUFFER, 1 << 10);
-        auto x = ssbo.pushData<glm::mat3x4>(modelMatrices.data(), modelMatrices.size());
-        ssbo.bindBase(constants::MODEL_BINDING);
+        const auto ssboHandle = mngr.createBuffer(GL_SHADER_STORAGE_BUFFER, 1 << 10);
+        auto ssbo = mngr.getBuffer(ssboHandle);
+        auto x = ssbo->pushData<glm::mat3x4>(modelMatrices.data(), modelMatrices.size());
+        ssbo->bindBase(constants::MODEL_BINDING);
 
         // Setup the indirect draw buffer and the draw IDs.
 
-        const auto dibo = Buffer(GL_DRAW_INDIRECT_BUFFER, 1 << 10);
-        auto y = dibo.pushData<MultiDrawElementsIndirectCommand>(cmds.data(), cmds.size());
+        const auto diboHandle = mngr.createBuffer(GL_DRAW_INDIRECT_BUFFER, 1 << 10);
+        const auto dibo = mngr.getBuffer(diboHandle);
+        auto y = dibo->pushData<MultiDrawElementsIndirectCommand>(cmds.data(), cmds.size());
 
         // Setup textures for the quads.
 
@@ -196,13 +196,14 @@ int main()
 
         shaderProgram.use();
         glBindVertexArray(vao);
-        dibo.bind();
+        dibo->bind();
 
         while (!glfwWindowShouldClose(app.getGLCtx()))
         {
             app.updateInternalTimes();
             
             glfwPollEvents();
+
             camera.tick();
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -213,6 +214,7 @@ int main()
         }
 
         glBindVertexArray(0);
+        glDeleteVertexArrays(1, &vao);
     }
 
     return 0;

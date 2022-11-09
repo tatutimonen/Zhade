@@ -1,10 +1,11 @@
 #pragma once
 
-#include "AlignedResource.hpp"
 #include "Handle.hpp"
 #include "Stack.hpp"
 
 #include <cstdint>
+#include <vector>
+#include <iostream>
 
 //------------------------------------------------------------------------
 
@@ -12,20 +13,22 @@ namespace Zhade
 {
 
 //------------------------------------------------------------------------
+// Reference: https://twitter.com/SebAaltonen/status/1535176343847043072.
 
 template<typename T>
 class ObjectPool
 {
 public:
-    ObjectPool()
-        : m_pool{AlignedResource<T>(s_size)},
-          m_generations{AlignedResource<uint32_t>(s_size)},
-          m_freeStack{Stack<uint32_t>(s_size)}
+    ObjectPool(size_t size = 1'000)
+        : m_size{size}, m_freeStack{Stack<uint32_t>(size)}
     {
-        for (uint32_t i = 0; i < s_size; ++i)
+        m_pool.resize(m_size);
+        m_generations.resize(m_size);
+
+        for (uint32_t i = 0; i < m_size; ++i)
         {
             m_generations[i] = 0;
-            m_freeStack.push(s_size - 1 - i);
+            m_freeStack.push(i);
         }
     }
 
@@ -36,16 +39,18 @@ public:
     ObjectPool(ObjectPool&& other) = default;
     ObjectPool& operator=(ObjectPool&& other) = default;
 
+    [[nodiscard]] size_t getSize() const noexcept { return m_size; }
+
     template<typename... Args>
-    requires std::is_constructible_v<T, Args...>
-    [[nodiscard]] Handle<T> allocate(Args&& ...args) const
+    requires std::constructible_from<T, Args...>
+    [[nodiscard]] Handle<T> allocate(Args&& ...args)
     {
         const auto handle = getHandleToNextFree();
         new (&m_pool[handle.m_index]) T(std::forward<Args>(args)...);
         return handle;
     }
 
-    [[nodiscard]] Handle<T> allocate(const T& item) const
+    [[nodiscard]] Handle<T> allocate(const T& item)
     requires std::copyable<T>
     {
         const auto handle = getHandleToNextFree();
@@ -53,7 +58,7 @@ public:
         return handle;
     }
 
-    [[nodiscard]] Handle<T> allocate(T&& item) const
+    [[nodiscard]] Handle<T> allocate(T&& item)
     requires std::movable<T>
     {
         const auto handle = getHandleToNextFree();
@@ -77,21 +82,35 @@ public:
         return &m_pool[handle.m_index];
     }
 
-    static constexpr size_t s_size = 10'000;
-
 private:
-    [[nodiscard]] Handle<T> getHandleToNextFree() const
+    [[nodiscard]] Handle<T> getHandleToNextFree()
     {
-        if (m_freeStack.top() == std::nullopt)
-            throw std::bad_alloc();
+        if (m_freeStack.top() == std::nullopt) [[unlikely]]
+            resize();
 
         const uint32_t nextFreeIdx = m_freeStack.top().value();
         m_freeStack.pop();
         return Handle<T>(nextFreeIdx, ++m_generations[nextFreeIdx]);
     }
 
-    mutable AlignedResource<T> m_pool;
-    mutable AlignedResource<uint32_t> m_generations;
+    void resize()
+    {
+        const auto size_prev = m_size;
+        m_size *= 2;
+        m_pool.resize(m_size);
+        m_generations.resize(m_size);
+        m_freeStack.resize();
+
+        for (uint32_t i = size_prev; i < m_size; ++i)
+        {
+            m_generations[i] = 0;
+            m_freeStack.push(i);
+        }
+    }
+
+    size_t m_size;
+    mutable std::vector<T> m_pool;
+    mutable std::vector<uint32_t> m_generations;
     mutable Stack<uint32_t> m_freeStack;
 };
 
