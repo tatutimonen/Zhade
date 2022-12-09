@@ -1,12 +1,11 @@
 #pragma once
 
-#include <format>
-#include <optional>
+#include <concepts>
+#include <memory>
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
 #include <vector>
-#include <iostream>
 
 //------------------------------------------------------------------------
 
@@ -21,7 +20,7 @@ template<typename T>
 class Stack
 {
 public:
-    Stack(size_t maxSize) : m_maxSize{maxSize} { m_underlying.resize(m_maxSize); }
+    Stack(size_t reserveSize = 0) { m_underlying.reserve(reserveSize); }
     ~Stack() = default;
 
     Stack(const Stack&) = default;
@@ -30,20 +29,27 @@ public:
     Stack& operator=(Stack&&) = default;
 
     [[nodiscard]] size_t getSize() const noexcept { return m_size; }
-    [[nodiscard]] size_t getMaxSize() const noexcept { return m_maxSize; }
 
-    [[nodiscard]] std::optional<std::reference_wrapper<const T>> top() const noexcept
+    [[nodiscard]] T& top()
     {
         if (m_size == 0) [[unlikely]]
-            return std::nullopt;
+            throw std::out_of_range("Top of an empty Stack");
 
         return m_underlying.at(m_size - 1);
     }
 
-    void pop() noexcept
+    [[nodiscard]] const T& top() const
     {
         if (m_size == 0) [[unlikely]]
-            return;
+            throw std::out_of_range("Top of an empty Stack");
+
+        return m_underlying.at(m_size - 1);
+    }
+
+    void pop()
+    {
+        if (m_size == 0) [[unlikely]]
+            throw std::out_of_range("Pop on an empty Stack");
 
         --m_size;
     }
@@ -51,29 +57,35 @@ public:
     void push(const T& item) noexcept
     requires std::copyable<T>
     {
-        if (m_size == m_maxSize) [[unlikely]]
-            resize();
+        if (m_size == m_underlying.size()) [[unlikely]]
+            m_underlying.push_back(item);
+        else
+            m_underlying[m_size] = item;
 
-        m_underlying[m_size++] = item;
+        ++m_size;
     }
 
     void push(T&& item) noexcept
     requires std::movable<T>
     {
-        if (m_size == m_maxSize) [[unlikely]]
-            resize();
-
-        m_underlying[m_size++] = std::move(item);
+        if (m_size == m_underlying.size()) [[unlikely]]
+            m_underlying.push_back(std::move(item));
+        else
+            m_underlying[m_size] = std::move(item);
+        
+        ++m_size;
     }
 
     template<typename... Args>
-    requires std::is_constructible_v<T, Args...>
+    requires std::constructible_from<T, Args...>
     void emplace(Args&& ...args) noexcept
     {
-        if (m_size == m_maxSize) [[unlikely]]
-            resize();
+        if (m_size == m_underlying.size()) [[unlikely]]
+            m_underlying.emplace_back(std::forward<Args>(args)...);
+        else
+            std::construct_at(std::addressof(m_underlying[m_size]), std::forward<Args>(args)...);
 
-        new (&m_underlying[m_size++]) T(std::forward<Args>(args)...);
+        ++m_size;
     }
 
     [[nodiscard]] T& at(size_t pos)
@@ -91,16 +103,12 @@ public:
         return m_underlying.at(pos);
     }
 
-    void resize()
-    {
-        m_maxSize *= 2;
-        m_underlying.resize(m_maxSize);
-    }
-
 private:
-    size_t m_maxSize;
     std::vector<T> m_underlying;
     size_t m_size = 0;
+
+    template <typename U>
+    friend class ObjectPool;
 };
 
 //------------------------------------------------------------------------

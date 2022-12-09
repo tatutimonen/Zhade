@@ -7,9 +7,11 @@
 
 #include <cassert>
 #include <cmath>
+#include <format>
 #include <map>
 #include <optional>
 #include <span>
+#include <iostream>
 
 //------------------------------------------------------------------------
 
@@ -22,9 +24,9 @@ namespace Zhade
 class Buffer
 {
 public:
-    Buffer() = default;
+    Buffer() : m_handle{0} { std::cout << "default Buffer ctor\n"; }
 
-    Buffer(GLenum target, GLsizei sizeBytes = 1 << 27)
+    Buffer(GLenum target, GLsizei sizeBytes = 1 << 16)
         : m_target{target},
           m_wholeSizeBytes{sizeBytes},
           m_alignment{s_alignmentTable.at(target)}
@@ -33,7 +35,15 @@ public:
         glNamedBufferStorage(m_handle, m_wholeSizeBytes, nullptr, GL_DYNAMIC_STORAGE_BIT | s_access);
     }
 
-    ~Buffer() { glDeleteBuffers(1, &m_handle); }
+    ~Buffer()
+    {
+        std::cout << "Buffer dtor\n";
+        if (m_handle != 0)
+        {
+            std::cout << std::format("Deleting GL buffer {}\n", m_handle);
+            glDeleteBuffers(1, &m_handle);
+        }
+    }
 
     Buffer(const Buffer&) = default;
     Buffer& operator=(const Buffer&) = default;

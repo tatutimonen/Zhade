@@ -96,7 +96,9 @@ public:
         glTextureParameteri(m_handle, GL_TEXTURE_MAG_FILTER, m_settings.magFilter);
         glTextureParameteri(m_handle, GL_TEXTURE_WRAP_S, m_settings.wrapS);
         glTextureParameteri(m_handle, GL_TEXTURE_WRAP_T, m_settings.wrapT);
-        if constexpr (InternalFormat == GL_DEPTH_COMPONENT32)  // Depth texture?
+
+        // Depth texture?
+        if constexpr (InternalFormat == GL_DEPTH_COMPONENT32)
         {
             glTextureParameteri(m_handle, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
             glTextureParameteri(m_handle, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);

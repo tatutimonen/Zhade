@@ -55,65 +55,26 @@ int main()
         const auto camera = PerspectiveCamera(mngr, app);
 
         static constexpr auto numQuads = 4;
-        static constexpr auto numTris = 2;
 
         // Basic vertex data setup.
 
         const Vertex quadVerts[] = {
             { glm::vec3( 0.5f,  0.0f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) },
-            { glm::vec3( 0.5f,  0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f) },
-            { glm::vec3(-0.5f,  0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f) },
-            { glm::vec3(-0.5f,  0.0f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) }
+            { glm::vec3( 0.5f,  0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f) },
+            { glm::vec3(-0.5f,  0.0f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f) },
+            { glm::vec3(-0.5f,  0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) }
         };
         const GLuint quadInds[] = {
             0, 1, 2,
             2, 3, 0
         };
 
-        const Vertex triVerts[] = {
-            { glm::vec3( 0.5f,  0.0f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) },
-            { glm::vec3( 0.0f,  0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.5f, 1.0f) },
-            { glm::vec3(-0.5f,  0.0f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) }
-        };
-        const GLuint triInds[] = {
-            0, 1, 2
-        };
-
-        auto importer = Assimp::Importer();
-        const aiScene* scene = importer.ReadFile(common::assetPath + "sponza/sponza.obj", aiProcessPreset_TargetRealtime_Fast);
-
-        auto mesh = scene->mMeshes[1];
-
-        auto importVerts = std::vector<Vertex>();
-
-        for (auto i = 0u; i < mesh->mNumVertices; ++i)
-        {
-            const auto& pos = mesh->mVertices[i];
-            const auto& nrm = mesh->mNormals[i];
-            importVerts.push_back({ glm::vec3(pos.x, pos.y, pos.z), glm::vec3(nrm.x, nrm.y, nrm.z), glm::vec2() });
-        }
-
-        auto dragonIndices = std::vector<GLuint>();
-
-        for (auto i = 0u; i < mesh->mNumFaces; ++i)
-        {
-            const auto faceIndices = mesh->mFaces[i].mIndices;
-            dragonIndices.push_back(faceIndices[0]);
-            dragonIndices.push_back(faceIndices[1]);
-            dragonIndices.push_back(faceIndices[2]);
-        }
-
         const auto vboHandle = mngr.createBuffer(GL_ARRAY_BUFFER);
+        std::cout << vboHandle.m_index << "\n";
         const auto vbo = mngr.getBuffer(vboHandle);
         const auto eboHandle = mngr.createBuffer(GL_ELEMENT_ARRAY_BUFFER);
+        std::cout << eboHandle.m_index << "\n";
         const auto ebo = mngr.getBuffer(eboHandle);
-
-        auto quadVtxSpan = vbo->pushData<Vertex>(quadVerts, 4);
-        auto quadIdxSpan = ebo->pushData<GLuint>(quadInds, 6);
-        auto triVtxSpan = vbo->pushData<Vertex>(triVerts, 3);
-        auto triIdxSpan = ebo->pushData<GLuint>(triInds, 3);
-        auto dragonVtxSpan = vbo->pushData<Vertex>(importVerts.data(), mesh->mNumVertices);
-        auto dragonIdxSpan = ebo->pushData<GLuint>(dragonIndices.data(), mesh->mNumFaces * 3);
 
         GLuint vao;
         glCreateVertexArrays(1, &vao);
@@ -132,6 +93,9 @@ int main()
         glVertexArrayAttribBinding(vao, 1, 0);
         glVertexArrayAttribBinding(vao, 2, 0);
 
+        /*auto quadVtxSpan = vbo->pushData<Vertex>(quadVerts, 4);
+        auto quadIdxSpan = ebo->pushData<GLuint>(quadInds, 6);
+
         // Create render commands and gather model matrices.
 
         std::vector<glm::mat3x4> modelMatrices;
@@ -141,11 +105,6 @@ int main()
         {
             modelMatrices.push_back(glm::mat3x4(glm::transpose(glm::translate(glm::vec3(0.0f, (float)i, 0.0f)))));
         }
-        for (auto i = 0u; i < numTris; ++i)
-        {
-            modelMatrices.push_back(glm::mat3x4(glm::transpose(glm::translate(glm::vec3((float)(i+1), 0.0f, 0.0f)))));
-        }
-        modelMatrices.push_back(glm::mat3x4(glm::transpose(glm::scale(glm::vec3(0.03f)))));
 
         cmds.push_back({
             .vertexCount = 6,
@@ -153,20 +112,6 @@ int main()
             .firstIndex = 0,
             .baseVertex = 0,
             .baseInstance = 0
-        });
-        cmds.push_back({
-            .vertexCount = 3,
-            .instanceCount = numTris,
-            .firstIndex = 6,
-            .baseVertex = 4,
-            .baseInstance = 4
-        });
-        cmds.push_back({
-            .vertexCount = mesh->mNumFaces * 3,
-            .instanceCount = 1,
-            .firstIndex = 9,
-            .baseVertex = 7,
-            .baseInstance = numQuads + numTris
         });
 
         // Upload the model matrices into an SSBO.
@@ -206,12 +151,14 @@ int main()
 
             camera.tick();
 
+            //std::cout << 1.0f / app.getDeltaTime() << "\n";
+
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, cmds.size(), 0);
 
             glfwSwapBuffers(app.getGLCtx());
-        }
+        }*/
 
         glBindVertexArray(0);
         glDeleteVertexArrays(1, &vao);

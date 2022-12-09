@@ -1,6 +1,7 @@
 #pragma once
 
 #include "App.hpp"
+#include "Handle.hpp"
 #include "ResourceManager.hpp"
 
 #include <glm/glm.hpp>

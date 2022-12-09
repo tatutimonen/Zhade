@@ -36,7 +36,7 @@ public:
 
     [[nodiscard]] const Buffer* getBuffer(const Handle<Buffer>& buffer) const noexcept;
 
-private:
+//private:
     ObjectPool<Buffer> m_buffers;
 };
 
