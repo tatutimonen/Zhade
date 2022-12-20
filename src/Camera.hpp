@@ -34,7 +34,10 @@ public:
         glm::mat4 P = glm::mat4(1.0f);
     };
 
-    virtual ~Camera() = default;
+    virtual ~Camera()
+    {
+        m_mngr.deleteBuffer(m_uniformBuffer);
+    }
 
     const glm::mat3x4& getView() const noexcept { return m_matrices.VT; }
     const glm::mat4& getProjectivity() const noexcept { return m_matrices.P; }
@@ -58,10 +61,11 @@ protected:
     bool move() const noexcept;
     bool rotate() const noexcept;
 
+    const ResourceManager& m_mngr;
     const App& m_app;
     mutable Settings m_settings;
     mutable Matrices m_matrices;
-    const Buffer* m_uniformBuffer;
+    Handle<Buffer> m_uniformBuffer;
 };
 
 //------------------------------------------------------------------------

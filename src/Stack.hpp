@@ -69,9 +69,9 @@ public:
     requires std::movable<T>
     {
         if (m_size == m_underlying.size()) [[unlikely]]
-            m_underlying.push_back(std::move(item));
+            m_underlying.push_back(item);
         else
-            m_underlying[m_size] = std::move(item);
+            m_underlying[m_size] = item;
         
         ++m_size;
     }

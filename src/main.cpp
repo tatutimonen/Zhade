@@ -55,6 +55,7 @@ int main()
         const auto camera = PerspectiveCamera(mngr, app);
 
         static constexpr auto numQuads = 4;
+        static constexpr auto numTris = 2;
 
         // Basic vertex data setup.
 
@@ -69,11 +70,18 @@ int main()
             2, 3, 0
         };
 
+        const Vertex triVerts[] = {
+            { glm::vec3( 0.5f,  0.0f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) },
+            { glm::vec3( 0.0f,  0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.5f, 1.0f) },
+            { glm::vec3(-0.5f,  0.0f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) }
+        };
+        const GLuint triInds[] = {
+            0, 1, 2
+        };
+
         const auto vboHandle = mngr.createBuffer(GL_ARRAY_BUFFER);
-        std::cout << vboHandle.m_index << "\n";
         const auto vbo = mngr.getBuffer(vboHandle);
         const auto eboHandle = mngr.createBuffer(GL_ELEMENT_ARRAY_BUFFER);
-        std::cout << eboHandle.m_index << "\n";
         const auto ebo = mngr.getBuffer(eboHandle);
 
         GLuint vao;
@@ -93,8 +101,10 @@ int main()
         glVertexArrayAttribBinding(vao, 1, 0);
         glVertexArrayAttribBinding(vao, 2, 0);
 
-        /*auto quadVtxSpan = vbo->pushData<Vertex>(quadVerts, 4);
+        auto quadVtxSpan = vbo->pushData<Vertex>(quadVerts, 4);
         auto quadIdxSpan = ebo->pushData<GLuint>(quadInds, 6);
+        auto triVtxSpan = vbo->pushData<Vertex>(triVerts, 3);
+        auto triIdxSpan = ebo->pushData<GLuint>(triInds, 3);
 
         // Create render commands and gather model matrices.
 
@@ -105,6 +115,10 @@ int main()
         {
             modelMatrices.push_back(glm::mat3x4(glm::transpose(glm::translate(glm::vec3(0.0f, (float)i, 0.0f)))));
         }
+        for (auto i = 0u; i < numTris; ++i)
+        {
+            modelMatrices.push_back(glm::mat3x4(glm::transpose(glm::translate(glm::vec3((float)(i+1), 0.0f, 0.0f)))));
+        }
 
         cmds.push_back({
             .vertexCount = 6,
@@ -112,6 +126,13 @@ int main()
             .firstIndex = 0,
             .baseVertex = 0,
             .baseInstance = 0
+        });
+        cmds.push_back({
+            .vertexCount = 3,
+            .instanceCount = numTris,
+            .firstIndex = 6,
+            .baseVertex = 4,
+            .baseInstance = 4
         });
 
         // Upload the model matrices into an SSBO.
@@ -151,14 +172,12 @@ int main()
 
             camera.tick();
 
-            //std::cout << 1.0f / app.getDeltaTime() << "\n";
-
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, cmds.size(), 0);
 
             glfwSwapBuffers(app.getGLCtx());
-        }*/
+        }
 
         glBindVertexArray(0);
         glDeleteVertexArrays(1, &vao);

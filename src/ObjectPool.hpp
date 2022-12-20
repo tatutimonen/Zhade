@@ -82,6 +82,10 @@ public:
         return std::addressof(m_pool[handle.m_index]);
     }
 
+    //------------------------------------------------------------------------------------
+    // TODO: Implement the contiguous_range concept to comply with std::span requirements.
+    //------------------------------------------------------------------------------------
+
 private:
     [[nodiscard]] Handle<T> getHandleToNextFree()
     {
@@ -117,6 +121,8 @@ private:
     mutable std::vector<T> m_pool;
     mutable std::vector<uint32_t> m_generations;
     mutable Stack<uint32_t> m_freeStack;
+
+    friend class ResourceManager;
 };
 
 //------------------------------------------------------------------------
