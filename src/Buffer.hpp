@@ -7,8 +7,8 @@
 
 #include <cassert>
 #include <cmath>
+#include <format>
 #include <map>
-#include <optional>
 #include <span>
 
 //------------------------------------------------------------------------
@@ -24,7 +24,7 @@ class Buffer
 public:
     Buffer() = default;
 
-    Buffer(GLenum target, GLsizei sizeBytes = 1 << 27)
+    Buffer(GLenum target, GLsizei sizeBytes = 1 << 16)
         : m_target{target},
           m_wholeSizeBytes{sizeBytes},
           m_alignment{s_alignmentTable.at(target)}
@@ -33,16 +33,22 @@ public:
         glNamedBufferStorage(m_handle, m_wholeSizeBytes, nullptr, GL_DYNAMIC_STORAGE_BIT | s_access);
     }
 
-    ~Buffer() { glDeleteBuffers(1, &m_handle); }
+    ~Buffer() = default;
 
-    Buffer(const Buffer&) = default;
-    Buffer& operator=(const Buffer&) = default;
+    void freeResources() const noexcept
+    {
+        glDeleteBuffers(1, &m_handle);
+        m_handle = 0;
+    }
+
+    Buffer(const Buffer&) = delete;
+    Buffer& operator=(const Buffer&) = delete;
     Buffer(Buffer&&) = default;
     Buffer& operator=(Buffer&&) = default;
 
     [[nodiscard]] GLuint getHandle() const noexcept { return m_handle; }
 
-    [[nodiscard]] bool isValid() const noexcept { return glIsBuffer(m_handle); }
+    [[nodiscard]] bool isValid() const noexcept { return m_handle != 0; }
 
     template<typename T>
     [[nodiscard]] std::span<T> pushData(const void* data, GLsizei size) const noexcept
@@ -138,7 +144,7 @@ private:
         return static_cast<GLsizeiptr>(std::ceil(static_cast<float>(sizeBytes) / m_alignment) * m_alignment);
     }
 
-    GLuint m_handle = 0;
+    mutable GLuint m_handle = 0;
     const GLenum m_target = 0;
     const GLsizei m_wholeSizeBytes = 0;
     const GLint m_alignment = 0;

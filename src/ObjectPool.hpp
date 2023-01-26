@@ -4,8 +4,8 @@
 #include "Stack.hpp"
 
 #include <cstdint>
+#include <ranges>
 #include <vector>
-#include <iostream>
 
 //------------------------------------------------------------------------
 
@@ -19,21 +19,21 @@ template<typename T>
 class ObjectPool
 {
 public:
-    ObjectPool(size_t size = 1'000)
+    ObjectPool(size_t size = 1)
         : m_size{size}, m_freeStack{Stack<uint32_t>(size)}
     {
         m_pool.resize(m_size);
         m_generations.resize(m_size);
 
-        for (uint32_t i = 0; i < m_size; ++i)
+        for (const size_t& idx : std::views::iota(0u, m_size) | std::views::reverse)
         {
-            m_generations[i] = 0;
-            m_freeStack.push(i);
+            m_generations[idx] = 0;
+            m_freeStack.push(idx);
         }
     }
 
     ~ObjectPool() = default;
-    
+
     ObjectPool(const ObjectPool&) = delete;
     ObjectPool& operator=(const ObjectPool&) = delete;
     ObjectPool(ObjectPool&& other) = default;
@@ -46,7 +46,7 @@ public:
     [[nodiscard]] Handle<T> allocate(Args&& ...args)
     {
         const auto handle = getHandleToNextFree();
-        new (&m_pool[handle.m_index]) T(std::forward<Args>(args)...);
+        std::construct_at(std::addressof(m_pool[handle.m_index]), std::forward<Args>(args)...);
         return handle;
     }
 
@@ -75,20 +75,27 @@ public:
 
     [[nodiscard]] T* get(const Handle<T>& handle) const noexcept
     {
-        const auto getIdx = handle.m_index;
+        const uint32_t getIdx = handle.m_index;
         if (handle.m_generation < m_generations[getIdx])
             return nullptr;
 
-        return &m_pool[handle.m_index];
+        return std::addressof(m_pool[handle.m_index]);
     }
+
+    static constexpr uint32_t s_growthFactor = 2;
 
 private:
     [[nodiscard]] Handle<T> getHandleToNextFree()
     {
-        if (m_freeStack.top() == std::nullopt) [[unlikely]]
+        try 
+        {
+            [[maybe_unused]] const auto& top = m_freeStack.top();
+        } 
+        catch (const std::out_of_range&)
+        {
             resize();
-
-        const uint32_t nextFreeIdx = m_freeStack.top().value();
+        }
+        const uint32_t nextFreeIdx = m_freeStack.top();
         m_freeStack.pop();
         return Handle<T>(nextFreeIdx, ++m_generations[nextFreeIdx]);
     }
@@ -96,15 +103,15 @@ private:
     void resize()
     {
         const auto size_prev = m_size;
-        m_size *= 2;
+        m_size *= s_growthFactor;
         m_pool.resize(m_size);
         m_generations.resize(m_size);
-        m_freeStack.resize();
+        m_freeStack.m_underlying.reserve(m_size);
 
-        for (uint32_t i = size_prev; i < m_size; ++i)
+        for (const auto& idx : std::views::iota(size_prev, m_size) | std::views::reverse)
         {
-            m_generations[i] = 0;
-            m_freeStack.push(i);
+            m_generations[idx] = 0;
+            m_freeStack.push(idx);
         }
     }
 
@@ -112,6 +119,8 @@ private:
     mutable std::vector<T> m_pool;
     mutable std::vector<uint32_t> m_generations;
     mutable Stack<uint32_t> m_freeStack;
+
+    friend class ResourceManager;
 };
 
 //------------------------------------------------------------------------

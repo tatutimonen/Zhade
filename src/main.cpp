@@ -52,7 +52,7 @@ int main()
             Shader<GL_FRAGMENT_SHADER>(common::shaderPath + "debug.frag")
         );
 
-        const auto camera = PerspectiveCamera(mngr, app);
+        const auto camera = PerspectiveCamera(&mngr, &app);
 
         static constexpr auto numQuads = 4;
         static constexpr auto numTris = 2;
@@ -79,46 +79,13 @@ int main()
             0, 1, 2
         };
 
-        auto importer = Assimp::Importer();
-        const aiScene* scene = importer.ReadFile(common::assetPath + "sponza/sponza.obj", aiProcessPreset_TargetRealtime_Fast);
-
-        auto mesh = scene->mMeshes[1];
-
-        auto importVerts = std::vector<Vertex>();
-
-        for (auto i = 0u; i < mesh->mNumVertices; ++i)
-        {
-            const auto& pos = mesh->mVertices[i];
-            const auto& nrm = mesh->mNormals[i];
-            importVerts.push_back({ glm::vec3(pos.x, pos.y, pos.z), glm::vec3(nrm.x, nrm.y, nrm.z), glm::vec2() });
-        }
-
-        auto dragonIndices = std::vector<GLuint>();
-
-        for (auto i = 0u; i < mesh->mNumFaces; ++i)
-        {
-            const auto faceIndices = mesh->mFaces[i].mIndices;
-            dragonIndices.push_back(faceIndices[0]);
-            dragonIndices.push_back(faceIndices[1]);
-            dragonIndices.push_back(faceIndices[2]);
-        }
-
         const auto vboHandle = mngr.createBuffer(GL_ARRAY_BUFFER);
-        const auto vbo = mngr.getBuffer(vboHandle);
         const auto eboHandle = mngr.createBuffer(GL_ELEMENT_ARRAY_BUFFER);
-        const auto ebo = mngr.getBuffer(eboHandle);
-
-        auto quadVtxSpan = vbo->pushData<Vertex>(quadVerts, 4);
-        auto quadIdxSpan = ebo->pushData<GLuint>(quadInds, 6);
-        auto triVtxSpan = vbo->pushData<Vertex>(triVerts, 3);
-        auto triIdxSpan = ebo->pushData<GLuint>(triInds, 3);
-        auto dragonVtxSpan = vbo->pushData<Vertex>(importVerts.data(), mesh->mNumVertices);
-        auto dragonIdxSpan = ebo->pushData<GLuint>(dragonIndices.data(), mesh->mNumFaces * 3);
 
         GLuint vao;
         glCreateVertexArrays(1, &vao);
-        glVertexArrayVertexBuffer(vao, 0, vbo->getHandle(), 0, sizeof(Vertex));
-        glVertexArrayElementBuffer(vao, ebo->getHandle());
+        glVertexArrayVertexBuffer(vao, 0, mngr.getBuffer(vboHandle)->getHandle(), 0, sizeof(Vertex));
+        glVertexArrayElementBuffer(vao, mngr.getBuffer(eboHandle)->getHandle());
 
         glEnableVertexArrayAttrib(vao, 0);
         glEnableVertexArrayAttrib(vao, 1);
@@ -131,6 +98,11 @@ int main()
         glVertexArrayAttribBinding(vao, 0, 0);
         glVertexArrayAttribBinding(vao, 1, 0);
         glVertexArrayAttribBinding(vao, 2, 0);
+
+        auto quadVtxSpan = mngr.getBuffer(vboHandle)->pushData<Vertex>(quadVerts, 4);
+        auto quadIdxSpan = mngr.getBuffer(eboHandle)->pushData<GLuint>(quadInds, 6);
+        auto triVtxSpan = mngr.getBuffer(vboHandle)->pushData<Vertex>(triVerts, 3);
+        auto triIdxSpan = mngr.getBuffer(eboHandle)->pushData<GLuint>(triInds, 3);
 
         // Create render commands and gather model matrices.
 
@@ -145,7 +117,6 @@ int main()
         {
             modelMatrices.push_back(glm::mat3x4(glm::transpose(glm::translate(glm::vec3((float)(i+1), 0.0f, 0.0f)))));
         }
-        modelMatrices.push_back(glm::mat3x4(glm::transpose(glm::scale(glm::vec3(0.03f)))));
 
         cmds.push_back({
             .vertexCount = 6,
@@ -160,13 +131,6 @@ int main()
             .firstIndex = 6,
             .baseVertex = 4,
             .baseInstance = 4
-        });
-        cmds.push_back({
-            .vertexCount = mesh->mNumFaces * 3,
-            .instanceCount = 1,
-            .firstIndex = 9,
-            .baseVertex = 7,
-            .baseInstance = numQuads + numTris
         });
 
         // Upload the model matrices into an SSBO.
