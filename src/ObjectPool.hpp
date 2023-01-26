@@ -33,7 +33,7 @@ public:
     }
 
     ~ObjectPool() = default;
-    
+
     ObjectPool(const ObjectPool&) = delete;
     ObjectPool& operator=(const ObjectPool&) = delete;
     ObjectPool(ObjectPool&& other) = default;
@@ -82,9 +82,7 @@ public:
         return std::addressof(m_pool[handle.m_index]);
     }
 
-    //------------------------------------------------------------------------------------
-    // TODO: Implement the contiguous_range concept to comply with std::span requirements.
-    //------------------------------------------------------------------------------------
+    static constexpr uint32_t s_growthFactor = 2;
 
 private:
     [[nodiscard]] Handle<T> getHandleToNextFree()
@@ -105,7 +103,7 @@ private:
     void resize()
     {
         const auto size_prev = m_size;
-        m_size *= 2;
+        m_size *= s_growthFactor;
         m_pool.resize(m_size);
         m_generations.resize(m_size);
         m_freeStack.m_underlying.reserve(m_size);

@@ -52,7 +52,7 @@ int main()
             Shader<GL_FRAGMENT_SHADER>(common::shaderPath + "debug.frag")
         );
 
-        const auto camera = PerspectiveCamera(mngr, app);
+        const auto camera = PerspectiveCamera(&mngr, &app);
 
         static constexpr auto numQuads = 4;
         static constexpr auto numTris = 2;
@@ -61,9 +61,9 @@ int main()
 
         const Vertex quadVerts[] = {
             { glm::vec3( 0.5f,  0.0f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f) },
-            { glm::vec3( 0.5f,  0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f) },
-            { glm::vec3(-0.5f,  0.0f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f) },
-            { glm::vec3(-0.5f,  0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) }
+            { glm::vec3( 0.5f,  0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f) },
+            { glm::vec3(-0.5f,  0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f) },
+            { glm::vec3(-0.5f,  0.0f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) }
         };
         const GLuint quadInds[] = {
             0, 1, 2,
@@ -80,14 +80,12 @@ int main()
         };
 
         const auto vboHandle = mngr.createBuffer(GL_ARRAY_BUFFER);
-        const auto vbo = mngr.getBuffer(vboHandle);
         const auto eboHandle = mngr.createBuffer(GL_ELEMENT_ARRAY_BUFFER);
-        const auto ebo = mngr.getBuffer(eboHandle);
 
         GLuint vao;
         glCreateVertexArrays(1, &vao);
-        glVertexArrayVertexBuffer(vao, 0, vbo->getHandle(), 0, sizeof(Vertex));
-        glVertexArrayElementBuffer(vao, ebo->getHandle());
+        glVertexArrayVertexBuffer(vao, 0, mngr.getBuffer(vboHandle)->getHandle(), 0, sizeof(Vertex));
+        glVertexArrayElementBuffer(vao, mngr.getBuffer(eboHandle)->getHandle());
 
         glEnableVertexArrayAttrib(vao, 0);
         glEnableVertexArrayAttrib(vao, 1);
@@ -101,10 +99,10 @@ int main()
         glVertexArrayAttribBinding(vao, 1, 0);
         glVertexArrayAttribBinding(vao, 2, 0);
 
-        auto quadVtxSpan = vbo->pushData<Vertex>(quadVerts, 4);
-        auto quadIdxSpan = ebo->pushData<GLuint>(quadInds, 6);
-        auto triVtxSpan = vbo->pushData<Vertex>(triVerts, 3);
-        auto triIdxSpan = ebo->pushData<GLuint>(triInds, 3);
+        auto quadVtxSpan = mngr.getBuffer(vboHandle)->pushData<Vertex>(quadVerts, 4);
+        auto quadIdxSpan = mngr.getBuffer(eboHandle)->pushData<GLuint>(quadInds, 6);
+        auto triVtxSpan = mngr.getBuffer(vboHandle)->pushData<Vertex>(triVerts, 3);
+        auto triIdxSpan = mngr.getBuffer(eboHandle)->pushData<GLuint>(triInds, 3);
 
         // Create render commands and gather model matrices.
 

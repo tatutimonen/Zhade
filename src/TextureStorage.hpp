@@ -19,7 +19,7 @@ namespace Zhade
 
 template<typename T>
 concept ValidGLTextureDataSourceType = (
-    StbImageDataFormat<T> || std::is_unsigned_v<T> && sizeof(T) <= 4 || std::is_same_v<T, int32_t> || std::is_same_v<T, float>
+    StbImageDataFormat<T> || std::is_unsigned_v<T> && sizeof(T) <= 4 || std::same_as<T, int32_t> || std::same_as<T, float>
 );
 
 template<GLenum InternalFormat>
@@ -32,15 +32,15 @@ concept SupportedGLInternalFormat = (
 template<ValidGLTextureDataSourceType T>
 inline constexpr GLenum textureDataSourceType2GLenum()
 {
-    if constexpr (std::is_same_v<T, uint8_t>)
+    if constexpr (std::same_as<T, uint8_t>)
         return GL_UNSIGNED_BYTE;
-    else if (std::is_same_v<T, uint16_t>)
+    else if (std::same_as<T, uint16_t>)
         return GL_UNSIGNED_SHORT;
-    else if (std::is_same_v<T, uint32_t>)
+    else if (std::same_as<T, uint32_t>)
         return GL_UNSIGNED_INT_8_8_8_8_REV;  // Assume 32-bit unsigned integers to be packed.
-    else if (std::is_same_v<T, int32_t>)
+    else if (std::same_as<T, int32_t>)
         return GL_INT;
-    else if (std::is_same_v<T, float>)
+    else if (std::same_as<T, float>)
         return GL_FLOAT;
 }
 

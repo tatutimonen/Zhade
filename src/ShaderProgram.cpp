@@ -41,7 +41,7 @@ GLint ShaderProgram::getUniformLocation(const std::string& name) const noexcept
 
     GLint location = glGetUniformLocation(m_handle, name.c_str());
     if (location == -1)
-        std::cerr << std::format("Error querying uniform location for \"{}\". Did it go unused?", name) << std::endl;
+        std::cerr << std::format("Error querying uniform location for '{}'. Did it go unused?", name) << std::endl;
 
     m_uniformLocationCache[name] = location;
     return location;

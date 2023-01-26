@@ -10,14 +10,14 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
-Camera::Camera(ResourceManager& mngr, const App& app, const Settings& settings)
+Camera::Camera(ResourceManager* mngr, const App* app, const Settings& settings)
     : m_mngr{mngr},
       m_app{app},
       m_settings{std::move(settings)},
       m_matrices{Matrices()},
-      m_uniformBuffer{mngr.createBuffer(GL_UNIFORM_BUFFER, static_cast<GLsizei>(sizeof(Matrices)))}
+      m_uniformBuffer{mngr->createBuffer(GL_UNIFORM_BUFFER, static_cast<GLsizei>(sizeof(Matrices)))}
 {
-    m_mngr.getBuffer(m_uniformBuffer)->bindBase(constants::CAMERA_BINDING);
+    m_mngr->getBuffer(m_uniformBuffer)->bindBase(constants::CAMERA_BINDING);
     updateView();
 }
 
@@ -30,7 +30,7 @@ void Camera::tick() const noexcept
 
     if (moved || rotated)
     {
-        m_mngr.getBuffer(m_uniformBuffer)->setData<Matrices>(&m_matrices, 1, 0);
+        m_mngr->getBuffer(m_uniformBuffer)->setData<Matrices>(&m_matrices, 1, 0);
     }
 }
 
@@ -38,8 +38,8 @@ void Camera::tick() const noexcept
 
 bool Camera::move() const noexcept
 {
-    const auto& [keys, pitch, yaw] = m_app.getGLFWState();
-    const float cameraSpeed = s_cameraBaseSpeed * m_app.getDeltaTime();
+    const auto& [keys, pitch, yaw] = m_app->getGLFWState();
+    const float cameraSpeed = s_cameraBaseSpeed * m_app->getDeltaTime();
 
     const glm::vec3 centerPrev = m_settings.center;
     
@@ -70,7 +70,7 @@ bool Camera::move() const noexcept
 
 bool Camera::rotate() const noexcept
 {
-    [[maybe_unused]] const auto& [keys, pitch, yaw] = m_app.getGLFWState();
+    [[maybe_unused]] const auto& [keys, pitch, yaw] = m_app->getGLFWState();
 
     const glm::vec3 targetPrev = m_settings.target;
     

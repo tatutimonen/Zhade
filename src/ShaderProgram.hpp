@@ -20,14 +20,14 @@ namespace Zhade
 
 template<typename T>
 concept ValidGLShaderDataType = (
-    std::is_same_v<T, GLint>
-        || std::is_same_v<T, GLfloat>
-        || std::is_same_v<T, glm::vec2>
-        || std::is_same_v<T, glm::vec3>
-        || std::is_same_v<T, glm::vec4>
-        || std::is_same_v<T, glm::mat3>
-        || std::is_same_v<T, glm::mat3x4>
-        || std::is_same_v<T, glm::mat4>
+    std::same_as<T, GLint>
+        || std::same_as<T, GLfloat>
+        || std::same_as<T, glm::vec2>
+        || std::same_as<T, glm::vec3>
+        || std::same_as<T, glm::vec4>
+        || std::same_as<T, glm::mat3>
+        || std::same_as<T, glm::mat3x4>
+        || std::same_as<T, glm::mat4>
 );
 
 //------------------------------------------------------------------------
@@ -55,21 +55,21 @@ public:
     void setUniform(const std::string& name, const void* data) const noexcept
     {
         const GLint location = getUniformLocation(name);
-        if constexpr (std::is_same_v<T, GLfloat>)
+        if constexpr (std::same_as<T, GLfloat>)
             glUniform1f(location, *static_cast<const GLfloat*>(data));
-        else if (std::is_same_v<T, GLint>)
+        else if (std::same_as<T, GLint>)
             glUniform1i(location, *static_cast<const GLint*>(data));
-        else if (std::is_same_v<T, glm::vec2>)
+        else if (std::same_as<T, glm::vec2>)
             glUniform2fv(location, 1, static_cast<const GLfloat*>(data));
-        else if (std::is_same_v<T, glm::vec3>)
+        else if (std::same_as<T, glm::vec3>)
             glUniform3fv(location, 1, static_cast<const GLfloat*>(data));
-        else if (std::is_same_v<T, glm::vec4>)
+        else if (std::same_as<T, glm::vec4>)
             glUniform4fv(location, 1, static_cast<const GLfloat*>(data));
-        else if (std::is_same_v<T, glm::mat3>)
+        else if (std::same_as<T, glm::mat3>)
             glUniformMatrix3fv(location, 1, GL_FALSE, static_cast<const GLfloat*>(data));
-        else if (std::is_same_v<T, glm::mat3x4>)
+        else if (std::same_as<T, glm::mat3x4>)
             glUniformMatrix3x4fv(location, 1, GL_FALSE, static_cast<const GLfloat*>(data));
-        else if (std::is_same_v<T, glm::mat4>)
+        else if (std::same_as<T, glm::mat4>)
             glUniformMatrix4fv(location, 1, GL_FALSE, static_cast<const GLfloat*>(data));
     }
 

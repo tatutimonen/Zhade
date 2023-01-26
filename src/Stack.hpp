@@ -83,7 +83,7 @@ public:
         if (m_size == m_underlying.size()) [[unlikely]]
             m_underlying.emplace_back(std::forward<Args>(args)...);
         else
-            std::construct_at(std::addressof(m_underlying[m_size]), std::forward<Args>(args)...);
+            std::construct_at(std::addressof(m_underlying.at(m_size)), std::forward<Args>(args)...);
 
         ++m_size;
     }

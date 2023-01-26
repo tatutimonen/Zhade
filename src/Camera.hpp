@@ -36,7 +36,7 @@ public:
 
     virtual ~Camera()
     {
-        m_mngr.deleteBuffer(m_uniformBuffer);
+        m_mngr->deleteBuffer(m_uniformBuffer);
     }
 
     const glm::mat3x4& getView() const noexcept { return m_matrices.VT; }
@@ -57,12 +57,12 @@ public:
     static constexpr auto s_cameraBaseSpeed = 5.0f;
 
 protected:
-    Camera(ResourceManager& mngr, const App& app, const Settings& settings);
+    Camera(ResourceManager* mngr, const App* app, const Settings& settings);
     bool move() const noexcept;
     bool rotate() const noexcept;
 
-    const ResourceManager& m_mngr;
-    const App& m_app;
+    const ResourceManager* m_mngr;
+    const App* m_app;
     mutable Settings m_settings;
     mutable Matrices m_matrices;
     Handle<Buffer> m_uniformBuffer;

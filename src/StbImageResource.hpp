@@ -17,7 +17,7 @@ namespace Zhade
 
 template<typename T>
 concept StbImageDataFormat = (
-    std::is_same_v<T, stbi_uc> || std::is_same_v<T, stbi_us> || std::is_same_v<T, float>
+    std::same_as<T, stbi_uc> || std::same_as<T, stbi_us> || std::same_as<T, float>
 );
 
 //------------------------------------------------------------------------
@@ -56,11 +56,11 @@ public:
 private:
     void load(std::string_view filename)
     {
-        if constexpr (std::is_same_v<T, stbi_uc>)
+        if constexpr (std::same_as<T, stbi_uc>)
             m_data = stbi_load(filename.data(), &m_width, &m_height, nullptr, 4);
-        else if (std::is_same_v<T, stbi_us>)
+        else if (std::same_as<T, stbi_us>)
             m_data = stbi_load_16(filename.data(), &m_width, &m_height, nullptr, 4);
-        else if (std::is_same_v<T, float>)
+        else if (std::same_as<T, float>)
             m_data = stbi_loadf(filename.data(), &m_width, &m_height, nullptr, 4);
         
         if (m_data == nullptr) [[unlikely]]
