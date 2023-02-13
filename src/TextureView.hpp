@@ -60,7 +60,7 @@ public:
     TextureView(TextureView&&) = default;
     TextureView& operator=(TextureView&&) = default;
 
-    [[nodiscard]] GLuint getHandle() const noexcept { return m_handle; }
+    [[nodiscard]] GLuint getGLHandle() const noexcept { return m_handle; }
     [[nodiscard]] bool isValid() const noexcept { return glIsTexture(m_handle) && glIsTexture(m_storageDetails.handle); }
 
 private:

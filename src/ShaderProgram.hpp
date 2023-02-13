@@ -44,7 +44,7 @@ public:
     ShaderProgram(ShaderProgram&&) = default;
     ShaderProgram& operator=(ShaderProgram&&) = default;
 
-    [[nodiscard]] GLint getHandle() const noexcept { return m_handle; }
+    [[nodiscard]] GLint getGLHandle() const noexcept { return m_handle; }
     [[nodiscard]] GLint getLinkStatus() const noexcept { return m_linkStatus; }
     [[nodiscard]] GLint getUniformLocation(const std::string& name) const noexcept;
 

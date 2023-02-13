@@ -1,10 +1,7 @@
 #pragma once
 
-#include <concepts>
 #include <memory>
 #include <stdexcept>
-#include <type_traits>
-#include <utility>
 #include <vector>
 
 //------------------------------------------------------------------------
@@ -30,7 +27,7 @@ public:
 
     [[nodiscard]] size_t getSize() const noexcept { return m_size; }
 
-    [[nodiscard]] T& top()
+    T& top()
     {
         if (m_size == 0) [[unlikely]]
             throw std::out_of_range("Top of an empty Stack");
@@ -83,7 +80,7 @@ public:
         if (m_size == m_underlying.size()) [[unlikely]]
             m_underlying.emplace_back(std::forward<Args>(args)...);
         else
-            std::construct_at(std::addressof(m_underlying.at(m_size)), std::forward<Args>(args)...);
+            std::construct_at(&m_underlying.at(m_size), std::forward<Args>(args)...);
 
         ++m_size;
     }

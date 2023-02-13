@@ -146,7 +146,7 @@ public:
     Shader(Shader&&) = default;
     Shader& operator=(Shader&&) = default;
 
-    [[nodiscard]] GLuint getHandle() const noexcept { return m_handle; }
+    [[nodiscard]] GLuint getGLHandle() const noexcept { return m_handle; }
 
     void attach(GLuint program) const noexcept { glAttachShader(program, m_handle); }
     void detach(GLuint program) const noexcept { glDetachShader(program, m_handle); }

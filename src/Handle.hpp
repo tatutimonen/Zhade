@@ -8,7 +8,7 @@ namespace Zhade
 {
 
 //------------------------------------------------------------------------
-// Reference: https://twitter.com/SebAaltonen/status/1534416275828514817.
+// From: https://twitter.com/SebAaltonen/status/1534416275828514817.
 
 template<typename T>
 class Handle

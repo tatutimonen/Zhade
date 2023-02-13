@@ -41,7 +41,13 @@ public:
     const GLFWState& getGLFWState() const noexcept { return s_state; }
 
     void init() const noexcept;
-    void updateInternalTimes() const noexcept;
+
+    inline void updateInternalTimes() const noexcept
+    {
+        float frameCurr = glfwGetTime();
+        m_deltaTime = frameCurr - m_framePrev;
+        m_framePrev = frameCurr;
+    }
 
     // According to the GLFW input reference.
     static void keyCallback(GLFWwindow* window, int key, [[maybe_unused]] int scancode, int action, int mode)

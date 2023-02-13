@@ -48,8 +48,8 @@ int main()
         ResourceManager mngr;
 
         const auto shaderProgram = ShaderProgram(
-            Shader<GL_VERTEX_SHADER>(common::shaderPath + "debug.vert"),
-            Shader<GL_FRAGMENT_SHADER>(common::shaderPath + "debug.frag")
+            Shader<GL_VERTEX_SHADER>(std::format("{}{}", common::SHADER_PATH, "debug.vert")),
+            Shader<GL_FRAGMENT_SHADER>(std::format("{}{}", common::SHADER_PATH, "debug.frag"))
         );
 
         const auto camera = PerspectiveCamera(&mngr, &app);
@@ -79,13 +79,13 @@ int main()
             0, 1, 2
         };
 
-        const auto vboHandle = mngr.createBuffer(GL_ARRAY_BUFFER);
-        const auto eboHandle = mngr.createBuffer(GL_ELEMENT_ARRAY_BUFFER);
+        const auto vboHandle = mngr.createBuffer(GL_ARRAY_BUFFER, 1 << 16);
+        const auto eboHandle = mngr.createBuffer(GL_ELEMENT_ARRAY_BUFFER, 1 << 16);
 
         GLuint vao;
         glCreateVertexArrays(1, &vao);
-        glVertexArrayVertexBuffer(vao, 0, mngr.getBuffer(vboHandle)->getHandle(), 0, sizeof(Vertex));
-        glVertexArrayElementBuffer(vao, mngr.getBuffer(eboHandle)->getHandle());
+        glVertexArrayVertexBuffer(vao, 0, mngr(vboHandle)->getGLHandle(), 0, sizeof(Vertex));
+        glVertexArrayElementBuffer(vao, mngr(eboHandle)->getGLHandle());
 
         glEnableVertexArrayAttrib(vao, 0);
         glEnableVertexArrayAttrib(vao, 1);
@@ -150,10 +150,10 @@ int main()
 
         const auto texStorage = TextureStorage();
 
-        const auto& cataViewOpt = texStorage.pushDataFromFile(common::texturePath + "cataphract.jpg");
-        const auto& berserkViewOpt = texStorage.pushDataFromFile(common::texturePath + "berserk.png");
-        const auto& longbowViewOpt = texStorage.pushDataFromFile(common::texturePath + "longbowman.png");
-        const auto& jagViewOpt = texStorage.pushDataFromFile(common::texturePath + "jaguarwarrior.png");
+        const auto& cataViewOpt = texStorage.pushDataFromFile(std::format("{}{}", common::TEXTURE_PATH, "cataphract.jpg"));
+        const auto& berserkViewOpt = texStorage.pushDataFromFile(std::format("{}{}", common::TEXTURE_PATH, "berserk.png"));
+        const auto& longbowViewOpt = texStorage.pushDataFromFile(std::format("{}{}", common::TEXTURE_PATH, "longbowman.png"));
+        const auto& jagViewOpt = texStorage.pushDataFromFile(std::format("{}{}", common::TEXTURE_PATH, "jaguarwarrior.png"));
 
         texStorage.bindToUnit(0);
         texStorage.generateMipmap();

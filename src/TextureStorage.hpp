@@ -120,7 +120,7 @@ public:
     TextureStorage(TextureStorage&&) = default;
     TextureStorage& operator=(TextureStorage&&) = default;
 
-    [[nodiscard]] GLuint getHandle() const noexcept { return m_handle; }
+    [[nodiscard]] GLuint getGLHandle() const noexcept { return m_handle; }
     [[nodiscard]] const Settings& getSettings() const noexcept { return m_settings; }
 
     void bindToUnit(GLuint unit) const noexcept { glBindTextureUnit(unit, m_handle); }

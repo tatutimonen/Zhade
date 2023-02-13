@@ -41,8 +41,6 @@ void App::init() const noexcept
     // OpenGL.
     glDebugMessageCallback(debugCallback, nullptr);
     glViewport(0, 0, s_windowWidth, s_windowHeight);
-    // CSM: 15.0f/255.0f, 46.0f/255.0f, 101.0f/255.0f, 1.0f
-    // Midnight Blue: 0.0f, 51.0f/255.0f, 102.0f/255.0f, 1.0f
     glClearColor(15.0f/255.0f, 46.0f/255.0f, 101.0f/255.0f, 1.0f);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -50,15 +48,6 @@ void App::init() const noexcept
 
     // Other.
     StbImageResource<>::setGlobalFlipY(true);
-}
-
-//------------------------------------------------------------------------
-
-void App::updateInternalTimes() const noexcept
-{
-    float frameCurr = glfwGetTime();
-    m_deltaTime = frameCurr - m_framePrev;
-    m_framePrev = frameCurr;
 }
 
 //------------------------------------------------------------------------

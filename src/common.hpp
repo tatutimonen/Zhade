@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include <string_view>
 
 //------------------------------------------------------------------------
 
@@ -9,11 +9,17 @@ namespace common
 
 //------------------------------------------------------------------------
 
-const std::string shaderPath = "../src/shaders/";
+inline constexpr std::string_view SHADER_PATH = "../src/shaders/";
+inline constexpr std::string_view TEXTURE_PATH = "../texture/";
+inline constexpr std::string_view ASSET_PATH = "../assets/";
 
-const std::string texturePath = "../texture/";
+//------------------------------------------------------------------------
 
-const std::string assetPath = "../assets/";
+enum class ResourceManagement
+{
+    MANUAL = 0,
+    RAII = 1
+};
 
 //------------------------------------------------------------------------
 

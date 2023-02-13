@@ -3,9 +3,6 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-#include <cstdlib>
-#include <iostream>
-
 //------------------------------------------------------------------------
 
 namespace Zhade
@@ -33,7 +30,7 @@ inline glm::vec3 makeUnitVec3z() noexcept
     return glm::vec3(0.0f, 0.0f, 1.0f);
 }
 
-// Adapted from https://www.gamedev.net/forums/topic/685081-normal-vector-artifacts-with-nvmeshmender/5326137/.
+// Adapted from: https://www.gamedev.net/forums/topic/685081-normal-vector-artifacts-with-nvmeshmender/5326137/.
 inline GLuint vec4_to_INT_2_10_10_10_REV(const glm::vec4& v) noexcept
 {
     const GLuint xs = v.x < 0;
