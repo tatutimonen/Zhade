@@ -131,7 +131,7 @@ public:
     {
         parseShaderFile(filename);
         m_handle = glCreateShader(ShaderType);
-        const char* shaderSourcePtr = m_shaderSource.c_str();  // glShaderSource needs an lvalue.
+        const char* shaderSourcePtr = m_shaderSource.c_str();
         glShaderSource(m_handle, 1, &shaderSourcePtr, nullptr);
         compile();
     }

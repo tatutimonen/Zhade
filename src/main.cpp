@@ -19,7 +19,7 @@
 #include <glm/gtx/transform.hpp>
 
 #include <array>
-#include <bit>
+#include <cmath>
 #include <format>
 #include <iostream>
 #include <memory>
@@ -55,7 +55,7 @@ int main()
         const auto camera = PerspectiveCamera(&mngr, &app);
 
         static constexpr auto numQuads = 4;
-        static constexpr auto numTris = 2;
+        static constexpr auto numTris = 100;
 
         // Basic vertex data setup.
 
@@ -115,7 +115,7 @@ int main()
         }
         for (auto i = 0u; i < numTris; ++i)
         {
-            modelMatrices.push_back(glm::mat3x4(glm::transpose(glm::translate(glm::vec3((float)(i+1), 0.0f, 0.0f)))));
+            modelMatrices.push_back(glm::mat3x4(glm::transpose(glm::translate(glm::vec3((float)(i+1), std::sinf(2*i), 0.0f)))));
         }
 
         cmds.push_back({
@@ -135,7 +135,7 @@ int main()
 
         // Upload the model matrices into an SSBO.
 
-        const auto ssboHandle = mngr.createBuffer(GL_SHADER_STORAGE_BUFFER, 1 << 10);
+        const auto ssboHandle = mngr.createBuffer(GL_SHADER_STORAGE_BUFFER, 1 << 16);
         auto ssbo = mngr.getBuffer(ssboHandle);
         auto x = ssbo->pushData<glm::mat3x4>(modelMatrices.data(), modelMatrices.size());
         ssbo->bindBase(constants::MODEL_BINDING);

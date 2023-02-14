@@ -32,13 +32,13 @@ public:
 
     StbImageResource(const StbImageResource&) = delete;
     StbImageResource& operator=(const StbImageResource&) = delete;
-    
+
     StbImageResource(StbImageResource&& other)
     {
         m_data = other.m_data;
         other.m_data = nullptr;
     }
-    
+
     StbImageResource& operator=(StbImageResource&& other)
     {
         m_data = other.m_data;

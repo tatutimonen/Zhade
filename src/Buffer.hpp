@@ -23,7 +23,6 @@ class Buffer
 {
 public:
     Buffer() = default;
-
     Buffer(GLenum target, GLsizei sizeBytes, common::ResourceManagement management);
     ~Buffer();
     

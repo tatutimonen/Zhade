@@ -19,7 +19,7 @@ namespace Zhade
 
 template<typename T>
 concept ValidGLTextureDataSourceType = (
-    StbImageDataFormat<T> || std::is_unsigned_v<T> && sizeof(T) <= 4 || std::same_as<T, int32_t> || std::same_as<T, float>
+    StbImageDataFormat<T> || std::unsigned_integral<T> && sizeof(T) <= 4 || std::same_as<T, int32_t> || std::same_as<T, float>
 );
 
 template<GLenum InternalFormat>
@@ -37,7 +37,7 @@ inline constexpr GLenum textureDataSourceType2GLenum()
     else if (std::same_as<T, uint16_t>)
         return GL_UNSIGNED_SHORT;
     else if (std::same_as<T, uint32_t>)
-        return GL_UNSIGNED_INT_8_8_8_8_REV;  // Assume 32-bit unsigned integers to be packed.
+        return GL_UNSIGNED_INT_8_8_8_8_REV;
     else if (std::same_as<T, int32_t>)
         return GL_INT;
     else if (std::same_as<T, float>)

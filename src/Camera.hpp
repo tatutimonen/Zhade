@@ -4,6 +4,7 @@
 #include "Handle.hpp"
 #include "ResourceManager.hpp"
 
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -54,7 +55,13 @@ public:
 
     void tick() const noexcept;
 
-    static constexpr auto s_cameraBaseSpeed = 5.0f;
+    // According to the GLFW input reference.
+    static void scrollCallback([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xoffset, double yoffset)
+    {
+        s_cameraSpeed = std::max(1.0f, s_cameraSpeed + 2.0f*static_cast<float>(yoffset));
+    }
+
+    static inline float s_cameraSpeed = 5.0f;
 
 protected:
     Camera(ResourceManager* mngr, const App* app, const Settings& settings);

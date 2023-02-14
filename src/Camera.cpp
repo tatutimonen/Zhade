@@ -39,7 +39,7 @@ void Camera::tick() const noexcept
 bool Camera::move() const noexcept
 {
     const auto& [keys, pitch, yaw] = m_app->getGLFWState();
-    const float cameraSpeed = s_cameraBaseSpeed * m_app->getDeltaTime();
+    const float cameraSpeed = s_cameraSpeed * m_app->getDeltaTime();
 
     const glm::vec3 centerPrev = m_settings.center;
     

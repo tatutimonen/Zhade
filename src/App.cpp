@@ -1,6 +1,7 @@
 #include "App.hpp"
 #include "util.hpp"
 
+#include "Camera.hpp"
 #include "StbImageResource.hpp"
 
 //------------------------------------------------------------------------
@@ -33,6 +34,7 @@ void App::init() const noexcept
     glfwMakeContextCurrent(m_window);
     glfwSetKeyCallback(m_window, keyCallback);
     glfwSetCursorPosCallback(m_window, mouseCallback);
+    glfwSetScrollCallback(m_window, Camera::scrollCallback);
 
     // GLEW.
     glewExperimental = GL_TRUE;
@@ -43,8 +45,8 @@ void App::init() const noexcept
     glViewport(0, 0, s_windowWidth, s_windowHeight);
     glClearColor(15.0f/255.0f, 46.0f/255.0f, 101.0f/255.0f, 1.0f);
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
+    //glEnable(GL_CULL_FACE);
+    //glCullFace(GL_BACK);
 
     // Other.
     StbImageResource<>::setGlobalFlipY(true);
