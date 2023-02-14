@@ -27,7 +27,7 @@ public:
 
     [[nodiscard]] size_t getSize() const noexcept { return m_size; }
 
-    T& top()
+    [[nodiscard]] T& top()
     {
         if (m_size == 0) [[unlikely]]
             throw std::out_of_range("Top of an empty Stack");

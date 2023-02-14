@@ -23,6 +23,7 @@ Buffer::~Buffer()
 {
     if (m_management == common::ResourceManagement::MANUAL)
         return;
+
     glDeleteBuffers(1, &m_handle);
 }
 
@@ -32,6 +33,7 @@ void Buffer::freeResources() const noexcept
 {
     if (m_management == common::ResourceManagement::RAII) [[unlikely]]
         return;
+
     glDeleteBuffers(1, &m_handle);
 }
 

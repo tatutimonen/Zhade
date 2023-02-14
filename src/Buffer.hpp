@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common.hpp"
 #include "Renderer.hpp"
+#include "common.hpp"
 
 #include <GL/glew.h>
 #include <robin_hood.h>
@@ -116,7 +116,7 @@ private:
     GLsizei m_wholeSizeBytes;
     GLint m_alignment;
     mutable GLsizeiptr m_writeOffsetBytes = 0;
-    common::ResourceManagement m_management;
+    common::ResourceManagement m_management = common::ResourceManagement::MANUAL;
 };
 
 //------------------------------------------------------------------------

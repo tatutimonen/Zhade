@@ -48,8 +48,8 @@ int main()
         ResourceManager mngr;
 
         const auto shaderProgram = ShaderProgram(
-            Shader<GL_VERTEX_SHADER>(std::format("{}{}", common::SHADER_PATH, "debug.vert")),
-            Shader<GL_FRAGMENT_SHADER>(std::format("{}{}", common::SHADER_PATH, "debug.frag"))
+            Shader<GL_VERTEX_SHADER>(common::SHADER_PATH + "debug.vert"),
+            Shader<GL_FRAGMENT_SHADER>(common::SHADER_PATH + "debug.frag")
         );
 
         const auto camera = PerspectiveCamera(&mngr, &app);
@@ -99,10 +99,10 @@ int main()
         glVertexArrayAttribBinding(vao, 1, 0);
         glVertexArrayAttribBinding(vao, 2, 0);
 
-        auto quadVtxSpan = mngr.getBuffer(vboHandle)->pushData<Vertex>(quadVerts, 4);
-        auto quadIdxSpan = mngr.getBuffer(eboHandle)->pushData<GLuint>(quadInds, 6);
-        auto triVtxSpan = mngr.getBuffer(vboHandle)->pushData<Vertex>(triVerts, 3);
-        auto triIdxSpan = mngr.getBuffer(eboHandle)->pushData<GLuint>(triInds, 3);
+        auto quadVtxSpan = mngr(vboHandle)->pushData<Vertex>(quadVerts, 4);
+        auto quadIdxSpan = mngr(eboHandle)->pushData<GLuint>(quadInds, 6);
+        auto triVtxSpan = mngr(vboHandle)->pushData<Vertex>(triVerts, 3);
+        auto triIdxSpan = mngr(eboHandle)->pushData<GLuint>(triInds, 3);
 
         // Create render commands and gather model matrices.
 
@@ -150,10 +150,10 @@ int main()
 
         const auto texStorage = TextureStorage();
 
-        const auto& cataViewOpt = texStorage.pushDataFromFile(std::format("{}{}", common::TEXTURE_PATH, "cataphract.jpg"));
-        const auto& berserkViewOpt = texStorage.pushDataFromFile(std::format("{}{}", common::TEXTURE_PATH, "berserk.png"));
-        const auto& longbowViewOpt = texStorage.pushDataFromFile(std::format("{}{}", common::TEXTURE_PATH, "longbowman.png"));
-        const auto& jagViewOpt = texStorage.pushDataFromFile(std::format("{}{}", common::TEXTURE_PATH, "jaguarwarrior.png"));
+        const auto& cataViewOpt = texStorage.pushDataFromFile(common::TEXTURE_PATH + "cataphract.jpg");
+        const auto& berserkViewOpt = texStorage.pushDataFromFile(common::TEXTURE_PATH + "berserk.png");
+        const auto& longbowViewOpt = texStorage.pushDataFromFile(common::TEXTURE_PATH + "longbowman.png");
+        const auto& jagViewOpt = texStorage.pushDataFromFile(common::TEXTURE_PATH + "jaguarwarrior.png");
 
         texStorage.bindToUnit(0);
         texStorage.generateMipmap();
@@ -165,15 +165,10 @@ int main()
         while (!glfwWindowShouldClose(app.getGLCtx()))
         {
             app.updateInternalTimes();
-            
             glfwPollEvents();
-
             camera.tick();
-
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
             glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, cmds.size(), 0);
-
             glfwSwapBuffers(app.getGLCtx());
         }
 

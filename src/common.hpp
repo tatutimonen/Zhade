@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string_view>
+#include <string>
 
 //------------------------------------------------------------------------
 
@@ -9,9 +9,9 @@ namespace common
 
 //------------------------------------------------------------------------
 
-inline constexpr std::string_view SHADER_PATH = "../src/shaders/";
-inline constexpr std::string_view TEXTURE_PATH = "../texture/";
-inline constexpr std::string_view ASSET_PATH = "../assets/";
+inline const std::string SHADER_PATH = "../src/shaders/";
+inline const std::string TEXTURE_PATH = "../texture/";
+inline const std::string ASSET_PATH = "../assets/";
 
 //------------------------------------------------------------------------
 

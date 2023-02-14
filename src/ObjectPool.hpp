@@ -15,8 +15,8 @@ namespace Zhade
 //------------------------------------------------------------------------
 // Inspired by: https://twitter.com/SebAaltonen/status/1535176343847043072.
 
-template<typename T>
-class ObjectPool
+template<std::default_initializable T>
+class ObjectPool<T>
 {
 public:
     ObjectPool(size_t size = 32)
@@ -88,7 +88,7 @@ public:
 private:
     [[nodiscard]] Handle<T> getHandleToNextFree()
     {
-        try { m_freeStack.top(); } catch (const std::out_of_range&) { resize(); }
+        try { static_cast<void>(m_freeStack.top()); } catch (const std::out_of_range&) { resize(); }
         const uint32_t nextFreeIdx = m_freeStack.top();
         m_freeStack.pop();
         return Handle<T>(nextFreeIdx, ++m_generations[nextFreeIdx]);
