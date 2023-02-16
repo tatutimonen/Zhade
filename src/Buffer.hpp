@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Renderer.hpp"
-#include "common.hpp"
 
 #include <GL/glew.h>
 #include <robin_hood.h>
@@ -23,7 +22,7 @@ class Buffer
 {
 public:
     Buffer() = default;
-    Buffer(GLenum target, GLsizei sizeBytes, common::ResourceManagement management);
+    Buffer(GLenum target, GLsizei sizeBytes, ResourceManagement management);
     ~Buffer();
     
     void freeResources() const noexcept;
@@ -33,9 +32,9 @@ public:
     Buffer(Buffer&&) = default;
     Buffer& operator=(Buffer&&) = default;
 
-    [[nodiscard]] inline GLuint getGLHandle() const noexcept { return m_handle; }
+    [[nodiscard]] GLuint getGLHandle() const noexcept { return m_handle; }
 
-    [[nodiscard]] inline bool isValid() const noexcept { return m_handle != 0; }
+    [[nodiscard]] bool isValid() const noexcept { return m_handle != 0; }
 
     template<typename T>
     [[nodiscard]] std::span<T> pushData(const void* data, GLsizei size) const noexcept
@@ -50,25 +49,25 @@ public:
     }
 
     template<typename T>
-    inline void setData(const void* data, GLsizei size, GLintptr offsetBytes) const noexcept
+    void setData(const void* data, GLsizei size, GLintptr offsetBytes) const noexcept
     {
         glNamedBufferSubData(m_handle, offsetBytes, sizeof(T) * size, data);
     }
 
     template<typename T>
-    [[nodiscard]] inline T* map() const noexcept
+    [[nodiscard]] T* map() const noexcept
     {
         return static_cast<T*>(glMapNamedBuffer(m_handle, s_access));
     }
 
     template<typename T>
-    [[nodiscard]] inline T* mapRange(GLintptr offsetBytes, GLsizei sizeBytes) const noexcept
+    [[nodiscard]] T* mapRange(GLintptr offsetBytes, GLsizei sizeBytes) const noexcept
     {
         return static_cast<T*>(glMapNamedBufferRange(m_handle, offsetBytes, sizeBytes, s_access));
     }
 
     template<typename T>
-    [[nodiscard]] inline T* mapRangeBump(GLsizei sizeBytes) const noexcept
+    [[nodiscard]] T* mapRangeBump(GLsizei sizeBytes) const noexcept
     {
         T* ptr = static_cast<T*>(glMapNamedBufferRange(m_handle, m_writeOffsetBytes, sizeBytes, s_access));
         m_writeOffsetBytes += sizeBytes;
@@ -105,7 +104,7 @@ public:
     static constexpr GLbitfield s_access = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
 
 private:
-    [[nodiscard]] inline GLsizeiptr computeWriteOffsetIncrement(GLsizei sizeBytes) const noexcept
+    [[nodiscard]] GLsizeiptr computeWriteOffsetIncrement(GLsizei sizeBytes) const noexcept
     {
         return static_cast<GLsizeiptr>(std::ceil(static_cast<float>(sizeBytes) / m_alignment) * m_alignment);
     }
@@ -115,7 +114,7 @@ private:
     GLsizei m_wholeSizeBytes;
     GLint m_alignment;
     mutable GLsizeiptr m_writeOffsetBytes = 0;
-    common::ResourceManagement m_management = common::ResourceManagement::MANUAL;
+    ResourceManagement m_management = ResourceManagement::MANUAL;
 };
 
 //------------------------------------------------------------------------

@@ -42,7 +42,6 @@ public:
 
     const glm::mat3x4& getView() const noexcept { return m_matrices.VT; }
     const glm::mat4& getProjectivity() const noexcept { return m_matrices.P; }
-    virtual const Settings& getSettings() const noexcept = 0;
 
     void updateView() const noexcept
     {
@@ -51,9 +50,10 @@ public:
         );
     }
 
-    virtual void updateProjectivity() const noexcept = 0;
-
     void tick() const noexcept;
+
+    virtual const Settings& getSettings() const noexcept = 0;
+    virtual void updateProjectivity() const noexcept = 0;
 
     // According to the GLFW input reference.
     static void scrollCallback([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xoffset, double yoffset)

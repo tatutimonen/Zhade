@@ -1,15 +1,32 @@
 #pragma once
 
+#include "Handle.hpp"
+#include "ResourceManager.hpp"
 #include "ShaderProgram.hpp"
 
 #include <GL/glew.h>
+#include <glm/glm.hpp>
 
-#include <memory>
+#include <span>
+#include <vector>
 
 //------------------------------------------------------------------------
 
 namespace Zhade
 {
+
+//------------------------------------------------------------------------
+
+class Buffer;
+
+//------------------------------------------------------------------------
+
+struct Vertex
+{
+    glm::vec3 pos = glm::vec3();
+    glm::vec3 nrm = glm::vec3();
+    glm::vec2 tex = glm::vec2();
+};
 
 //------------------------------------------------------------------------
 // As per: https://www.khronos.org/opengl/wiki/Vertex_Rendering#Indirect_rendering.
@@ -26,6 +43,26 @@ struct MultiDrawElementsIndirectCommand
 //------------------------------------------------------------------------
 
 class Renderer;
+/*{
+public:
+    struct Specification
+    {
+        std::span<Handle<Buffer>> vertexBuffers;
+        Handle<Buffer> indexBuffer;
+        std::span<Handle<ShaderProgram>> programs;
+
+    };
+
+    Renderer(const Specification& spec, const ResourceManager* mngr);
+    ~Renderer();
+
+    void submit(, std::span<glm::mat3x4> transforms) const noexcept;
+
+private:
+    const ResourceManager* m_mngr;
+    GLuint m_vao;
+    std::vector<Handle<ShaderProgram>> m_programs;
+};*/
 
 // Some resources:
 // https://www.opengl.org/wiki/Vertex_Specification_Best_Practices

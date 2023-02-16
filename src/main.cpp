@@ -1,6 +1,7 @@
 #include "App.hpp"
 #include "Buffer.hpp"
 #include "PerspectiveCamera.hpp"
+#include "Renderer.hpp"
 #include "ResourceManager.hpp"
 #include "Shader.hpp"
 #include "ShaderProgram.hpp"
@@ -28,15 +29,6 @@
 
 //------------------------------------------------------------------------
 
-struct Vertex
-{
-    glm::vec3 pos = glm::vec3();
-    glm::vec3 nrm = glm::vec3();
-    glm::vec2 tex = glm::vec2();
-};
-
-//------------------------------------------------------------------------
-
 int main()
 {
     using namespace Zhade;
@@ -48,8 +40,8 @@ int main()
         ResourceManager mngr;
 
         const auto shaderProgram = ShaderProgram(
-            Shader<GL_VERTEX_SHADER>(common::SHADER_PATH + "debug.vert"),
-            Shader<GL_FRAGMENT_SHADER>(common::SHADER_PATH + "debug.frag")
+            Shader<GL_VERTEX_SHADER>(SHADER_PATH + "debug.vert"),
+            Shader<GL_FRAGMENT_SHADER>(SHADER_PATH + "debug.frag")
         );
 
         const auto camera = PerspectiveCamera(&mngr, &app);
@@ -78,6 +70,15 @@ int main()
         const GLuint triInds[] = {
             0, 1, 2
         };
+
+        // auto renderer = Renderer();
+        // renderer.submit(Model, instanceCount);
+        //
+        // Model {
+        //   vertices: span
+        //   indices: span
+        //   transformation: mat3x4
+        // }
 
         const auto vboHandle = mngr.createBuffer(GL_ARRAY_BUFFER, 1 << 16);
         const auto eboHandle = mngr.createBuffer(GL_ELEMENT_ARRAY_BUFFER, 1 << 16);
@@ -150,10 +151,10 @@ int main()
 
         const auto texStorage = TextureStorage();
 
-        const auto& cataViewOpt = texStorage.pushDataFromFile(common::TEXTURE_PATH + "cataphract.jpg");
-        const auto& berserkViewOpt = texStorage.pushDataFromFile(common::TEXTURE_PATH + "berserk.png");
-        const auto& longbowViewOpt = texStorage.pushDataFromFile(common::TEXTURE_PATH + "longbowman.png");
-        const auto& jagViewOpt = texStorage.pushDataFromFile(common::TEXTURE_PATH + "jaguarwarrior.png");
+        const auto& cataViewOpt = texStorage.pushDataFromFile(TEXTURE_PATH + "cataphract.jpg");
+        const auto& berserkViewOpt = texStorage.pushDataFromFile(TEXTURE_PATH + "berserk.png");
+        const auto& longbowViewOpt = texStorage.pushDataFromFile(TEXTURE_PATH + "longbowman.png");
+        const auto& jagViewOpt = texStorage.pushDataFromFile(TEXTURE_PATH + "jaguarwarrior.png");
 
         texStorage.bindToUnit(0);
         texStorage.generateMipmap();

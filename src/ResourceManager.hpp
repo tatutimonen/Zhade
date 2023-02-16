@@ -25,7 +25,7 @@ public:
     ResourceManager& operator=(ResourceManager&&) = default;
 
     template<typename T>
-    [[nodiscard]] inline const T* operator()(const Handle<T>& handle) const noexcept
+    [[nodiscard]] const T* operator()(const Handle<T>& handle) const noexcept
     {
         if constexpr (std::same_as<T, Buffer>)
             return getBuffer(handle);
@@ -34,10 +34,10 @@ public:
     }
 
     template<typename... Args>
-    requires std::constructible_from<Buffer, Args..., common::ResourceManagement>
+    requires std::constructible_from<Buffer, Args..., ResourceManagement>
     [[nodiscard]] Handle<Buffer> createBuffer(Args&& ...args)
     {
-        return m_buffers.allocate(std::forward<Args>(args)..., common::ResourceManagement::MANUAL);
+        return m_buffers.allocate(std::forward<Args>(args)..., ResourceManagement::MANUAL);
     }
 
     [[nodiscard]] const Buffer* getBuffer(const Handle<Buffer>& buffer) const noexcept;

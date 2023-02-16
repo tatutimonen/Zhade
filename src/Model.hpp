@@ -1,6 +1,10 @@
 #pragma once
 
-#include <string>
+#include <GL/glew.h>
+#include <glm/glm.hpp>
+
+#include <functional>
+#include <span>
 
 //------------------------------------------------------------------------
 
@@ -9,16 +13,18 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
-inline const std::string SHADER_PATH = "../src/shaders/";
-inline const std::string TEXTURE_PATH = "../texture/";
-inline const std::string ASSET_PATH = "../assets/";
+class Vertex;
 
 //------------------------------------------------------------------------
 
-enum class ResourceManagement
+class Model
 {
-    MANUAL = 0,
-    RAII = 1
+public:
+
+private:
+    std::span<Vertex> m_vertices;
+    std::span<GLuint> m_indices;
+    glm::mat3x4 m_transformation;
 };
 
 //------------------------------------------------------------------------

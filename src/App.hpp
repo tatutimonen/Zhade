@@ -42,7 +42,7 @@ public:
 
     void init() const noexcept;
 
-    inline void updateInternalTimes() const noexcept
+    void updateInternalTimes() const noexcept
     {
         float frameCurr = glfwGetTime();
         m_deltaTime = frameCurr - m_framePrev;

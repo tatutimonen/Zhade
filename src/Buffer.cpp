@@ -7,7 +7,7 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
-Buffer::Buffer(GLenum target, GLsizei sizeBytes, common::ResourceManagement management)
+Buffer::Buffer(GLenum target, GLsizei sizeBytes, ResourceManagement management)
     : m_target{target},
       m_wholeSizeBytes{sizeBytes},
       m_management{management},
@@ -21,7 +21,7 @@ Buffer::Buffer(GLenum target, GLsizei sizeBytes, common::ResourceManagement mana
 
 Buffer::~Buffer()
 {
-    if (m_management == common::ResourceManagement::MANUAL)
+    if (m_management == ResourceManagement::MANUAL)
         return;
 
     glDeleteBuffers(1, &m_handle);
@@ -31,7 +31,7 @@ Buffer::~Buffer()
 
 void Buffer::freeResources() const noexcept
 {
-    if (m_management == common::ResourceManagement::RAII) [[unlikely]]
+    if (m_management == ResourceManagement::RAII) [[unlikely]]
         return;
 
     glDeleteBuffers(1, &m_handle);
