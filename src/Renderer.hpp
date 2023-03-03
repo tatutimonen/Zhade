@@ -1,6 +1,8 @@
 #pragma once
 
+#include "Buffer.hpp"
 #include "Handle.hpp"
+#include "Model.hpp"
 #include "ResourceManager.hpp"
 #include "ShaderProgram.hpp"
 
@@ -17,33 +19,8 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
-class Buffer;
-
-//------------------------------------------------------------------------
-
-struct Vertex
+class Renderer
 {
-    glm::vec3 pos = glm::vec3();
-    glm::vec3 nrm = glm::vec3();
-    glm::vec2 tex = glm::vec2();
-};
-
-//------------------------------------------------------------------------
-// As per: https://www.khronos.org/opengl/wiki/Vertex_Rendering#Indirect_rendering.
-
-struct MultiDrawElementsIndirectCommand
-{
-    GLuint vertexCount;
-    GLuint instanceCount;
-    GLuint firstIndex;
-    GLuint baseVertex;
-    GLuint baseInstance;
-};
-
-//------------------------------------------------------------------------
-
-class Renderer;
-/*{
 public:
     struct Specification
     {
@@ -53,16 +30,27 @@ public:
 
     };
 
-    Renderer(const Specification& spec, const ResourceManager* mngr);
+    struct Job
+    {
+        Handle<Model> model;
+        GLuint instanceCount;
+        std::span<glm::mat3x4> transformations;
+    };
+
+    Renderer(ResourceManager* mngr, const Specification& spec);
     ~Renderer();
 
-    void submit(, std::span<glm::mat3x4> transforms) const noexcept;
+    void render() const noexcept;
+    void submit(const Job& job) const noexcept;
 
 private:
-    const ResourceManager* m_mngr;
-    GLuint m_vao;
+    ResourceManager* m_mngr;
     std::vector<Handle<ShaderProgram>> m_programs;
-};*/
+    GLuint m_vao;
+    mutable Handle<Buffer> m_drawIndirectBuffer;
+    mutable Handle<Buffer> m_transformsBuffer;
+    mutable std::vector<Job> m_jobs;
+};
 
 // Some resources:
 // https://www.opengl.org/wiki/Vertex_Specification_Best_Practices

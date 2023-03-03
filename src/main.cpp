@@ -1,7 +1,7 @@
 #include "App.hpp"
 #include "Buffer.hpp"
+#include "Model.hpp"
 #include "PerspectiveCamera.hpp"
-#include "Renderer.hpp"
 #include "ResourceManager.hpp"
 #include "Shader.hpp"
 #include "ShaderProgram.hpp"
@@ -85,8 +85,8 @@ int main()
 
         GLuint vao;
         glCreateVertexArrays(1, &vao);
-        glVertexArrayVertexBuffer(vao, 0, mngr(vboHandle)->getGLHandle(), 0, sizeof(Vertex));
-        glVertexArrayElementBuffer(vao, mngr(eboHandle)->getGLHandle());
+        glVertexArrayVertexBuffer(vao, 0, mngr.get(vboHandle)->getGLHandle(), 0, sizeof(Vertex));
+        glVertexArrayElementBuffer(vao, mngr.get(eboHandle)->getGLHandle());
 
         glEnableVertexArrayAttrib(vao, 0);
         glEnableVertexArrayAttrib(vao, 1);
@@ -100,10 +100,10 @@ int main()
         glVertexArrayAttribBinding(vao, 1, 0);
         glVertexArrayAttribBinding(vao, 2, 0);
 
-        auto quadVtxSpan = mngr(vboHandle)->pushData<Vertex>(quadVerts, 4);
-        auto quadIdxSpan = mngr(eboHandle)->pushData<GLuint>(quadInds, 6);
-        auto triVtxSpan = mngr(vboHandle)->pushData<Vertex>(triVerts, 3);
-        auto triIdxSpan = mngr(eboHandle)->pushData<GLuint>(triInds, 3);
+        auto quadVtxSpan = mngr.get(vboHandle)->pushData<Vertex>(quadVerts, 4);
+        auto quadIdxSpan = mngr.get(eboHandle)->pushData<GLuint>(quadInds, 6);
+        auto triVtxSpan = mngr.get(vboHandle)->pushData<Vertex>(triVerts, 3);
+        auto triIdxSpan = mngr.get(eboHandle)->pushData<GLuint>(triInds, 3);
 
         // Create render commands and gather model matrices.
 
@@ -137,14 +137,14 @@ int main()
         // Upload the model matrices into an SSBO.
 
         const auto ssboHandle = mngr.createBuffer(GL_SHADER_STORAGE_BUFFER, 1 << 16);
-        auto ssbo = mngr.getBuffer(ssboHandle);
+        auto ssbo = mngr.get(ssboHandle);
         auto x = ssbo->pushData<glm::mat3x4>(modelMatrices.data(), modelMatrices.size());
         ssbo->bindBase(constants::MODEL_BINDING);
 
         // Setup the indirect draw buffer and the draw IDs.
 
         const auto diboHandle = mngr.createBuffer(GL_DRAW_INDIRECT_BUFFER, 1 << 10);
-        const auto dibo = mngr.getBuffer(diboHandle);
+        const auto dibo = mngr.get(diboHandle);
         auto y = dibo->pushData<MultiDrawElementsIndirectCommand>(cmds.data(), cmds.size());
 
         // Setup textures for the quads.

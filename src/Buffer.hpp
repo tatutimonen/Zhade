@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Renderer.hpp"
+#include "common.hpp"
 
 #include <GL/glew.h>
+#include <glm/glm.hpp>
 #include <robin_hood.h>
 
 #include <cassert>
@@ -36,15 +37,21 @@ public:
 
     [[nodiscard]] bool isValid() const noexcept { return m_handle != 0; }
 
+    [[nodiscard]] GLsizei getWholeSizeBytes() const noexcept { return m_wholeSizeBytes; }
+
+    template<typename T>
+    [[nodiscard]] bool fits(GLsizei size) const noexcept
+    {
+        return m_writeOffsetBytes + sizeof(T)*size <= m_wholeSizeBytes;
+    }
+
     template<typename T>
     [[nodiscard]] std::span<T> pushData(const void* data, GLsizei size) const noexcept
     {
         setData<T>(data, size, m_writeOffsetBytes);
         const GLsizei sizeBytes = sizeof(T) * size;
-        T* dataPtr = mapRange<T>(m_writeOffsetBytes, sizeBytes);
-        const auto span = std::span(dataPtr, size);
+        const auto span = std::span(mapRangeBump<T>(sizeBytes), size);
         unmap();
-        m_writeOffsetBytes += computeWriteOffsetIncrement(sizeBytes);
         return span;
     }
 
@@ -69,8 +76,8 @@ public:
     template<typename T>
     [[nodiscard]] T* mapRangeBump(GLsizei sizeBytes) const noexcept
     {
-        T* ptr = static_cast<T*>(glMapNamedBufferRange(m_handle, m_writeOffsetBytes, sizeBytes, s_access));
-        m_writeOffsetBytes += sizeBytes;
+        T* ptr = mapRange<T>(m_writeOffsetBytes, sizeBytes);
+        m_writeOffsetBytes += computeWriteOffsetIncrement(sizeBytes);
         return ptr;
     }
 
@@ -79,7 +86,7 @@ public:
         auto table = robin_hood::unordered_map<GLenum, GLint>{
             { GL_ARRAY_BUFFER, 1 },
             { GL_ELEMENT_ARRAY_BUFFER, 1 },
-            { GL_DRAW_INDIRECT_BUFFER, static_cast<GLint>(sizeof(Zhade::MultiDrawElementsIndirectCommand)) }
+            { GL_DRAW_INDIRECT_BUFFER, static_cast<GLint>(sizeof(MultiDrawElementsIndirectCommand)) }
         };
 
         GLint uniformBufferAlignment;
@@ -96,8 +103,8 @@ public:
     void bind() const noexcept;
     void bindBase(GLuint bindingIndex) const noexcept;
     void bindRange(GLuint bindingIndex, GLintptr offsetBytes, GLsizeiptr sizeBytes) const noexcept;
-    [[nodiscard]] bool fits(GLsizei sizeBytes) const noexcept;
     void unmap() const noexcept;
+    void zero() const noexcept;
 
     static inline const robin_hood::unordered_map<GLenum, GLint> s_alignmentTable = makeAlignmentTable();
 

@@ -41,6 +41,9 @@ public:
 
     StbImageResource& operator=(StbImageResource&& other)
     {
+        if (this == &other) [[unlikely]]
+            return *this;
+
         m_data = other.m_data;
         other.m_data = nullptr;
         return *this;

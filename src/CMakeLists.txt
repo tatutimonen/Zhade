@@ -6,8 +6,10 @@ set(src_files
     Buffer.cpp
     Camera.cpp
     Handle.cpp
+    Model.cpp
     ObjectPool.cpp
     PerspectiveCamera.cpp
+    Renderer.cpp
     ResourceManager.cpp
     Shader.cpp
     ShaderProgram.cpp

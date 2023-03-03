@@ -1,5 +1,7 @@
 #include "Buffer.hpp"
 
+#include <cstring>
+
 //------------------------------------------------------------------------
 
 namespace Zhade
@@ -62,9 +64,10 @@ void Buffer::bindRange(GLuint bindingIndex, GLintptr offsetBytes, GLsizeiptr siz
 
 //------------------------------------------------------------------------
 
-bool Buffer::fits(GLsizei sizeBytes) const noexcept
+void Buffer::zero() const noexcept
 {
-    return m_writeOffsetBytes + sizeBytes <= m_wholeSizeBytes;
+    std::memset(map<GLuint>(), 0, getWholeSizeBytes());
+    unmap();
 }
 
 //------------------------------------------------------------------------

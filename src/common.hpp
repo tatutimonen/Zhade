@@ -1,5 +1,8 @@
 #pragma once
 
+#include <GL/glew.h>
+#include <glm/glm.hpp>
+
 #include <string>
 
 //------------------------------------------------------------------------
@@ -19,6 +22,27 @@ enum class ResourceManagement
 {
     MANUAL = 0,
     RAII = 1
+};
+
+//------------------------------------------------------------------------
+
+struct Vertex
+{
+    glm::vec3 pos = glm::vec3();
+    glm::vec3 nrm = glm::vec3();
+    glm::vec2 tex = glm::vec2();
+};
+
+//------------------------------------------------------------------------
+// As per: https://www.khronos.org/opengl/wiki/Vertex_Rendering#Indirect_rendering.
+
+struct MultiDrawElementsIndirectCommand
+{
+    GLuint vertexCount;
+    GLuint instanceCount;
+    GLuint firstIndex;
+    GLuint baseVertex;
+    GLuint baseInstance;
 };
 
 //------------------------------------------------------------------------

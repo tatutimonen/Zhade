@@ -1,4 +1,4 @@
-#include "ResourceManager.hpp"
+#include "Model.hpp"
 
 //------------------------------------------------------------------------
 
@@ -7,11 +7,10 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
-ResourceManager::~ResourceManager()
-{
-    for (const auto& buffer : m_buffers.m_pool)
-        buffer.freeResources();
-}
+Model::Model(std::span<Vertex> vertices, std::span<GLuint> indices)
+    : m_vertices{vertices},
+      m_indices{indices}
+{}
 
 //------------------------------------------------------------------------
 

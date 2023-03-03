@@ -37,7 +37,7 @@ public:
 
     virtual ~Camera()
     {
-        m_mngr->deleteBuffer(m_uniformBuffer);
+        m_mngr->destroy(m_uniformBuffer);
     }
 
     const glm::mat3x4& getView() const noexcept { return m_matrices.VT; }
