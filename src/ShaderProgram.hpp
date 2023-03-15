@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Shader.hpp"
+#include "common.hpp"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -35,8 +36,11 @@ concept ValidGLShaderDataType = (
 class ShaderProgram
 {
 public:
-    ShaderProgram(const Shader<GL_VERTEX_SHADER>& vertexShader, const Shader<GL_FRAGMENT_SHADER>& fragmentShader,
-        const std::optional<Shader<GL_GEOMETRY_SHADER>>& geometryShader = std::nullopt);
+    ShaderProgram(
+        const Shader<GL_VERTEX_SHADER>& vertexShader = Shader<GL_VERTEX_SHADER>(SHADER_PATH + "debug.vert"),
+        const Shader<GL_FRAGMENT_SHADER>& fragmentShader = Shader<GL_FRAGMENT_SHADER>(SHADER_PATH + "debug.frag"),
+        const std::optional<Shader<GL_GEOMETRY_SHADER>>& geometryShader = std::nullopt
+    );
     ~ShaderProgram();
 
     ShaderProgram(const ShaderProgram&) = delete;

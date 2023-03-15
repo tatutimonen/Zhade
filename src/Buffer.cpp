@@ -1,6 +1,7 @@
 #include "Buffer.hpp"
 
 #include <cstring>
+#include <iostream>
 
 //------------------------------------------------------------------------
 
@@ -23,9 +24,7 @@ Buffer::Buffer(GLenum target, GLsizei sizeBytes, ResourceManagement management)
 
 Buffer::~Buffer()
 {
-    if (m_management == ResourceManagement::MANUAL)
-        return;
-
+    if (m_management == ResourceManagement::MANUAL) return;
     glDeleteBuffers(1, &m_handle);
 }
 
@@ -33,9 +32,7 @@ Buffer::~Buffer()
 
 void Buffer::freeResources() const noexcept
 {
-    if (m_management == ResourceManagement::RAII) [[unlikely]]
-        return;
-
+    if (m_management == ResourceManagement::RAII) [[unlikely]] return;
     glDeleteBuffers(1, &m_handle);
 }
 
@@ -50,7 +47,11 @@ void Buffer::bind() const noexcept
 
 void Buffer::bindBase(GLuint bindingIndex) const noexcept
 {
-    assert(m_target == GL_UNIFORM_BUFFER || m_target == GL_SHADER_STORAGE_BUFFER);
+    if (m_target != GL_UNIFORM_BUFFER && m_target != GL_SHADER_STORAGE_BUFFER) [[unlikely]]
+    {
+        std::cerr << "Bind base of non-UBO or non-SSBO\n";
+        return;
+    }
     glBindBufferBase(m_target, bindingIndex, m_handle);
 }
 
@@ -58,7 +59,11 @@ void Buffer::bindBase(GLuint bindingIndex) const noexcept
 
 void Buffer::bindRange(GLuint bindingIndex, GLintptr offsetBytes, GLsizeiptr sizeBytes) const noexcept
 {
-    assert(m_target == GL_UNIFORM_BUFFER || m_target == GL_SHADER_STORAGE_BUFFER);
+    if (m_target != GL_UNIFORM_BUFFER && m_target != GL_SHADER_STORAGE_BUFFER) [[unlikely]]
+    {
+        std::cerr << "Bind range of non-UBO or non-SSBO\n";
+        return;
+    }
     glBindBufferRange(m_target, bindingIndex, m_handle, offsetBytes, sizeBytes);
 }
 

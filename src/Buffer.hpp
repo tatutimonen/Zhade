@@ -6,9 +6,7 @@
 #include <glm/glm.hpp>
 #include <robin_hood.h>
 
-#include <cassert>
 #include <cmath>
-#include <format>
 #include <span>
 
 //------------------------------------------------------------------------
@@ -34,10 +32,9 @@ public:
     Buffer& operator=(Buffer&&) = default;
 
     [[nodiscard]] GLuint getGLHandle() const noexcept { return m_handle; }
+    [[nodiscard]] GLsizei getWholeSizeBytes() const noexcept { return m_wholeSizeBytes; }
 
     [[nodiscard]] bool isValid() const noexcept { return m_handle != 0; }
-
-    [[nodiscard]] GLsizei getWholeSizeBytes() const noexcept { return m_wholeSizeBytes; }
 
     template<typename T>
     [[nodiscard]] bool fits(GLsizei size) const noexcept
@@ -64,13 +61,13 @@ public:
     template<typename T>
     [[nodiscard]] T* map() const noexcept
     {
-        return static_cast<T*>(glMapNamedBuffer(m_handle, s_access));
+        return static_cast<T*>(glMapNamedBuffer(m_handle, GL_READ_WRITE));
     }
 
     template<typename T>
     [[nodiscard]] T* mapRange(GLintptr offsetBytes, GLsizei sizeBytes) const noexcept
     {
-        return static_cast<T*>(glMapNamedBufferRange(m_handle, offsetBytes, sizeBytes, s_access));
+        return static_cast<T*>(glMapNamedBufferRange(m_handle, offsetBytes, sizeBytes, GL_READ_WRITE));
     }
 
     template<typename T>
@@ -116,7 +113,7 @@ private:
         return static_cast<GLsizeiptr>(std::ceil(static_cast<float>(sizeBytes) / m_alignment) * m_alignment);
     }
 
-    mutable GLuint m_handle;
+    GLuint m_handle;
     GLenum m_target;
     GLsizei m_wholeSizeBytes;
     GLint m_alignment;

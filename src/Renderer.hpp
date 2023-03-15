@@ -24,13 +24,12 @@ class Renderer
 public:
     struct Specification
     {
-        std::span<Handle<Buffer>> vertexBuffers;
+        Handle<Buffer> vertexBuffer;
         Handle<Buffer> indexBuffer;
-        std::span<Handle<ShaderProgram>> programs;
-
+        ShaderProgram* program;
     };
 
-    struct Job
+    struct Task
     {
         Handle<Model> model;
         GLuint instanceCount;
@@ -41,15 +40,15 @@ public:
     ~Renderer();
 
     void render() const noexcept;
-    void submit(const Job& job) const noexcept;
+    void submit(const Task& task) const noexcept;
 
 private:
     ResourceManager* m_mngr;
-    std::vector<Handle<ShaderProgram>> m_programs;
+    ShaderProgram* m_program;
     GLuint m_vao;
     mutable Handle<Buffer> m_drawIndirectBuffer;
     mutable Handle<Buffer> m_transformsBuffer;
-    mutable std::vector<Job> m_jobs;
+    mutable std::vector<Task> m_tasks;
 };
 
 // Some resources:
