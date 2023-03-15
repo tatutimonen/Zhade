@@ -43,7 +43,7 @@ public:
     }
 
     template<typename T>
-    [[nodiscard]] std::span<T> pushData(const void* data, GLsizei size) const noexcept
+    std::span<T> pushData(const T* data, GLsizei size) const noexcept
     {
         setData<T>(data, size, m_writeOffsetBytes);
         const GLsizei sizeBytes = sizeof(T) * size;
@@ -53,7 +53,7 @@ public:
     }
 
     template<typename T>
-    void setData(const void* data, GLsizei size, GLintptr offsetBytes) const noexcept
+    void setData(const T* data, GLsizei size, GLintptr offsetBytes) const noexcept
     {
         glNamedBufferSubData(m_handle, offsetBytes, sizeof(T) * size, data);
     }
@@ -67,7 +67,7 @@ public:
     template<typename T>
     [[nodiscard]] T* mapRange(GLintptr offsetBytes, GLsizei sizeBytes) const noexcept
     {
-        return static_cast<T*>(glMapNamedBufferRange(m_handle, offsetBytes, sizeBytes, GL_READ_WRITE));
+        return static_cast<T*>(glMapNamedBufferRange(m_handle, offsetBytes, sizeBytes, s_access));
     }
 
     template<typename T>

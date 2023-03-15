@@ -1,6 +1,7 @@
 #include "Renderer.hpp"
 
 #include <iostream>
+#include <format>
 #include <ranges>
 #include <vector>
 
@@ -13,9 +14,15 @@ namespace Zhade
 
 Renderer::Renderer(ResourceManager* mngr, const Specification& spec)
     : m_mngr{mngr},
-      m_program{std::move(spec.program)}
+      m_vertexBuffer{spec.vertexBuffer},
+      m_indexBuffer{spec.indexBuffer},
+      m_program{spec.program}
 {
     glCreateVertexArrays(1, &m_vao);
+
+    const GLuint vboHandle = m_mngr->get(m_vertexBuffer)->getGLHandle();
+    glVertexArrayVertexBuffer(m_vao, 0, vboHandle, 0, sizeof(Vertex));
+    glVertexArrayElementBuffer(m_vao, m_mngr->get(m_indexBuffer)->getGLHandle());
 
     glEnableVertexArrayAttrib(m_vao, 0);
     glEnableVertexArrayAttrib(m_vao, 1);
@@ -25,13 +32,9 @@ Renderer::Renderer(ResourceManager* mngr, const Specification& spec)
     glVertexArrayAttribFormat(m_vao, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, nrm));
     glVertexArrayAttribFormat(m_vao, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, tex));
 
-    const GLuint vboHandle = m_mngr->get(spec.vertexBuffer)->getGLHandle();
-    glVertexArrayVertexBuffer(m_vao, 0, vboHandle, 0, sizeof(Vertex));
     glVertexArrayAttribBinding(m_vao, 0, 0);
     glVertexArrayAttribBinding(m_vao, 1, 0);
     glVertexArrayAttribBinding(m_vao, 2, 0);
-
-    glVertexArrayElementBuffer(m_vao, m_mngr->get(spec.indexBuffer)->getGLHandle());
 
     m_drawIndirectBuffer = m_mngr->createBuffer(GL_DRAW_INDIRECT_BUFFER, 1 << 10);
     m_transformsBuffer = m_mngr->createBuffer(GL_SHADER_STORAGE_BUFFER, 1 << 16);
@@ -64,6 +67,11 @@ void Renderer::submit(const Task& task) const noexcept
 
 void Renderer::render() const noexcept
 {
+    const auto vbo = m_mngr->get(m_vertexBuffer);
+    const auto ebo = m_mngr->get(m_indexBuffer);
+    vbo->zero();
+    ebo->zero();
+
     // TODO: Ensure these buffers are large enough.
     const auto drawIndirectBuffer = m_mngr->get(m_drawIndirectBuffer);
     const auto transformsBuffer = m_mngr->get(m_transformsBuffer);
@@ -81,6 +89,9 @@ void Renderer::render() const noexcept
     for (const auto& task : m_tasks)
     {
         const Model* model = m_mngr->get(task.model);
+
+        vbo->pushData(model->getVertices().data(), model->getNumVertices());
+        ebo->pushData(model->getIndices().data(), model->getNumIndices());
 
         cmds.push_back({
             .vertexCount = static_cast<GLuint>(model->getNumIndices()),

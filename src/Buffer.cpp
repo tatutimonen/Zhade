@@ -73,6 +73,7 @@ void Buffer::zero() const noexcept
 {
     std::memset(map<GLuint>(), 0, getWholeSizeBytes());
     unmap();
+    m_writeOffsetBytes = 0;
 }
 
 //------------------------------------------------------------------------

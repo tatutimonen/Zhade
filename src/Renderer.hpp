@@ -46,6 +46,8 @@ private:
     ResourceManager* m_mngr;
     ShaderProgram* m_program;
     GLuint m_vao;
+    mutable Handle<Buffer> m_vertexBuffer;
+    mutable Handle<Buffer> m_indexBuffer;
     mutable Handle<Buffer> m_drawIndirectBuffer;
     mutable Handle<Buffer> m_transformsBuffer;
     mutable std::vector<Task> m_tasks;

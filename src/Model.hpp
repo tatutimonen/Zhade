@@ -20,6 +20,8 @@ public:
     Model() = default;
     Model(std::span<Vertex> vertices, std::span<GLuint> indices);
 
+    [[nodiscard]] std::span<Vertex> getVertices() const noexcept { return m_vertices; }
+    [[nodiscard]] std::span<GLuint> getIndices() const noexcept { return m_indices; }
     [[nodiscard]] size_t getNumVertices() const noexcept { return m_vertices.size(); }
     [[nodiscard]] size_t getNumIndices() const noexcept { return m_indices.size(); }
 
