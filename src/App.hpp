@@ -79,7 +79,7 @@ public:
         GLenum severity, [[maybe_unused]] GLsizei length, const char* message, [[maybe_unused]] const void* userParam) noexcept
     {
         if (severity == GL_DEBUG_SEVERITY_MEDIUM || severity == GL_DEBUG_SEVERITY_HIGH) [[unlikely]]
-            std::cerr << message << std::endl;
+            std::cerr << message << "\n";
     }
 
     static constexpr std::string_view s_title = "Zhade - ESC to quit";

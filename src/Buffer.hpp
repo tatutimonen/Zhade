@@ -1,13 +1,12 @@
 #pragma once
 
-#include "Renderer.hpp"
+#include "common.hpp"
 
 #include <GL/glew.h>
+#include <glm/glm.hpp>
 #include <robin_hood.h>
 
-#include <cassert>
 #include <cmath>
-#include <format>
 #include <span>
 
 //------------------------------------------------------------------------
@@ -33,23 +32,28 @@ public:
     Buffer& operator=(Buffer&&) = default;
 
     [[nodiscard]] GLuint getGLHandle() const noexcept { return m_handle; }
+    [[nodiscard]] GLsizei getWholeSizeBytes() const noexcept { return m_wholeSizeBytes; }
 
     [[nodiscard]] bool isValid() const noexcept { return m_handle != 0; }
 
     template<typename T>
-    [[nodiscard]] std::span<T> pushData(const void* data, GLsizei size) const noexcept
+    [[nodiscard]] bool fits(GLsizei size) const noexcept
+    {
+        return m_writeOffsetBytes + sizeof(T)*size <= m_wholeSizeBytes;
+    }
+
+    template<typename T>
+    std::span<T> pushData(const T* data, GLsizei size) const noexcept
     {
         setData<T>(data, size, m_writeOffsetBytes);
         const GLsizei sizeBytes = sizeof(T) * size;
-        T* dataPtr = mapRange<T>(m_writeOffsetBytes, sizeBytes);
-        const auto span = std::span(dataPtr, size);
+        const auto span = std::span(mapRangeBump<T>(sizeBytes), size);
         unmap();
-        m_writeOffsetBytes += computeWriteOffsetIncrement(sizeBytes);
         return span;
     }
 
     template<typename T>
-    void setData(const void* data, GLsizei size, GLintptr offsetBytes) const noexcept
+    void setData(const T* data, GLsizei size, GLintptr offsetBytes) const noexcept
     {
         glNamedBufferSubData(m_handle, offsetBytes, sizeof(T) * size, data);
     }
@@ -57,7 +61,7 @@ public:
     template<typename T>
     [[nodiscard]] T* map() const noexcept
     {
-        return static_cast<T*>(glMapNamedBuffer(m_handle, s_access));
+        return static_cast<T*>(glMapNamedBuffer(m_handle, GL_READ_WRITE));
     }
 
     template<typename T>
@@ -69,8 +73,8 @@ public:
     template<typename T>
     [[nodiscard]] T* mapRangeBump(GLsizei sizeBytes) const noexcept
     {
-        T* ptr = static_cast<T*>(glMapNamedBufferRange(m_handle, m_writeOffsetBytes, sizeBytes, s_access));
-        m_writeOffsetBytes += sizeBytes;
+        T* ptr = mapRange<T>(m_writeOffsetBytes, sizeBytes);
+        m_writeOffsetBytes += computeWriteOffsetIncrement(sizeBytes);
         return ptr;
     }
 
@@ -79,7 +83,7 @@ public:
         auto table = robin_hood::unordered_map<GLenum, GLint>{
             { GL_ARRAY_BUFFER, 1 },
             { GL_ELEMENT_ARRAY_BUFFER, 1 },
-            { GL_DRAW_INDIRECT_BUFFER, static_cast<GLint>(sizeof(Zhade::MultiDrawElementsIndirectCommand)) }
+            { GL_DRAW_INDIRECT_BUFFER, static_cast<GLint>(sizeof(MultiDrawElementsIndirectCommand)) }
         };
 
         GLint uniformBufferAlignment;
@@ -96,8 +100,8 @@ public:
     void bind() const noexcept;
     void bindBase(GLuint bindingIndex) const noexcept;
     void bindRange(GLuint bindingIndex, GLintptr offsetBytes, GLsizeiptr sizeBytes) const noexcept;
-    [[nodiscard]] bool fits(GLsizei sizeBytes) const noexcept;
     void unmap() const noexcept;
+    void zero() const noexcept;
 
     static inline const robin_hood::unordered_map<GLenum, GLint> s_alignmentTable = makeAlignmentTable();
 
@@ -109,7 +113,7 @@ private:
         return static_cast<GLsizeiptr>(std::ceil(static_cast<float>(sizeBytes) / m_alignment) * m_alignment);
     }
 
-    mutable GLuint m_handle;
+    GLuint m_handle;
     GLenum m_target;
     GLsizei m_wholeSizeBytes;
     GLint m_alignment;
