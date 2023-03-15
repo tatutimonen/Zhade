@@ -1,6 +1,6 @@
 #include "Renderer.hpp"
+#include "constants.hpp"
 
-#include <iostream>
 #include <format>
 #include <ranges>
 #include <vector>
@@ -20,8 +20,7 @@ Renderer::Renderer(ResourceManager* mngr, const Specification& spec)
 {
     glCreateVertexArrays(1, &m_vao);
 
-    const GLuint vboHandle = m_mngr->get(m_vertexBuffer)->getGLHandle();
-    glVertexArrayVertexBuffer(m_vao, 0, vboHandle, 0, sizeof(Vertex));
+    glVertexArrayVertexBuffer(m_vao, 0, m_mngr->get(m_vertexBuffer)->getGLHandle(), 0, sizeof(Vertex));
     glVertexArrayElementBuffer(m_vao, m_mngr->get(m_indexBuffer)->getGLHandle());
 
     glEnableVertexArrayAttrib(m_vao, 0);
@@ -41,6 +40,7 @@ Renderer::Renderer(ResourceManager* mngr, const Specification& spec)
 
     glBindVertexArray(m_vao);
     m_mngr->get(m_drawIndirectBuffer)->bind();
+    m_mngr->get(m_transformsBuffer)->bindBase(constants::MODEL_BINDING);
     m_program->use();
 }
 

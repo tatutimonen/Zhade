@@ -71,7 +71,7 @@ void Buffer::bindRange(GLuint bindingIndex, GLintptr offsetBytes, GLsizeiptr siz
 
 void Buffer::zero() const noexcept
 {
-    std::memset(map<GLuint>(), 0, getWholeSizeBytes());
+    std::memset(map<GLuint>(), 0, m_writeOffsetBytes);
     unmap();
     m_writeOffsetBytes = 0;
 }
