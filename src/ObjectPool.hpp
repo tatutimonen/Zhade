@@ -77,9 +77,7 @@ public:
     [[nodiscard]] T* get(const Handle<T>& handle) const noexcept
     {
         const uint32_t getIdx = handle.m_index;
-        if (handle.m_generation < m_generations.at(getIdx))
-            return nullptr;
-
+        if (handle.m_generation < m_generations.at(getIdx)) return nullptr;
         return &m_pool.at(handle.m_index);
     }
 
