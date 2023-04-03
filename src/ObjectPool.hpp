@@ -99,7 +99,7 @@ private:
 
         m_pool.resize(m_size);
         m_generations.resize(m_size);
-        m_freeStack.m_underlying.reserve(m_size);
+        m_freeStack.reserve(m_size);
 
         for (size_t idx : std::views::iota(size_prev, m_size) | std::views::reverse)
         {

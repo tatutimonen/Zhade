@@ -2,8 +2,10 @@
 
 #include "common.hpp"
 
-#include <GL/glew.h>
 #include <glm/glm.hpp>
+extern "C" {
+#include <GL/glew.h>
+}
 
 #include <span>
 

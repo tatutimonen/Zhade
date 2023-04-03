@@ -1,6 +1,8 @@
 #pragma once
 
+extern "C" {
 #include <GL/glew.h>
+}
 
 #include <memory>
 

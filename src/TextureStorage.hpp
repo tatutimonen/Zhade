@@ -4,8 +4,10 @@
 #include "TextureView.hpp"
 #include "util.hpp"
 
-#include <GL/glew.h>
 #include <glm/glm.hpp>
+extern "C" {
+#include <GL/glew.h>
+}
 
 #include <optional>
 #include <string_view>

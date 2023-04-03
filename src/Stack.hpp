@@ -17,7 +17,7 @@ template<typename T>
 class Stack
 {
 public:
-    Stack(size_t reserveSize = 0) { m_underlying.reserve(reserveSize); }
+    Stack(size_t capacity = 0) { if (capacity > 0) [[likely]] reserve(capacity); }
     ~Stack() = default;
 
     Stack(const Stack&) = default;
@@ -29,25 +29,19 @@ public:
 
     [[nodiscard]] T& top()
     {
-        if (m_size == 0) [[unlikely]]
-            throw std::out_of_range("Top of an empty Stack");
-
-        return m_underlying.at(m_size - 1);
+        if (m_size == 0) [[unlikely]] throw std::out_of_range("Top of an empty Stack");
+        return at(m_size - 1);
     }
 
     [[nodiscard]] const T& top() const
     {
-        if (m_size == 0) [[unlikely]]
-            throw std::out_of_range("Top of an empty Stack");
-
-        return m_underlying.at(m_size - 1);
+        if (m_size == 0) [[unlikely]] throw std::out_of_range("Top of an empty Stack");
+        return at(m_size - 1);
     }
 
     void pop()
     {
-        if (m_size == 0) [[unlikely]]
-            throw std::out_of_range("Pop on an empty Stack");
-
+        if (m_size == 0) [[unlikely]] throw std::out_of_range("Pop on an empty Stack");
         --m_size;
     }
 
@@ -56,8 +50,8 @@ public:
     {
         if (m_size == m_underlying.size()) [[unlikely]]
             m_underlying.push_back(item);
-        else
-            m_underlying[m_size] = item;
+        else [[likely]]
+            at(m_size) = item;
 
         ++m_size;
     }
@@ -67,9 +61,9 @@ public:
     {
         if (m_size == m_underlying.size()) [[unlikely]]
             m_underlying.push_back(item);
-        else
-            m_underlying[m_size] = item;
-        
+        else [[likely]]
+            this[m_size] = item;
+
         ++m_size;
     }
 
@@ -79,10 +73,15 @@ public:
     {
         if (m_size == m_underlying.size()) [[unlikely]]
             m_underlying.emplace_back(std::forward<Args>(args)...);
-        else
-            std::construct_at(&m_underlying.at(m_size), std::forward<Args>(args)...);
+        else [[likely]]
+            std::construct_at(&at(m_size), std::forward<Args>(args)...);
 
         ++m_size;
+    }
+
+    void reserve(size_t capacity) noexcept
+    {
+        m_underlying.reserve(capacity);
     }
 
     [[nodiscard]] T& at(size_t pos)
@@ -103,9 +102,6 @@ public:
 private:
     std::vector<T> m_underlying;
     size_t m_size = 0;
-
-    template <typename U>
-    friend class ObjectPool;
 };
 
 //------------------------------------------------------------------------

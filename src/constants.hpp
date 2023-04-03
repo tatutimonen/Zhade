@@ -1,7 +1,9 @@
 #pragma once
 
-#include <GL/glew.h>
 #include <assimp/postprocess.h>
+extern "C" {
+#include <GL/glew.h>
+}
 
 #include <cstdint>
 

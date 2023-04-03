@@ -3,9 +3,11 @@
 #include "Shader.hpp"
 #include "common.hpp"
 
-#include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <robin_hood.h>
+extern "C" {
+#include <GL/glew.h>
+}
 
 #include <map>
 #include <optional>

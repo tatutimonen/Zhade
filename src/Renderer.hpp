@@ -6,8 +6,10 @@
 #include "ResourceManager.hpp"
 #include "ShaderProgram.hpp"
 
-#include <GL/glew.h>
 #include <glm/glm.hpp>
+extern "C" {
+#include <GL/glew.h>
+}
 
 #include <span>
 #include <vector>
@@ -51,6 +53,9 @@ private:
     mutable Handle<Buffer> m_drawIndirectBuffer;
     mutable Handle<Buffer> m_transformsBuffer;
     mutable std::vector<Task> m_tasks;
+
+    MultiDrawElementsIndirectCommand* cmdData;
+    glm::mat3x4* transformsData;
 };
 
 // Some resources:

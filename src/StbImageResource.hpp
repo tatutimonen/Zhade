@@ -1,12 +1,12 @@
 #pragma once
 
-#include <cstdint>
-#include <format>
-#include <string_view>
-
 extern "C" {
 #include <stb_image.h>
 }
+
+#include <cstdint>
+#include <format>
+#include <string_view>
 
 //------------------------------------------------------------------------
 
