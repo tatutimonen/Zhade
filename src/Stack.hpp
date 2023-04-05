@@ -29,19 +29,22 @@ public:
 
     [[nodiscard]] T& top()
     {
-        if (m_size == 0) [[unlikely]] throw std::out_of_range("Top of an empty Stack");
+        if (m_size == 0) [[unlikely]]
+            throw std::out_of_range("Top of an empty Stack");
         return at(m_size - 1);
     }
 
     [[nodiscard]] const T& top() const
     {
-        if (m_size == 0) [[unlikely]] throw std::out_of_range("Top of an empty Stack");
+        if (m_size == 0) [[unlikely]]
+            throw std::out_of_range("Top of an empty Stack");
         return at(m_size - 1);
     }
 
     void pop()
     {
-        if (m_size == 0) [[unlikely]] throw std::out_of_range("Pop on an empty Stack");
+        if (m_size == 0) [[unlikely]]
+            throw std::out_of_range("Pop on an empty Stack");
         --m_size;
     }
 
@@ -51,8 +54,7 @@ public:
         if (m_size == m_underlying.size()) [[unlikely]]
             m_underlying.push_back(item);
         else [[likely]]
-            at(m_size) = item;
-
+            this[m_size] = item;
         ++m_size;
     }
 
@@ -63,7 +65,6 @@ public:
             m_underlying.push_back(item);
         else [[likely]]
             this[m_size] = item;
-
         ++m_size;
     }
 
@@ -75,7 +76,6 @@ public:
             m_underlying.emplace_back(std::forward<Args>(args)...);
         else [[likely]]
             std::construct_at(&at(m_size), std::forward<Args>(args)...);
-
         ++m_size;
     }
 

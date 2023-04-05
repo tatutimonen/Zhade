@@ -23,7 +23,7 @@ public:
         {}
     };
 
-    PerspectiveCamera(ResourceManager* mngr, const App* app, const Settings& settings = Settings());
+    PerspectiveCamera(ResourceManager* mngr, App* app, const Settings& settings = Settings());
 
     virtual void updateProjectivity() const noexcept override
     {

@@ -46,7 +46,6 @@ public:
             return m_buffers.get(handle);
         else if (std::same_as<T, Model>)
             return m_models.get(handle);
-
         return nullptr;
     }
 
@@ -54,9 +53,9 @@ public:
     void destroy(const Handle<T>& handle) const noexcept
     {
         if constexpr (std::same_as<T, Buffer>)
-            return m_buffers.deallocate(handle);
+            m_buffers.deallocate(handle);
         else if (std::same_as<T, Model>)
-            return m_models.deallocate(handle);
+            m_models.deallocate(handle);
     }
 
 private:

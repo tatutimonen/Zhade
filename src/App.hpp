@@ -52,16 +52,15 @@ public:
     }
 
     // According to the GLFW input reference.
-    static void keyCallback(GLFWwindow* window, int key, [[maybe_unused]] int scancode, int action, int mode)
+    static void keyCallback(GLFWwindow* window, int key, [[maybe_unused]] int scancode, int action, int mode) noexcept
     {
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) [[unlikely]]
             glfwSetWindowShouldClose(window, GL_TRUE);
-    
         s_state.keys[key] = static_cast<bool>(action);
     }
 
     // According to the GLFW input reference.
-    static void mouseCallback([[maybe_unused]] GLFWwindow* window, double xPos, double yPos)
+    static void mouseCallback([[maybe_unused]] GLFWwindow* window, double xPos, double yPos) noexcept
     {
         static float xPosPrev = xPos;
         static float yPosPrev = yPos;

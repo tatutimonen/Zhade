@@ -34,7 +34,7 @@ int main()
 {
     using namespace Zhade;
 
-    const auto app = App();
+    auto app = App();
 
     app.init();
     {

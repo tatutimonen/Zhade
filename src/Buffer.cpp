@@ -69,9 +69,9 @@ void Buffer::bindRange(GLuint bindingIndex, GLintptr offsetBytes, GLsizeiptr siz
 
 //------------------------------------------------------------------------
 
-void Buffer::invalidate() const noexcept
+void Buffer::invalidate(GLintptr offset, GLsizeiptr length) const noexcept
 {
-    glInvalidateBufferSubData(m_handle, 0, m_writeOffsetBytes);
+    glInvalidateBufferSubData(m_handle, offset, length == 0 ? m_writeOffsetBytes : length);
     m_writeOffsetBytes = 0;
 }
 

@@ -91,7 +91,7 @@ void Renderer::render() const noexcept
         vbo->pushData(model->getVertices().data(), model->getNumVertices());
         ebo->pushData(model->getIndices().data(), model->getNumIndices());
 
-        MultiDrawElementsIndirectCommand cmd = {
+        MultiDrawElementsIndirectCommand cmd {
             .vertexCount = static_cast<GLuint>(model->getNumIndices()),
             .instanceCount = task.instanceCount,
             .firstIndex = firstIndex,

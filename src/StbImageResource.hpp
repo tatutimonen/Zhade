@@ -41,7 +41,8 @@ public:
 
     StbImageResource& operator=(StbImageResource&& other)
     {
-        if (this == &other) [[unlikely]] return *this;
+        if (this == &other) [[unlikely]]
+            return *this;
         m_data = other.m_data;
         other.m_data = nullptr;
         return *this;
@@ -51,8 +52,6 @@ public:
     [[nodiscard]] int32_t getHeight() const noexcept { return m_height; }
     [[nodiscard]] T* data() noexcept { return m_data; }
     [[nodiscard]] const T* data() const noexcept { return m_data; }
-
-    static void setGlobalFlipY(bool flip) noexcept { stbi_set_flip_vertically_on_load(flip); }
 
 private:
     void load(std::string_view filename)

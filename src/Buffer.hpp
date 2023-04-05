@@ -103,7 +103,7 @@ public:
     void bind() const noexcept;
     void bindBase(GLuint bindingIndex) const noexcept;
     void bindRange(GLuint bindingIndex, GLintptr offsetBytes, GLsizeiptr sizeBytes) const noexcept;
-    void invalidate() const noexcept;
+    void invalidate(GLintptr offset = 0, GLsizeiptr length = 0) const noexcept;
     void unmap() const noexcept;
 
     static inline const robin_hood::unordered_map<GLenum, GLint> s_alignmentTable = makeAlignmentTable();

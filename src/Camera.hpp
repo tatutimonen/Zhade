@@ -66,12 +66,12 @@ public:
     static inline float s_cameraSpeed = 5.0f;
 
 protected:
-    Camera(ResourceManager* mngr, const App* app, const Settings& settings);
+    Camera(ResourceManager* mngr, App* app, const Settings& settings);
     bool move() const noexcept;
     bool rotate() const noexcept;
 
-    const ResourceManager* m_mngr;
-    const App* m_app;
+    ResourceManager* m_mngr;
+    App* m_app;
     mutable Settings m_settings;
     mutable Matrices m_matrices;
     Handle<Buffer> m_uniformBuffer;
