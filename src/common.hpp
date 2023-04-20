@@ -1,5 +1,7 @@
 #pragma once
 
+#include "constants.hpp"
+
 #include <glm/glm.hpp>
 extern "C" {
 #include <GL/glew.h>
@@ -32,7 +34,7 @@ struct Vertex
 {
     glm::vec3 pos = glm::vec3();
     glm::vec3 nrm = glm::vec3();
-    glm::vec2 tex = glm::vec2();
+    glm::vec2 uv = glm::vec2();
 };
 
 //------------------------------------------------------------------------

@@ -5,6 +5,7 @@
 #include "Model.hpp"
 #include "ResourceManager.hpp"
 #include "ShaderProgram.hpp"
+#include "Texture.hpp"
 
 #include <glm/glm.hpp>
 extern "C" {
@@ -36,6 +37,7 @@ public:
         Handle<Model> model;
         GLuint instanceCount;
         std::span<glm::mat3x4> transformations;
+        std::span<Texture> textures;
     };
 
     Renderer(ResourceManager* mngr, const Specification& spec);
@@ -52,10 +54,12 @@ private:
     mutable Handle<Buffer> m_indexBuffer;
     mutable Handle<Buffer> m_drawIndirectBuffer;
     mutable Handle<Buffer> m_transformsBuffer;
+    mutable Handle<Buffer> m_textureBuffer;
     mutable std::vector<Task> m_tasks;
 
     MultiDrawElementsIndirectCommand* cmdData;
     glm::mat3x4* transformsData;
+    GLuint64* textureData;
 };
 
 // Some resources:

@@ -10,13 +10,13 @@ const uint INSTANCE_ID = gl_BaseInstance + gl_InstanceID;
 
 layout (location = 0) in vec3 a_pos;
 layout (location = 1) in vec3 a_nrm;
-layout (location = 2) in vec2 a_tex;
+layout (location = 2) in vec2 a_uv;
 
 //------------------------------------------------------------------------
 // Outputs.
 
 out VERT_OUT {
-    vec2 tex;
+    vec2 uv;
     flat uint instanceID;
 } VertOut;
 
@@ -36,7 +36,7 @@ layout (binding = 1, std430) buffer Model {
 
 void main()
 {
-    VertOut.tex = a_tex;
+    VertOut.uv = a_uv;
     VertOut.instanceID = INSTANCE_ID;
     vec3 modelPos = vec4(a_pos, 1.0) * b_model.MT[INSTANCE_ID];
     vec3 viewModel = vec4(modelPos, 1.0) * u_camera.VT;

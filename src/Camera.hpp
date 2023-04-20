@@ -58,7 +58,7 @@ public:
     virtual void updateProjectivity() const noexcept = 0;
 
     // According to the GLFW input reference.
-    static void scrollCallback([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xoffset, double yoffset)
+    static void scrollCallback([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xoffset, double yoffset) noexcept
     {
         s_cameraSpeed = std::max(1.0f, s_cameraSpeed + 2.0f*static_cast<float>(yoffset));
     }

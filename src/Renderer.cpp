@@ -25,7 +25,7 @@ Renderer::Renderer(ResourceManager* mngr, const Specification& spec)
 
     glVertexArrayAttribFormat(m_vao, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, pos));
     glVertexArrayAttribFormat(m_vao, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, nrm));
-    glVertexArrayAttribFormat(m_vao, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, tex));
+    glVertexArrayAttribFormat(m_vao, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, uv));
 
     glVertexArrayAttribBinding(m_vao, 0, 0);
     glVertexArrayAttribBinding(m_vao, 1, 0);
@@ -33,14 +33,18 @@ Renderer::Renderer(ResourceManager* mngr, const Specification& spec)
 
     m_drawIndirectBuffer = m_mngr->createBuffer(GL_DRAW_INDIRECT_BUFFER, 1 << 10);
     m_transformsBuffer = m_mngr->createBuffer(GL_SHADER_STORAGE_BUFFER, 1 << 16);
+    m_textureBuffer = m_mngr->createBuffer(GL_SHADER_STORAGE_BUFFER, 64);
     auto dibo = m_mngr->get(m_drawIndirectBuffer);
     auto tbo = m_mngr->get(m_transformsBuffer);
+    auto tebo = m_mngr->get(m_textureBuffer);
     cmdData = dibo->mapRange<MultiDrawElementsIndirectCommand>(0, dibo->getWholeSizeBytes());
     transformsData = tbo->mapRange<glm::mat3x4>(0, tbo->getWholeSizeBytes());
+    textureData = tebo->mapRange<GLuint64>(0, tebo->getWholeSizeBytes());
 
     glBindVertexArray(m_vao);
     dibo->bind();
     tbo->bindBase(constants::MODEL_BINDING);
+    tebo->bindBase(constants::TEXTURE_BINDING);
     m_program->use();
 }
 
@@ -55,7 +59,7 @@ Renderer::~Renderer()
 
 void Renderer::submit(const Task& task) const noexcept
 {
-    if (task.instanceCount != task.transformations.size()) [[unlikely]]
+    if (task.instanceCount != task.transformations.size()) [[unlikely]]  // TODO: move this check elsewhere
     {
         std::cerr << "instanceCount does not match transformations.size()\n";
         return;
@@ -75,14 +79,17 @@ void Renderer::render() const noexcept
     // TODO: Ensure these buffers are large enough.
     const auto drawIndirectBuffer = m_mngr->get(m_drawIndirectBuffer);
     const auto transformsBuffer = m_mngr->get(m_transformsBuffer);
+    const auto textureBuffer = m_mngr->get(m_textureBuffer);
     drawIndirectBuffer->invalidate();
     transformsBuffer->invalidate();
+    textureBuffer->invalidate();
 
     GLuint firstIndex = 0;
     GLuint baseVertex = 0;
     GLuint baseInstance = 0;
     GLuint cmdIdx = 0;
     GLuint transformIdx = 0;
+    GLuint textureIdx = 0;
 
     for (const auto& task : m_tasks)
     {
@@ -102,6 +109,9 @@ void Renderer::render() const noexcept
 
         for (const auto& transform : task.transformations)
             transformsData[transformIdx++] = transform;
+
+        for (const auto& tex : task.textures)
+            textureData[textureIdx++] = tex.getTexHandle();
 
         firstIndex += model->getNumIndices();
         baseVertex += model->getNumVertices();

@@ -1,4 +1,5 @@
 #version 460
+#extension GL_ARB_bindless_texture : enable
 
 //------------------------------------------------------------------------
 // Outputs.
@@ -9,20 +10,22 @@ layout (location = 0) out vec4 fragOut;
 // Inputs from previous pipeline stages.
 
 in VERT_OUT {
-    vec2 tex;
+    vec2 uv;
     flat uint instanceID;
 } FragIn;
 
 //------------------------------------------------------------------------
 // Uniforms.
 
-uniform sampler2DArray u_diffuseTexture;
+layout (binding = 2, std430) buffer Texture {
+    sampler2D diffuse[];
+} b_tex;
 
 //------------------------------------------------------------------------
 
 void main()
 {
-    fragOut = texture(u_diffuseTexture, vec3(FragIn.tex, FragIn.instanceID));
+    fragOut = texture(b_tex.diffuse[FragIn.instanceID], FragIn.uv);
 }
 
 //------------------------------------------------------------------------
