@@ -6,11 +6,10 @@
 #include "ResourceManager.hpp"
 #include "Shader.hpp"
 #include "ShaderProgram.hpp"
-#include "TextureStorage.hpp"
-#include "TextureView.hpp"
+#include "StbImageResource.hpp"
+#include "Texture.hpp"
 #include "common.hpp"
 #include "constants.hpp"
-#include "StbImageResource.hpp"
 #include "util.hpp"
 
 #include <assimp/Importer.hpp>
@@ -34,7 +33,7 @@ int main()
 {
     using namespace Zhade;
 
-    const auto app = App();
+    auto app = App();
 
     app.init();
     {
@@ -74,7 +73,7 @@ int main()
         };
         const auto triModel = mngr.createModel(std::span<Vertex>(triVerts), std::span<GLuint>(triInds));
 
-        const Renderer renderer{
+        const Renderer renderer {
             &mngr,
             {
                 .vertexBuffer = mngr.createBuffer(GL_ARRAY_BUFFER, 1 << 16),
@@ -95,26 +94,25 @@ int main()
             modelMatrices.push_back(glm::mat3x4(glm::transpose(glm::translate(glm::vec3((float)(i+1), std::sinf(2*i), 0.0f)))));
         }
 
+        auto quadTextures = std::array<Texture, numQuads>{
+            Texture::fromFile(TEXTURE_PATH + "cataphract.jpg"),
+            Texture::fromFile(TEXTURE_PATH + "berserk.png"),
+            Texture::fromFile(TEXTURE_PATH + "longbowman.png"),
+            Texture::fromFile(TEXTURE_PATH + "jaguarwarrior.png")
+        };
+
         renderer.submit({
             .model = quadModel,
             .instanceCount = numQuads,
-            .transformations = std::span(modelMatrices.begin(), modelMatrices.begin() + numQuads)
+            .transformations = std::span(modelMatrices.begin(), modelMatrices.begin() + numQuads),
+            .textures = std::span(quadTextures)
         });
         renderer.submit({
             .model = triModel,
             .instanceCount = numTris,
-            .transformations = std::span(modelMatrices.begin() + numQuads, modelMatrices.end())
+            .transformations = std::span(modelMatrices.begin() + numQuads, modelMatrices.end()),
+            .textures = std::span(quadTextures)
         });
-
-        const auto texStorage = TextureStorage();
-
-        const auto& cataViewOpt = texStorage.pushDataFromFile(TEXTURE_PATH + "cataphract.jpg");
-        const auto& berserkViewOpt = texStorage.pushDataFromFile(TEXTURE_PATH + "berserk.png");
-        const auto& longbowViewOpt = texStorage.pushDataFromFile(TEXTURE_PATH + "longbowman.png");
-        const auto& jagViewOpt = texStorage.pushDataFromFile(TEXTURE_PATH + "jaguarwarrior.png");
-
-        texStorage.bindToUnit(0);
-        texStorage.generateMipmap();
 
         while (!glfwWindowShouldClose(app.getGLCtx()))
         {

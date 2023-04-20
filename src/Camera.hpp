@@ -4,9 +4,11 @@
 #include "Handle.hpp"
 #include "ResourceManager.hpp"
 
-#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+extern "C" {
+#include <GLFW/glfw3.h>
+}
 
 //------------------------------------------------------------------------
 
@@ -56,7 +58,7 @@ public:
     virtual void updateProjectivity() const noexcept = 0;
 
     // According to the GLFW input reference.
-    static void scrollCallback([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xoffset, double yoffset)
+    static void scrollCallback([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xoffset, double yoffset) noexcept
     {
         s_cameraSpeed = std::max(1.0f, s_cameraSpeed + 2.0f*static_cast<float>(yoffset));
     }
@@ -64,12 +66,12 @@ public:
     static inline float s_cameraSpeed = 5.0f;
 
 protected:
-    Camera(ResourceManager* mngr, const App* app, const Settings& settings);
+    Camera(ResourceManager* mngr, App* app, const Settings& settings);
     bool move() const noexcept;
     bool rotate() const noexcept;
 
-    const ResourceManager* m_mngr;
-    const App* m_app;
+    ResourceManager* m_mngr;
+    App* m_app;
     mutable Settings m_settings;
     mutable Matrices m_matrices;
     Handle<Buffer> m_uniformBuffer;

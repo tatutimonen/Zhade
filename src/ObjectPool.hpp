@@ -77,9 +77,7 @@ public:
     [[nodiscard]] T* get(const Handle<T>& handle) const noexcept
     {
         const uint32_t getIdx = handle.m_index;
-        if (handle.m_generation < m_generations.at(getIdx))
-            return nullptr;
-
+        if (handle.m_generation < m_generations.at(getIdx)) return nullptr;
         return &m_pool.at(handle.m_index);
     }
 
@@ -101,7 +99,7 @@ private:
 
         m_pool.resize(m_size);
         m_generations.resize(m_size);
-        m_freeStack.m_underlying.reserve(m_size);
+        m_freeStack.reserve(m_size);
 
         for (size_t idx : std::views::iota(size_prev, m_size) | std::views::reverse)
         {

@@ -15,8 +15,7 @@ set(src_files
     ShaderProgram.cpp
     Stack.cpp
     StbImageResource.cpp
-    TextureStorage.cpp
-    TextureView.cpp
+    Texture.cpp
     common.cpp
     constants.cpp
     main.cpp

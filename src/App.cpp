@@ -49,7 +49,7 @@ void App::init() const noexcept
     //glCullFace(GL_BACK);
 
     // Other.
-    StbImageResource<>::setGlobalFlipY(true);
+    stbi_set_flip_vertically_on_load(1);
 }
 
 //------------------------------------------------------------------------

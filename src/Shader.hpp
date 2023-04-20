@@ -2,7 +2,9 @@
 
 #include "common.hpp"
 
+extern "C" {
 #include <GL/glew.h>
+}
 
 #include <iostream>
 #include <fstream>

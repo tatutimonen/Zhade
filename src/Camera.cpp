@@ -10,7 +10,7 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
-Camera::Camera(ResourceManager* mngr, const App* app, const Settings& settings)
+Camera::Camera(ResourceManager* mngr, App* app, const Settings& settings)
     : m_mngr{mngr},
       m_app{app},
       m_settings{std::move(settings)},
@@ -29,9 +29,7 @@ void Camera::tick() const noexcept
     const bool rotated = rotate();
 
     if (moved || rotated)
-    {
         m_mngr->get(m_uniformBuffer)->setData<Matrices>(&m_matrices, 1, 0);
-    }
 }
 
 //------------------------------------------------------------------------

@@ -2,9 +2,11 @@
 
 #include "common.hpp"
 
-#include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <robin_hood.h>
+extern "C" {
+#include <GL/glew.h>
+}
 
 #include <cmath>
 #include <span>
@@ -32,6 +34,7 @@ public:
     Buffer& operator=(Buffer&&) = default;
 
     [[nodiscard]] GLuint getGLHandle() const noexcept { return m_handle; }
+    [[nodiscard]] GLsizei getSizeBytes() const noexcept { return m_writeOffsetBytes; }
     [[nodiscard]] GLsizei getWholeSizeBytes() const noexcept { return m_wholeSizeBytes; }
 
     [[nodiscard]] bool isValid() const noexcept { return m_handle != 0; }
@@ -100,8 +103,8 @@ public:
     void bind() const noexcept;
     void bindBase(GLuint bindingIndex) const noexcept;
     void bindRange(GLuint bindingIndex, GLintptr offsetBytes, GLsizeiptr sizeBytes) const noexcept;
+    void invalidate(GLintptr offset = 0, GLsizeiptr length = 0) const noexcept;
     void unmap() const noexcept;
-    void zero() const noexcept;
 
     static inline const robin_hood::unordered_map<GLenum, GLint> s_alignmentTable = makeAlignmentTable();
 
