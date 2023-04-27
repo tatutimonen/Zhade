@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <memory>
 #include <stdexcept>
 #include <vector>
@@ -26,7 +27,7 @@ public:
     Stack& operator=(Stack&&) = default;
 
     [[nodiscard]] size_t size() const noexcept { return m_size; }
-    [[nodiscard]] bool isSaturated() const noexcept { return m_size == m_underlying.size(); }
+    [[nodiscard]] bool isSaturated() const noexcept { return m_size == 0 || m_size == m_underlying.size(); }
 
     T& top()
     {
@@ -52,14 +53,16 @@ public:
     void push(const T& item) noexcept
     requires std::copyable<T>
     {
-        if (isSaturated()) [[unlikely]] resize(m_size * s_growthFactor);
+        if (isSaturated()) [[unlikely]]
+            resize(std::max(1ull, m_size) * s_growthFactor);
         at(m_size++) = item;
     }
 
     void push(T&& item) noexcept
     requires std::movable<T>
     {
-        if (isSaturated()) [[unlikely]] resize(m_size * s_growthFactor);
+        if (isSaturated()) [[unlikely]]
+            resize(std::max(1ull, m_size) * s_growthFactor);
         at(m_size++) = item;
     }
 
@@ -67,7 +70,8 @@ public:
     requires std::constructible_from<T, Args...>
     void emplace(Args&& ...args) noexcept
     {
-        if (isSaturated()) [[unlikely]] resize(m_size * s_growthFactor);
+        if (isSaturated()) [[unlikely]]
+            resize(std::max(1ull, m_size) * s_growthFactor);
         std::construct_at(&at(m_size++), std::forward<Args>(args)...);
     }
 
@@ -91,7 +95,7 @@ public:
         return m_underlying.at(pos);
     }
 
-    static constexpr uint32_t s_growthFactor = 2;
+    static constexpr uint32_t s_growthFactor = 2u;
 
 private:
     std::vector<T> m_underlying;

@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <ranges>
 #include <vector>
+#include <iostream>
 
 //------------------------------------------------------------------------
 
@@ -83,12 +84,12 @@ public:
         return &m_pool.at(handle.m_index);
     }
 
-    static constexpr uint32_t s_growthFactor = 2;
+    static constexpr uint32_t s_growthFactor = 2u;
 
 private:
     [[nodiscard]] Handle<T> getHandleToNextFree()
     {
-        try { m_freeList.top(); } catch (const std::out_of_range&) { resize(); }
+        if (m_freeList.isSaturated()) [[unlikely]] resize();
         const uint32_t nextFreeIdx = m_freeList.top();
         m_freeList.pop();
         return Handle<T>(nextFreeIdx, ++m_generations[nextFreeIdx]);
