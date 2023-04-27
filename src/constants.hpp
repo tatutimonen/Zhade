@@ -20,10 +20,11 @@ inline constexpr float Z_FIGHT_EPSILON     = 1e-5f;
 inline constexpr GLint CAMERA_BINDING      = 0;
 inline constexpr GLint MODEL_BINDING       = 1;
 inline constexpr GLint TEXTURE_BINDING     = 2;
-inline constexpr GLuint MAX_TEXTURES       = 256;
 
 inline constexpr int32_t ASSIMP_LOAD_FLAGS = aiProcess_Triangulate | aiProcess_GenSmoothNormals
     | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
+
+inline constexpr size_t OBJECT_POOL_INIT_SIZE = 32;
 
 //------------------------------------------------------------------------
 

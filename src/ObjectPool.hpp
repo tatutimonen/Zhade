@@ -2,7 +2,9 @@
 
 #include "Handle.hpp"
 #include "Stack.hpp"
+#include "constants.hpp"
 
+#include <algorithm>
 #include <cstdint>
 #include <ranges>
 #include <vector>
@@ -19,9 +21,9 @@ template<std::default_initializable T>
 class ObjectPool<T>
 {
 public:
-    ObjectPool(size_t size = 32)
+    ObjectPool(size_t size = constants::OBJECT_POOL_INIT_SIZE)
         : m_size{size},
-          m_freeStack{Stack<uint32_t>(size)}
+          m_freeList{Stack<uint32_t>(size)}
     {
         m_pool.resize(m_size);
         m_generations.resize(m_size);
@@ -29,7 +31,7 @@ public:
         for (size_t idx : std::views::iota(0u, m_size) | std::views::reverse)
         {
             m_generations[idx] = 0;
-            m_freeStack.push(idx);
+            m_freeList.push(idx);
         }
     }
 
@@ -40,7 +42,7 @@ public:
     ObjectPool(ObjectPool&& other) = default;
     ObjectPool& operator=(ObjectPool&& other) = default;
 
-    [[nodiscard]] size_t getSize() const noexcept { return m_size; }
+    [[nodiscard]] size_t size() const noexcept { return m_size; }
 
     template<typename... Args>
     requires std::constructible_from<T, Args...>
@@ -70,7 +72,7 @@ public:
     void deallocate(const Handle<T>& handle) const noexcept
     {
         const uint32_t deallocIdx = handle.m_index;
-        m_freeStack.push(deallocIdx);
+        m_freeList.push(deallocIdx);
         ++m_generations[deallocIdx];
     }
 
@@ -86,32 +88,32 @@ public:
 private:
     [[nodiscard]] Handle<T> getHandleToNextFree()
     {
-        try { static_cast<void>(m_freeStack.top()); } catch (const std::out_of_range&) { resize(); }
-        const uint32_t nextFreeIdx = m_freeStack.top();
-        m_freeStack.pop();
+        try { m_freeList.top(); } catch (const std::out_of_range&) { resize(); }
+        const uint32_t nextFreeIdx = m_freeList.top();
+        m_freeList.pop();
         return Handle<T>(nextFreeIdx, ++m_generations[nextFreeIdx]);
     }
 
     void resize()
     {
-        const auto size_prev = m_size;
-        m_size *= s_growthFactor;
+        const size_t size_prev = m_size;
+        m_size = std::max(1ull, m_size) * s_growthFactor;
 
         m_pool.resize(m_size);
         m_generations.resize(m_size);
-        m_freeStack.reserve(m_size);
+        m_freeList.resize(m_size);
 
         for (size_t idx : std::views::iota(size_prev, m_size) | std::views::reverse)
         {
             m_generations[idx] = 0;
-            m_freeStack.push(idx);
+            m_freeList.push(idx);
         }
     }
 
     size_t m_size;
     mutable std::vector<T> m_pool;
     mutable std::vector<uint32_t> m_generations;
-    mutable Stack<uint32_t> m_freeStack;
+    mutable Stack<uint32_t> m_freeList;
 
     friend class ResourceManager;
 };

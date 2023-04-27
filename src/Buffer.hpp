@@ -25,8 +25,6 @@ public:
     Buffer() = default;
     Buffer(GLenum target, GLsizei sizeBytes, ResourceManagement management);
     ~Buffer();
-    
-    void freeResources() const noexcept;
 
     Buffer(const Buffer&) = delete;
     Buffer& operator=(const Buffer&) = delete;
@@ -81,24 +79,7 @@ public:
         return ptr;
     }
 
-    [[nodiscard]] static robin_hood::unordered_map<GLenum, GLint> makeAlignmentTable() noexcept
-    {
-        auto table = robin_hood::unordered_map<GLenum, GLint>{
-            { GL_ARRAY_BUFFER, 1 },
-            { GL_ELEMENT_ARRAY_BUFFER, 1 },
-            { GL_DRAW_INDIRECT_BUFFER, static_cast<GLint>(sizeof(MultiDrawElementsIndirectCommand)) }
-        };
-
-        GLint uniformBufferAlignment;
-        glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &uniformBufferAlignment);
-        table.insert({ GL_UNIFORM_BUFFER, uniformBufferAlignment });
-
-        GLint storageBufferAlignment;
-        glGetIntegerv(GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT, &storageBufferAlignment);
-        table.insert({ GL_SHADER_STORAGE_BUFFER, storageBufferAlignment });
-
-        return table;
-    }
+    [[nodiscard]] static robin_hood::unordered_map<GLenum, GLint> makeAlignmentTable() noexcept;
 
     void bind() const noexcept;
     void bindBase(GLuint bindingIndex) const noexcept;
@@ -116,12 +97,16 @@ private:
         return static_cast<GLsizeiptr>(std::ceil(static_cast<float>(sizeBytes) / m_alignment) * m_alignment);
     }
 
+    void freeResources() const noexcept;
+
     GLuint m_handle;
     GLenum m_target;
     GLsizei m_wholeSizeBytes;
     GLint m_alignment;
     mutable GLsizeiptr m_writeOffsetBytes = 0;
     ResourceManagement m_management = ResourceManagement::MANUAL;
+
+    friend class ResourceManager;
 };
 
 //------------------------------------------------------------------------

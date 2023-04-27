@@ -1,10 +1,10 @@
 #pragma once
 
+#include <glm/glm.hpp>
 extern "C" {
 #include <stb_image.h>
 }
 
-#include <cstdint>
 #include <format>
 #include <string_view>
 
@@ -41,15 +41,13 @@ public:
 
     StbImageResource& operator=(StbImageResource&& other)
     {
-        if (this == &other) [[unlikely]]
-            return *this;
+        if (this == &other) [[unlikely]] return *this;
         m_data = other.m_data;
         other.m_data = nullptr;
         return *this;
     }
 
-    [[nodiscard]] int32_t getWidth() const noexcept { return m_width; }
-    [[nodiscard]] int32_t getHeight() const noexcept { return m_height; }
+    [[nodiscard]] const glm::ivec2& getDims() const noexcept { return m_dims; }
     [[nodiscard]] T* data() noexcept { return m_data; }
     [[nodiscard]] const T* data() const noexcept { return m_data; }
 
@@ -57,18 +55,17 @@ private:
     void load(std::string_view filename)
     {
         if constexpr (std::same_as<T, stbi_uc>)
-            m_data = stbi_load(filename.data(), &m_width, &m_height, nullptr, 4);
+            m_data = stbi_load(filename.data(), &m_dims.x, &m_dims.y, nullptr, 4);
         else if (std::same_as<T, stbi_us>)
-            m_data = stbi_load_16(filename.data(), &m_width, &m_height, nullptr, 4);
+            m_data = stbi_load_16(filename.data(), &m_dims.x, &m_dims.y, nullptr, 4);
         else if (std::same_as<T, float>)
-            m_data = stbi_loadf(filename.data(), &m_width, &m_height, nullptr, 4);
+            m_data = stbi_loadf(filename.data(), &m_dims.x, &m_dims.y, nullptr, 4);
         
         if (m_data == nullptr) [[unlikely]]
             throw std::runtime_error(std::format("Error loading data from '{}'", filename));
     }
 
-    int32_t m_width;
-    int32_t m_height;
+    glm::ivec2 m_dims;
     T* m_data;
 };
 

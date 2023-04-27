@@ -59,11 +59,6 @@ Renderer::~Renderer()
 
 void Renderer::submit(const Task& task) const noexcept
 {
-    if (task.instanceCount != task.transformations.size()) [[unlikely]]  // TODO: move this check elsewhere
-    {
-        std::cerr << "instanceCount does not match transformations.size()\n";
-        return;
-    }
     m_tasks.push_back(task);
 }
 
@@ -98,7 +93,7 @@ void Renderer::render() const noexcept
         vbo->pushData(model->getVertices().data(), model->getNumVertices());
         ebo->pushData(model->getIndices().data(), model->getNumIndices());
 
-        MultiDrawElementsIndirectCommand cmd {
+        MultiDrawElementsIndirectCommand cmd{
             .vertexCount = static_cast<GLuint>(model->getNumIndices()),
             .instanceCount = task.instanceCount,
             .firstIndex = firstIndex,

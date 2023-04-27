@@ -24,15 +24,7 @@ Buffer::Buffer(GLenum target, GLsizei sizeBytes, ResourceManagement management)
 
 Buffer::~Buffer()
 {
-    if (m_management == ResourceManagement::MANUAL) return;
-    glDeleteBuffers(1, &m_handle);
-}
-
-//------------------------------------------------------------------------
-
-void Buffer::freeResources() const noexcept
-{
-    if (m_management == ResourceManagement::RAII) [[unlikely]] return;
+    if (m_management == ResourceManagement::MANUAL) [[likely]] return;
     glDeleteBuffers(1, &m_handle);
 }
 
@@ -80,6 +72,35 @@ void Buffer::invalidate(GLintptr offset, GLsizeiptr length) const noexcept
 void Buffer::unmap() const noexcept
 {
     glUnmapNamedBuffer(m_handle);
+}
+
+//------------------------------------------------------------------------
+
+robin_hood::unordered_map<GLenum, GLint> Buffer::makeAlignmentTable() noexcept
+{
+    auto table = robin_hood::unordered_map<GLenum, GLint>{
+        { GL_ARRAY_BUFFER, 1 },
+        { GL_ELEMENT_ARRAY_BUFFER, 1 },
+        { GL_DRAW_INDIRECT_BUFFER, static_cast<GLint>(sizeof(MultiDrawElementsIndirectCommand)) }
+    };
+
+    GLint uniformBufferAlignment;
+    glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &uniformBufferAlignment);
+    table.insert({ GL_UNIFORM_BUFFER, uniformBufferAlignment });
+
+    GLint storageBufferAlignment;
+    glGetIntegerv(GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT, &storageBufferAlignment);
+    table.insert({ GL_SHADER_STORAGE_BUFFER, storageBufferAlignment });
+
+    return table;
+}
+
+//------------------------------------------------------------------------
+
+void Buffer::freeResources() const noexcept
+{
+    if (m_management == ResourceManagement::RAII) [[unlikely]] return;
+    glDeleteBuffers(1, &m_handle);
 }
 
 //------------------------------------------------------------------------

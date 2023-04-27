@@ -13,11 +13,11 @@ namespace Zhade
 // Because std::stack is horrendously slow and std::pmr::deque with
 // a std::pmr::monotonic_buffer_resource is not always applicable as a remedy.
 
-template<typename T>
+template<std::default_initializable T>
 class Stack
 {
 public:
-    Stack(size_t capacity = 0) { if (capacity > 0) [[likely]] reserve(capacity); }
+    Stack(size_t capacity = 0) { if (capacity > 0) [[likely]] resize(capacity); }
     ~Stack() = default;
 
     Stack(const Stack&) = default;
@@ -25,16 +25,17 @@ public:
     Stack(Stack&&) = default;
     Stack& operator=(Stack&&) = default;
 
-    [[nodiscard]] size_t getSize() const noexcept { return m_size; }
+    [[nodiscard]] size_t size() const noexcept { return m_size; }
+    [[nodiscard]] bool isSaturated() const noexcept { return m_size == m_underlying.size(); }
 
-    [[nodiscard]] T& top()
+    T& top()
     {
         if (m_size == 0) [[unlikely]]
             throw std::out_of_range("Top of an empty Stack");
         return at(m_size - 1);
     }
 
-    [[nodiscard]] const T& top() const
+    const T& top() const
     {
         if (m_size == 0) [[unlikely]]
             throw std::out_of_range("Top of an empty Stack");
@@ -51,37 +52,28 @@ public:
     void push(const T& item) noexcept
     requires std::copyable<T>
     {
-        if (m_size == m_underlying.size()) [[unlikely]]
-            m_underlying.push_back(item);
-        else [[likely]]
-            this[m_size] = item;
-        ++m_size;
+        if (isSaturated()) [[unlikely]] resize(m_size * s_growthFactor);
+        at(m_size++) = item;
     }
 
     void push(T&& item) noexcept
     requires std::movable<T>
     {
-        if (m_size == m_underlying.size()) [[unlikely]]
-            m_underlying.push_back(item);
-        else [[likely]]
-            this[m_size] = item;
-        ++m_size;
+        if (isSaturated()) [[unlikely]] resize(m_size * s_growthFactor);
+        at(m_size++) = item;
     }
 
     template<typename... Args>
     requires std::constructible_from<T, Args...>
     void emplace(Args&& ...args) noexcept
     {
-        if (m_size == m_underlying.size()) [[unlikely]]
-            m_underlying.emplace_back(std::forward<Args>(args)...);
-        else [[likely]]
-            std::construct_at(&at(m_size), std::forward<Args>(args)...);
-        ++m_size;
+        if (isSaturated()) [[unlikely]] resize(m_size * s_growthFactor);
+        std::construct_at(&at(m_size++), std::forward<Args>(args)...);
     }
 
-    void reserve(size_t capacity) noexcept
+    void resize(size_t capacity) noexcept
     {
-        m_underlying.reserve(capacity);
+        m_underlying.resize(capacity);
     }
 
     [[nodiscard]] T& at(size_t pos)
@@ -98,6 +90,8 @@ public:
     {
         return m_underlying.at(pos);
     }
+
+    static constexpr uint32_t s_growthFactor = 2;
 
 private:
     std::vector<T> m_underlying;

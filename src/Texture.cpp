@@ -1,6 +1,7 @@
 #include "Texture.hpp"
 
-#include <iostream>
+#include "ResourceManager.hpp"
+#include "StbImageResource.hpp"
 
 //------------------------------------------------------------------------
 
@@ -9,18 +10,20 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
-Texture::Texture(const Specification& spec)
-    : m_spec{spec}
+Texture::Texture(const glm::ivec2& dims, const Specification& spec, ResourceManagement management)
+    : m_dims{dims},
+      m_management{management}
 {
     glCreateTextures(GL_TEXTURE_2D, 1, &m_handle);
-    glTextureStorage2D(m_handle, m_spec.levels, m_spec.internalFormat, m_spec.width, m_spec.height);
+    glTextureStorage2D(m_handle, spec.levels, spec.internalFormat, m_dims.x, m_dims.y);
 
-    glTextureParameteri(m_handle, GL_TEXTURE_MIN_FILTER, m_spec.minFilter);
-    glTextureParameteri(m_handle, GL_TEXTURE_MAG_FILTER, m_spec.magFilter);
-    glTextureParameteri(m_handle, GL_TEXTURE_WRAP_S, m_spec.wrapS);
-    glTextureParameteri(m_handle, GL_TEXTURE_WRAP_T, m_spec.wrapT);
+    glTextureParameteri(m_handle, GL_TEXTURE_MIN_FILTER, spec.minFilter);
+    glTextureParameteri(m_handle, GL_TEXTURE_MAG_FILTER, spec.magFilter);
+    glTextureParameteri(m_handle, GL_TEXTURE_WRAP_S, spec.wrapS);
+    glTextureParameteri(m_handle, GL_TEXTURE_WRAP_T, spec.wrapT);
+    glTextureParameterf(m_handle, GL_TEXTURE_MAX_ANISOTROPY, spec.anisotropy);
 
-    if (m_spec.internalFormat == GL_DEPTH_COMPONENT32)  // Depth texture?
+    if (spec.internalFormat == GL_DEPTH_COMPONENT32)  // Depth texture?
     {
         glTextureParameteri(m_handle, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
         glTextureParameteri(m_handle, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
@@ -34,8 +37,28 @@ Texture::Texture(const Specification& spec)
 
 Texture::~Texture()
 {
+    if (m_management == ResourceManagement::MANUAL) [[likely]] return;
+    freeResources();
+}
+
+//------------------------------------------------------------------------
+
+void Texture::freeResources() const noexcept
+{
+    if (m_handle == 0) return;
     glMakeTextureHandleNonResidentARB(m_texHandle);
     glDeleteTextures(1, &m_handle);
+}
+
+//------------------------------------------------------------------------
+
+Texture Texture::fromFile(ResourceManager* mngr, std::string_view filename, const Specification& spec) noexcept
+{
+    const auto img = StbImageResource(filename);
+    auto tex = Texture(img.getDims(), spec, ResourceManagement::RAII);
+    tex.setData(img.data());
+    tex.generateMipmap();
+    return tex;
 }
 
 //------------------------------------------------------------------------

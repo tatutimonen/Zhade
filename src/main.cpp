@@ -11,6 +11,8 @@
 #include "common.hpp"
 #include "constants.hpp"
 #include "util.hpp"
+#include "Handle.hpp"
+#include "ObjectPool.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -94,24 +96,26 @@ int main()
             modelMatrices.push_back(glm::mat3x4(glm::transpose(glm::translate(glm::vec3((float)(i+1), std::sinf(2*i), 0.0f)))));
         }
 
+        //const auto test = mngr.createTexture(glm::ivec2(1024, 1024), Texture::Specification{});
+
         auto quadTextures = std::array<Texture, numQuads>{
-            Texture::fromFile(TEXTURE_PATH + "cataphract.jpg"),
-            Texture::fromFile(TEXTURE_PATH + "berserk.png"),
-            Texture::fromFile(TEXTURE_PATH + "longbowman.png"),
-            Texture::fromFile(TEXTURE_PATH + "jaguarwarrior.png")
+            Texture::fromFile(&mngr, TEXTURE_PATH + "cataphract.jpg"),
+            Texture::fromFile(&mngr, TEXTURE_PATH + "berserk.png"),
+            Texture::fromFile(&mngr, TEXTURE_PATH + "longbowman.png"),
+            Texture::fromFile(&mngr, TEXTURE_PATH + "jaguarwarrior.png")
         };
 
         renderer.submit({
             .model = quadModel,
             .instanceCount = numQuads,
             .transformations = std::span(modelMatrices.begin(), modelMatrices.begin() + numQuads),
-            .textures = std::span(quadTextures)
+            .textures = quadTextures
         });
         renderer.submit({
             .model = triModel,
             .instanceCount = numTris,
             .transformations = std::span(modelMatrices.begin() + numQuads, modelMatrices.end()),
-            .textures = std::span(quadTextures)
+            .textures = quadTextures
         });
 
         while (!glfwWindowShouldClose(app.getGLCtx()))

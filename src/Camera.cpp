@@ -14,7 +14,7 @@ Camera::Camera(ResourceManager* mngr, App* app, const Settings& settings)
     : m_mngr{mngr},
       m_app{app},
       m_settings{std::move(settings)},
-      m_matrices{Matrices()},
+      m_matrices{Matrices{}},
       m_uniformBuffer{mngr->createBuffer(GL_UNIFORM_BUFFER, static_cast<GLsizei>(sizeof(Matrices)))}
 {
     m_mngr->get(m_uniformBuffer)->bindBase(constants::CAMERA_BINDING);
