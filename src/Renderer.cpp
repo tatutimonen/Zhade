@@ -106,7 +106,7 @@ void Renderer::render() const noexcept
             transformsData[transformIdx++] = transform;
 
         for (const auto& tex : task.textures)
-            textureData[textureIdx++] = tex.getTexHandle();
+            textureData[textureIdx++] = m_mngr->get(tex)->getTexHandle();
 
         firstIndex += model->getNumIndices();
         baseVertex += model->getNumVertices();

@@ -30,6 +30,9 @@ public:
 private:
     std::span<Vertex> m_vertices;
     std::span<GLuint> m_indices;
+    glm::mat3x4 m_transformation;
+    GLuint m_materialID = 0;
+    GLuint m_textureID = 0;
 };
 
 //------------------------------------------------------------------------

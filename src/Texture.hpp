@@ -56,7 +56,7 @@ public:
         glTextureSubImage2D(m_handle, 0, 0, 0, m_dims.x, m_dims.y, GL_RGBA, GL_UNSIGNED_BYTE, data);
     }
 
-    static Texture fromFile([[maybe_unused]] ResourceManager* mngr, std::string_view filename, const Specification& spec = Specification{}) noexcept;
+    static Handle<Texture> fromFile(ResourceManager* mngr, std::string_view filename, const Specification& spec = Specification{}) noexcept;
 
 private:
     void freeResources() const noexcept;

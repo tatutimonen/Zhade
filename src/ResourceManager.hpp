@@ -54,10 +54,14 @@ public:
             return m_buffers.get(handle);
         else if (std::same_as<T, Model>)
             return m_models.get(handle);
-        /*else if (std::same_as<T, Texture>)
-            return m_textures.get(handle);*/
         else
             return nullptr;
+    }
+
+    // Workaround for MSVC's inability to distinguish the types Model and Texture.
+    [[nodiscard]] Texture* get(const Handle<Texture>& handle) noexcept
+    {
+        return m_textures.get(handle);
     }
 
     template<typename T>
@@ -67,8 +71,12 @@ public:
             m_buffers.deallocate(handle);
         else if (std::same_as<T, Model>)
             m_models.deallocate(handle);
-        /*else if (std::same_as<T, Texture>)
-            m_textures.deallocate(handle);*/
+    }
+
+    // Workaround for MSVC's inability to distinguish the types Model and Texture.
+    void destroy(const Handle<Texture>& handle) const noexcept
+    {
+        m_textures.deallocate(handle);
     }
 
 private:

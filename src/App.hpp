@@ -26,8 +26,6 @@ public:
         std::array<bool, 512> keys = { false };
         float pitch = 0.0f;
         float yaw = -glm::half_pi<float>();
-
-        GLFWState() {};  // Clang, for example, has issues with "= default."
     };
 
     App() = default;
@@ -84,8 +82,8 @@ public:
     }
 
     static constexpr std::string_view s_title = "Zhade - ESC to quit";
-    static constexpr uint32_t s_windowWidth = 800u;
-    static constexpr uint32_t s_windowHeight = 800u;
+    static constexpr uint32_t s_windowWidth = 1980u;
+    static constexpr uint32_t s_windowHeight = 1080u;
     static constexpr float s_mouseSensitivity = 0.002f;
 
 private:

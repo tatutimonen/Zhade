@@ -52,12 +52,13 @@ void Texture::freeResources() const noexcept
 
 //------------------------------------------------------------------------
 
-Texture Texture::fromFile(ResourceManager* mngr, std::string_view filename, const Specification& spec) noexcept
+Handle<Texture> Texture::fromFile(ResourceManager* mngr, std::string_view filename, const Specification& spec) noexcept
 {
     const auto img = StbImageResource(filename);
-    auto tex = Texture(img.getDims(), spec, ResourceManagement::RAII);
-    tex.setData(img.data());
-    tex.generateMipmap();
+    auto tex = mngr->createTexture(img.getDims(), spec);
+    auto texPtr = mngr->get(tex);
+    texPtr->setData(img.data());
+    texPtr->generateMipmap();
     return tex;
 }
 

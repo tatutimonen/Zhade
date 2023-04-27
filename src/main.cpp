@@ -96,9 +96,7 @@ int main()
             modelMatrices.push_back(glm::mat3x4(glm::transpose(glm::translate(glm::vec3((float)(i+1), std::sinf(2*i), 0.0f)))));
         }
 
-        //const auto test = mngr.createTexture(glm::ivec2(1024, 1024), Texture::Specification{});
-
-        auto quadTextures = std::array<Texture, numQuads>{
+        auto quadTextures = std::array<Handle<Texture>, numQuads>{
             Texture::fromFile(&mngr, TEXTURE_PATH + "cataphract.jpg"),
             Texture::fromFile(&mngr, TEXTURE_PATH + "berserk.png"),
             Texture::fromFile(&mngr, TEXTURE_PATH + "longbowman.png"),

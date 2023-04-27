@@ -37,7 +37,7 @@ public:
         Handle<Model> model;
         GLuint instanceCount;
         std::span<glm::mat3x4> transformations;
-        std::span<Texture> textures;
+        std::span<Handle<Texture>> textures;
     };
 
     Renderer(ResourceManager* mngr, const Specification& spec);
