@@ -53,16 +53,14 @@ public:
     void push(const T& item) noexcept
     requires std::copyable<T>
     {
-        if (isSaturated()) [[unlikely]]
-            resize(std::max(1ull, m_size) * s_growthFactor);
+        if (isSaturated()) [[unlikely]] resize();
         at(m_size++) = item;
     }
 
     void push(T&& item) noexcept
     requires std::movable<T>
     {
-        if (isSaturated()) [[unlikely]]
-            resize(std::max(1ull, m_size) * s_growthFactor);
+        if (isSaturated()) [[unlikely]] resize();
         at(m_size++) = item;
     }
 
@@ -70,14 +68,14 @@ public:
     requires std::constructible_from<T, Args...>
     void emplace(Args&& ...args) noexcept
     {
-        if (isSaturated()) [[unlikely]]
-            resize(std::max(1ull, m_size) * s_growthFactor);
+        if (isSaturated()) [[unlikely]] resize();
         std::construct_at(&at(m_size++), std::forward<Args>(args)...);
     }
 
-    void resize(size_t capacity) noexcept
+    void resize(size_t size) noexcept
     {
-        m_underlying.resize(capacity);
+        m_underlying.resize(size);
+        m_size = std::min(m_size, m_underlying.size());
     }
 
     [[nodiscard]] T& at(size_t pos)
@@ -98,6 +96,11 @@ public:
     static constexpr uint32_t s_growthFactor = 2u;
 
 private:
+    void resize() noexcept
+    {
+        m_underlying.resize(std::max(1ull, m_size) * s_growthFactor);
+    }
+
     std::vector<T> m_underlying;
     size_t m_size = 0;
 };

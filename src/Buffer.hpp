@@ -8,7 +8,9 @@ extern "C" {
 #include <GL/glew.h>
 }
 
+#include <bit>
 #include <cmath>
+#include <cstring>
 #include <span>
 
 //------------------------------------------------------------------------
@@ -54,6 +56,13 @@ public:
     }
 
     template<typename T>
+    void pushDataMapped(const T* data, GLsizei size) const noexcept
+    {
+        T* ptr = std::bit_cast<T*>(m_ptr);  // 256, 8*4 = 32 bytes
+        std::memcpy(ptr, data, sizeof(T) * size);
+    }
+
+    template<typename T>
     void setData(const T* data, GLsizei size, GLintptr offsetBytes) const noexcept
     {
         glNamedBufferSubData(m_handle, offsetBytes, sizeof(T) * size, data);
@@ -72,6 +81,12 @@ public:
     }
 
     template<typename T>
+    [[nodiscard]] T* mapRangeWhole() const noexcept
+    {
+        return static_cast<T*>(glMapNamedBufferRange(m_handle, 0, m_wholeSizeBytes, s_access));
+    }
+
+    template<typename T>
     [[nodiscard]] T* mapRangeBump(GLsizei sizeBytes) const noexcept
     {
         T* ptr = mapRange<T>(m_writeOffsetBytes, sizeBytes);
@@ -79,16 +94,16 @@ public:
         return ptr;
     }
 
-    [[nodiscard]] static robin_hood::unordered_map<GLenum, GLint> makeAlignmentTable() noexcept;
-
     void bind() const noexcept;
     void bindBase(GLuint bindingIndex) const noexcept;
     void bindRange(GLuint bindingIndex, GLintptr offsetBytes, GLsizeiptr sizeBytes) const noexcept;
     void invalidate(GLintptr offset = 0, GLsizeiptr length = 0) const noexcept;
     void unmap() const noexcept;
 
-    static inline const robin_hood::unordered_map<GLenum, GLint> s_alignmentTable = makeAlignmentTable();
+    [[nodiscard]] static robin_hood::unordered_map<GLenum, GLint> makeAlignmentTable() noexcept;
 
+    // This table is amended with UBO and SSBO information by App upon initialization of the GL context.
+    static inline robin_hood::unordered_map<GLenum, GLint> s_alignmentTable = makeAlignmentTable();
     static constexpr GLbitfield s_access = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
 
 private:
@@ -103,6 +118,7 @@ private:
     GLenum m_target;
     GLsizei m_wholeSizeBytes;
     GLint m_alignment;
+    void* m_ptr;
     mutable GLsizeiptr m_writeOffsetBytes = 0;
     ResourceManagement m_management = ResourceManagement::MANUAL;
 

@@ -29,15 +29,6 @@ enum class ResourceManagement
 };
 
 //------------------------------------------------------------------------
-
-struct Vertex
-{
-    glm::vec3 pos = glm::vec3();
-    glm::vec3 nrm = glm::vec3();
-    glm::vec2 uv = glm::vec2();
-};
-
-//------------------------------------------------------------------------
 // As per: https://www.khronos.org/opengl/wiki/Vertex_Rendering#Indirect_rendering.
 
 struct MultiDrawElementsIndirectCommand

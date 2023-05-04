@@ -1,5 +1,6 @@
 #include "Camera.hpp"
 
+#include "App.hpp"
 #include "constants.hpp"
 #include "util.hpp"
 
@@ -23,7 +24,7 @@ Camera::Camera(ResourceManager* mngr, App* app, const Settings& settings)
 
 //------------------------------------------------------------------------
 
-void Camera::tick() const noexcept
+void Camera::update() const noexcept
 {
     const bool moved = move();
     const bool rotated = rotate();
@@ -36,7 +37,7 @@ void Camera::tick() const noexcept
 
 bool Camera::move() const noexcept
 {
-    const auto& [keys, pitch, yaw] = m_app->getGLFWState();
+    [[maybe_unused]] const auto& [keys, pitch, yaw] = m_app->getGLFWState();
     const float cameraSpeed = s_cameraSpeed * m_app->getDeltaTime();
 
     const glm::vec3 centerPrev = m_settings.center;
@@ -57,7 +58,6 @@ bool Camera::move() const noexcept
     if (m_settings.center != centerPrev)
     {
         updateView();
-        updateProjectivity();
         return true;
     }
 
@@ -80,7 +80,6 @@ bool Camera::rotate() const noexcept
     if (m_settings.target != targetPrev)
     {
         updateView();
-        updateProjectivity();
         return true;
     }
 

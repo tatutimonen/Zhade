@@ -1,5 +1,6 @@
 #include "App.hpp"
 #include "Buffer.hpp"
+#include "Handle.hpp"
 #include "Model.hpp"
 #include "PerspectiveCamera.hpp"
 #include "Renderer.hpp"
@@ -11,7 +12,6 @@
 #include "common.hpp"
 #include "constants.hpp"
 #include "util.hpp"
-#include "Handle.hpp"
 #include "ObjectPool.hpp"
 
 #include <assimp/Importer.hpp>
@@ -39,6 +39,17 @@ int main()
 
     app.init();
     {
+        Assimp::Importer importer{};
+        const aiScene* scene = importer.ReadFile(ASSET_PATH + "sponza/sponza.obj", constants::ASSIMP_LOAD_FLAGS);
+        if (scene == nullptr)
+        {
+            std::cerr << importer.GetErrorString() << "\n";
+            // TODO: Get some sort of default geometry instead.
+        }
+
+        std::cout << std::format("numMeshes: {}, numMaterirals: {}\n", scene->mNumMeshes, scene->mNumMaterials);
+        std::cout << Buffer::s_alignmentTable.at(GL_UNIFORM_BUFFER) << " " << Buffer::s_alignmentTable.at(GL_SHADER_STORAGE_BUFFER) << "\n";
+
         ResourceManager mngr;
 
         auto shaderProgram = ShaderProgram(
@@ -84,8 +95,6 @@ int main()
             }
         };
 
-        // Create render commands and gather model matrices.
-
         std::vector<glm::mat3x4> modelMatrices;
         for (auto i = 0u; i < numQuads; ++i)
         {
@@ -116,11 +125,13 @@ int main()
             .textures = quadTextures
         });
 
+        glfwSwapInterval(0);
+
         while (!glfwWindowShouldClose(app.getGLCtx()))
         {
-            app.updateInternalTimes();
+            app.updateTemporalState();
             glfwPollEvents();
-            camera.tick();
+            camera.update();
             renderer.render();
             glfwSwapBuffers(app.getGLCtx());
         }

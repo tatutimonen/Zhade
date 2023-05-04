@@ -37,9 +37,9 @@ Renderer::Renderer(ResourceManager* mngr, const Specification& spec)
     auto dibo = m_mngr->get(m_drawIndirectBuffer);
     auto tbo = m_mngr->get(m_transformsBuffer);
     auto tebo = m_mngr->get(m_textureBuffer);
-    cmdData = dibo->mapRange<MultiDrawElementsIndirectCommand>(0, dibo->getWholeSizeBytes());
-    transformsData = tbo->mapRange<glm::mat3x4>(0, tbo->getWholeSizeBytes());
-    textureData = tebo->mapRange<GLuint64>(0, tebo->getWholeSizeBytes());
+    cmdData = dibo->mapRangeWhole<MultiDrawElementsIndirectCommand>();
+    transformsData = tbo->mapRangeWhole<glm::mat3x4>();
+    textureData = tebo->mapRangeWhole<GLuint64>();
 
     glBindVertexArray(m_vao);
     dibo->bind();
@@ -90,11 +90,11 @@ void Renderer::render() const noexcept
     {
         const Model* model = m_mngr->get(task.model);
 
-        vbo->pushData(model->getVertices().data(), model->getNumVertices());
-        ebo->pushData(model->getIndices().data(), model->getNumIndices());
+        vbo->pushData(model->vertices().data(), model->numVertices());
+        ebo->pushData(model->indices().data(), model->numIndices());
 
         MultiDrawElementsIndirectCommand cmd{
-            .vertexCount = static_cast<GLuint>(model->getNumIndices()),
+            .vertexCount = static_cast<GLuint>(model->numIndices()),
             .instanceCount = task.instanceCount,
             .firstIndex = firstIndex,
             .baseVertex = baseVertex,
@@ -108,8 +108,8 @@ void Renderer::render() const noexcept
         for (const auto& tex : task.textures)
             textureData[textureIdx++] = m_mngr->get(tex)->getTexHandle();
 
-        firstIndex += model->getNumIndices();
-        baseVertex += model->getNumVertices();
+        firstIndex += model->numIndices();
+        baseVertex += model->numVertices();
         baseInstance += task.instanceCount;
     }
 

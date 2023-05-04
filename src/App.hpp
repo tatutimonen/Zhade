@@ -1,5 +1,7 @@
 #pragma once
 
+#include "constants.hpp"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 extern "C" {
@@ -7,7 +9,9 @@ extern "C" {
 #include <GLFW/glfw3.h>
 }
 
+#include <cstdint>
 #include <array>
+#include <format>
 #include <iostream>
 #include <string_view>
 
@@ -28,6 +32,15 @@ public:
         float yaw = -glm::half_pi<float>();
     };
 
+    struct TemporalState
+    {
+        float deltaTime = 0.0f;
+        float prevTime = 0.0f;
+        std::array<float, constants::TEMPORAL_CACHE_SIZE> FPS = { 0.0f };
+        std::array<float, constants::TEMPORAL_CACHE_SIZE> frameTimes = { 0.0f };
+        uint8_t writeIdx = 0;
+    };
+
     App() = default;
     ~App();
 
@@ -37,17 +50,11 @@ public:
     App& operator=(App&&) = default;
            
     GLFWwindow* getGLCtx() const noexcept { return m_window; }
-    float getDeltaTime() const noexcept { return m_deltaTime; }
+    float getDeltaTime() const noexcept { return m_temporalState.deltaTime; }
     const GLFWState& getGLFWState() const noexcept { return s_state; }
 
     void init() const noexcept;
-
-    void updateInternalTimes() const noexcept
-    {
-        float frameCurr = glfwGetTime();
-        m_deltaTime = frameCurr - m_framePrev;
-        m_framePrev = frameCurr;
-    }
+    void updateTemporalState() const noexcept;
 
     // According to the GLFW input reference.
     static void keyCallback(GLFWwindow* window, int key, [[maybe_unused]] int scancode, int action, int mode) noexcept
@@ -63,8 +70,9 @@ public:
         static float xPosPrev = xPos;
         static float yPosPrev = yPos;
 
-        float xOffset = s_mouseSensitivity * (xPos - xPosPrev);
-        float yOffset = s_mouseSensitivity * (yPosPrev - yPos);
+        static constexpr float mouseSensitivity = 0.002f;
+        float xOffset = mouseSensitivity * (xPos - xPosPrev);
+        float yOffset = mouseSensitivity * (yPosPrev - yPos);
 
         static constexpr float pitchBound = glm::half_pi<float>() - 0.01f;
         s_state.pitch = glm::clamp(s_state.pitch + yOffset, -pitchBound, pitchBound);
@@ -84,14 +92,12 @@ public:
     static constexpr std::string_view s_title = "Zhade - ESC to quit";
     static constexpr uint32_t s_windowWidth = 1980u;
     static constexpr uint32_t s_windowHeight = 1080u;
-    static constexpr float s_mouseSensitivity = 0.002f;
 
 private:
     static inline GLFWState s_state;
 
     mutable GLFWwindow* m_window;
-    mutable float m_deltaTime = 0.0f;
-    mutable float m_framePrev = 0.0f;
+    mutable TemporalState m_temporalState;
 };
 
 //------------------------------------------------------------------------

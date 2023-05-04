@@ -12,7 +12,7 @@ if(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
 #-------------------------------------------------------------------------
-# Toolchain, project definition, modules, packages.
+# Toolchain, project definition, includes, etc.
 
 set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
     CACHE STRING "Vcpkg toolchain file"

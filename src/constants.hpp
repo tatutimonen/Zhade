@@ -25,6 +25,7 @@ inline constexpr int32_t ASSIMP_LOAD_FLAGS = aiProcess_Triangulate | aiProcess_G
     | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
 
 inline constexpr size_t OBJECT_POOL_INIT_SIZE = 32;
+inline constexpr uint8_t TEMPORAL_CACHE_SIZE = 128;
 
 //------------------------------------------------------------------------
 

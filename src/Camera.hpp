@@ -1,6 +1,5 @@
 #pragma once
 
-#include "App.hpp"
 #include "Handle.hpp"
 #include "ResourceManager.hpp"
 
@@ -14,6 +13,10 @@ extern "C" {
 
 namespace Zhade
 {
+
+//------------------------------------------------------------------------
+
+class App;
 
 //------------------------------------------------------------------------
 
@@ -52,7 +55,7 @@ public:
         );
     }
 
-    void tick() const noexcept;
+    void update() const noexcept;
 
     virtual const Settings& getSettings() const noexcept = 0;
     virtual void updateProjectivity() const noexcept = 0;
@@ -74,7 +77,7 @@ protected:
     App* m_app;
     mutable Settings m_settings;
     mutable Matrices m_matrices;
-    Handle<Buffer> m_uniformBuffer;
+    Zhade::Handle<Buffer> m_uniformBuffer;
 };
 
 //------------------------------------------------------------------------

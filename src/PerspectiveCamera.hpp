@@ -1,5 +1,7 @@
 #include "Camera.hpp"
 
+#include "App.hpp"
+
 //------------------------------------------------------------------------
 
 namespace Zhade

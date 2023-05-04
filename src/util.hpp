@@ -1,10 +1,12 @@
 #pragma once
 
+#include <assimp/vector3.h>
 #include <glm/glm.hpp>
 extern "C" {
 #include <GL/glew.h>
 }
 
+#include <span>
 
 //------------------------------------------------------------------------
 
@@ -74,6 +76,29 @@ inline GLuint makeUnitVec3zPacked() noexcept
 inline GLuint makeNegUnitVec3zPacked() noexcept
 {
     return vec4_to_INT_2_10_10_10_REV(glm::vec4(-makeUnitVec3z(), 0.0f));
+}
+
+//------------------------------------------------------------------------
+
+template<std::floating_point T>
+inline T average(std::span<T> values)
+{
+    T sum{};
+    for (const auto value : values)
+        sum += value;
+    return sum / values.size();
+}
+
+//------------------------------------------------------------------------
+
+inline glm::vec3 vec3FromAiVector3D(const aiVector3D& vec)
+{
+    return glm::vec3(vec.x, vec.y, vec.z);
+}
+
+inline glm::vec2 vec2FromAiVector3D(const aiVector3D& vec)
+{
+    return glm::vec2(vec.x, vec.y);
 }
 
 //------------------------------------------------------------------------
