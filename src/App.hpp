@@ -9,8 +9,8 @@ extern "C" {
 #include <GLFW/glfw3.h>
 }
 
-#include <cstdint>
 #include <array>
+#include <cstdint>
 #include <format>
 #include <iostream>
 #include <string_view>

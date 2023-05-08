@@ -16,8 +16,8 @@ Renderer::Renderer(ResourceManager* mngr, const Specification& spec)
 {
     glCreateVertexArrays(1, &m_vao);
 
-    glVertexArrayVertexBuffer(m_vao, 0, m_mngr->get(m_vertexBuffer)->getGLHandle(), 0, sizeof(Vertex));
-    glVertexArrayElementBuffer(m_vao, m_mngr->get(m_indexBuffer)->getGLHandle());
+    glVertexArrayVertexBuffer(m_vao, 0, m_mngr->get(m_vertexBuffer)->getName(), 0, sizeof(Vertex));
+    glVertexArrayElementBuffer(m_vao, m_mngr->get(m_indexBuffer)->getName());
 
     glEnableVertexArrayAttrib(m_vao, 0);
     glEnableVertexArrayAttrib(m_vao, 1);
@@ -37,9 +37,6 @@ Renderer::Renderer(ResourceManager* mngr, const Specification& spec)
     auto dibo = m_mngr->get(m_drawIndirectBuffer);
     auto tbo = m_mngr->get(m_transformsBuffer);
     auto tebo = m_mngr->get(m_textureBuffer);
-    cmdData = dibo->mapRangeWhole<MultiDrawElementsIndirectCommand>();
-    transformsData = tbo->mapRangeWhole<glm::mat3x4>();
-    textureData = tebo->mapRangeWhole<GLuint64>();
 
     glBindVertexArray(m_vao);
     dibo->bind();
@@ -78,6 +75,10 @@ void Renderer::render() const noexcept
     drawIndirectBuffer->invalidate();
     transformsBuffer->invalidate();
     textureBuffer->invalidate();
+
+    auto cmdData = drawIndirectBuffer->getPtr<MultiDrawElementsIndirectCommand>();
+    auto transformsData = transformsBuffer->getPtr<glm::mat3x4>();
+    auto textureData = textureBuffer->getPtr<GLuint64>();
 
     GLuint firstIndex = 0;
     GLuint baseVertex = 0;

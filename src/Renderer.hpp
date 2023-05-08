@@ -56,10 +56,6 @@ private:
     mutable Handle<Buffer> m_transformsBuffer;
     mutable Handle<Buffer> m_textureBuffer;
     mutable std::vector<Task> m_tasks;
-
-    MultiDrawElementsIndirectCommand* cmdData;
-    glm::mat3x4* transformsData;
-    GLuint64* textureData;
 };
 
 // Some resources:

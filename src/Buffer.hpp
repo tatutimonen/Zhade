@@ -33,11 +33,12 @@ public:
     Buffer(Buffer&&) = default;
     Buffer& operator=(Buffer&&) = default;
 
-    [[nodiscard]] GLuint getGLHandle() const noexcept { return m_handle; }
+    [[nodiscard]] GLuint getName() const noexcept { return m_name; }
     [[nodiscard]] GLsizei getSizeBytes() const noexcept { return m_writeOffsetBytes; }
     [[nodiscard]] GLsizei getWholeSizeBytes() const noexcept { return m_wholeSizeBytes; }
-
-    [[nodiscard]] bool isValid() const noexcept { return m_handle != 0; }
+    
+    template<typename T>
+    [[nodiscard]] T* getPtr() const noexcept { return std::bit_cast<T*>(m_ptr); }
 
     template<typename T>
     [[nodiscard]] bool fits(GLsizei size) const noexcept
@@ -48,77 +49,42 @@ public:
     template<typename T>
     std::span<T> pushData(const T* data, GLsizei size) const noexcept
     {
-        setData<T>(data, size, m_writeOffsetBytes);
         const GLsizei sizeBytes = sizeof(T) * size;
-        const auto span = std::span(mapRangeBump<T>(sizeBytes), size);
-        unmap();
-        return span;
-    }
-
-    template<typename T>
-    void pushDataMapped(const T* data, GLsizei size) const noexcept
-    {
-        T* ptr = std::bit_cast<T*>(m_ptr);  // 256, 8*4 = 32 bytes
-        std::memcpy(ptr, data, sizeof(T) * size);
+        std::memcpy(m_ptr + m_writeOffsetBytes, std::bit_cast<uint8_t*>(data), sizeBytes);
+        m_writeOffsetBytes += calculateWriteOffsetIncrement(sizeBytes);
+        return std::span(std::bit_cast<T*>(m_ptr), size);
     }
 
     template<typename T>
     void setData(const T* data, GLsizei size, GLintptr offsetBytes) const noexcept
     {
-        glNamedBufferSubData(m_handle, offsetBytes, sizeof(T) * size, data);
-    }
-
-    template<typename T>
-    [[nodiscard]] T* map() const noexcept
-    {
-        return static_cast<T*>(glMapNamedBuffer(m_handle, GL_READ_WRITE));
-    }
-
-    template<typename T>
-    [[nodiscard]] T* mapRange(GLintptr offsetBytes, GLsizei sizeBytes) const noexcept
-    {
-        return static_cast<T*>(glMapNamedBufferRange(m_handle, offsetBytes, sizeBytes, s_access));
-    }
-
-    template<typename T>
-    [[nodiscard]] T* mapRangeWhole() const noexcept
-    {
-        return static_cast<T*>(glMapNamedBufferRange(m_handle, 0, m_wholeSizeBytes, s_access));
-    }
-
-    template<typename T>
-    [[nodiscard]] T* mapRangeBump(GLsizei sizeBytes) const noexcept
-    {
-        T* ptr = mapRange<T>(m_writeOffsetBytes, sizeBytes);
-        m_writeOffsetBytes += computeWriteOffsetIncrement(sizeBytes);
-        return ptr;
+        glNamedBufferSubData(m_name, offsetBytes, sizeof(T) * size, data);
     }
 
     void bind() const noexcept;
     void bindBase(GLuint bindingIndex) const noexcept;
     void bindRange(GLuint bindingIndex, GLintptr offsetBytes, GLsizeiptr sizeBytes) const noexcept;
     void invalidate(GLintptr offset = 0, GLsizeiptr length = 0) const noexcept;
-    void unmap() const noexcept;
 
     [[nodiscard]] static robin_hood::unordered_map<GLenum, GLint> makeAlignmentTable() noexcept;
 
-    // This table is amended with UBO and SSBO information by App upon initialization of the GL context.
-    static inline robin_hood::unordered_map<GLenum, GLint> s_alignmentTable = makeAlignmentTable();
     static constexpr GLbitfield s_access = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
+    // This table is amended with UBO -and SSBO information by App upon initialization of the GL context.
+    static inline robin_hood::unordered_map<GLenum, GLint> s_alignmentTable = makeAlignmentTable();
 
 private:
-    [[nodiscard]] GLsizeiptr computeWriteOffsetIncrement(GLsizei sizeBytes) const noexcept
+    [[nodiscard]] GLsizeiptr calculateWriteOffsetIncrement(GLsizei sizeBytes) const noexcept
     {
         return static_cast<GLsizeiptr>(std::ceil(static_cast<float>(sizeBytes) / m_alignment) * m_alignment);
     }
 
     void freeResources() const noexcept;
 
-    GLuint m_handle;
+    GLuint m_name;
     GLenum m_target;
     GLsizei m_wholeSizeBytes;
     GLint m_alignment;
-    void* m_ptr;
+    uint8_t* m_ptr;
     mutable GLsizeiptr m_writeOffsetBytes = 0;
     ResourceManagement m_management = ResourceManagement::MANUAL;
 
