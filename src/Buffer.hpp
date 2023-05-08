@@ -52,7 +52,7 @@ public:
         const GLsizei sizeBytes = sizeof(T) * size;
         std::memcpy(m_ptr + m_writeOffsetBytes, data, sizeBytes);
         m_writeOffsetBytes += calculateWriteOffsetIncrement(sizeBytes);
-        return std::span(std::bit_cast<T*>(m_ptr), size);
+        return std::span(getPtr<T>(), size);
     }
 
     template<typename T>
