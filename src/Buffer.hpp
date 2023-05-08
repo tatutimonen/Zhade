@@ -50,7 +50,7 @@ public:
     std::span<T> pushData(const T* data, GLsizei size) const noexcept
     {
         const GLsizei sizeBytes = sizeof(T) * size;
-        std::memcpy(m_ptr + m_writeOffsetBytes, std::bit_cast<uint8_t*>(data), sizeBytes);
+        std::memcpy(m_ptr + m_writeOffsetBytes, data, sizeBytes);
         m_writeOffsetBytes += calculateWriteOffsetIncrement(sizeBytes);
         return std::span(std::bit_cast<T*>(m_ptr), size);
     }
