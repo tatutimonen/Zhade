@@ -50,9 +50,10 @@ public:
     std::span<T> pushData(const T* data, GLsizei size) const noexcept
     {
         const GLsizei sizeBytes = sizeof(T) * size;
-        std::memcpy(m_ptr + m_writeOffsetBytes, data, sizeBytes);
+        uint8_t* dst = m_ptr + m_writeOffsetBytes;
+        std::memcpy(dst, data, sizeBytes);
         m_writeOffsetBytes += calculateWriteOffsetIncrement(sizeBytes);
-        return std::span(getPtr<T>(), size);
+        return std::span(std::bit_cast<T*>(dst), size);
     }
 
     template<typename T>
