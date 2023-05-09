@@ -44,29 +44,26 @@ public:
     Texture(Texture&&) = default;
     Texture& operator=(Texture&&) = default;
 
-    [[nodiscard]] GLuint getHandle() const noexcept { return m_handle; }
-    [[nodiscard]] GLuint64 getTexHandle() const noexcept { return m_texHandle; }
-    [[nodiscard]] const glm::ivec2& getDims() const noexcept { return m_dims; }
-
-    void generateMipmap() const noexcept { glGenerateTextureMipmap(m_handle); }
-    void makeResident() const noexcept { glMakeTextureHandleResidentARB(m_texHandle); }
-
     void setData(const void* data) const noexcept
     {
-        glTextureSubImage2D(m_handle, 0, 0, 0, m_dims.x, m_dims.y, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glTextureSubImage2D(m_name, 0, 0, 0, m_dims.x, m_dims.y, GL_RGBA, GL_UNSIGNED_BYTE, data);
     }
+
+    [[nodiscard]] GLuint getHandle() const noexcept { return m_name; }
+    [[nodiscard]] GLuint64 getTexHandle() const noexcept { return m_handle; }
+    [[nodiscard]] const glm::ivec2& getDims() const noexcept { return m_dims; }
+
+    void freeResources() const noexcept;
+    void generateMipmap() const noexcept { glGenerateTextureMipmap(m_name); }
+    void makeResident() const noexcept { glMakeTextureHandleResidentARB(m_handle); }
 
     static Handle<Texture> fromFile(ResourceManager* mngr, std::string_view filename, const Specification& spec = Specification{}) noexcept;
 
 private:
-    void freeResources() const noexcept;
-
-    GLuint m_handle = 0;
-    GLuint64 m_texHandle;
+    GLuint m_name = 0;
+    GLuint64 m_handle;
     glm::ivec2 m_dims;
     ResourceManagement m_management = ResourceManagement::MANUAL;
-
-    friend class ResourceManager;
 };
 
 //------------------------------------------------------------------------

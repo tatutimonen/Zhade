@@ -36,7 +36,12 @@ public:
         }
     }
 
-    ~ObjectPool() = default;
+    ~ObjectPool()
+    {
+        if constexpr (requires { T::freeResources(); })
+            for (const auto& item : m_pool)
+                item.freeResources();
+    }
 
     ObjectPool(const ObjectPool&) = delete;
     ObjectPool& operator=(const ObjectPool&) = delete;
@@ -72,6 +77,8 @@ public:
 
     void deallocate(const Handle<T>& handle) const noexcept
     {
+        if constexpr (requires { T::freeResources(); })
+            get(handle)->freeResources();
         const uint32_t deallocIdx = handle.m_index;
         m_freeList.push(deallocIdx);
         ++m_generations[deallocIdx];
@@ -83,8 +90,6 @@ public:
         if (handle.m_generation < m_generations.at(getIdx)) return nullptr;
         return &m_pool.at(handle.m_index);
     }
-
-    static constexpr uint32_t s_growthFactor = 2u;
 
 private:
     [[nodiscard]] Handle<T> getHandleToNextFree()
@@ -98,7 +103,7 @@ private:
     void resize()
     {
         const size_t size_prev = m_size;
-        m_size = std::max(1ull, m_size) * s_growthFactor;
+        m_size = std::max(1ull, m_size) * constants::DYNAMIC_STORAGE_GROWTH_FACTOR;
 
         m_pool.resize(m_size);
         m_generations.resize(m_size);

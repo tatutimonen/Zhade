@@ -19,7 +19,7 @@ class ResourceManager
 {
 public:
     ResourceManager() = default;
-    ~ResourceManager();
+    ~ResourceManager() = default;
 
     ResourceManager(const ResourceManager&) = delete;
     ResourceManager& operator=(const ResourceManager&) = delete;
@@ -58,7 +58,6 @@ public:
             return nullptr;
     }
 
-    // Workaround for MSVC's inability to distinguish the types Model and Texture.
     [[nodiscard]] Texture* get(const Handle<Texture>& handle) noexcept
     {
         return m_textures.get(handle);
@@ -73,7 +72,6 @@ public:
             m_models.deallocate(handle);
     }
 
-    // Workaround for MSVC's inability to distinguish the types Model and Texture.
     void destroy(const Handle<Texture>& handle) const noexcept
     {
         m_textures.deallocate(handle);

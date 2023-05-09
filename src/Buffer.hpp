@@ -36,7 +36,7 @@ public:
     [[nodiscard]] GLuint getName() const noexcept { return m_name; }
     [[nodiscard]] GLsizei getSizeBytes() const noexcept { return m_writeOffsetBytes; }
     [[nodiscard]] GLsizei getWholeSizeBytes() const noexcept { return m_wholeSizeBytes; }
-    
+
     template<typename T>
     [[nodiscard]] T* getPtr() const noexcept { return std::bit_cast<T*>(m_ptr); }
 
@@ -65,11 +65,13 @@ public:
     void bind() const noexcept;
     void bindBase(GLuint bindingIndex) const noexcept;
     void bindRange(GLuint bindingIndex, GLintptr offsetBytes, GLsizeiptr sizeBytes) const noexcept;
+    void freeResources() const noexcept;
     void invalidate(GLintptr offset = 0, GLsizeiptr length = 0) const noexcept;
 
     [[nodiscard]] static robin_hood::unordered_map<GLenum, GLint> makeAlignmentTable() noexcept;
 
     static constexpr GLbitfield s_access = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
+
     // This table is amended with UBO -and SSBO information by App upon initialization of the GL context.
     static inline robin_hood::unordered_map<GLenum, GLint> s_alignmentTable = makeAlignmentTable();
 
@@ -79,17 +81,13 @@ private:
         return static_cast<GLsizeiptr>(std::ceil(static_cast<float>(sizeBytes) / m_alignment) * m_alignment);
     }
 
-    void freeResources() const noexcept;
-
-    GLuint m_name;
+    GLuint m_name = 0;
     GLenum m_target;
     GLsizei m_wholeSizeBytes;
     GLint m_alignment;
     uint8_t* m_ptr;
     mutable GLsizeiptr m_writeOffsetBytes = 0;
     ResourceManagement m_management = ResourceManagement::MANUAL;
-
-    friend class ResourceManager;
 };
 
 //------------------------------------------------------------------------

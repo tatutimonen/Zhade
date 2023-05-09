@@ -70,6 +70,9 @@ public:
 
 protected:
     Camera(ResourceManager* mngr, App* app, const Settings& settings);
+
+    const Buffer* uniformBuffer() const noexcept { return m_mngr->get(m_uniformBuffer); }
+
     bool move() const noexcept;
     bool rotate() const noexcept;
 

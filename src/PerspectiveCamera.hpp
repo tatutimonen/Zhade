@@ -31,6 +31,7 @@ public:
     {
         const auto& settings = static_cast<Settings>(getSettings());
         m_matrices.P = glm::perspective(settings.fov, settings.aspectRatio, settings.zNear, settings.zFar);
+        uniformBuffer()->setData<glm::mat4>(&m_matrices.P, 1, offsetof(Matrices, P));
     }
 
     virtual const Camera::Settings& getSettings() const noexcept override { return m_settings; }

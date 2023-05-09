@@ -14,22 +14,22 @@ Texture::Texture(const glm::ivec2& dims, const Specification& spec, ResourceMana
     : m_dims{dims},
       m_management{management}
 {
-    glCreateTextures(GL_TEXTURE_2D, 1, &m_handle);
-    glTextureStorage2D(m_handle, spec.levels, spec.internalFormat, m_dims.x, m_dims.y);
+    glCreateTextures(GL_TEXTURE_2D, 1, &m_name);
+    glTextureStorage2D(m_name, spec.levels, spec.internalFormat, m_dims.x, m_dims.y);
 
-    glTextureParameteri(m_handle, GL_TEXTURE_MIN_FILTER, spec.minFilter);
-    glTextureParameteri(m_handle, GL_TEXTURE_MAG_FILTER, spec.magFilter);
-    glTextureParameteri(m_handle, GL_TEXTURE_WRAP_S, spec.wrapS);
-    glTextureParameteri(m_handle, GL_TEXTURE_WRAP_T, spec.wrapT);
-    glTextureParameterf(m_handle, GL_TEXTURE_MAX_ANISOTROPY, spec.anisotropy);
+    glTextureParameteri(m_name, GL_TEXTURE_MIN_FILTER, spec.minFilter);
+    glTextureParameteri(m_name, GL_TEXTURE_MAG_FILTER, spec.magFilter);
+    glTextureParameteri(m_name, GL_TEXTURE_WRAP_S, spec.wrapS);
+    glTextureParameteri(m_name, GL_TEXTURE_WRAP_T, spec.wrapT);
+    glTextureParameterf(m_name, GL_TEXTURE_MAX_ANISOTROPY, spec.anisotropy);
 
     if (spec.internalFormat == GL_DEPTH_COMPONENT32)  // Depth texture?
     {
-        glTextureParameteri(m_handle, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
-        glTextureParameteri(m_handle, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+        glTextureParameteri(m_name, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+        glTextureParameteri(m_name, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
     }
 
-    m_texHandle = glGetTextureHandleARB(m_handle);
+    m_handle = glGetTextureHandleARB(m_name);
     makeResident();
 }
 
@@ -45,9 +45,9 @@ Texture::~Texture()
 
 void Texture::freeResources() const noexcept
 {
-    if (m_handle == 0) return;
-    glMakeTextureHandleNonResidentARB(m_texHandle);
-    glDeleteTextures(1, &m_handle);
+    if (m_management == ResourceManagement::RAII || glIsTexture(m_name) == GL_FALSE) [[unlikely]] return;
+    glMakeTextureHandleNonResidentARB(m_handle);
+    glDeleteTextures(1, &m_name);
 }
 
 //------------------------------------------------------------------------

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "constants.hpp"
+
 #include <algorithm>
 #include <memory>
 #include <stdexcept>
@@ -27,7 +29,10 @@ public:
     Stack& operator=(Stack&&) = default;
 
     [[nodiscard]] size_t size() const noexcept { return m_size; }
-    [[nodiscard]] bool isSaturated() const noexcept { return m_size == 0 || m_size == m_underlying.size(); }
+    [[nodiscard]] bool isSaturated() const noexcept
+    {
+        return m_size == 0 && m_size <= m_underlying.size() || m_size == m_underlying.size();
+    }
 
     T& top()
     {
@@ -93,12 +98,10 @@ public:
         return m_underlying.at(pos);
     }
 
-    static constexpr uint32_t s_growthFactor = 2u;
-
 private:
     void resize() noexcept
     {
-        m_underlying.resize(std::max(1ull, m_size) * s_growthFactor);
+        m_underlying.resize(std::max(1ull, m_size) * constants::DYNAMIC_STORAGE_GROWTH_FACTOR);
     }
 
     std::vector<T> m_underlying;

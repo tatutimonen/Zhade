@@ -18,7 +18,7 @@ Camera::Camera(ResourceManager* mngr, App* app, const Settings& settings)
       m_matrices{Matrices{}},
       m_uniformBuffer{mngr->createBuffer(GL_UNIFORM_BUFFER, static_cast<GLsizei>(sizeof(Matrices)))}
 {
-    m_mngr->get(m_uniformBuffer)->bindBase(constants::CAMERA_BINDING);
+    uniformBuffer()->bindBase(constants::CAMERA_BINDING);
     updateView();
 }
 
@@ -30,7 +30,7 @@ void Camera::update() const noexcept
     const bool rotated = rotate();
 
     if (moved || rotated)
-        m_mngr->get(m_uniformBuffer)->setData<Matrices>(&m_matrices, 1, 0);
+        uniformBuffer()->setData<glm::mat3x4>(&m_matrices.VT, 1, offsetof(Matrices, VT));
 }
 
 //------------------------------------------------------------------------
