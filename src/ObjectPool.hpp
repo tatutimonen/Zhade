@@ -79,9 +79,17 @@ public:
 
     void deallocate(const Handle<T>& handle) const noexcept
     {
+<<<<<<< HEAD
         const T* ptr = get(handle);
         if (ptr == nullptr) [[unlikely]] return;
         if constexpr (requires { T::freeResources(); }) ptr->freeResources();
+=======
+        if constexpr (requires { T::freeResources(); })
+        {
+            if (const T* ptr = get(handle); ptr != nullptr) [[likely]]
+                ptr->freeResources();
+        }
+>>>>>>> 9f6699ec1ec2b9bea358d0718ef3f95ccf6b35d1
         const uint32_t deallocIdx = handle.m_index;
         m_freeList.push(deallocIdx);
         ++m_generations[deallocIdx];
