@@ -39,8 +39,10 @@ public:
     ~ObjectPool()
     {
         if constexpr (requires { T::freeResources(); })
+        {
             for (const auto& item : m_pool)
                 item.freeResources();
+        }
     }
 
     ObjectPool(const ObjectPool&) = delete;
@@ -78,7 +80,10 @@ public:
     void deallocate(const Handle<T>& handle) const noexcept
     {
         if constexpr (requires { T::freeResources(); })
-            get(handle)->freeResources();
+        {
+            if (const T* ptr = get(handle); ptr != nullptr) [[likely]]
+                ptr->freeResources();
+        }
         const uint32_t deallocIdx = handle.m_index;
         m_freeList.push(deallocIdx);
         ++m_generations[deallocIdx];
