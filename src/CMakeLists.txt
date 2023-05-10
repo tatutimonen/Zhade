@@ -12,6 +12,7 @@ set(src_files
     PerspectiveCamera.cpp
     Renderer.cpp
     ResourceManager.cpp
+    Scene.cpp
     Shader.cpp
     ShaderProgram.cpp
     Stack.cpp

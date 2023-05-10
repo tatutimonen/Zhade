@@ -41,13 +41,16 @@ public:
     [[nodiscard]] T* getPtr() const noexcept { return std::bit_cast<T*>(m_ptr); }
 
     template<typename T>
+    [[nodiscard]] T* getWritePtr() const noexcept { return std::bit_cast<T*>(m_ptr + m_writeOffsetBytes); }
+
+    template<typename T>
     [[nodiscard]] bool fits(GLsizei size) const noexcept
     {
         return m_writeOffsetBytes + sizeof(T)*size <= m_wholeSizeBytes;
     }
 
     template<typename T>
-    std::span<T> pushData(const T* data, GLsizei size) const noexcept
+    std::span<T> pushData(const T* data, GLsizei size = 1) const noexcept
     {
         const GLsizei sizeBytes = sizeof(T) * size;
         uint8_t* dst = m_ptr + m_writeOffsetBytes;

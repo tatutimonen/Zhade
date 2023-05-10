@@ -4,8 +4,10 @@
 
 #include <algorithm>
 #include <memory>
-#include <stdexcept>
 #include <vector>
+
+#include <iostream>
+#include <format>
 
 //------------------------------------------------------------------------
 
@@ -29,43 +31,35 @@ public:
     Stack& operator=(Stack&&) = default;
 
     [[nodiscard]] size_t size() const noexcept { return m_size; }
-    [[nodiscard]] bool isSaturated() const noexcept
-    {
-        return m_size == 0 && m_size <= m_underlying.size() || m_size == m_underlying.size();
-    }
 
     T& top()
     {
-        if (m_size == 0) [[unlikely]]
-            throw std::out_of_range("Top of an empty Stack");
+        if (m_size == 0) [[unlikely]] std::cerr << "Top of an empty Stack\n";
         return at(m_size - 1);
     }
 
     const T& top() const
     {
-        if (m_size == 0) [[unlikely]]
-            throw std::out_of_range("Top of an empty Stack");
+        if (m_size == 0) [[unlikely]] std::cerr << "Top of an empty Stack\n";
         return at(m_size - 1);
     }
 
     void pop()
     {
-        if (m_size == 0) [[unlikely]]
-            throw std::out_of_range("Pop on an empty Stack");
-        --m_size;
+        if (m_size > 0) [[likely]] --m_size;
     }
 
     void push(const T& item) noexcept
     requires std::copyable<T>
     {
-        if (isSaturated()) [[unlikely]] resize();
+        if (m_size == m_underlying.size()) [[unlikely]] resize();
         at(m_size++) = item;
     }
 
     void push(T&& item) noexcept
     requires std::movable<T>
     {
-        if (isSaturated()) [[unlikely]] resize();
+        if (m_size == m_underlying.size()) [[unlikely]] resize();
         at(m_size++) = item;
     }
 
@@ -73,7 +67,7 @@ public:
     requires std::constructible_from<T, Args...>
     void emplace(Args&& ...args) noexcept
     {
-        if (isSaturated()) [[unlikely]] resize();
+        if (m_size == m_underlying.size()) [[unlikely]] resize();
         std::construct_at(&at(m_size++), std::forward<Args>(args)...);
     }
 

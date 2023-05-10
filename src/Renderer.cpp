@@ -89,7 +89,7 @@ void Renderer::render() const noexcept
 
     for (const auto& task : m_tasks)
     {
-        const Model* model = m_mngr->get(task.model);
+        const Model* model = m_mngr->get<Model>(task.model);
 
         vbo->pushData(model->vertices().data(), model->numVertices());
         ebo->pushData(model->indices().data(), model->numIndices());
@@ -107,7 +107,7 @@ void Renderer::render() const noexcept
             transformsData[transformIdx++] = transform;
 
         for (const auto& tex : task.textures)
-            textureData[textureIdx++] = m_mngr->get(tex)->getTexHandle();
+            textureData[textureIdx++] = m_mngr->get(tex)->getHandle();
 
         firstIndex += model->numIndices();
         baseVertex += model->numVertices();

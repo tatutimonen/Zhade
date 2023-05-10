@@ -3,18 +3,17 @@
 #include "Buffer.hpp"
 #include "Handle.hpp"
 #include "Model.hpp"
+#include "ResourceManager.hpp"
+#include "Texture.hpp"
+#include "common.hpp"
 
-#include <string_view>
+#include <filesystem>
 #include <vector>
 
 //------------------------------------------------------------------------
 
 namespace Zhade
 {
-
-//------------------------------------------------------------------------
-
-class ResourceManager;
 
 //------------------------------------------------------------------------
 
@@ -27,7 +26,7 @@ public:
           m_indexBuffer{mngr->createBuffer(GL_ELEMENT_ARRAY_BUFFER, 1 << 17)}
     {}
 
-    void addNamedModel(std::string_view filename) const noexcept;
+    void addModelFromFile(const fs::path& path) const noexcept;
 
 private:
     const Buffer* vertexBuffer() const noexcept { return m_mngr->get(m_vertexBuffer); }
@@ -36,7 +35,8 @@ private:
     ResourceManager* m_mngr;
     Handle<Buffer> m_vertexBuffer;
     Handle<Buffer> m_indexBuffer;
-    std::vector<Handle<Model2>> m_models;
+    mutable std::vector<Handle<Texture>> m_textures;
+    mutable std::vector<Handle<Model2>> m_models;
 };
 
 //------------------------------------------------------------------------

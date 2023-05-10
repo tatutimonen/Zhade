@@ -36,8 +36,8 @@ public:
 
     struct Matrices
     {
-        glm::mat3x4 VT = glm::mat3x4(1.0f);
-        glm::mat4 P = glm::mat4(1.0f);
+        glm::mat3x4 VT = glm::mat3x4();
+        glm::mat4 P = glm::mat4();
     };
 
     virtual ~Camera()

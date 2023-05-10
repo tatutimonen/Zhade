@@ -8,7 +8,9 @@
 #include <cstdint>
 #include <ranges>
 #include <vector>
+
 #include <iostream>
+#include <format>
 
 //------------------------------------------------------------------------
 
@@ -90,14 +92,14 @@ public:
     [[nodiscard]] T* get(const Handle<T>& handle) const noexcept
     {
         const uint32_t getIdx = handle.m_index;
-        if (handle.m_generation < m_generations.at(getIdx)) return nullptr;
+        if (handle.m_generation < m_generations.at(getIdx)) [[unlikely]] return nullptr;
         return &m_pool.at(handle.m_index);
     }
 
 private:
     [[nodiscard]] Handle<T> getHandleToNextFree()
     {
-        if (m_freeList.isSaturated()) [[unlikely]] resize();
+        if (m_freeList.size() == 0) [[unlikely]] resize();
         const uint32_t nextFreeIdx = m_freeList.top();
         m_freeList.pop();
         return Handle<T>(nextFreeIdx, ++m_generations[nextFreeIdx]);

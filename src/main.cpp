@@ -28,6 +28,7 @@
 #include <memory>
 #include <ranges>
 #include <vector>
+#include <filesystem>
 
 //------------------------------------------------------------------------
 
@@ -40,21 +41,37 @@ int main()
     app.init();
     {
         Assimp::Importer importer{};
-        const aiScene* scene = importer.ReadFile(ASSET_PATH + "sponza/sponza.obj", constants::ASSIMP_LOAD_FLAGS);
+        const aiScene* scene = importer.ReadFile((ASSET_PATH / "sponza" / "sponza.obj").string().c_str(), constants::ASSIMP_LOAD_FLAGS);
         if (scene == nullptr)
         {
             std::cerr << importer.GetErrorString() << "\n";
             // TODO: Get some sort of default geometry instead.
         }
 
+        std::filesystem::path path1 = "foo";
+        std::filesystem::path path2 = "bar";
+        std::cout << (path1 / path2.concat("asd.c\n")).parent_path().string();
+
         std::cout << std::format("numMeshes: {}, numMaterirals: {}\n", scene->mNumMeshes, scene->mNumMaterials);
         std::cout << Buffer::s_alignmentTable.at(GL_UNIFORM_BUFFER) << " " << Buffer::s_alignmentTable.at(GL_SHADER_STORAGE_BUFFER) << "\n";
+
+        for (uint32_t i : std::views::iota(0u, scene->mNumMaterials))
+        {
+            const aiMaterial* material = scene->mMaterials[i];
+
+            if (material->GetTextureCount(aiTextureType_DIFFUSE) > 0)
+            {
+                aiString path;
+                if (material->GetTexture(aiTextureType_DIFFUSE, 0, &path) == AI_FAILURE) continue;
+                std::cout << std::format("{}\n", path.data);
+            }
+        }
 
         ResourceManager mngr;
 
         auto shaderProgram = ShaderProgram(
-            Shader<GL_VERTEX_SHADER>(SHADER_PATH + "debug.vert"),
-            Shader<GL_FRAGMENT_SHADER>(SHADER_PATH + "debug.frag")
+            Shader<GL_VERTEX_SHADER>(SHADER_PATH / "debug.vert"),
+            Shader<GL_FRAGMENT_SHADER>(SHADER_PATH / "debug.frag")
         );
 
         const auto camera = PerspectiveCamera(&mngr, &app);
@@ -106,10 +123,10 @@ int main()
         }
 
         auto quadTextures = std::array<Handle<Texture>, numQuads>{
-            Texture::fromFile(&mngr, TEXTURE_PATH + "cataphract.jpg"),
-            Texture::fromFile(&mngr, TEXTURE_PATH + "berserk.png"),
-            Texture::fromFile(&mngr, TEXTURE_PATH + "longbowman.png"),
-            Texture::fromFile(&mngr, TEXTURE_PATH + "jaguarwarrior.png")
+            Texture::fromFile(&mngr, TEXTURE_PATH / "cataphract.jpg"),
+            Texture::fromFile(&mngr, TEXTURE_PATH / "berserk.png"),
+            Texture::fromFile(&mngr, TEXTURE_PATH / "longbowman.png"),
+            Texture::fromFile(&mngr, TEXTURE_PATH / "jaguarwarrior.png")
         };
 
         renderer.submit({

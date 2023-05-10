@@ -8,8 +8,6 @@ extern "C" {
 #include <GL/glew.h>
 }
 
-#include <string_view>
-
 //------------------------------------------------------------------------
 
 namespace Zhade
@@ -49,15 +47,15 @@ public:
         glTextureSubImage2D(m_name, 0, 0, 0, m_dims.x, m_dims.y, GL_RGBA, GL_UNSIGNED_BYTE, data);
     }
 
-    [[nodiscard]] GLuint getHandle() const noexcept { return m_name; }
-    [[nodiscard]] GLuint64 getTexHandle() const noexcept { return m_handle; }
+    [[nodiscard]] GLuint getName() const noexcept { return m_name; }
+    [[nodiscard]] GLuint64 getHandle() const noexcept { return m_handle; }
     [[nodiscard]] const glm::ivec2& getDims() const noexcept { return m_dims; }
 
     void freeResources() const noexcept;
     void generateMipmap() const noexcept { glGenerateTextureMipmap(m_name); }
     void makeResident() const noexcept { glMakeTextureHandleResidentARB(m_handle); }
 
-    static Handle<Texture> fromFile(ResourceManager* mngr, std::string_view filename, const Specification& spec = Specification{}) noexcept;
+    static Handle<Texture> fromFile(ResourceManager* mngr, const fs::path& path, const Specification& spec = Specification{}) noexcept;
 
 private:
     GLuint m_name = 0;

@@ -2,6 +2,7 @@
 
 #include "Buffer.hpp"
 #include "Handle.hpp"
+#include "Mesh.hpp"
 #include "Model.hpp"
 #include "ObjectPool.hpp"
 #include "Texture.hpp"
@@ -41,10 +42,24 @@ public:
     }
 
     template<typename... Args>
+    requires std::constructible_from<Model2, Args...>
+    [[nodiscard]] Handle<Model2> createModel2(Args&& ...args)
+    {
+        return m_models2.allocate(std::forward<Args>(args)...);
+    }
+
+    template<typename... Args>
     requires std::constructible_from<Texture, Args..., ResourceManagement>
     [[nodiscard]] Handle<Texture> createTexture(Args&& ...args)
     {
         return m_textures.allocate(std::forward<Args>(args)..., ResourceManagement::MANUAL);
+    }
+
+    template<typename... Args>
+    requires std::constructible_from<Mesh, Args...>
+    [[nodiscard]] Handle<Mesh> createMesh(Args&& ...args)
+    {
+        return m_meshes.allocate(std::forward<Args>(args)...);
     }
 
     template<typename T>
@@ -63,6 +78,11 @@ public:
         return m_textures.get(handle);
     }
 
+    [[nodiscard]] Model2* get(const Handle<Model2>& handle) noexcept
+    {
+        return m_models2.get(handle);
+    }
+
     template<typename T>
     void destroy(const Handle<T>& handle) const noexcept
     {
@@ -77,9 +97,21 @@ public:
         m_textures.deallocate(handle);
     }
 
+    void destroy(const Handle<Model2>& handle) const noexcept
+    {
+        m_models2.deallocate(handle);
+    }
+
+    void destroy(const Handle<Mesh>& handle) const noexcept
+    {
+        m_meshes.deallocate(handle);
+    }
+
 private:
     ObjectPool<Buffer> m_buffers;
     ObjectPool<Model> m_models;
+    ObjectPool<Model2> m_models2;
+    ObjectPool<Mesh> m_meshes;
     ObjectPool<Texture> m_textures;
 };
 

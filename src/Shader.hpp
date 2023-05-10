@@ -11,7 +11,6 @@ extern "C" {
 #include <format>
 #include <sstream>
 #include <string>
-#include <string_view>
 
 //------------------------------------------------------------------------
 
@@ -129,9 +128,9 @@ requires ValidGLShaderType<ShaderType>
 class Shader
 {
 public:
-    Shader(std::string_view filename)
+    Shader(const fs::path& path)
     {
-        parseShaderFile(filename);
+        parseShaderFile(path);
         m_handle = glCreateShader(ShaderType);
         const char* shaderSourcePtr = m_shaderSource.c_str();
         glShaderSource(m_handle, 1, &shaderSourcePtr, nullptr);
@@ -154,12 +153,12 @@ public:
     void detach(GLuint program) const noexcept { glDetachShader(program, m_handle); }
     
 private:
-    void parseShaderFile(std::string_view filename)
+    void parseShaderFile(const fs::path& path)
     {
         std::ifstream shaderFile;
         shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         
-        shaderFile.open(filename.data());
+        shaderFile.open(path);
         std::ostringstream osstream;
         osstream << shaderFile.rdbuf();
         m_shaderSource = osstream.str();

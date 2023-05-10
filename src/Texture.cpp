@@ -52,9 +52,9 @@ void Texture::freeResources() const noexcept
 
 //------------------------------------------------------------------------
 
-Handle<Texture> Texture::fromFile(ResourceManager* mngr, std::string_view filename, const Specification& spec) noexcept
+Handle<Texture> Texture::fromFile(ResourceManager* mngr, const fs::path& path, const Specification& spec) noexcept
 {
-    const auto img = StbImageResource(filename);
+    const auto img = StbImageResource(path);
     auto tex = mngr->createTexture(img.getDims(), spec);
     auto texPtr = mngr->get(tex);
     texPtr->setData(img.data());

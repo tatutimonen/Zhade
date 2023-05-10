@@ -1,12 +1,14 @@
 #pragma once
 
+#include "common.hpp"
+
 #include <glm/glm.hpp>
 extern "C" {
 #include <stb_image.h>
 }
 
+#include <bit>
 #include <format>
-#include <string_view>
 
 //------------------------------------------------------------------------
 
@@ -27,7 +29,7 @@ template<StbImageDataFormat T = stbi_uc>
 class StbImageResource
 {
 public:
-    StbImageResource(std::string_view filename) { load(filename); }
+    StbImageResource(const fs::path& path) { load(path); }
     ~StbImageResource() { stbi_image_free(m_data); }
 
     StbImageResource(const StbImageResource&) = delete;
@@ -52,17 +54,19 @@ public:
     [[nodiscard]] const T* data() const noexcept { return m_data; }
 
 private:
-    void load(std::string_view filename)
+    void load(const fs::path& path)
     {
+        const char* rawPath = path.string().c_str();
+
         if constexpr (std::same_as<T, stbi_uc>)
-            m_data = stbi_load(filename.data(), &m_dims.x, &m_dims.y, nullptr, 4);
+            m_data = stbi_load(rawPath, &m_dims.x, &m_dims.y, nullptr, 4);
         else if (std::same_as<T, stbi_us>)
-            m_data = stbi_load_16(filename.data(), &m_dims.x, &m_dims.y, nullptr, 4);
+            m_data = stbi_load_16(rawPath, &m_dims.x, &m_dims.y, nullptr, 4);
         else if (std::same_as<T, float>)
-            m_data = stbi_loadf(filename.data(), &m_dims.x, &m_dims.y, nullptr, 4);
+            m_data = stbi_loadf(rawPath, &m_dims.x, &m_dims.y, nullptr, 4);
         
         if (m_data == nullptr) [[unlikely]]
-            throw std::runtime_error(std::format("Error loading data from '{}'", filename));
+            throw std::runtime_error(std::format("Error loading data from '{}'", rawPath));
     }
 
     glm::ivec2 m_dims;

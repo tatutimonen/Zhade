@@ -7,7 +7,8 @@ extern "C" {
 #include <GL/glew.h>
 }
 
-#include <string>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 //------------------------------------------------------------------------
 
@@ -16,9 +17,9 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
-inline const std::string SHADER_PATH = "../src/shaders/";
-inline const std::string TEXTURE_PATH = "../texture/";
-inline const std::string ASSET_PATH = "../assets/";
+inline const fs::path SHADER_PATH = fs::path("..") / "src" / "shaders";
+inline const fs::path TEXTURE_PATH = fs::path("..") / "texture";
+inline const fs::path ASSET_PATH = fs::path("..") / "assets";
 
 //------------------------------------------------------------------------
 

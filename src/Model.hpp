@@ -26,9 +26,12 @@ public:
     Model2() = default;
     Model2(std::span<Handle<Mesh>> meshes) : m_meshes{meshes.begin(), meshes.end()} {}
 
+    void setTransformation(const glm::mat3x4& transformation) const noexcept { m_transformation = transformation; }
+
     [[nodiscard]] std::span<Handle<Mesh>> getMeshes() const noexcept { return m_meshes; }
     [[nodiscard]] const glm::mat3x4& getTransformation() const noexcept { return m_transformation; }
-    void setTransformation(const glm::mat3x4& transformation) const noexcept { m_transformation = transformation; }
+
+    void addMesh(const Handle<Mesh>& mesh) const noexcept { return m_meshes.push_back(mesh); }
 
 private:
     mutable std::vector<Handle<Mesh>> m_meshes;
