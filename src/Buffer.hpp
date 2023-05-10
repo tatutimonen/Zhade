@@ -10,6 +10,7 @@ extern "C" {
 
 #include <bit>
 #include <cmath>
+#include <cstddef>
 #include <cstring>
 #include <span>
 
@@ -53,7 +54,7 @@ public:
     std::span<T> pushData(const T* data, GLsizei size = 1) const noexcept
     {
         const GLsizei sizeBytes = sizeof(T) * size;
-        uint8_t* dst = m_ptr + m_writeOffsetBytes;
+        std::byte* dst = m_ptr + m_writeOffsetBytes;
         std::memcpy(dst, data, sizeBytes);
         m_writeOffsetBytes += calculateWriteOffsetIncrement(sizeBytes);
         return std::span(std::bit_cast<T*>(dst), size);
@@ -88,7 +89,7 @@ private:
     GLenum m_target;
     GLsizei m_wholeSizeBytes;
     GLint m_alignment;
-    uint8_t* m_ptr;
+    std::byte* m_ptr;
     mutable GLsizeiptr m_writeOffsetBytes = 0;
     ResourceManagement m_management = ResourceManagement::MANUAL;
 };
