@@ -9,6 +9,7 @@ extern "C" {
 
 #include <bit>
 #include <format>
+#include <iostream>
 
 //------------------------------------------------------------------------
 
@@ -29,7 +30,7 @@ template<StbImageDataFormat T = stbi_uc>
 class StbImageResource
 {
 public:
-    StbImageResource(const fs::path& path) { load(path); }
+    explicit StbImageResource(const fs::path& path) { load(path); }
     ~StbImageResource() { stbi_image_free(m_data); }
 
     StbImageResource(const StbImageResource&) = delete;
@@ -56,17 +57,17 @@ public:
 private:
     void load(const fs::path& path)
     {
-        const char* rawPath = path.string().c_str();
+        const auto pathStr = path.string();
 
         if constexpr (std::same_as<T, stbi_uc>)
-            m_data = stbi_load(rawPath, &m_dims.x, &m_dims.y, nullptr, 4);
+            m_data = stbi_load(pathStr.c_str(), &m_dims.x, &m_dims.y, nullptr, 4);
         else if (std::same_as<T, stbi_us>)
-            m_data = stbi_load_16(rawPath, &m_dims.x, &m_dims.y, nullptr, 4);
+            m_data = stbi_load_16(pathStr.c_str(), &m_dims.x, &m_dims.y, nullptr, 4);
         else if (std::same_as<T, float>)
-            m_data = stbi_loadf(rawPath, &m_dims.x, &m_dims.y, nullptr, 4);
+            m_data = stbi_loadf(pathStr.c_str(), &m_dims.x, &m_dims.y, nullptr, 4);
         
         if (m_data == nullptr) [[unlikely]]
-            throw std::runtime_error(std::format("Error loading data from '{}'", rawPath));
+            std::cerr << std::format("Error loading data from '{}'\n", pathStr);
     }
 
     glm::ivec2 m_dims;

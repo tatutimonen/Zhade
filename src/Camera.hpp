@@ -36,8 +36,8 @@ public:
 
     struct Matrices
     {
-        glm::mat3x4 VT = glm::mat3x4();
-        glm::mat4 P = glm::mat4();
+        glm::mat3x4 VT;
+        glm::mat4 P;
     };
 
     virtual ~Camera()
@@ -80,7 +80,7 @@ protected:
     App* m_app;
     mutable Settings m_settings;
     mutable Matrices m_matrices;
-    Zhade::Handle<Buffer> m_uniformBuffer;
+    Handle<Buffer> m_uniformBuffer;
 };
 
 //------------------------------------------------------------------------

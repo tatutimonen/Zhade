@@ -1,6 +1,9 @@
 #include "Renderer.hpp"
 #include "constants.hpp"
 
+#include <format>
+#include <iostream>
+
 //------------------------------------------------------------------------
 
 namespace Zhade
@@ -89,7 +92,7 @@ void Renderer::render() const noexcept
 
     for (const auto& task : m_tasks)
     {
-        const Model* model = m_mngr->get<Model>(task.model);
+        const Model* model = m_mngr->get(task.model);
 
         vbo->pushData(model->vertices().data(), model->numVertices());
         ebo->pushData(model->indices().data(), model->numIndices());

@@ -22,7 +22,7 @@ class ResourceManager;
 class Texture
 {
 public:
-    struct Specification
+    struct Desc
     {
         GLsizei levels = 8;
         GLenum internalFormat = GL_RGBA8;
@@ -34,7 +34,7 @@ public:
     };
 
     Texture() = default;
-    Texture(const glm::ivec2& dims, const Specification& spec, ResourceManagement management);
+    Texture(const glm::ivec2& dims, const Desc& desc, ResourceManagement management);
     ~Texture();
 
     Texture(const Texture&) = delete;
@@ -55,7 +55,8 @@ public:
     void generateMipmap() const noexcept { glGenerateTextureMipmap(m_name); }
     void makeResident() const noexcept { glMakeTextureHandleResidentARB(m_handle); }
 
-    static Handle<Texture> fromFile(ResourceManager* mngr, const fs::path& path, const Specification& spec = Specification{}) noexcept;
+    static Handle<Texture> fromFile(ResourceManager* mngr, const fs::path& path, const Desc& desc = Desc{}) noexcept;
+    static Handle<Texture> makeDefault(ResourceManager* mngr) noexcept;
 
 private:
     GLuint m_name = 0;

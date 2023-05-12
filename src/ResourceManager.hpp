@@ -35,6 +35,20 @@ public:
     }
 
     template<typename... Args>
+    requires std::constructible_from<Material, Args...>
+    [[nodiscard]] Handle<Material> createMaterial(Args&& ...args)
+    {
+        return m_materials.allocate(std::forward<Args>(args)...);
+    }
+
+    template<typename... Args>
+    requires std::constructible_from<Mesh, Args...>
+    [[nodiscard]] Handle<Mesh> createMesh(Args&& ...args)
+    {
+        return m_meshes.allocate(std::forward<Args>(args)...);
+    }
+
+    template<typename... Args>
     requires std::constructible_from<Model, Args...>
     [[nodiscard]] Handle<Model> createModel(Args&& ...args)
     {
@@ -55,63 +69,26 @@ public:
         return m_textures.allocate(std::forward<Args>(args)..., ResourceManagement::MANUAL);
     }
 
-    template<typename... Args>
-    requires std::constructible_from<Mesh, Args...>
-    [[nodiscard]] Handle<Mesh> createMesh(Args&& ...args)
-    {
-        return m_meshes.allocate(std::forward<Args>(args)...);
-    }
+    [[nodiscard]] Buffer* get(const Handle<Buffer>& handle) const noexcept { return m_buffers.get(handle); }
+    [[nodiscard]] Material* get(const Handle<Material>& handle) const noexcept { return m_materials.get(handle); }
+    [[nodiscard]] Mesh* get(const Handle<Mesh>& handle) const noexcept { return m_meshes.get(handle); }
+    [[nodiscard]] Model* get(const Handle<Model>& handle) const noexcept { return m_models.get(handle); }
+    [[nodiscard]] Model2* get(const Handle<Model2>& handle) const noexcept { return m_models2.get(handle); }
+    [[nodiscard]] Texture* get(const Handle<Texture>& handle) const noexcept { return m_textures.get(handle); }
 
-    template<typename T>
-    [[nodiscard]] T* get(const Handle<T>& handle) const noexcept
-    {
-        if constexpr (std::same_as<T, Buffer>)
-            return m_buffers.get(handle);
-        else if (std::same_as<T, Model>)
-            return m_models.get(handle);
-        else
-            return nullptr;
-    }
-
-    [[nodiscard]] Texture* get(const Handle<Texture>& handle) noexcept
-    {
-        return m_textures.get(handle);
-    }
-
-    [[nodiscard]] Model2* get(const Handle<Model2>& handle) noexcept
-    {
-        return m_models2.get(handle);
-    }
-
-    template<typename T>
-    void destroy(const Handle<T>& handle) const noexcept
-    {
-        if constexpr (std::same_as<T, Buffer>)
-            m_buffers.deallocate(handle);
-        else if (std::same_as<T, Model>)
-            m_models.deallocate(handle);
-    }
-
-    void destroy(const Handle<Texture>& handle) const noexcept
-    {
-        m_textures.deallocate(handle);
-    }
-
-    void destroy(const Handle<Model2>& handle) const noexcept
-    {
-        m_models2.deallocate(handle);
-    }
-
-    void destroy(const Handle<Mesh>& handle) const noexcept
-    {
-        m_meshes.deallocate(handle);
-    }
+    void destroy(const Handle<Buffer>& handle) const noexcept { m_buffers.deallocate(handle); }
+    void destroy(const Handle<Material>& handle) const noexcept { m_materials.deallocate(handle); }
+    void destroy(const Handle<Mesh>& handle) const noexcept { m_meshes.deallocate(handle); }
+    void destroy(const Handle<Model>& handle) const noexcept { m_models.deallocate(handle); }
+    void destroy(const Handle<Model2>& handle) const noexcept { m_models2.deallocate(handle); }
+    void destroy(const Handle<Texture>& handle) const noexcept { m_textures.deallocate(handle); }
 
 private:
     ObjectPool<Buffer> m_buffers;
+    ObjectPool<Material> m_materials;
+    ObjectPool<Mesh> m_meshes;
     ObjectPool<Model> m_models;
     ObjectPool<Model2> m_models2;
-    ObjectPool<Mesh> m_meshes;
     ObjectPool<Texture> m_textures;
 };
 

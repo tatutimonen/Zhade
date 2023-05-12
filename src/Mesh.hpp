@@ -7,6 +7,7 @@ extern "C" {
 #include <GL/glew.h>
 }
 
+#include <cstdint>
 #include <span>
 
 //------------------------------------------------------------------------
@@ -46,18 +47,23 @@ public:
         std::span<GLuint> indices;
     };
 
-    Mesh() = default;
-    Mesh(const Geometry& geometry) : m_geometry{geometry} {}
+    struct Desc
+    {
+        Geometry geometry;
+        uint32_t materialID = 0;
+        uint32_t diffuseID = 0;
+    };
 
-    [[nodiscard]] std::span<Vertex> vertices() const noexcept { return m_geometry.vertices; }
-    [[nodiscard]] std::span<GLuint> indices() const noexcept { return m_geometry.indices; }
+    Mesh() = default;
+    explicit Mesh(const Desc& desc) : m_desc{desc} {}
+
+    [[nodiscard]] std::span<Vertex> vertices() const noexcept { return m_desc.geometry.vertices; }
+    [[nodiscard]] std::span<GLuint> indices() const noexcept { return m_desc.geometry.indices; }
     [[nodiscard]] size_t numVertices() const noexcept { return vertices().size(); }
     [[nodiscard]] size_t numIndices() const noexcept { return indices().size(); }
 
 private:
-    Geometry m_geometry;
-    GLuint m_materialID = 0;
-    GLuint m_textureID = 0;
+    Desc m_desc;
 };
 
 //------------------------------------------------------------------------

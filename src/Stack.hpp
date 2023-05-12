@@ -3,11 +3,9 @@
 #include "constants.hpp"
 
 #include <algorithm>
+#include <iostream>
 #include <memory>
 #include <vector>
-
-#include <iostream>
-#include <format>
 
 //------------------------------------------------------------------------
 
@@ -22,7 +20,7 @@ template<std::default_initializable T>
 class Stack
 {
 public:
-    Stack(size_t capacity = 0) { if (capacity > 0) [[likely]] resize(capacity); }
+    explicit Stack(size_t capacity = 0) { if (capacity > 0) [[likely]] resize(capacity); }
     ~Stack() = default;
 
     Stack(const Stack&) = default;

@@ -9,9 +9,6 @@
 #include <ranges>
 #include <vector>
 
-#include <iostream>
-#include <format>
-
 //------------------------------------------------------------------------
 
 namespace Zhade
@@ -24,7 +21,7 @@ template<std::default_initializable T>
 class ObjectPool<T>
 {
 public:
-    ObjectPool(size_t size = constants::OBJECT_POOL_INIT_SIZE)
+    explicit ObjectPool(size_t size = constants::OBJECT_POOL_INIT_SIZE)
         : m_size{size},
           m_freeList{Stack<uint32_t>(size)}
     {
