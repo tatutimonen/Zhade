@@ -47,17 +47,10 @@ public:
         float aspectRatio = static_cast<float>(App::s_windowWidth) / App::s_windowHeight;
     };
 
-    Camera(ResourceManager* mngr, App* app, const Settings& settings = Settings{}, const SettingsPerspective& specialSettings = SettingsPerspective{})
+    Camera(ResourceManager* mngr, App* app, Settings&& settings = Settings{}, SettingsPerspective&& specialSettings = SettingsPerspective{})
     requires (T == CameraType::PERSPECTIVE)
-        : m_mngr{mngr},
-          m_app{app},
-          m_settings{std::move(settings)},
-          m_specialSettings{std::move(specialSettings)},
-          m_uniformBuffer{mngr->createBuffer(GL_UNIFORM_BUFFER, static_cast<GLsizei>(sizeof(Matrices)))}
     {
-        uniformBuffer()->bindBase(constants::CAMERA_BINDING);
-        updateView();
-        updateProjectivity();
+        init(mngr, app, std::forward<decltype(settings)>(settings), std::forward<decltype(m_specialSettings)>(specialSettings));
     }
 
     ~Camera()
@@ -88,6 +81,18 @@ private:
     };
 
     const Buffer* uniformBuffer() const noexcept { return m_mngr->get(m_uniformBuffer); }
+
+    void init(ResourceManager* mngr, App* app, const Settings& settings, const std::variant<SettingsPerspective>& specialSettings) noexcept
+    {
+        m_mngr = mngr;
+        m_app = app;
+        m_settings = std::move(settings);
+        m_specialSettings = std::move(specialSettings);
+        m_uniformBuffer = mngr->createBuffer(GL_UNIFORM_BUFFER, static_cast<GLsizei>(sizeof(Matrices)));
+        uniformBuffer()->bindBase(constants::CAMERA_BINDING);
+        updateView();
+        updateProjectivity();
+    }
 
     void updateView() const noexcept
     {
