@@ -29,7 +29,7 @@ enum class CameraType
 //------------------------------------------------------------------------
 
 template<CameraType T = CameraType::PERSPECTIVE>
-class Camera final
+class Camera
 {
 public:
     struct Settings
