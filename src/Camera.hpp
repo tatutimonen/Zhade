@@ -82,13 +82,13 @@ private:
 
     const Buffer* uniformBuffer() const noexcept { return m_mngr->get(m_uniformBuffer); }
 
-    void init(ResourceManager* mngr, App* app, const Settings& settings, const std::variant<SettingsPerspective>& specialSettings) noexcept
+    void init(ResourceManager* mngr, App* app, Settings settings, std::variant<SettingsPerspective> specialSettings) noexcept
     {
         m_mngr = mngr;
         m_app = app;
-        m_settings = settings;
-        m_specialSettings = specialSettings;
-        m_uniformBuffer = mngr->createBuffer(GL_UNIFORM_BUFFER, static_cast<GLsizei>(sizeof(Matrices)));
+        m_settings = std::move(settings);
+        m_specialSettings = std::move(specialSettings);
+        m_uniformBuffer = m_mngr->createBuffer(GL_UNIFORM_BUFFER, static_cast<GLsizei>(sizeof(Matrices)));
         uniformBuffer()->bindBase(constants::CAMERA_BINDING);
         updateView();
         updateProjectivity();

@@ -74,8 +74,6 @@ int main()
             Shader<GL_FRAGMENT_SHADER>(SHADER_PATH / "debug.frag")
         );
 
-        std::cout << "nutsnutsnutnsu!\n";
-
         const auto camera = Camera(&mngr, &app);
 
         static constexpr auto numQuads = 4;

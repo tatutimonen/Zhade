@@ -55,7 +55,7 @@ public:
     };
 
     Mesh() = default;
-    explicit Mesh(const Desc& desc) : m_desc{desc} {}
+    explicit Mesh(Desc desc) : m_desc{std::move(desc)} {}
 
     [[nodiscard]] std::span<Vertex> vertices() const noexcept { return m_desc.geometry.vertices; }
     [[nodiscard]] std::span<GLuint> indices() const noexcept { return m_desc.geometry.indices; }
