@@ -86,8 +86,8 @@ private:
     {
         m_mngr = mngr;
         m_app = app;
-        m_settings = std::move(settings);
-        m_specialSettings = std::move(specialSettings);
+        m_settings = settings;
+        m_specialSettings = specialSettings;
         m_uniformBuffer = mngr->createBuffer(GL_UNIFORM_BUFFER, static_cast<GLsizei>(sizeof(Matrices)));
         uniformBuffer()->bindBase(constants::CAMERA_BINDING);
         updateView();
