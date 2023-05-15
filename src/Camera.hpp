@@ -82,7 +82,7 @@ private:
 
     const Buffer* uniformBuffer() const noexcept { return m_mngr->get(m_uniformBuffer); }
 
-    void init(ResourceManager* mngr, App* app, Settings settings, std::variant<SettingsPerspective> specialSettings) noexcept
+    void init(ResourceManager* mngr, App* app, Settings&& settings, std::variant<SettingsPerspective>&& specialSettings) noexcept
     {
         m_mngr = mngr;
         m_app = app;
