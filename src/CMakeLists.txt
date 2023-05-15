@@ -9,7 +9,6 @@ set(src_files
     Mesh.cpp
     Model.cpp
     ObjectPool.cpp
-    PerspectiveCamera.cpp
     Renderer.cpp
     ResourceManager.cpp
     Scene.cpp

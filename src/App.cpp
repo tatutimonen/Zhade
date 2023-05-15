@@ -35,7 +35,7 @@ void App::init() const noexcept
     glfwMakeContextCurrent(m_window);
     glfwSetKeyCallback(m_window, keyCallback);
     glfwSetCursorPosCallback(m_window, mouseCallback);
-    glfwSetScrollCallback(m_window, Camera::scrollCallback);
+    glfwSetScrollCallback(m_window, Camera<>::scrollCallback);
 
     // GLEW.
     glewExperimental = GL_TRUE;

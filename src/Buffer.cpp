@@ -65,7 +65,7 @@ void Buffer::bindRange(GLuint bindingIndex, GLintptr offsetBytes, GLsizeiptr siz
 
 void Buffer::freeResources() const noexcept
 {
-    if (m_management == ResourceManagement::RAII || glIsBuffer(m_name) == GL_FALSE) [[unlikely]] return;
+    if (glIsBuffer(m_name) == GL_FALSE) [[unlikely]] return;
     glDeleteBuffers(1, &m_name);
 }
 

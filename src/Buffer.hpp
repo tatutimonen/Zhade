@@ -61,7 +61,7 @@ public:
     }
 
     template<typename T>
-    void setData(const T* data, GLsizei size, GLintptr offsetBytes) const noexcept
+    void setData(const T* data, GLintptr offsetBytes = 0, GLsizei size = 1) const noexcept
     {
         glNamedBufferSubData(m_name, offsetBytes, sizeof(T) * size, data);
     }

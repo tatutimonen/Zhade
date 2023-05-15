@@ -1,8 +1,8 @@
 #include "App.hpp"
 #include "Buffer.hpp"
+#include "Camera.hpp"
 #include "Handle.hpp"
 #include "Model.hpp"
-#include "PerspectiveCamera.hpp"
 #include "Renderer.hpp"
 #include "ResourceManager.hpp"
 #include "Shader.hpp"
@@ -74,7 +74,9 @@ int main()
             Shader<GL_FRAGMENT_SHADER>(SHADER_PATH / "debug.frag")
         );
 
-        const auto camera = PerspectiveCamera(&mngr, &app);
+        std::cout << "nutsnutsnutnsu!\n";
+
+        const auto camera = Camera(&mngr, &app);
 
         static constexpr auto numQuads = 4;
         static constexpr auto numTris = 100;
