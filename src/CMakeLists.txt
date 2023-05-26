@@ -6,6 +6,7 @@ set(src_files
     Buffer.cpp
     Camera.cpp
     Handle.cpp
+    IndirectRenderer.cpp
     Mesh.cpp
     Model.cpp
     ObjectPool.cpp

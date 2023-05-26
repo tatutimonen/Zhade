@@ -9,6 +9,7 @@ extern "C" {
 #include <GL/glew.h>
 }
 
+#include <cstdint>
 #include <span>
 #include <string_view>
 #include <vector>
@@ -27,13 +28,17 @@ public:
 
     void setTransformation(const glm::mat3x4& transformation) const noexcept { m_transformation = transformation; }
 
+    [[nodiscard]] uint32_t getID() const noexcept { return m_ID; }
     [[nodiscard]] const glm::mat3x4& getTransformation() const noexcept { return m_transformation; }
 
     void addMesh(const Handle<Mesh>& mesh) const noexcept { return m_meshes.push_back(mesh); }
 
 private:
+    uint32_t m_ID;
     mutable std::vector<Handle<Mesh>> m_meshes;
     mutable glm::mat3x4 m_transformation;
+
+    friend class Scene;
 };
 
 //------------------------------------------------------------------------

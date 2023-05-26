@@ -9,7 +9,7 @@
 
 #include <robin_hood.h>
 
-#include <cstdint>
+#include <atomic>
 #include <filesystem>
 #include <string>
 #include <vector>
@@ -32,6 +32,8 @@ public:
           m_textures{Texture::makeDefault(mngr)}
     {}
 
+    [[nodiscard]] std::span<Handle<Model2>> getModels() const noexcept { return m_models; }
+
     void addModelFromFile(const fs::path& path) const noexcept;
 
 private:
@@ -46,7 +48,10 @@ private:
     mutable uint32_t m_baseMaterial = 1;
     mutable uint32_t m_baseTexture = 1;
     mutable std::vector<Handle<Model2>> m_models;
-    mutable robin_hood::unordered_map<std::string, uint32_t> m_cache;
+    mutable robin_hood::unordered_map<std::string, Handle<Model2>> m_modelCache;
+    mutable std::atomic_uint32_t m_modelID;
+
+    friend class IndirectRenderer;
 };
 
 //------------------------------------------------------------------------
