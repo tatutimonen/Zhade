@@ -1,12 +1,6 @@
 # Zhade
 
-A WIP rasterization-based renderer utilizing modern OpenGL. Currently under development:
-
-- Rendering queue based on encoding OpenGL state change requirements and objects' average depth in a bit field, and sorting the rendering tasks with respect to these keys before performing them. See, e.g., [this blog post](https://realtimecollisiondetection.net/blog/?p=86) and [this talk](https://www.youtube.com/watch?v=-bCeNzgiJ8I&t=1920s) for more details. The depth value is included to aid early z-culling.
-    
-- Separate attribute format specification to decouple the buffers from the vertex array. This facilitates minimizing the overhead induced by changing vertex format state and is generally more intuitive.
-
-- Shadow maps with sampling enhancements such as fitting, cascaded; and filtering, such as PCSS.
+(images here)
 
 ----
 
