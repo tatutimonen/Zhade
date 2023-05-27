@@ -23,7 +23,7 @@ namespace Zhade
 enum class CameraType
 {
     PERSPECTIVE = 0,
-    ORTHOGRAPHIC = 1
+    ORTHO = 1
 };
 
 //------------------------------------------------------------------------
@@ -47,10 +47,31 @@ public:
         float aspectRatio = static_cast<float>(App::s_windowWidth) / App::s_windowHeight;
     };
 
-    Camera(ResourceManager* mngr, App* app, Settings&& settings = Settings{}, SettingsPerspective&& specialSettings = SettingsPerspective{})
-    requires (T == CameraType::PERSPECTIVE)
+    struct SettingsOrtho
     {
-        init(mngr, app, std::forward<decltype(settings)>(settings), std::forward<decltype(m_specialSettings)>(specialSettings));
+        float xmin{}, xmax{App::s_windowWidth}, ymin{}, ymax{App::s_windowHeight};
+    };
+
+    using VarSettings = std::variant<SettingsPerspective, SettingsOrtho>;
+
+    struct Desc
+    {
+        ResourceManager* mngr;
+        App* app;
+        Settings settings{};
+        VarSettings specialSettings{T == CameraType::PERSPECTIVE ? SettingsPerspective{} : SettingsOrtho{}};
+    };
+
+    Camera(Desc desc)
+        : m_mngr{desc.mngr},
+          m_app{app},
+          m_settings{desc.settings},
+          m_specialSettings{desc.specialSettings},
+          m_uniformBuffer{desc.mngr->createBuffer(GL_UNIFORM_BUFFER, static_cast<GLsizei>(sizeof(Matrices)))}
+    {
+        uniformBuffer()->bindBase(constants::CAMERA_BINDING);
+        updateView();
+        updateProjectivity();
     }
 
     ~Camera()
@@ -82,18 +103,6 @@ private:
 
     const Buffer* uniformBuffer() const noexcept { return m_mngr->get(m_uniformBuffer); }
 
-    void init(ResourceManager* mngr, App* app, Settings&& settings, std::variant<SettingsPerspective>&& specialSettings) noexcept
-    {
-        m_mngr = mngr;
-        m_app = app;
-        m_settings = std::move(settings);
-        m_specialSettings = std::move(specialSettings);
-        m_uniformBuffer = m_mngr->createBuffer(GL_UNIFORM_BUFFER, static_cast<GLsizei>(sizeof(Matrices)));
-        uniformBuffer()->bindBase(constants::CAMERA_BINDING);
-        updateView();
-        updateProjectivity();
-    }
-
     void updateView() const noexcept
     {
         m_matrices.VT = glm::mat3x4(
@@ -105,10 +114,15 @@ private:
     {
         if constexpr (T == CameraType::PERSPECTIVE)
         {
-            const auto& perspectiveSettings = std::get<SettingsPerspective>(m_specialSettings);
-            m_matrices.P = glm::perspective(perspectiveSettings.fov, perspectiveSettings.aspectRatio, m_settings.zNear, m_settings.zFar);
-            uniformBuffer()->setData<glm::mat4>(&m_matrices.P, offsetof(Matrices, P));
+            const auto [fov, aspectRatio] = std::get<SettingsPerspective>(m_specialSettings);
+            m_matrices.P = glm::perspective(fov, aspectRatio, m_settings.zNear, m_settings.zFar);
         }
+        else if (T == CameraType::ORTHO)
+        {
+            const auto [xmin, xmax, ymin, ymax] = std::get<SettingsOrtho>(m_specialSettings);
+            m_matrices.P = glm::ortho(xmin, xmax, ymin, ymax, m_settings.zNear, m_settings.zFar);
+        }
+        uniformBuffer()->setData<glm::mat4>(&m_matrices.P, offsetof(Matrices, P));
     }
 
     bool move() const noexcept
@@ -165,7 +179,7 @@ private:
     ResourceManager* m_mngr;
     App* m_app;
     mutable Settings m_settings;
-    mutable std::variant<SettingsPerspective> m_specialSettings;
+    mutable VarSettings m_specialSettings;
     mutable Matrices m_matrices;
     Handle<Buffer> m_uniformBuffer;
 };
