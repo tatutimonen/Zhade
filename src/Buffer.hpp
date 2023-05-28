@@ -84,13 +84,13 @@ private:
         return static_cast<GLsizeiptr>(std::ceil(static_cast<float>(sizeBytes) / m_alignment) * m_alignment);
     }
 
-    GLuint m_name = 0;
-    GLenum m_target;
-    GLsizei m_wholeSizeBytes;
-    GLint m_alignment;
-    uint8_t* m_ptr;
-    mutable GLsizeiptr m_writeOffsetBytes = 0;
-    ResourceManagement m_management = ResourceManagement::MANUAL;
+    GLuint m_name{};
+    GLenum m_target{};
+    GLsizei m_wholeSizeBytes{};
+    GLint m_alignment{};
+    uint8_t* m_ptr{};
+    mutable GLsizeiptr m_writeOffsetBytes{};
+    ResourceManagement m_management{ResourceManagement::MANUAL};
 };
 
 //------------------------------------------------------------------------
