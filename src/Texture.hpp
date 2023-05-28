@@ -24,13 +24,13 @@ class Texture
 public:
     struct Desc
     {
-        GLsizei levels = 8;
-        GLenum internalFormat = GL_RGBA8;
-        GLenum minFilter = GL_LINEAR_MIPMAP_LINEAR;
-        GLenum magFilter = GL_LINEAR;
-        GLenum wrapS = GL_CLAMP_TO_EDGE;
-        GLenum wrapT = GL_CLAMP_TO_EDGE;
-        GLfloat anisotropy = 8.0f;
+        GLsizei levels{8};
+        GLenum internalFormat{GL_RGBA8};
+        GLenum minFilter{GL_LINEAR_MIPMAP_LINEAR};
+        GLenum magFilter{GL_LINEAR};
+        GLenum wrapS{GL_CLAMP_TO_EDGE};
+        GLenum wrapT{GL_CLAMP_TO_EDGE};
+        GLfloat anisotropy{8.0f};
     };
 
     Texture() = default;
@@ -59,10 +59,10 @@ public:
     static Handle<Texture> makeDefault(ResourceManager* mngr) noexcept;
 
 private:
-    GLuint m_name = 0;
-    GLuint64 m_handle;
+    GLuint m_name{};
+    GLuint64 m_handle{};
     glm::ivec2 m_dims;
-    ResourceManagement m_management = ResourceManagement::MANUAL;
+    ResourceManagement m_management{ResourceManagement::MANUAL};
 };
 
 //------------------------------------------------------------------------
