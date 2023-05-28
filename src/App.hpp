@@ -27,7 +27,7 @@ class App
 public:
     struct GLFWState
     {
-        std::array<bool, 512> keys{false};
+        std::array<bool, 512> keys;
         float pitch{};
         float yaw{-glm::half_pi<float>{}};
     };
@@ -70,11 +70,11 @@ public:
         static float xPosPrev = xPos;
         static float yPosPrev = yPos;
 
-        static constexpr float mouseSensitivity = 0.002f;
+        static constexpr float mouseSensitivity{0.002f};
         float xOffset = mouseSensitivity * (xPos - xPosPrev);
         float yOffset = mouseSensitivity * (yPosPrev - yPos);
 
-        static constexpr float pitchBound = glm::half_pi<float>() - 0.01f;
+        static constexpr float pitchBound{glm::half_pi<float>{} - 0.01f};
         s_state.pitch = glm::clamp(s_state.pitch + yOffset, -pitchBound, pitchBound);
         s_state.yaw += xOffset;
 
@@ -89,14 +89,14 @@ public:
             std::cerr << message << "\n";
     }
 
-    static constexpr std::string_view s_title = "Zhade - ESC to quit";
-    static constexpr uint32_t s_windowWidth = 1980u;
-    static constexpr uint32_t s_windowHeight = 1080u;
+    static constexpr std::string_view s_title{"Zhade - ESC to quit"};
+    static constexpr uint32_t s_windowWidth{1920u};
+    static constexpr uint32_t s_windowHeight{1080u};
 
 private:
     static inline GLFWState s_state;
 
-    mutable GLFWwindow* m_window;
+    mutable GLFWwindow* m_window{};
     mutable TemporalState m_temporalState;
 };
 
