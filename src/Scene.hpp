@@ -45,8 +45,8 @@ private:
     Handle<Buffer> m_indexBuffer;
     mutable std::vector<Handle<Material>> m_materials;
     mutable std::vector<Handle<Texture>> m_textures;
-    mutable uint32_t m_baseMaterial = 1;
-    mutable uint32_t m_baseTexture = 1;
+    mutable uint32_t m_baseMaterial{1};
+    mutable uint32_t m_baseTexture{1};
     mutable std::vector<Handle<Model2>> m_models;
     mutable robin_hood::unordered_map<std::string, Handle<Model2>> m_modelCache;
     mutable std::atomic_uint32_t m_modelID;

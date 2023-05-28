@@ -50,8 +50,8 @@ public:
     struct Desc
     {
         Geometry geometry;
-        uint32_t materialID = 0;
-        uint32_t diffuseID = 0;
+        uint32_t materialID{};
+        uint32_t diffuseID{};
     };
 
     Mesh() = default;

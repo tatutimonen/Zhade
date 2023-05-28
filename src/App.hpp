@@ -27,18 +27,18 @@ class App
 public:
     struct GLFWState
     {
-        std::array<bool, 512> keys = { false };
-        float pitch = 0.0f;
-        float yaw = -glm::half_pi<float>();
+        std::array<bool, 512> keys{false};
+        float pitch{};
+        float yaw{-glm::half_pi<float>{}};
     };
 
     struct TemporalState
     {
-        float deltaTime = 0.0f;
-        float prevTime = 0.0f;
-        std::array<float, constants::TEMPORAL_CACHE_SIZE> FPS = { 0.0f };
-        std::array<float, constants::TEMPORAL_CACHE_SIZE> frameTimes = { 0.0f };
-        uint8_t writeIdx = 0;
+        float deltaTime{};
+        float prevTime{};
+        std::array<float, constants::TEMPORAL_CACHE_SIZE> FPS;
+        std::array<float, constants::TEMPORAL_CACHE_SIZE> frameTimes;
+        uint8_t writeIdx{};
     };
 
     App() = default;

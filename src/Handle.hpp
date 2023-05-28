@@ -20,8 +20,8 @@ public:
 private:
     Handle(uint32_t index, uint32_t generation) : m_index{index}, m_generation{generation} {}
 
-    uint32_t m_index = 0;
-    uint32_t m_generation = 0;
+    uint32_t m_index{};
+    uint32_t m_generation{};
 
     template<typename U>
     friend class ObjectPool;

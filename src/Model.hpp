@@ -34,7 +34,7 @@ public:
     void addMesh(const Handle<Mesh>& mesh) const noexcept { return m_meshes.push_back(mesh); }
 
 private:
-    uint32_t m_ID;
+    uint32_t m_ID{};
     mutable std::vector<Handle<Mesh>> m_meshes;
     mutable glm::mat3x4 m_transformation;
 

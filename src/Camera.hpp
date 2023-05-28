@@ -34,17 +34,17 @@ class Camera
 public:
     struct Settings
     {
-        glm::vec3 center = glm::vec3(0.0f,  1.0f,  3.0f);
-        glm::vec3 target = glm::vec3(0.0f,  0.0f, -1.0f);
-        glm::vec3 up     = glm::vec3(0.0f,  1.0f,  0.0f);
-        float zNear      = 0.1f;
-        float zFar       = 1000.0f;
+        glm::vec3 center{0.0f, 1.0f, 3.0f};
+        glm::vec3 target{0.0f, 0.0f, -1.0f};
+        glm::vec3 up{0.0f, 1.0f, 0.0f};
+        float zNear{0.1f};
+        float zFar{1000.0f};
     };
 
     struct SettingsPerspective
     {
-        float fov = 70.0f;
-        float aspectRatio = static_cast<float>(App::s_windowWidth) / App::s_windowHeight;
+        float fov{70.0f};
+        float aspectRatio{static_cast<float>(App::s_windowWidth) / App::s_windowHeight};
     };
 
     struct SettingsOrtho
@@ -74,7 +74,7 @@ public:
 
     Camera(Desc desc)
         : m_mngr{desc.mngr},
-          m_app{dsec.app},
+          m_app{desc.app},
           m_settings{desc.settings},
           m_specialSettings{desc.specialSettings},
           m_uniformBuffer{desc.mngr->createBuffer(GL_UNIFORM_BUFFER, static_cast<GLsizei>(sizeof(Matrices)))}
@@ -184,7 +184,7 @@ private:
         return false;
     }
 
-    static inline float s_cameraSpeed = 5.0f;
+    static inline float s_cameraSpeed{5.0f};
 
     ResourceManager* m_mngr;
     App* m_app;

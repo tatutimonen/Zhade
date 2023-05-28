@@ -76,7 +76,7 @@ public:
     static constexpr GLbitfield s_access = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
 
     // This table is amended with UBO -and SSBO information by App upon initialization of the GL context.
-    static inline robin_hood::unordered_map<GLenum, GLint> s_alignmentTable = makeAlignmentTable();
+    static inline robin_hood::unordered_map<GLenum, GLint> s_alignmentTable{makeAlignmentTable()};
 
 private:
     [[nodiscard]] GLsizeiptr calculateWriteOffsetIncrement(GLsizei sizeBytes) const noexcept

@@ -13,8 +13,7 @@ namespace Zhade
 {
 
 //------------------------------------------------------------------------
-// Because std::stack is horrendously slow and std::pmr::deque with
-// a std::pmr::monotonic_buffer_resource is not always applicable as a remedy.
+// An efficient stack implementation. Primarily employed as a free list.
 
 template<std::default_initializable T>
 class Stack
@@ -97,7 +96,7 @@ private:
     }
 
     std::vector<T> m_underlying;
-    size_t m_size = 0;
+    size_t m_size{};
 };
 
 //------------------------------------------------------------------------
