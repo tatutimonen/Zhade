@@ -53,7 +53,6 @@ public:
 
     void freeResources() const noexcept;
     void generateMipmap() const noexcept { glGenerateTextureMipmap(m_name); }
-    void makeResident() const noexcept { glMakeTextureHandleResidentARB(m_handle); }
 
     static Handle<Texture> fromFile(ResourceManager* mngr, const fs::path& path, const Desc& desc = Desc{}) noexcept;
     static Handle<Texture> makeDefault(ResourceManager* mngr) noexcept;

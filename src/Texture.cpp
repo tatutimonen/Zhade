@@ -30,7 +30,7 @@ Texture::Texture(const glm::ivec2& dims, const Desc& desc, ResourceManagement ma
     }
 
     m_handle = glGetTextureHandleARB(m_name);
-    makeResident();
+    glMakeTextureHandleResidentARB(m_handle);
 }
 
 //------------------------------------------------------------------------
