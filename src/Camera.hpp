@@ -52,19 +52,29 @@ public:
         float xmin{}, xmax{App::s_windowWidth}, ymin{}, ymax{App::s_windowHeight};
     };
 
-    using VarSettings = std::variant<SettingsPerspective, SettingsOrtho>;
+    using VarSettings = std::variant<std::monostate, SettingsPerspective, SettingsOrtho>;
 
     struct Desc
     {
-        ResourceManager* mngr;
-        App* app;
+        ResourceManager* mngr{};
+        App* app{};
         Settings settings{};
-        VarSettings specialSettings{T == CameraType::PERSPECTIVE ? SettingsPerspective{} : SettingsOrtho{}};
+        VarSettings specialSettings;
+
+        Desc()
+        {
+            if constexpr (T == CameraType::PERSPECTIVE)
+                specialSettings = SettingsPerspective{};
+            else if (T == CameraType::ORTHO)
+                specialSettings = SettingsOrtho{};
+            else
+                specialSettings = std::monostate{};
+        }
     };
 
     Camera(Desc desc)
         : m_mngr{desc.mngr},
-          m_app{app},
+          m_app{dsec.app},
           m_settings{desc.settings},
           m_specialSettings{desc.specialSettings},
           m_uniformBuffer{desc.mngr->createBuffer(GL_UNIFORM_BUFFER, static_cast<GLsizei>(sizeof(Matrices)))}
