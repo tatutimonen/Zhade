@@ -3,8 +3,6 @@
 #include "ResourceManager.hpp"
 #include "StbImageResource.hpp"
 
-#include <cstddef>
-
 //------------------------------------------------------------------------
 
 namespace Zhade
@@ -77,7 +75,7 @@ Handle<Texture> Texture::makeDefault(ResourceManager* mngr) noexcept
         .wrapT = GL_CLAMP_TO_EDGE,
         .anisotropy = 1.0f
     };
-    static constexpr std::byte data{0xff};
+    static constexpr uint8_t data{0xff};
 
     auto texHandle = mngr->createTexture(glm::ivec2(1, 1), desc);
     mngr->get(texHandle)->setData(&data);
