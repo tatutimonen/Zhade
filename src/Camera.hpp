@@ -52,24 +52,14 @@ public:
         float xmin{}, xmax{App::s_windowWidth}, ymin{}, ymax{App::s_windowHeight};
     };
 
-    using VarSettings = std::variant<std::monostate, SettingsPerspective, SettingsOrtho>;
+    using VarSettings = std::variant<SettingsPerspective, SettingsOrtho>;
 
     struct Desc
     {
         ResourceManager* mngr{};
         App* app{};
-        Settings settings{};
+        Settings settings;
         VarSettings specialSettings;
-
-        Desc()
-        {
-            if constexpr (T == CameraType::PERSPECTIVE)
-                specialSettings = SettingsPerspective{};
-            else if (T == CameraType::ORTHO)
-                specialSettings = SettingsOrtho{};
-            else
-                specialSettings = std::monostate{};
-        }
     };
 
     Camera(Desc desc)

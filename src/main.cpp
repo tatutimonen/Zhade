@@ -74,7 +74,12 @@ int main()
             Shader<GL_FRAGMENT_SHADER>(SHADER_PATH / "debug.frag")
         );
 
-        const auto camera = Camera(&mngr, &app);
+        const auto camera = Camera({
+            .mngr = &mngr,
+            .app = &app,
+            .settings = Camera<>::Settings{},
+            .specialSettings = Camera<>::SettingsPerspective{}
+        });
 
         static constexpr auto numQuads = 4;
         static constexpr auto numTris = 100;

@@ -29,7 +29,7 @@ public:
     {
         std::array<bool, 512> keys;
         float pitch{};
-        float yaw{-glm::half_pi<float>{}};
+        float yaw{-glm::half_pi<float>()};
     };
 
     struct TemporalState
@@ -74,7 +74,7 @@ public:
         float xOffset = mouseSensitivity * (xPos - xPosPrev);
         float yOffset = mouseSensitivity * (yPosPrev - yPos);
 
-        static constexpr float pitchBound{glm::half_pi<float>{} - 0.01f};
+        static constexpr float pitchBound{glm::half_pi<float>() - 0.01f};
         s_state.pitch = glm::clamp(s_state.pitch + yOffset, -pitchBound, pitchBound);
         s_state.yaw += xOffset;
 
