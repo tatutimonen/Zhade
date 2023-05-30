@@ -26,6 +26,8 @@ class Model2
 public:
     Model2() = default;
 
+    friend auto operator<=>(const Model2& lhs, const Model2& rhs) { return lhs.m_ID <=> rhs.m_ID; }
+
     void setTransformation(const glm::mat3x4& transformation) const noexcept { m_transformation = transformation; }
 
     [[nodiscard]] uint32_t getID() const noexcept { return m_ID; }

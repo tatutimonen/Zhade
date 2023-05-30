@@ -84,7 +84,7 @@ robin_hood::unordered_map<GLenum, GLint> Buffer::makeAlignmentTable() noexcept
     return robin_hood::unordered_map<GLenum, GLint>{
         { GL_ARRAY_BUFFER, 1 },
         { GL_ELEMENT_ARRAY_BUFFER, 1 },
-        { GL_DRAW_INDIRECT_BUFFER, static_cast<GLint>(sizeof(MultiDrawElementsIndirectCommand)) }
+        { GL_DRAW_INDIRECT_BUFFER, static_cast<GLint>(sizeof(DrawElementsIndirectCommand)) }
     };
 }
 

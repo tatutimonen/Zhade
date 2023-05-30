@@ -10,7 +10,7 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
-Texture::Texture(const glm::ivec2& dims, const Desc& desc, ResourceManagement management)
+Texture::Texture(const glm::ivec2& dims, Desc desc, ResourceManagement management)
     : m_dims{dims},
       m_management{management}
 {

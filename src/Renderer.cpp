@@ -79,7 +79,7 @@ void Renderer::render() const noexcept
     transformsBuffer->invalidate();
     textureBuffer->invalidate();
 
-    auto cmdData = drawIndirectBuffer->getPtr<MultiDrawElementsIndirectCommand>();
+    auto cmdData = drawIndirectBuffer->getPtr<DrawElementsIndirectCommand>();
     auto transformsData = transformsBuffer->getPtr<glm::mat3x4>();
     auto textureData = textureBuffer->getPtr<GLuint64>();
 
@@ -97,7 +97,7 @@ void Renderer::render() const noexcept
         vbo->pushData(model->vertices().data(), model->numVertices());
         ebo->pushData(model->indices().data(), model->numIndices());
 
-        MultiDrawElementsIndirectCommand cmd{
+        DrawElementsIndirectCommand cmd{
             .vertexCount = static_cast<GLuint>(model->numIndices()),
             .instanceCount = task.instanceCount,
             .firstIndex = firstIndex,

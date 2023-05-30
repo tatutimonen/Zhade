@@ -5,6 +5,7 @@ set(src_files
     App.cpp
     Buffer.cpp
     Camera.cpp
+    Framebuffer.cpp
     Handle.cpp
     IndirectRenderer.cpp
     Mesh.cpp

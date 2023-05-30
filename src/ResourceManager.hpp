@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Buffer.hpp"
+#include "Framebuffer.hpp"
 #include "Handle.hpp"
 #include "Mesh.hpp"
 #include "Model.hpp"
@@ -35,10 +36,10 @@ public:
     }
 
     template<typename... Args>
-    requires std::constructible_from<Material, Args...>
-    [[nodiscard]] Handle<Material> createMaterial(Args&& ...args)
+    requires std::constructible_from<Framebuffer, Args..., ResourceManagement>
+    [[nodiscard]] Handle<Framebuffer> createFramebuffer(Args&& ...args)
     {
-        return m_materials.allocate(std::forward<Args>(args)...);
+        return m_framebuffers.allocate(std::forward<Args>(args)..., ResourceManagement::MANUAL);
     }
 
     template<typename... Args>
@@ -70,14 +71,14 @@ public:
     }
 
     [[nodiscard]] Buffer* get(const Handle<Buffer>& handle) const noexcept { return m_buffers.get(handle); }
-    [[nodiscard]] Material* get(const Handle<Material>& handle) const noexcept { return m_materials.get(handle); }
+    [[nodiscard]] Framebuffer* get(const Handle<Framebuffer>& handle) const noexcept { return m_framebuffers.get(handle); }
     [[nodiscard]] Mesh* get(const Handle<Mesh>& handle) const noexcept { return m_meshes.get(handle); }
     [[nodiscard]] Model* get(const Handle<Model>& handle) const noexcept { return m_models.get(handle); }
     [[nodiscard]] Model2* get(const Handle<Model2>& handle) const noexcept { return m_models2.get(handle); }
     [[nodiscard]] Texture* get(const Handle<Texture>& handle) const noexcept { return m_textures.get(handle); }
 
     void destroy(const Handle<Buffer>& handle) const noexcept { m_buffers.deallocate(handle); }
-    void destroy(const Handle<Material>& handle) const noexcept { m_materials.deallocate(handle); }
+    void destroy(const Handle<Framebuffer>& handle) const noexcept { m_framebuffers.deallocate(handle); }
     void destroy(const Handle<Mesh>& handle) const noexcept { m_meshes.deallocate(handle); }
     void destroy(const Handle<Model>& handle) const noexcept { m_models.deallocate(handle); }
     void destroy(const Handle<Model2>& handle) const noexcept { m_models2.deallocate(handle); }
@@ -85,7 +86,7 @@ public:
 
 private:
     ObjectPool<Buffer> m_buffers;
-    ObjectPool<Material> m_materials;
+    ObjectPool<Framebuffer> m_framebuffers;
     ObjectPool<Mesh> m_meshes;
     ObjectPool<Model> m_models;
     ObjectPool<Model2> m_models2;

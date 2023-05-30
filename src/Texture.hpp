@@ -34,7 +34,7 @@ public:
     };
 
     Texture() = default;
-    Texture(const glm::ivec2& dims, const Desc& desc, ResourceManagement management);
+    Texture(const glm::ivec2& dims, Desc desc, ResourceManagement management);
     ~Texture();
 
     Texture(const Texture&) = delete;

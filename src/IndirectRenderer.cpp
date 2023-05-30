@@ -1,5 +1,10 @@
 #include "IndirectRenderer.hpp"
 
+#include <array>
+#include <memory_resource>
+#include <numeric>
+#include <ranges>
+
 //------------------------------------------------------------------------
 
 namespace Zhade
@@ -34,17 +39,43 @@ IndirectRenderer::IndirectRenderer(ResourceManager* mngr, Scene* scene)
 
 void IndirectRenderer::render() const noexcept
 {
+    prepareForRender();
 
+    static GLuint currentlyBoundFbo{};
+
+    for (const auto& renderPass : m_extraPasses)
+    {
+        const Framebuffer* framebuffer = m_mngr->get(renderPass.framebuffer);
+        const auto fbo = framebuffer->getName();
+        if (fbo != currentlyBoundFbo) [[unlikely]]
+        {
+            currentlyBoundFbo = fbo;
+            framebuffer->bind();
+        }
+        glClear(renderPass.clearMask);
+        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, 1, 0);
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, 1, 0);
 }
 
 //------------------------------------------------------------------------
 
-void IndirectRenderer::setupCommandBuffer() const noexcept
+void IndirectRenderer::prepareForRender() const noexcept
 {
-    for (const auto& modelHandle : m_scene->getModels())
+    static std::array<uint8_t, 2048> buf;
+    std::pmr::monotonic_buffer_resource rsrc{buf.data(), buf.size()};
+    std::pmr::vector<uint32_t> modelIndices{&rsrc};
+
+    std::iota(modelIndices.begin(), modelIndices.end(), 0u);
+    auto idx2model = [this](uint32_t idx){ return m_mngr->get(m_scene->getModels()[idx]); };
+    std::ranges::sort(modelIndices, std::less{}, idx2model);
+
+    for (const Model2* model : std::ranges::views::transform(modelIndices, idx2model))
     {
-        const Model2* model = m_mngr->get(modelHandle);
-        
+
     }
 }
 

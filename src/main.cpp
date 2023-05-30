@@ -5,6 +5,7 @@
 #include "Model.hpp"
 #include "Renderer.hpp"
 #include "ResourceManager.hpp"
+#include "Scene.hpp"
 #include "Shader.hpp"
 #include "ShaderProgram.hpp"
 #include "StbImageResource.hpp"
@@ -73,6 +74,13 @@ int main()
             Shader<GL_VERTEX_SHADER>(SHADER_PATH / "debug.vert"),
             Shader<GL_FRAGMENT_SHADER>(SHADER_PATH / "debug.frag")
         );
+
+        const auto scene2 = Scene(&mngr);
+        scene2.addModelFromFile(ASSET_PATH / "sponza" / "sponza.obj");
+        for (const auto& modelHandle : scene2.getModels())
+        {
+            std::cout << mngr.get(modelHandle)->getID() << "\n";
+        }
 
         const auto camera = Camera({
             .mngr = &mngr,

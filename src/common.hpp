@@ -32,7 +32,7 @@ enum class ResourceManagement
 //------------------------------------------------------------------------
 // As per: https://www.khronos.org/opengl/wiki/Vertex_Rendering#Indirect_rendering.
 
-struct MultiDrawElementsIndirectCommand
+struct DrawElementsIndirectCommand
 {
     GLuint vertexCount;
     GLuint instanceCount;

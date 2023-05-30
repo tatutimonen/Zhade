@@ -5,6 +5,7 @@
 #include "constants.hpp"
 
 #include <algorithm>
+#include <atomic>
 #include <cstdint>
 #include <ranges>
 #include <vector>
@@ -29,10 +30,7 @@ public:
         m_generations.resize(m_size);
 
         for (size_t idx : std::views::iota(0u, m_size) | std::views::reverse)
-        {
-            m_generations[idx] = 0;
             m_freeList.push(idx);
-        }
     }
 
     ~ObjectPool()
@@ -112,18 +110,13 @@ private:
         m_freeList.resize(m_size);
 
         for (size_t idx : std::views::iota(size_prev, m_size) | std::views::reverse)
-        {
-            m_generations[idx] = 0;
             m_freeList.push(idx);
-        }
     }
 
     size_t m_size;
     mutable std::vector<T> m_pool;
     mutable std::vector<uint32_t> m_generations;
     mutable Stack<uint32_t> m_freeList;
-
-    friend class ResourceManager;
 };
 
 //------------------------------------------------------------------------

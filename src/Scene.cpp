@@ -8,6 +8,7 @@
 #include <assimp/scene.h>
 
 #include <cstdint>
+#include <format>
 #include <iostream>
 #include <ranges>
 #include <span>
@@ -66,17 +67,12 @@ void Scene::addModelFromFile(const fs::path& path) const noexcept
             aiString tempMaterialPath;
             material->GetTexture(aiTextureType_DIFFUSE, 0, &tempMaterialPath);
             const fs::path materialPath = path.parent_path() / tempMaterialPath.data;
-            const std::string materialPathStr = materialPath.string();
             m_textures.push_back(Texture::fromFile(m_mngr, materialPath));
         }
 
         const auto meshHandle = m_mngr->createMesh(Mesh::Desc{
-            .geometry = {
-                .vertices = std::span(verticesStart, mesh->mNumVertices),
-                .indices = std::span(indicesStart, mesh->mNumFaces * 3)
-            },
-            .materialID = 0,
-            .diffuseID = m_baseTexture++
+            .vertices = std::span(verticesStart, mesh->mNumVertices),
+            .indices = std::span(indicesStart, mesh->mNumFaces * 3)
         });
         model->addMesh(meshHandle);
     }
