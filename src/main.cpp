@@ -76,7 +76,7 @@ int main()
         );
 
         const auto scene2 = Scene(&mngr);
-        scene2.addModelFromFile(ASSET_PATH / "sponza" / "sponza.obj");
+        scene2.addModelFromFile(ASSET_PATH / "dragon" / "dragon.obj");
         for (const auto& modelHandle : scene2.getModels())
         {
             std::cout << mngr.get(modelHandle)->getID() << "\n";

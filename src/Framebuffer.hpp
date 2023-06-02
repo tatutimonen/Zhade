@@ -51,7 +51,6 @@ private:
     GLuint m_name{};
     Handle<Texture> m_texture;
     ResourceManagement m_management{ResourceManagement::MANUAL};
-    bool bound{};
 };
 
 //------------------------------------------------------------------------

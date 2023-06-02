@@ -41,17 +41,9 @@ void IndirectRenderer::render() const noexcept
 {
     prepareForRender();
 
-    static GLuint currentlyBoundFbo{};
-
     for (const auto& renderPass : m_extraPasses)
     {
-        const Framebuffer* framebuffer = m_mngr->get(renderPass.framebuffer);
-        const auto fbo = framebuffer->getName();
-        if (fbo != currentlyBoundFbo) [[unlikely]]
-        {
-            currentlyBoundFbo = fbo;
-            framebuffer->bind();
-        }
+        m_mngr->get(renderPass.framebuffer)->bind();
         glClear(renderPass.clearMask);
         glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, 1, 0);
     }
