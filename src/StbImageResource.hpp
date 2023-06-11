@@ -10,6 +10,7 @@ extern "C" {
 #include <bit>
 #include <format>
 #include <iostream>
+#include <utility>
 
 //------------------------------------------------------------------------
 
@@ -36,17 +37,11 @@ public:
     StbImageResource(const StbImageResource&) = delete;
     StbImageResource& operator=(const StbImageResource&) = delete;
 
-    StbImageResource(StbImageResource&& other)
-    {
-        m_data = other.m_data;
-        other.m_data = nullptr;
-    }
+    StbImageResource(StbImageResource&& other) : m_data{std::exchange(other.m_data, nullptr)} {}
 
     StbImageResource& operator=(StbImageResource&& other)
     {
-        if (this == &other) [[unlikely]] return *this;
-        m_data = other.m_data;
-        other.m_data = nullptr;
+        m_data = std::exchange(other.m_data, nullptr);
         return *this;
     }
 
