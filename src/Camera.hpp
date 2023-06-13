@@ -22,8 +22,8 @@ namespace Zhade
 
 enum class CameraType
 {
-    PERSPECTIVE = 0,
-    ORTHO       = 1
+    PERSPECTIVE,
+    ORTHO
 };
 
 //------------------------------------------------------------------------

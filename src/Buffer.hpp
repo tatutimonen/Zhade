@@ -24,11 +24,11 @@ namespace BufferUsage
     using Type = int;
     enum
     {
-        VERTEX   = 0,
-        INDEX    = 1,
-        UNIFORM  = 2,
-        STORAGE  = 3,
-        INDIRECT = 4
+        VERTEX,
+        INDEX,
+        UNIFORM,
+        STORAGE,
+        INDIRECT
     };
 }
 
