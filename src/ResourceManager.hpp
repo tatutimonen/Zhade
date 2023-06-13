@@ -28,11 +28,9 @@ public:
     ResourceManager(ResourceManager&&) = default;
     ResourceManager& operator=(ResourceManager&&) = default;
 
-    template<typename... Args>
-    requires std::constructible_from<Buffer, Args..., ResourceManagement>
-    [[nodiscard]] Handle<Buffer> createBuffer(Args&& ...args)
+    [[nodiscard]] Handle<Buffer> createBuffer(BufferDescriptor desc)
     {
-        return m_buffers.allocate(std::forward<Args>(args)..., ResourceManagement::MANUAL);
+        return m_buffers.allocate(desc);
     }
 
     template<typename... Args>

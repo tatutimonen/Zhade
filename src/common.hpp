@@ -7,6 +7,7 @@ extern "C" {
 #include <GL/glew.h>
 }
 
+#include <array>
 #include <filesystem>
 namespace fs = std::filesystem;
 

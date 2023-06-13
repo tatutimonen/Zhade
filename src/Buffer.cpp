@@ -10,11 +10,10 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
-Buffer::Buffer(GLenum target, GLsizei sizeBytes, ResourceManagement management)
-    : m_target{target},
-      m_wholeSizeBytes{sizeBytes},
-      m_management{management},
-      m_alignment{s_alignmentTable.at(target)}
+Buffer::Buffer(BufferDescriptor desc)
+    : m_usage{desc.usage},
+      m_wholeSizeBytes{desc.sizeBytes},
+      m_managed{desc.managed}
 {
     glCreateBuffers(1, &m_name);
     glNamedBufferStorage(m_name, m_wholeSizeBytes, nullptr, GL_DYNAMIC_STORAGE_BIT | s_access);
@@ -26,7 +25,7 @@ Buffer::Buffer(GLenum target, GLsizei sizeBytes, ResourceManagement management)
 
 Buffer::~Buffer()
 {
-    if (m_management == ResourceManagement::MANUAL) [[likely]] return;
+    if (m_managed) [[likely]] return;
     glDeleteBuffers(1, &m_name);
 }
 
@@ -34,31 +33,33 @@ Buffer::~Buffer()
 
 void Buffer::bind() const noexcept
 {
-    glBindBuffer(m_target, m_name);
+    glBindBuffer(BufferUsage2GLenum[m_usage], m_name);
 }
 
 //------------------------------------------------------------------------
 
 void Buffer::bindBase(GLuint bindingIndex) const noexcept
 {
-    if (m_target != GL_UNIFORM_BUFFER && m_target != GL_SHADER_STORAGE_BUFFER) [[unlikely]]
+    const GLenum target = BufferUsage2GLenum[m_usage];
+    if (target != GL_UNIFORM_BUFFER && target != GL_SHADER_STORAGE_BUFFER) [[unlikely]]
     {
         std::cerr << "Bind base of non-UBO or non-SSBO\n";
         return;
     }
-    glBindBufferBase(m_target, bindingIndex, m_name);
+    glBindBufferBase(target, bindingIndex, m_name);
 }
 
 //------------------------------------------------------------------------
 
 void Buffer::bindRange(GLuint bindingIndex, GLintptr offsetBytes, GLsizeiptr sizeBytes) const noexcept
 {
-    if (m_target != GL_UNIFORM_BUFFER && m_target != GL_SHADER_STORAGE_BUFFER) [[unlikely]]
+    const GLenum target = BufferUsage2GLenum[m_usage];
+    if (target != GL_UNIFORM_BUFFER && target != GL_SHADER_STORAGE_BUFFER) [[unlikely]]
     {
         std::cerr << "Bind range of non-UBO or non-SSBO\n";
         return;
     }
-    glBindBufferRange(m_target, bindingIndex, m_name, offsetBytes, sizeBytes);
+    glBindBufferRange(target, bindingIndex, m_name, offsetBytes, sizeBytes);
 }
 
 //------------------------------------------------------------------------
@@ -75,17 +76,6 @@ void Buffer::invalidate(GLintptr offset, GLsizeiptr length) const noexcept
 {
     glInvalidateBufferSubData(m_name, offset, length == 0 ? m_writeOffsetBytes : length);
     m_writeOffsetBytes = 0;
-}
-
-//------------------------------------------------------------------------
-
-robin_hood::unordered_map<GLenum, GLint> Buffer::makeAlignmentTable() noexcept
-{
-    return robin_hood::unordered_map<GLenum, GLint>{
-        { GL_ARRAY_BUFFER, 1 },
-        { GL_ELEMENT_ARRAY_BUFFER, 1 },
-        { GL_DRAW_INDIRECT_BUFFER, static_cast<GLint>(sizeof(DrawElementsIndirectCommand)) }
-    };
 }
 
 //------------------------------------------------------------------------

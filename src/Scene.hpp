@@ -26,8 +26,8 @@ class Scene
 public:
     Scene(ResourceManager* mngr)
         : m_mngr{mngr},
-          m_vertexBuffer{mngr->createBuffer(GL_ARRAY_BUFFER, 1 << 28)},
-          m_indexBuffer{mngr->createBuffer(GL_ELEMENT_ARRAY_BUFFER, 1 << 28)},
+          m_vertexBuffer{mngr->createBuffer({.sizeBytes = 1 << 28, .usage = BufferUsage::VERTEX})},
+          m_indexBuffer{mngr->createBuffer({.sizeBytes = 1 << 28, .usage = BufferUsage::INDEX})},
           m_textures{Texture::makeDefault(mngr)}
     {}
 

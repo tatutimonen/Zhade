@@ -23,7 +23,7 @@ namespace Zhade
 enum class CameraType
 {
     PERSPECTIVE = 0,
-    ORTHO = 1
+    ORTHO       = 1
 };
 
 //------------------------------------------------------------------------
@@ -67,7 +67,7 @@ public:
           m_app{desc.app},
           m_settings{desc.settings},
           m_specialSettings{desc.specialSettings},
-          m_uniformBuffer{desc.mngr->createBuffer(GL_UNIFORM_BUFFER, static_cast<GLsizei>(sizeof(Matrices)))}
+          m_uniformBuffer{desc.mngr->createBuffer({.sizeBytes = static_cast<GLsizei>(sizeof(Matrices)), .usage = BufferUsage::UNIFORM})}
     {
         uniformBuffer()->bindBase(constants::CAMERA_BINDING);
         updateView();

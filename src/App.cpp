@@ -52,13 +52,8 @@ void App::init() const noexcept
     // Other.
     stbi_set_flip_vertically_on_load(1);
 
-    GLint uniformBufferAlignment;
-    glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &uniformBufferAlignment);
-    Buffer::s_alignmentTable.insert({ GL_UNIFORM_BUFFER, uniformBufferAlignment });
-
-    GLint storageBufferAlignment;
-    glGetIntegerv(GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT, &storageBufferAlignment);
-    Buffer::s_alignmentTable.insert({ GL_SHADER_STORAGE_BUFFER, storageBufferAlignment });
+    glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &BufferUsage2Alignment[BufferUsage::UNIFORM]);
+    glGetIntegerv(GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT, &BufferUsage2Alignment[BufferUsage::STORAGE]);
 }
 
 //------------------------------------------------------------------------

@@ -54,7 +54,7 @@ int main()
         std::cout << (path1 / path2.concat("asd.c\n")).parent_path().string();
 
         std::cout << std::format("numMeshes: {}, numMaterirals: {}\n", scene->mNumMeshes, scene->mNumMaterials);
-        std::cout << Buffer::s_alignmentTable.at(GL_UNIFORM_BUFFER) << " " << Buffer::s_alignmentTable.at(GL_SHADER_STORAGE_BUFFER) << "\n";
+        std::cout << BufferUsage2Alignment[BufferUsage::UNIFORM] << " " << BufferUsage2Alignment[BufferUsage::STORAGE] << "\n";
 
         for (uint32_t i : std::views::iota(0u, scene->mNumMaterials))
         {
@@ -119,8 +119,8 @@ int main()
         const Renderer renderer {
             &mngr,
             {
-                .vertexBuffer = mngr.createBuffer(GL_ARRAY_BUFFER, 1 << 16),
-                .indexBuffer = mngr.createBuffer(GL_ELEMENT_ARRAY_BUFFER, 1 << 16),
+                .vertexBuffer = mngr.createBuffer({.sizeBytes = 1 << 16, .usage = BufferUsage::VERTEX}),
+                .indexBuffer = mngr.createBuffer({.sizeBytes = 1 << 16, .usage = BufferUsage::INDEX}),
                 .program = &shaderProgram
             }
         };

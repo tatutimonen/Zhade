@@ -15,7 +15,7 @@ namespace Zhade
 IndirectRenderer::IndirectRenderer(ResourceManager* mngr, Scene* scene)
     : m_mngr{mngr},
       m_scene{scene},
-      m_commandBuffer{mngr->createBuffer(GL_DRAW_INDIRECT_BUFFER, 1 << 17)}
+      m_commandBuffer{mngr->createBuffer({.sizeBytes = 1 << 17, .usage = BufferUsage::INDIRECT})}
 {
     glCreateVertexArrays(1, &m_vao);
 

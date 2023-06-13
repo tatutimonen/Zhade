@@ -3,7 +3,6 @@
 #include "common.hpp"
 
 #include <glm/glm.hpp>
-#include <robin_hood.h>
 extern "C" {
 #include <GL/glew.h>
 }
@@ -19,13 +18,52 @@ namespace Zhade
 {
 
 //------------------------------------------------------------------------
-// Generic OpenGL buffer, persistently and coherently mapped.
+
+namespace BufferUsage
+{
+    using Type = int;
+    enum
+    {
+        VERTEX   = 0,
+        INDEX    = 1,
+        UNIFORM  = 2,
+        STORAGE  = 3,
+        INDIRECT = 4
+    };
+}
+
+inline constexpr GLenum BufferUsage2GLenum[] {
+    GL_ARRAY_BUFFER,
+    GL_ELEMENT_ARRAY_BUFFER,
+    GL_UNIFORM_BUFFER,
+    GL_SHADER_STORAGE_BUFFER,
+    GL_DRAW_INDIRECT_BUFFER
+};
+
+inline constexpr GLint TBD = 0;
+
+inline GLint BufferUsage2Alignment[] {
+    1,
+    1,
+    TBD,
+    TBD,
+    static_cast<GLint>(sizeof(DrawElementsIndirectCommand)),
+};
+
+struct BufferDescriptor
+{
+    GLsizei sizeBytes;
+    BufferUsage::Type usage;
+    bool managed = true;
+};
+
+//------------------------------------------------------------------------
 
 class Buffer
 {
 public:
     Buffer() = default;
-    Buffer(GLenum target, GLsizei sizeBytes, ResourceManagement management);
+    Buffer(BufferDescriptor desc);
     ~Buffer();
 
     Buffer(const Buffer&) = delete;
@@ -71,26 +109,21 @@ public:
     void freeResources() const noexcept;
     void invalidate(GLintptr offset = 0, GLsizeiptr length = 0) const noexcept;
 
-    [[nodiscard]] static robin_hood::unordered_map<GLenum, GLint> makeAlignmentTable() noexcept;
-
     static constexpr GLbitfield s_access = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
-
-    // This table is amended with UBO -and SSBO information by App upon initialization of the GL context.
-    static inline robin_hood::unordered_map<GLenum, GLint> s_alignmentTable{makeAlignmentTable()};
 
 private:
     [[nodiscard]] GLsizeiptr calculateWriteOffsetIncrement(GLsizei sizeBytes) const noexcept
     {
-        return static_cast<GLsizeiptr>(std::ceil(static_cast<float>(sizeBytes) / m_alignment) * m_alignment);
+        const GLint alignment = BufferUsage2Alignment[m_usage];
+        return static_cast<GLsizeiptr>(std::ceil(static_cast<float>(sizeBytes) / alignment) * alignment);
     }
 
     GLuint m_name{};
-    GLenum m_target{};
+    BufferUsage::Type m_usage{};
     GLsizei m_wholeSizeBytes{};
-    GLint m_alignment{};
     uint8_t* m_ptr{};
     mutable GLsizeiptr m_writeOffsetBytes{};
-    ResourceManagement m_management{ResourceManagement::MANUAL};
+    bool m_managed{true};
 };
 
 //------------------------------------------------------------------------

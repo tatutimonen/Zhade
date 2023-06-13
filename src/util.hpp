@@ -81,7 +81,7 @@ inline GLuint makeNegUnitVec3zPacked() noexcept
 //------------------------------------------------------------------------
 
 template<std::floating_point T>
-inline T average(std::span<T> values)
+inline T average(std::span<T> values) noexcept
 {
     T sum{};
     for (const auto value : values)
@@ -91,12 +91,12 @@ inline T average(std::span<T> values)
 
 //------------------------------------------------------------------------
 
-inline glm::vec3 vec3FromAiVector3D(const aiVector3D& vec)
+inline glm::vec3 vec3FromAiVector3D(const aiVector3D& vec) noexcept
 {
     return glm::vec3(vec.x, vec.y, vec.z);
 }
 
-inline glm::vec2 vec2FromAiVector3D(const aiVector3D& vec)
+inline glm::vec2 vec2FromAiVector3D(const aiVector3D& vec) noexcept
 {
     return glm::vec2(vec.x, vec.y);
 }
