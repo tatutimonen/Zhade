@@ -50,14 +50,14 @@ inline GLint BufferUsage2Alignment[] {
     static_cast<GLint>(sizeof(DrawElementsIndirectCommand)),
 };
 
+//------------------------------------------------------------------------
+
 struct BufferDescriptor
 {
     GLsizei sizeBytes;
     BufferUsage::Type usage;
     bool managed = true;
 };
-
-//------------------------------------------------------------------------
 
 class Buffer
 {
