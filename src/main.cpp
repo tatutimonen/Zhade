@@ -82,12 +82,7 @@ int main()
             std::cout << mngr.get(modelHandle)->getID() << "\n";
         }
 
-        const auto camera = Camera({
-            .mngr = &mngr,
-            .app = &app,
-            .settings = Camera<>::Settings{},
-            .specialSettings = Camera<>::SettingsPerspective{}
-        });
+        const auto camera = Camera({.mngr = &mngr, .app = &app});
 
         static constexpr auto numQuads = 4;
         static constexpr auto numTris = 100;
@@ -119,8 +114,8 @@ int main()
         const Renderer renderer {
             &mngr,
             {
-                .vertexBuffer = mngr.createBuffer({.sizeBytes = 1 << 16, .usage = BufferUsage::VERTEX}),
-                .indexBuffer = mngr.createBuffer({.sizeBytes = 1 << 16, .usage = BufferUsage::INDEX}),
+                .vertexBuffer = mngr.createBuffer({.byteSize = 1 << 16, .usage = BufferUsage::VERTEX}),
+                .indexBuffer = mngr.createBuffer({.byteSize = 1 << 16, .usage = BufferUsage::INDEX}),
                 .program = &shaderProgram
             }
         };

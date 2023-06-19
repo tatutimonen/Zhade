@@ -34,9 +34,9 @@ Renderer::Renderer(ResourceManager* mngr, const Specification& spec)
     glVertexArrayAttribBinding(m_vao, 1, 0);
     glVertexArrayAttribBinding(m_vao, 2, 0);
 
-    m_drawIndirectBuffer = m_mngr->createBuffer({.sizeBytes = 1 << 10, .usage = BufferUsage::INDIRECT});
-    m_transformsBuffer = m_mngr->createBuffer({.sizeBytes = 1 << 16, .usage = BufferUsage::STORAGE});
-    m_textureBuffer = m_mngr->createBuffer({.sizeBytes = 64, .usage = BufferUsage::STORAGE});
+    m_drawIndirectBuffer = m_mngr->createBuffer({.byteSize = 1 << 10, .usage = BufferUsage::INDIRECT});
+    m_transformsBuffer = m_mngr->createBuffer({.byteSize = 1 << 16, .usage = BufferUsage::STORAGE});
+    m_textureBuffer = m_mngr->createBuffer({.byteSize = 64, .usage = BufferUsage::STORAGE});
     auto dibo = m_mngr->get(m_drawIndirectBuffer);
     auto tbo = m_mngr->get(m_transformsBuffer);
     auto tebo = m_mngr->get(m_textureBuffer);

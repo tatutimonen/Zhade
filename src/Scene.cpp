@@ -70,7 +70,7 @@ void Scene::addModelFromFile(const fs::path& path) const noexcept
             m_textures.push_back(Texture::fromFile(m_mngr, materialPath));
         }
 
-        const auto meshHandle = m_mngr->createMesh(Mesh::Desc{
+        const auto meshHandle = m_mngr->createMesh({
             .vertices = std::span(verticesStart, mesh->mNumVertices),
             .indices = std::span(indicesStart, mesh->mNumFaces * 3)
         });

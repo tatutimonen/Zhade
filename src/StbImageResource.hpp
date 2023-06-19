@@ -25,7 +25,6 @@ concept StbImageDataFormat = (
 );
 
 //------------------------------------------------------------------------
-// RAII wrapper for selected stb_image functionality.
 
 template<StbImageDataFormat T = stbi_uc>
 class StbImageResource

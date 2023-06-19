@@ -13,7 +13,6 @@ namespace Zhade
 {
 
 //------------------------------------------------------------------------
-// An efficient stack implementation. Primarily employed as a free list.
 
 template<std::default_initializable T>
 class Stack
@@ -76,17 +75,17 @@ public:
 
     [[nodiscard]] T& at(size_t pos)
     {
-        return m_underlying.at(pos);
+        return m_underlying[pos];
     }
 
     [[nodiscard]] const T& at(size_t pos) const
     {
-        return m_underlying.at(pos);
+        return m_underlying[pos];
     }
 
     [[nodiscard]] T& operator[](size_t pos)
     {
-        return m_underlying.at(pos);
+        return m_underlying[pos];
     }
 
 private:

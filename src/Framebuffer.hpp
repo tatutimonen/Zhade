@@ -18,20 +18,20 @@ namespace Zhade
 
 class ResourceManager;
 
+struct FramebufferDescriptor
+{
+    TextureDescriptor texture;
+    GLenum attachment;
+    ResourceManager* mngr;
+};
+
 //------------------------------------------------------------------------
 
 class Framebuffer
 {
 public:
-    struct Desc
-    {
-        glm::ivec2 dims;
-        Texture::Desc texDesc;
-        GLenum attachment;
-    };
-
     Framebuffer() = default;
-    Framebuffer(ResourceManager* mngr, Desc desc, ResourceManagement management);
+    explicit Framebuffer(FramebufferDescriptor desc);
     ~Framebuffer();
 
     Framebuffer(const Framebuffer&) = delete;
@@ -47,10 +47,10 @@ public:
 private:
     const Texture* texture() const noexcept;
 
-    ResourceManager* m_mngr{};
-    GLuint m_name{};
-    Handle<Texture> m_texture;
-    ResourceManagement m_management{ResourceManagement::MANUAL};
+    GLuint m_name = 0;
+    Handle<Texture> m_texture{};
+    ResourceManager* m_mngr = nullptr;
+    bool m_managed = true;
 };
 
 //------------------------------------------------------------------------

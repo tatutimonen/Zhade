@@ -10,18 +10,19 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
-Texture::Texture(const glm::ivec2& dims, Desc desc, ResourceManagement management)
-    : m_dims{dims},
-      m_management{management}
+Texture::Texture(TextureDescriptor desc)
+    : m_dims{desc.dims},
+      m_managed{desc.managed}
 {
     glCreateTextures(GL_TEXTURE_2D, 1, &m_name);
     glTextureStorage2D(m_name, desc.levels, desc.internalFormat, m_dims.x, m_dims.y);
 
-    glTextureParameteri(m_name, GL_TEXTURE_MIN_FILTER, desc.minFilter);
-    glTextureParameteri(m_name, GL_TEXTURE_MAG_FILTER, desc.magFilter);
-    glTextureParameteri(m_name, GL_TEXTURE_WRAP_S, desc.wrapS);
-    glTextureParameteri(m_name, GL_TEXTURE_WRAP_T, desc.wrapT);
-    glTextureParameterf(m_name, GL_TEXTURE_MAX_ANISOTROPY, desc.anisotropy);
+    const SamplerDescriptor& sampler = desc.sampler;
+    glTextureParameteri(m_name, GL_TEXTURE_WRAP_S, sampler.wrapS);
+    glTextureParameteri(m_name, GL_TEXTURE_WRAP_T, sampler.wrapT);
+    glTextureParameteri(m_name, GL_TEXTURE_MAG_FILTER, sampler.magFilter);
+    glTextureParameteri(m_name, GL_TEXTURE_MIN_FILTER, sampler.minFilter);
+    glTextureParameterf(m_name, GL_TEXTURE_MAX_ANISOTROPY, sampler.anisotropy);
 
     if (desc.internalFormat == GL_DEPTH_COMPONENT32)  // Depth texture?
     {
@@ -37,7 +38,7 @@ Texture::Texture(const glm::ivec2& dims, Desc desc, ResourceManagement managemen
 
 Texture::~Texture()
 {
-    if (m_management == ResourceManagement::MANUAL) [[likely]] return;
+    if (m_managed) [[likely]] return;
     freeResources();
 }
 
@@ -52,13 +53,18 @@ void Texture::freeResources() const noexcept
 
 //------------------------------------------------------------------------
 
-Handle<Texture> Texture::fromFile(ResourceManager* mngr, const fs::path& path, const Desc& desc) noexcept
+Handle<Texture> Texture::fromFile(ResourceManager* mngr, const fs::path& path, TextureDescriptor desc) noexcept
 {
     const auto img = StbImageResource(path);
-    auto texHandle = mngr->createTexture(img.getDims(), desc);
+    desc.dims = img.getDims();
+    
+    desc.managed = true;
+    auto texHandle = mngr->createTexture(desc);
+    
     auto tex = mngr->get(texHandle);
     tex->setData(img.data());
     tex->generateMipmap();
+    
     return texHandle;
 }
 
@@ -66,18 +72,18 @@ Handle<Texture> Texture::fromFile(ResourceManager* mngr, const fs::path& path, c
 
 Handle<Texture> Texture::makeDefault(ResourceManager* mngr) noexcept
 {
-    static constexpr Desc desc{
+    static constexpr TextureDescriptor desc{
+        .dims = {1, 1},
         .levels = 1,
-        .internalFormat = GL_RGBA8,
-        .minFilter = GL_NEAREST,
-        .magFilter = GL_NEAREST,
-        .wrapS = GL_CLAMP_TO_EDGE,
-        .wrapT = GL_CLAMP_TO_EDGE,
-        .anisotropy = 1.0f
+        .sampler = {
+            .magFilter = GL_NEAREST,
+            .minFilter = GL_NEAREST,
+            .anisotropy = 1.0f
+        }
     };
-    static constexpr uint8_t data{0xff};
+    static constexpr uint8_t data = 0xff;
 
-    auto texHandle = mngr->createTexture(glm::ivec2(1, 1), desc);
+    auto texHandle = mngr->createTexture(desc);
     mngr->get(texHandle)->setData(&data);
     return texHandle;
 }

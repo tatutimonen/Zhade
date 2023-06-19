@@ -26,48 +26,48 @@ enum class CameraType
     ORTHO
 };
 
+struct CameraSettings
+{
+    glm::vec3 center{0.0f, 1.0f, 3.0f};
+    glm::vec3 target{0.0f, 0.0f, -1.0f};
+    glm::vec3 up{0.0f, 1.0f, 0.0f};
+    float zNear = 0.1f;
+    float zFar = 1000.0f;
+};
+
+struct PerspectiveSettings
+{
+    float fov = 70.0f;
+    float aspectRatio = static_cast<float>(App::s_windowWidth) / App::s_windowHeight;
+};
+
+struct OrthoSettings
+{
+    float xmin{}, xmax{App::s_windowWidth}, ymin{}, ymax{App::s_windowHeight};
+};
+
+using VarCameraSettings = std::variant<PerspectiveSettings, OrthoSettings>;
+
+struct CameraDescriptor
+{
+    CameraSettings settings{};
+    VarCameraSettings varSettings = PerspectiveSettings{};
+    ResourceManager* mngr;
+    App* app;
+};
+
 //------------------------------------------------------------------------
 
 template<CameraType T = CameraType::PERSPECTIVE>
 class Camera
 {
 public:
-    struct Settings
-    {
-        glm::vec3 center{0.0f, 1.0f, 3.0f};
-        glm::vec3 target{0.0f, 0.0f, -1.0f};
-        glm::vec3 up{0.0f, 1.0f, 0.0f};
-        float zNear{0.1f};
-        float zFar{1000.0f};
-    };
-
-    struct SettingsPerspective
-    {
-        float fov{70.0f};
-        float aspectRatio{static_cast<float>(App::s_windowWidth) / App::s_windowHeight};
-    };
-
-    struct SettingsOrtho
-    {
-        float xmin{}, xmax{App::s_windowWidth}, ymin{}, ymax{App::s_windowHeight};
-    };
-
-    using VarSettings = std::variant<SettingsPerspective, SettingsOrtho>;
-
-    struct Desc
-    {
-        ResourceManager* mngr{};
-        App* app{};
-        Settings settings;
-        VarSettings specialSettings;
-    };
-
-    Camera(Desc desc)
-        : m_mngr{desc.mngr},
-          m_app{desc.app},
-          m_settings{desc.settings},
-          m_specialSettings{desc.specialSettings},
-          m_uniformBuffer{desc.mngr->createBuffer({.sizeBytes = static_cast<GLsizei>(sizeof(Matrices)), .usage = BufferUsage::UNIFORM})}
+    Camera(CameraDescriptor desc)
+        : m_settings{desc.settings},
+          m_varSettings{desc.varSettings},
+          m_uniformBuffer{desc.mngr->createBuffer({.byteSize = static_cast<GLsizei>(sizeof(Matrices)), .usage = BufferUsage::UNIFORM})},
+          m_mngr{desc.mngr},
+          m_app{desc.app}
     {
         uniformBuffer()->bindBase(constants::CAMERA_BINDING);
         updateView();
@@ -114,12 +114,12 @@ private:
     {
         if constexpr (T == CameraType::PERSPECTIVE)
         {
-            const auto [fov, aspectRatio] = std::get<SettingsPerspective>(m_specialSettings);
+            const auto [fov, aspectRatio] = std::get<PerspectiveSettings>(m_varSettings);
             m_matrices.P = glm::perspective(fov, aspectRatio, m_settings.zNear, m_settings.zFar);
         }
         else if (T == CameraType::ORTHO)
         {
-            const auto [xmin, xmax, ymin, ymax] = std::get<SettingsOrtho>(m_specialSettings);
+            const auto [xmin, xmax, ymin, ymax] = std::get<OrthoSettings>(m_varSettings);
             m_matrices.P = glm::ortho(xmin, xmax, ymin, ymax, m_settings.zNear, m_settings.zFar);
         }
         uniformBuffer()->setData<glm::mat4>(&m_matrices.P, offsetof(Matrices, P));
@@ -174,14 +174,14 @@ private:
         return false;
     }
 
-    static inline float s_cameraSpeed{5.0f};
+    static inline float s_cameraSpeed = 5.0f;
 
-    ResourceManager* m_mngr;
-    App* m_app;
-    mutable Settings m_settings;
-    mutable VarSettings m_specialSettings;
+    mutable CameraSettings m_settings;
+    mutable VarCameraSettings m_varSettings;
     mutable Matrices m_matrices;
     Handle<Buffer> m_uniformBuffer;
+    ResourceManager* m_mngr;
+    App* m_app;
 };
 
 //------------------------------------------------------------------------

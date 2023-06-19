@@ -17,24 +17,31 @@ namespace Zhade
 
 class ResourceManager;
 
+struct SamplerDescriptor
+{
+    GLenum wrapS = GL_CLAMP_TO_EDGE;
+    GLenum wrapT = GL_CLAMP_TO_EDGE;
+    GLenum magFilter = GL_LINEAR;
+    GLenum minFilter = GL_LINEAR_MIPMAP_LINEAR;
+    GLfloat anisotropy = 8.0f;
+};
+
+struct TextureDescriptor
+{
+    glm::ivec2 dims{256, 256};
+    GLsizei levels = 8;
+    GLenum internalFormat = GL_RGBA8;
+    SamplerDescriptor sampler{};
+    bool managed = true;
+};
+
 //------------------------------------------------------------------------
 
 class Texture
 {
 public:
-    struct Desc
-    {
-        GLsizei levels{8};
-        GLenum internalFormat{GL_RGBA8};
-        GLenum minFilter{GL_LINEAR_MIPMAP_LINEAR};
-        GLenum magFilter{GL_LINEAR};
-        GLenum wrapS{GL_CLAMP_TO_EDGE};
-        GLenum wrapT{GL_CLAMP_TO_EDGE};
-        GLfloat anisotropy{8.0f};
-    };
-
     Texture() = default;
-    Texture(const glm::ivec2& dims, Desc desc, ResourceManagement management);
+    explicit Texture(TextureDescriptor desc);
     ~Texture();
 
     Texture(const Texture&) = delete;
@@ -54,14 +61,14 @@ public:
     void freeResources() const noexcept;
     void generateMipmap() const noexcept { glGenerateTextureMipmap(m_name); }
 
-    static Handle<Texture> fromFile(ResourceManager* mngr, const fs::path& path, const Desc& desc = Desc{}) noexcept;
+    static Handle<Texture> fromFile(ResourceManager* mngr, const fs::path& path, TextureDescriptor desc = TextureDescriptor{}) noexcept;
     static Handle<Texture> makeDefault(ResourceManager* mngr) noexcept;
 
 private:
-    GLuint m_name{};
-    GLuint64 m_handle{};
-    glm::ivec2 m_dims;
-    ResourceManagement m_management{ResourceManagement::MANUAL};
+    GLuint m_name = 0;
+    GLuint64 m_handle = 0;
+    glm::ivec2 m_dims{};
+    bool m_managed = true;
 };
 
 //------------------------------------------------------------------------

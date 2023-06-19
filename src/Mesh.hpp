@@ -19,9 +19,15 @@ namespace Zhade
 
 struct Vertex
 {
-    glm::vec3 pos = glm::vec3();
-    glm::vec3 nrm = glm::vec3();
-    glm::vec2 uv = glm::vec2();
+    glm::vec3 pos{};
+    glm::vec3 nrm{};
+    glm::vec2 uv{};
+};
+
+struct MeshDescriptor
+{
+    std::span<Vertex> vertices;
+    std::span<GLuint> indices;
 };
 
 //------------------------------------------------------------------------
@@ -29,22 +35,17 @@ struct Vertex
 class Mesh
 {
 public:
-    struct Desc
-    {
-        std::span<Vertex> vertices;
-        std::span<GLuint> indices;
-    };
-
     Mesh() = default;
-    explicit Mesh(Desc desc) : m_desc{std::move(desc)} {}
+    explicit Mesh(MeshDescriptor desc) : m_vertices{desc.vertices}, m_indices{desc.indices} {}
 
-    [[nodiscard]] std::span<Vertex> vertices() const noexcept { return m_desc.vertices; }
-    [[nodiscard]] std::span<GLuint> indices() const noexcept { return m_desc.indices; }
-    [[nodiscard]] size_t numVertices() const noexcept { return vertices().size(); }
-    [[nodiscard]] size_t numIndices() const noexcept { return indices().size(); }
+    [[nodiscard]] std::span<Vertex> vertices() const noexcept { return m_vertices; }
+    [[nodiscard]] std::span<GLuint> indices() const noexcept { return m_indices; }
+    [[nodiscard]] size_t numVertices() const noexcept { return m_vertices.size(); }
+    [[nodiscard]] size_t numIndices() const noexcept { return m_indices.size(); }
 
 private:
-    Desc m_desc;
+    std::span<Vertex> m_vertices{};
+    std::span<GLuint> m_indices{};
 };
 
 //------------------------------------------------------------------------

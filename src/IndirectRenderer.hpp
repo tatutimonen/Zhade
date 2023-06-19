@@ -33,7 +33,7 @@ private:
     const Buffer* modelMatrixBuffer() const noexcept { return m_mngr->get(m_modelMatrixBuffer); }
     const Buffer* textureBuffer() const noexcept { return m_mngr->get(m_textureBuffer); }
 
-    void prepareForRender() const noexcept;
+    void processSceneGraph() const noexcept;
 
     ResourceManager* m_mngr;
     Scene* m_scene;

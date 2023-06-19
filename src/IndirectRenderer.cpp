@@ -15,7 +15,7 @@ namespace Zhade
 IndirectRenderer::IndirectRenderer(ResourceManager* mngr, Scene* scene)
     : m_mngr{mngr},
       m_scene{scene},
-      m_commandBuffer{mngr->createBuffer({.sizeBytes = 1 << 17, .usage = BufferUsage::INDIRECT})}
+      m_commandBuffer{mngr->createBuffer({.byteSize = 1 << 17, .usage = BufferUsage::INDIRECT})}
 {
     glCreateVertexArrays(1, &m_vao);
 
@@ -39,7 +39,7 @@ IndirectRenderer::IndirectRenderer(ResourceManager* mngr, Scene* scene)
 
 void IndirectRenderer::render() const noexcept
 {
-    prepareForRender();
+    processSceneGraph();
 
     for (const auto& renderPass : m_extraPasses)
     {
@@ -55,14 +55,14 @@ void IndirectRenderer::render() const noexcept
 
 //------------------------------------------------------------------------
 
-void IndirectRenderer::prepareForRender() const noexcept
+void IndirectRenderer::processSceneGraph() const noexcept
 {
     static std::array<uint8_t, 2048> buf;
     std::pmr::monotonic_buffer_resource rsrc{buf.data(), buf.size()};
     std::pmr::vector<uint32_t> modelIndices{&rsrc};
 
     std::iota(modelIndices.begin(), modelIndices.end(), 0u);
-    auto idx2model = [this](uint32_t idx){ return m_mngr->get(m_scene->getModels()[idx]); };
+    auto idx2model = [this](uint32_t idx) { return m_mngr->get(m_scene->getModels()[idx]); };
     std::ranges::sort(modelIndices, std::less{}, idx2model);
 
     for (const Model2* model : std::ranges::views::transform(modelIndices, idx2model))

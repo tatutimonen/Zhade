@@ -51,14 +51,14 @@ public:
 
     template<typename... Args>
     requires std::constructible_from<T, Args...>
-    [[nodiscard]] Handle<T> allocate(Args&& ...args)
+    [[nodiscard]] Handle<T> allocate(Args&& ...args) const noexcept
     {
         const auto handle = getHandleToNextFree();
-        std::construct_at(&m_pool.at(handle.m_index), std::forward<Args>(args)...);
+        std::construct_at(&m_pool[handle.m_index], std::forward<Args>(args)...);
         return handle;
     }
 
-    [[nodiscard]] Handle<T> allocate(const T& item)
+    [[nodiscard]] Handle<T> allocate(const T& item) const noexcept
     requires std::copyable<T>
     {
         const auto handle = getHandleToNextFree();
@@ -66,7 +66,7 @@ public:
         return handle;
     }
 
-    [[nodiscard]] Handle<T> allocate(T&& item)
+    [[nodiscard]] Handle<T> allocate(T&& item) const noexcept
     requires std::movable<T>
     {
         const auto handle = getHandleToNextFree();
@@ -87,12 +87,12 @@ public:
     [[nodiscard]] T* get(const Handle<T>& handle) const noexcept
     {
         const uint32_t getIdx = handle.m_index;
-        if (handle.m_generation < m_generations.at(getIdx)) [[unlikely]] return nullptr;
-        return &m_pool.at(handle.m_index);
+        if (handle.m_generation < m_generations[getIdx]) [[unlikely]] return nullptr;
+        return &m_pool[handle.m_index];
     }
 
 private:
-    [[nodiscard]] Handle<T> getHandleToNextFree()
+    [[nodiscard]] Handle<T> getHandleToNextFree() const noexcept
     {
         if (m_freeList.size() == 0) [[unlikely]] resize();
         const uint32_t nextFreeIdx = m_freeList.top();
@@ -100,7 +100,7 @@ private:
         return Handle<T>(nextFreeIdx, ++m_generations[nextFreeIdx]);
     }
 
-    void resize()
+    void resize() const noexcept
     {
         const size_t size_prev = m_size;
         m_size = std::max(1ull, m_size) * constants::DYNAMIC_STORAGE_GROWTH_FACTOR;
@@ -113,7 +113,7 @@ private:
             m_freeList.push(idx);
     }
 
-    size_t m_size;
+    mutable size_t m_size;
     mutable std::vector<T> m_pool;
     mutable std::vector<uint32_t> m_generations;
     mutable Stack<uint32_t> m_freeList;

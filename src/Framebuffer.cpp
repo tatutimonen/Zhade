@@ -12,10 +12,9 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
-Framebuffer::Framebuffer(ResourceManager* mngr, Desc desc, ResourceManagement management)
-    : m_mngr{mngr},
-      m_texture{mngr->createTexture(desc.dims, desc.texDesc)},
-      m_management{management}
+Framebuffer::Framebuffer(FramebufferDescriptor desc)
+    : m_mngr{desc.mngr},
+      m_texture{desc.mngr->createTexture(desc.texture)}
 {
     glCreateFramebuffers(1, &m_name);
     glNamedFramebufferTexture(m_name, desc.attachment, texture()->getName(), 0);
@@ -28,7 +27,7 @@ Framebuffer::Framebuffer(ResourceManager* mngr, Desc desc, ResourceManagement ma
 
 Framebuffer::~Framebuffer()
 {
-    if (m_management == ResourceManagement::MANUAL) [[likely]] return;
+    if (m_managed) [[likely]] return;
     freeResources();
 }
 
