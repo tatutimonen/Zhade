@@ -46,7 +46,6 @@ Texture::~Texture()
 
 void Texture::freeResources() const noexcept
 {
-    if (glIsTexture(m_name) == GL_FALSE) [[unlikely]] return;
     glMakeTextureHandleNonResidentARB(m_handle);
     glDeleteTextures(1, &m_name);
 }

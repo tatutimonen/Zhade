@@ -14,7 +14,8 @@ namespace Zhade
 
 Framebuffer::Framebuffer(FramebufferDescriptor desc)
     : m_mngr{desc.mngr},
-      m_texture{desc.mngr->createTexture(desc.texture)}
+      m_texture{desc.mngr->createTexture(desc.texture)},
+      m_managed{desc.managed}
 {
     glCreateFramebuffers(1, &m_name);
     glNamedFramebufferTexture(m_name, desc.attachment, texture()->getName(), 0);

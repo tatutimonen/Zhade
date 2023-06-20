@@ -69,7 +69,7 @@ int main()
 
         ResourceManager mngr;
 
-        auto pipeline = RenderPipeline({
+        const auto pipeline = RenderPipeline({
             .vertPath = SHADER_PATH / "debug.vert",
             .fragPath = SHADER_PATH / "debug.frag"
         });

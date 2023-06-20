@@ -48,12 +48,11 @@ void App::init() const noexcept
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
+    glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &BufferUsage2Alignment[BufferUsage::UNIFORM]);
+    glGetIntegerv(GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT, &BufferUsage2Alignment[BufferUsage::STORAGE]);
 
     // Other.
     stbi_set_flip_vertically_on_load(1);
-
-    glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &BufferUsage2Alignment[BufferUsage::UNIFORM]);
-    glGetIntegerv(GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT, &BufferUsage2Alignment[BufferUsage::STORAGE]);
 }
 
 //------------------------------------------------------------------------

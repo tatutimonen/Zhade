@@ -23,6 +23,7 @@ struct FramebufferDescriptor
     TextureDescriptor texture;
     GLenum attachment;
     ResourceManager* mngr;
+    bool managed = true;
 };
 
 //------------------------------------------------------------------------
@@ -34,10 +35,10 @@ public:
     explicit Framebuffer(FramebufferDescriptor desc);
     ~Framebuffer();
 
-    Framebuffer(const Framebuffer&) = delete;
-    Framebuffer& operator=(const Framebuffer&) = delete;
-    Framebuffer(Framebuffer&&) = default;
-    Framebuffer& operator=(Framebuffer&&) = default;
+    Framebuffer(const Framebuffer&) = default;
+    Framebuffer& operator=(const Framebuffer&) = default;
+    Framebuffer(Framebuffer&&) = delete;
+    Framebuffer& operator=(Framebuffer&&) = delete;
 
     [[nodiscard]] GLuint getName() const noexcept { return m_name; }
 

@@ -66,34 +66,34 @@ public:
     explicit Buffer(BufferDescriptor desc);
     ~Buffer();
 
-    Buffer(const Buffer&) = delete;
-    Buffer& operator=(const Buffer&) = delete;
-    Buffer(Buffer&&) = default;
-    Buffer& operator=(Buffer&&) = default;
+    Buffer(const Buffer&) = default;
+    Buffer& operator=(const Buffer&) = default;
+    Buffer(Buffer&&) = delete;
+    Buffer& operator=(Buffer&&) = delete;
 
     [[nodiscard]] GLuint getName() const noexcept { return m_name; }
-    [[nodiscard]] GLsizei getByteSize() const noexcept { return m_writeByteOffset; }
+    [[nodiscard]] GLsizei getByteSize() const noexcept { return m_writeOffset; }
     [[nodiscard]] GLsizei getWholeByteSize() const noexcept { return m_wholeByteSize; }
 
     template<typename T>
     [[nodiscard]] T* getPtr() const noexcept { return std::bit_cast<T*>(m_ptr); }
 
     template<typename T>
-    [[nodiscard]] T* getWritePtr() const noexcept { return std::bit_cast<T*>(m_ptr + m_writeByteOffset); }
+    [[nodiscard]] T* getWritePtr() const noexcept { return std::bit_cast<T*>(m_ptr + m_writeOffset); }
 
     template<typename T>
     [[nodiscard]] bool fits(GLsizei size) const noexcept
     {
-        return m_writeByteOffset + sizeof(T)*size <= m_wholeByteSize;
+        return m_writeOffset + sizeof(T)*size <= m_wholeByteSize;
     }
 
     template<typename T>
     std::span<T> pushData(const T* data, GLsizei size = 1) const noexcept
     {
         const GLsizei byteSize = sizeof(T) * size;
-        uint8_t* dst = m_ptr + m_writeByteOffset;
+        uint8_t* dst = m_ptr + m_writeOffset;
         std::memcpy(dst, data, byteSize);
-        m_writeByteOffset += calculateWriteOffsetIncrement(byteSize);
+        m_writeOffset += calculateWriteOffsetIncrement(byteSize);
         return std::span(std::bit_cast<T*>(dst), size);
     }
 
@@ -122,7 +122,7 @@ private:
     BufferUsage::Type m_usage{};
     GLsizei m_wholeByteSize = 0;
     uint8_t* m_ptr = nullptr;
-    mutable GLsizeiptr m_writeByteOffset = 0;
+    mutable GLsizeiptr m_writeOffset = 0;
     bool m_managed = true;
 };
 

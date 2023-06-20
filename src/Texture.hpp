@@ -44,10 +44,10 @@ public:
     explicit Texture(TextureDescriptor desc);
     ~Texture();
 
-    Texture(const Texture&) = delete;
-    Texture& operator=(const Texture&) = delete;
-    Texture(Texture&&) = default;
-    Texture& operator=(Texture&&) = default;
+    Texture(const Texture&) = default;
+    Texture& operator=(const Texture&) = default;
+    Texture(Texture&&) = delete;
+    Texture& operator=(Texture&&) = delete;
 
     void setData(const void* data) const noexcept
     {

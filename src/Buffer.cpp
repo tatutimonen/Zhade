@@ -64,7 +64,6 @@ void Buffer::bindRange(GLuint bindingIndex, GLintptr offsetBytes, GLsizeiptr byt
 
 void Buffer::freeResources() const noexcept
 {
-    if (glIsBuffer(m_name) == GL_FALSE) [[unlikely]] return;
     glDeleteBuffers(1, &m_name);
 }
 
@@ -72,8 +71,8 @@ void Buffer::freeResources() const noexcept
 
 void Buffer::invalidate(GLintptr offset, GLsizeiptr length) const noexcept
 {
-    glInvalidateBufferSubData(m_name, offset, length == 0 ? m_writeByteOffset : length);
-    m_writeByteOffset = 0;
+    glInvalidateBufferSubData(m_name, offset, length == 0 ? m_writeOffset : length);
+    m_writeOffset = 0;
 }
 
 //------------------------------------------------------------------------

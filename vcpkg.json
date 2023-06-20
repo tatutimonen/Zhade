@@ -1,11 +1,16 @@
 {
+    "name": "zhade",
+    "version": "1.0",
     "dependencies": [
-        { "name": "glew" },
-        { "name": "glfw3" },
-        { "name": "glm" },
-        { "name": "assimp" },
-        { "name": "stb" },
-        { "name": "imgui" },
-        { "name": "robin-hood-hashing" }
+        "glew",
+        "glfw3",
+        "glm",
+        "assimp",
+        "stb",
+        {
+            "name": "imgui",
+            "features": [ "glfw-binding", "opengl3-binding" ]
+        },
+        "robin-hood-hashing"
     ]
 }
