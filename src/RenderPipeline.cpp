@@ -39,7 +39,7 @@ RenderPipeline::RenderPipeline(RenderPipelineDescriptor desc)
 
     validate();
 }
- 
+
 //------------------------------------------------------------------------
 
 RenderPipeline::~RenderPipeline()
