@@ -12,10 +12,9 @@ set(src_files
     Model.cpp
     ObjectPool.cpp
     Renderer.cpp
+    RenderPipeline.cpp
     ResourceManager.cpp
     Scene.cpp
-    Shader.cpp
-    ShaderProgram.cpp
     Stack.cpp
     StbImageResource.cpp
     Texture.cpp

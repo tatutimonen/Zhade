@@ -4,7 +4,6 @@
 #include "Handle.hpp"
 #include "Model.hpp"
 #include "ResourceManager.hpp"
-#include "ShaderProgram.hpp"
 #include "Texture.hpp"
 
 #include <glm/glm.hpp>
@@ -29,7 +28,6 @@ public:
     {
         Handle<Buffer> vertexBuffer;
         Handle<Buffer> indexBuffer;
-        ShaderProgram* program;
     };
 
     struct Task
@@ -48,7 +46,6 @@ public:
 
 private:
     ResourceManager* m_mngr;
-    ShaderProgram* m_program;
     GLuint m_vao;
     mutable Handle<Buffer> m_vertexBuffer;
     mutable Handle<Buffer> m_indexBuffer;

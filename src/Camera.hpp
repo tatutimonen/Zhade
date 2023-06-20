@@ -62,7 +62,7 @@ template<CameraType T = CameraType::PERSPECTIVE>
 class Camera
 {
 public:
-    Camera(CameraDescriptor desc)
+    explicit Camera(CameraDescriptor desc)
         : m_settings{desc.settings},
           m_varSettings{desc.varSettings},
           m_uniformBuffer{desc.mngr->createBuffer({.byteSize = static_cast<GLsizei>(sizeof(Matrices)), .usage = BufferUsage::UNIFORM})},
