@@ -13,6 +13,7 @@ namespace Zhade
 //------------------------------------------------------------------------
 
 RenderPipeline::RenderPipeline(RenderPipelineDescriptor desc)
+<<<<<<< HEAD
     : m_managed{desc.managed}
 {
     glCreateProgramPipelines(1, &m_name);
@@ -21,18 +22,35 @@ RenderPipeline::RenderPipeline(RenderPipelineDescriptor desc)
 
     const std::string vertSource = readShaderFile(vertPath);
     const std::string fragSource = readShaderFile(fragPath);
+=======
+{
+    glCreateProgramPipelines(1, &m_name);
+
+    const auto& [vertPath, fragPath, geomPath] = desc;
+
+    const std::string vertSource = parseShaderFile(vertPath);
+    const std::string fragSource = parseShaderFile(fragPath);
+>>>>>>> 81d827c67dc9574fa9d21a928fb8df9ee17ca63f
     const char* vertSourceRaw = vertSource.c_str();
     const char* fragSourceRaw = fragSource.c_str();
 
     m_vertexStage = glCreateShaderProgramv(GL_VERTEX_SHADER, 1, &vertSourceRaw);
     m_fragmentStage = glCreateShaderProgramv(GL_FRAGMENT_SHADER, 1, &fragSourceRaw);
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 81d827c67dc9574fa9d21a928fb8df9ee17ca63f
     glUseProgramStages(m_name, GL_VERTEX_SHADER_BIT, m_vertexStage);
     glUseProgramStages(m_name, GL_FRAGMENT_SHADER_BIT, m_fragmentStage);
 
     if (geomPath)
     {
+<<<<<<< HEAD
         const std::string geomSource = readShaderFile(geomPath.value());
+=======
+        const std::string geomSource = parseShaderFile(geomPath.value());
+>>>>>>> 81d827c67dc9574fa9d21a928fb8df9ee17ca63f
         const char* geomSourceRaw = geomSource.c_str();
         m_geometryStage = glCreateShaderProgramv(GL_GEOMETRY_SHADER, 1, &geomSourceRaw);
         glUseProgramStages(m_name, GL_GEOMETRY_SHADER_BIT, m_geometryStage);
@@ -43,6 +61,7 @@ RenderPipeline::RenderPipeline(RenderPipelineDescriptor desc)
 
 //------------------------------------------------------------------------
 
+<<<<<<< HEAD
 RenderPipeline::~RenderPipeline()
 {
     if (m_managed) [[likely]] return;
@@ -62,6 +81,9 @@ void RenderPipeline::freeResources() const noexcept
 //------------------------------------------------------------------------
 
 std::string RenderPipeline::readShaderFile(const fs::path& path) const noexcept
+=======
+std::string RenderPipeline::parseShaderFile(const fs::path& path) const noexcept
+>>>>>>> 81d827c67dc9574fa9d21a928fb8df9ee17ca63f
 {
     std::ifstream shaderFile{path};
     if (shaderFile.bad()) [[unlikely]]
