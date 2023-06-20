@@ -95,7 +95,7 @@ private:
     }
 
     std::vector<T> m_underlying;
-    size_t m_size{};
+    size_t m_size = 0;
 };
 
 //------------------------------------------------------------------------

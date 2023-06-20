@@ -1,5 +1,9 @@
 #version 460 core
 
+out gl_PerVertex {
+    vec4 gl_Position;
+};
+
 //------------------------------------------------------------------------
 // Constants.
 
@@ -13,7 +17,7 @@ layout (location = 1) in vec3 a_nrm;
 layout (location = 2) in vec2 a_uv;
 
 //------------------------------------------------------------------------
-// Outputs.
+// Extra outputs.
 
 out VERT_OUT {
     vec2 uv;

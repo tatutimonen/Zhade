@@ -4,10 +4,9 @@
 #include "Handle.hpp"
 #include "Model.hpp"
 #include "Renderer.hpp"
+#include "RenderPipeline.hpp"
 #include "ResourceManager.hpp"
 #include "Scene.hpp"
-#include "Shader.hpp"
-#include "ShaderProgram.hpp"
 #include "StbImageResource.hpp"
 #include "Texture.hpp"
 #include "common.hpp"
@@ -70,10 +69,11 @@ int main()
 
         ResourceManager mngr;
 
-        auto shaderProgram = ShaderProgram(
-            Shader<GL_VERTEX_SHADER>(SHADER_PATH / "debug.vert"),
-            Shader<GL_FRAGMENT_SHADER>(SHADER_PATH / "debug.frag")
-        );
+        auto pipeline = RenderPipeline({
+            .vertPath = SHADER_PATH / "debug.vert",
+            .fragPath = SHADER_PATH / "debug.frag"
+        });
+        pipeline.bind();
 
         const auto scene2 = Scene(&mngr);
         scene2.addModelFromFile(ASSET_PATH / "dragon" / "dragon.obj");
@@ -115,8 +115,7 @@ int main()
             &mngr,
             {
                 .vertexBuffer = mngr.createBuffer({.byteSize = 1 << 16, .usage = BufferUsage::VERTEX}),
-                .indexBuffer = mngr.createBuffer({.byteSize = 1 << 16, .usage = BufferUsage::INDEX}),
-                .program = &shaderProgram
+                .indexBuffer = mngr.createBuffer({.byteSize = 1 << 16, .usage = BufferUsage::INDEX})
             }
         };
 

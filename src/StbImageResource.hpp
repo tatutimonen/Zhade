@@ -64,8 +64,8 @@ private:
             std::cerr << std::format("Error loading data from '{}'\n", pathStr);
     }
 
-    glm::ivec2 m_dims;
-    T* m_data{};
+    glm::ivec2 m_dims{};
+    T* m_data = nullptr;
 };
 
 //------------------------------------------------------------------------

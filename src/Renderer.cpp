@@ -14,8 +14,7 @@ namespace Zhade
 Renderer::Renderer(ResourceManager* mngr, const Specification& spec)
     : m_mngr{mngr},
       m_vertexBuffer{spec.vertexBuffer},
-      m_indexBuffer{spec.indexBuffer},
-      m_program{spec.program}
+      m_indexBuffer{spec.indexBuffer}
 {
     glCreateVertexArrays(1, &m_vao);
 
@@ -45,7 +44,6 @@ Renderer::Renderer(ResourceManager* mngr, const Specification& spec)
     dibo->bind();
     tbo->bindBase(constants::MODEL_BINDING);
     tebo->bindBase(constants::TEXTURE_BINDING);
-    m_program->use();
 }
 
 //------------------------------------------------------------------------
