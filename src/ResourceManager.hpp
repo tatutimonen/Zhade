@@ -25,8 +25,8 @@ public:
 
     ResourceManager(const ResourceManager&) = delete;
     ResourceManager& operator=(const ResourceManager&) = delete;
-    ResourceManager(ResourceManager&&) = default;
-    ResourceManager& operator=(ResourceManager&&) = default;
+    ResourceManager(ResourceManager&&) = delete;
+    ResourceManager& operator=(ResourceManager&&) = delete;
 
     [[nodiscard]] Handle<Buffer> createBuffer(BufferDescriptor desc) { return m_buffers.allocate(desc); }
     [[nodiscard]] Handle<Framebuffer> createFramebuffer(FramebufferDescriptor desc) { return m_framebuffers.allocate(desc); }

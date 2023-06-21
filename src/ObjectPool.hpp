@@ -44,8 +44,8 @@ public:
 
     ObjectPool(const ObjectPool&) = delete;
     ObjectPool& operator=(const ObjectPool&) = delete;
-    ObjectPool(ObjectPool&& other) = default;
-    ObjectPool& operator=(ObjectPool&& other) = default;
+    ObjectPool(ObjectPool&&) = default;
+    ObjectPool& operator=(ObjectPool&&) = default;
 
     [[nodiscard]] size_t size() const noexcept { return m_size; }
 

@@ -9,6 +9,7 @@ extern "C" {
 
 #include <bit>
 #include <cmath>
+#include <cstdint>
 #include <cstring>
 #include <span>
 

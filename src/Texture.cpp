@@ -14,23 +14,23 @@ Texture::Texture(TextureDescriptor desc)
     : m_dims{desc.dims},
       m_managed{desc.managed}
 {
-    glCreateTextures(GL_TEXTURE_2D, 1, &m_name);
-    glTextureStorage2D(m_name, desc.levels, desc.internalFormat, m_dims.x, m_dims.y);
+    glCreateTextures(GL_TEXTURE_2D, 1, &m_texture);
+    glTextureStorage2D(m_texture, desc.levels, desc.internalFormat, m_dims.x, m_dims.y);
 
-    const SamplerDescriptor& sampler = desc.sampler;
-    glTextureParameteri(m_name, GL_TEXTURE_WRAP_S, sampler.wrapS);
-    glTextureParameteri(m_name, GL_TEXTURE_WRAP_T, sampler.wrapT);
-    glTextureParameteri(m_name, GL_TEXTURE_MAG_FILTER, sampler.magFilter);
-    glTextureParameteri(m_name, GL_TEXTURE_MIN_FILTER, sampler.minFilter);
-    glTextureParameterf(m_name, GL_TEXTURE_MAX_ANISOTROPY, sampler.anisotropy);
+    glCreateSamplers(1, m_sampler);
+    glSamplerParameteri(m_sampler, GL_TEXTURE_WRAP_S, desc.sampler.wrapS);
+    glSamplerParameteri(m_sampler, GL_TEXTURE_WRAP_T, desc.sampler.wrapT);
+    glSamplerParameteri(m_sampler, GL_TEXTURE_MAG_FILTER, desc.sampler.magFilter);
+    glSamplerParameteri(m_sampler, GL_TEXTURE_MIN_FILTER, desc.sampler.minFilter);
+    glSamplerParameterf(m_sampler, GL_TEXTURE_MAX_ANISOTROPY, desc.sampler.anisotropy);
 
     if (desc.internalFormat == GL_DEPTH_COMPONENT32)  // Depth texture?
     {
-        glTextureParameteri(m_name, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
-        glTextureParameteri(m_name, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+        glSamplerParameteri(m_sampler, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+        glSamplerParameteri(m_sampler, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
     }
 
-    m_handle = glGetTextureHandleARB(m_name);
+    m_handle = glGetTextureSamplerHandleARB(m_texture, m_sampler);
     glMakeTextureHandleResidentARB(m_handle);
 }
 
@@ -47,7 +47,8 @@ Texture::~Texture()
 void Texture::freeResources() const noexcept
 {
     glMakeTextureHandleNonResidentARB(m_handle);
-    glDeleteTextures(1, &m_name);
+    glDeleteTextures(1, &m_texture);
+    glDeleteSamplers(1, &m_sampler);
 }
 
 //------------------------------------------------------------------------
@@ -58,13 +59,13 @@ Handle<Texture> Texture::fromFile(ResourceManager* mngr, const fs::path& path, T
     desc.dims = img.getDims();
     
     desc.managed = true;
-    auto texHandle = mngr->createTexture(desc);
+    auto textureHandle = mngr->createTexture(desc);
     
-    auto tex = mngr->get(texHandle);
-    tex->setData(img.data());
-    tex->generateMipmap();
+    auto texture = mngr->get(textureHandle);
+    texture->setData(img.data());
+    texture->generateMipmap();
     
-    return texHandle;
+    return textureHandle;
 }
 
 //------------------------------------------------------------------------
@@ -82,9 +83,9 @@ Handle<Texture> Texture::makeDefault(ResourceManager* mngr) noexcept
     };
     static constexpr uint8_t data = 0xff;
 
-    auto texHandle = mngr->createTexture(desc);
-    mngr->get(texHandle)->setData(&data);
-    return texHandle;
+    auto textureHandle = mngr->createTexture(desc);
+    mngr->get(textureHandle)->setData(&data);
+    return textureHandle;
 }
 
 //------------------------------------------------------------------------

@@ -54,7 +54,7 @@ public:
         glTextureSubImage2D(m_name, 0, 0, 0, m_dims.x, m_dims.y, GL_RGBA, GL_UNSIGNED_BYTE, data);
     }
 
-    [[nodiscard]] GLuint getName() const noexcept { return m_name; }
+    [[nodiscard]] GLuint getName() const noexcept { return m_texture; }
     [[nodiscard]] GLuint64 getHandle() const noexcept { return m_handle; }
     [[nodiscard]] const glm::ivec2& getDims() const noexcept { return m_dims; }
 
@@ -65,7 +65,8 @@ public:
     static Handle<Texture> makeDefault(ResourceManager* mngr) noexcept;
 
 private:
-    GLuint m_name = 0;
+    GLuint m_texture = 0;
+    GLuint m_sampler = 0;
     GLuint64 m_handle = 0;
     glm::ivec2 m_dims{};
     bool m_managed = true;

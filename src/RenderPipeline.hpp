@@ -35,7 +35,7 @@ public:
 
     RenderPipeline(const RenderPipeline&) = delete;
     RenderPipeline& operator=(const RenderPipeline&) = delete;
-    RenderPipeline(RenderPipeline&& other) = delete;
+    RenderPipeline(RenderPipeline&&) = delete;
     RenderPipeline& operator=(RenderPipeline&&) = delete;
 
     void bind() const noexcept { glBindProgramPipeline(m_name); }
