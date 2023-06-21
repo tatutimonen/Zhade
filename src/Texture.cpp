@@ -55,16 +55,16 @@ void Texture::freeResources() const noexcept
 
 Handle<Texture> Texture::fromFile(ResourceManager* mngr, const fs::path& path, TextureDescriptor desc) noexcept
 {
-    const auto img = StbImageResource(path);
+    const StbImageResource img{path};
     desc.dims = img.getDims();
-    
+
     desc.managed = true;
     auto textureHandle = mngr->createTexture(desc);
-    
+
     auto texture = mngr->get(textureHandle);
     texture->setData(img.data());
     texture->generateMipmap();
-    
+
     return textureHandle;
 }
 
