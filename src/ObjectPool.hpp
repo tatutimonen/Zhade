@@ -5,6 +5,7 @@
 #include "constants.hpp"
 
 #include <cstdint>
+#include <memory>
 #include <ranges>
 #include <vector>
 
