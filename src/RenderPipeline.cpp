@@ -21,7 +21,6 @@ RenderPipeline::RenderPipeline(RenderPipelineDescriptor desc)
     const std::string fragSource = readShaderFile(desc.fragPath);
     const char* vertSourceRaw = vertSource.c_str();
     const char* fragSourceRaw = fragSource.c_str();
-
     m_vertexStage = glCreateShaderProgramv(GL_VERTEX_SHADER, 1, &vertSourceRaw);
     m_fragmentStage = glCreateShaderProgramv(GL_FRAGMENT_SHADER, 1, &fragSourceRaw);
     glUseProgramStages(m_name, GL_VERTEX_SHADER_BIT, m_vertexStage);
