@@ -91,7 +91,7 @@ public:
 private:
     void resize() noexcept
     {
-        m_underlying.resize(std::max(1z, m_size) * constants::DYNAMIC_STORAGE_GROWTH_FACTOR);
+        m_underlying.resize(std::max(1ull, m_size) * constants::DYNAMIC_STORAGE_GROWTH_FACTOR);
     }
 
     std::vector<T> m_underlying;

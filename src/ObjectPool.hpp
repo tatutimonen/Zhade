@@ -103,7 +103,7 @@ private:
     void resize() const noexcept
     {
         const size_t size_prev = m_size;
-        m_size = std::max(1z, m_size) * constants::DYNAMIC_STORAGE_GROWTH_FACTOR;
+        m_size = std::max(1ull, m_size) * constants::DYNAMIC_STORAGE_GROWTH_FACTOR;
 
         m_pool.resize(m_size);
         m_generations.resize(m_size);
