@@ -17,7 +17,7 @@ Texture::Texture(TextureDescriptor desc)
     glCreateTextures(GL_TEXTURE_2D, 1, &m_texture);
     glTextureStorage2D(m_texture, desc.levels, desc.internalFormat, m_dims.x, m_dims.y);
 
-    glCreateSamplers(1, m_sampler);
+    glCreateSamplers(1, &m_sampler);
     glSamplerParameteri(m_sampler, GL_TEXTURE_WRAP_S, desc.sampler.wrapS);
     glSamplerParameteri(m_sampler, GL_TEXTURE_WRAP_T, desc.sampler.wrapT);
     glSamplerParameteri(m_sampler, GL_TEXTURE_MAG_FILTER, desc.sampler.magFilter);

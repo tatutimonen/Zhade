@@ -51,7 +51,7 @@ public:
 
     void setData(const void* data) const noexcept
     {
-        glTextureSubImage2D(m_name, 0, 0, 0, m_dims.x, m_dims.y, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glTextureSubImage2D(m_texture, 0, 0, 0, m_dims.x, m_dims.y, GL_RGBA, GL_UNSIGNED_BYTE, data);
     }
 
     [[nodiscard]] GLuint getName() const noexcept { return m_texture; }
@@ -59,7 +59,7 @@ public:
     [[nodiscard]] const glm::ivec2& getDims() const noexcept { return m_dims; }
 
     void freeResources() const noexcept;
-    void generateMipmap() const noexcept { glGenerateTextureMipmap(m_name); }
+    void generateMipmap() const noexcept { glGenerateTextureMipmap(m_texture); }
 
     static Handle<Texture> fromFile(ResourceManager* mngr, const fs::path& path, TextureDescriptor desc = TextureDescriptor{}) noexcept;
     static Handle<Texture> makeDefault(ResourceManager* mngr) noexcept;

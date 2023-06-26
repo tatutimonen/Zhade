@@ -42,6 +42,13 @@ void Framebuffer::freeResources() const noexcept
 
 //------------------------------------------------------------------------
 
+const Texture* Framebuffer::texture() const noexcept
+{
+    return m_mngr->get(m_texture);
+}
+
+//------------------------------------------------------------------------
+
 }  // namespace Zhade
 
 //------------------------------------------------------------------------
