@@ -6,8 +6,10 @@ extern "C" {
 #include <GLFW/glfw3.h>
 }
 
+#include <iostream>
 #include <optional>
 #include <string>
+#include <string_view>
 
 //------------------------------------------------------------------------
 
@@ -39,9 +41,9 @@ public:
     RenderPipeline& operator=(RenderPipeline&&) = delete;
 
     void bind() const noexcept { glBindProgramPipeline(m_name); }
+    void freeResources() const noexcept;
 
 private:
-    void freeResources() const noexcept;
     [[nodiscard]] std::string readShaderFile(const fs::path& path) const noexcept;
     void validate() const noexcept;
 

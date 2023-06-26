@@ -78,15 +78,13 @@ void RenderPipeline::validate() const noexcept
 
     GLint status;
     glGetProgramPipelineiv(m_name, GL_VALIDATE_STATUS, &status);
-    if (status == GL_FALSE)
-    {
-        GLint logLength;
-        glGetProgramPipelineiv(m_name, GL_INFO_LOG_LENGTH, &logLength);
-        std::string infoLog;
-        infoLog.resize(static_cast<std::string::size_type>(logLength - 1));
-        glGetProgramPipelineInfoLog(m_name, logLength, nullptr, infoLog.data());
-        std::cerr << std::format("Error validating pipeline with ID {}: {}", m_name, infoLog);
-    }
+    if (status == GL_TRUE) [[likely]] return;
+    GLint logLength;
+    glGetProgramPipelineiv(m_name, GL_INFO_LOG_LENGTH, &logLength);
+    std::string infoLog;
+    infoLog.resize(static_cast<std::string::size_type>(logLength - 1));
+    glGetProgramPipelineInfoLog(m_name, logLength, nullptr, infoLog.data());
+    std::cerr << std::format("Error validating pipeline with ID {}: {}", m_name, infoLog);
 }
 
 //------------------------------------------------------------------------
