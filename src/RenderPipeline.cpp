@@ -23,6 +23,8 @@ RenderPipeline::RenderPipeline(RenderPipelineDescriptor desc)
     const char* fragSourceRaw = fragSource.c_str();
     m_stages[PipelineStage::VERTEX] = glCreateShaderProgramv(GL_VERTEX_SHADER, 1, &vertSourceRaw);
     m_stages[PipelineStage::FRAGMENT] = glCreateShaderProgramv(GL_FRAGMENT_SHADER, 1, &fragSourceRaw);
+    checkProgramLinkStatus(PipelineStage::VERTEX);
+    checkProgramLinkStatus(PipelineStage::FRAGMENT);
     glUseProgramStages(m_name, GL_VERTEX_SHADER_BIT, m_stages[PipelineStage::VERTEX]);
     glUseProgramStages(m_name, GL_FRAGMENT_SHADER_BIT, m_stages[PipelineStage::FRAGMENT]);
 
@@ -31,6 +33,7 @@ RenderPipeline::RenderPipeline(RenderPipelineDescriptor desc)
         const std::string geomSource = readShaderFile(desc.geomPath);
         const char* geomSourceRaw = geomSource.c_str();
         m_stages[PipelineStage::GEOMETRY] = glCreateShaderProgramv(GL_GEOMETRY_SHADER, 1, &geomSourceRaw);
+        checkProgramLinkStatus(PipelineStage::GEOMETRY);
         glUseProgramStages(m_name, GL_GEOMETRY_SHADER_BIT, m_stages[PipelineStage::GEOMETRY]);
     }
 
@@ -92,10 +95,6 @@ std::string RenderPipeline::readShaderFile(const fs::path& path) const noexcept
 
 void RenderPipeline::validate() const noexcept
 {
-    checkProgramLinkStatus(PipelineStage::VERTEX);
-    checkProgramLinkStatus(PipelineStage::FRAGMENT);
-    checkProgramLinkStatus(PipelineStage::GEOMETRY);
-
     GLchar infoLog[constants::LOCAL_CHAR_BUF_SIZE] = { 0 };
     GLint status = GL_FALSE;
 
