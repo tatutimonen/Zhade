@@ -67,12 +67,11 @@ void Pipeline::checkStageProgramLinkStatus(PipelineStage::Type stage) const noex
     const GLuint program = m_stages[stage];
     if (program == 0) [[unlikely]] return;
 
-    GLchar infoLog[constants::LOCAL_CHAR_BUF_SIZE];
     GLint status = GL_FALSE;
-
     glGetProgramiv(program, GL_LINK_STATUS, &status);
     if (status == GL_FALSE) [[unlikely]]
     {
+        GLchar infoLog[constants::LOCAL_CHAR_BUF_SIZE];
         glGetProgramInfoLog(program, sizeof(infoLog), nullptr, infoLog);
         std::cerr << std::format("Error preparing shader with ID {}: {}", program, infoLog);
     }
@@ -97,13 +96,13 @@ std::string Pipeline::readShaderFile(const fs::path& path) const noexcept
 
 void Pipeline::validate() const noexcept
 {
-    GLchar infoLog[constants::LOCAL_CHAR_BUF_SIZE];
-    GLint status = GL_FALSE;
-
     glValidateProgramPipeline(m_name);
+
+    GLint status = GL_FALSE;
     glGetProgramPipelineiv(m_name, GL_VALIDATE_STATUS, &status);
     if (status == GL_FALSE) [[unlikely]]
     {
+        GLchar infoLog[constants::LOCAL_CHAR_BUF_SIZE];
         glGetProgramPipelineInfoLog(m_name, sizeof(infoLog), nullptr, infoLog);
         std::cerr << std::format("Error validating pipeline with ID {}: {}", m_name, infoLog);
     }
