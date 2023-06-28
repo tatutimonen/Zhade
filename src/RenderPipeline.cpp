@@ -65,7 +65,7 @@ void RenderPipeline::checkProgramLinkStatus(PipelineStage::Type stage) const noe
     const GLuint program = m_stages[stage];
     if (program == 0) [[unlikely]] return;
 
-    GLchar infoLog[constants::LOCAL_CHAR_BUF_SIZE] = { 0 };
+    GLchar infoLog[constants::LOCAL_CHAR_BUF_SIZE];
     GLint status = GL_FALSE;
 
     glGetProgramiv(program, GL_LINK_STATUS, &status);
@@ -95,7 +95,7 @@ std::string RenderPipeline::readShaderFile(const fs::path& path) const noexcept
 
 void RenderPipeline::validate() const noexcept
 {
-    GLchar infoLog[constants::LOCAL_CHAR_BUF_SIZE] = { 0 };
+    GLchar infoLog[constants::LOCAL_CHAR_BUF_SIZE];
     GLint status = GL_FALSE;
 
     glValidateProgramPipeline(m_name);
