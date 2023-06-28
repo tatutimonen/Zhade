@@ -21,6 +21,7 @@ RenderPipeline::RenderPipeline(RenderPipelineDescriptor desc)
     const std::string fragSource = readShaderFile(desc.fragPath);
     const char* vertSourceRaw = vertSource.c_str();
     const char* fragSourceRaw = fragSource.c_str();
+
     m_stages[PipelineStage::VERTEX] = glCreateShaderProgramv(GL_VERTEX_SHADER, 1, &vertSourceRaw);
     m_stages[PipelineStage::FRAGMENT] = glCreateShaderProgramv(GL_FRAGMENT_SHADER, 1, &fragSourceRaw);
     checkStageProgramLinkStatus(PipelineStage::VERTEX);
@@ -32,6 +33,7 @@ RenderPipeline::RenderPipeline(RenderPipelineDescriptor desc)
     {
         const std::string geomSource = readShaderFile(desc.geomPath);
         const char* geomSourceRaw = geomSource.c_str();
+
         m_stages[PipelineStage::GEOMETRY] = glCreateShaderProgramv(GL_GEOMETRY_SHADER, 1, &geomSourceRaw);
         checkStageProgramLinkStatus(PipelineStage::GEOMETRY);
         glUseProgramStages(m_name, GL_GEOMETRY_SHADER_BIT, m_stages[PipelineStage::GEOMETRY]);
