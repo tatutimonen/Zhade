@@ -62,12 +62,12 @@ void RenderPipeline::freeResources() const noexcept
 
 void RenderPipeline::checkProgramLinkStatus(PipelineStage::Type stage) const noexcept
 {
-    if (m_stages[stage] == 0) [[unlikely]] return;
+    const GLuint program = m_stages[stage];
+    if (program == 0) [[unlikely]] return;
 
     GLchar infoLog[constants::LOCAL_CHAR_BUF_SIZE] = { 0 };
     GLint status = GL_FALSE;
 
-    const GLuint program = m_stages[stage];
     glGetProgramiv(program, GL_LINK_STATUS, &status);
     if (status == GL_FALSE) [[unlikely]]
     {
