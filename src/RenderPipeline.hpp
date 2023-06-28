@@ -55,7 +55,7 @@ public:
     void freeResources() const noexcept;
 
 private:
-    void checkProgramLinkStatus(PipelineStage::Type stage) const noexcept;
+    void checkStageProgramLinkStatus(PipelineStage::Type stage) const noexcept;
     [[nodiscard]] std::string readShaderFile(const fs::path& path) const noexcept;
     void validate() const noexcept;
 

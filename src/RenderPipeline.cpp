@@ -23,8 +23,8 @@ RenderPipeline::RenderPipeline(RenderPipelineDescriptor desc)
     const char* fragSourceRaw = fragSource.c_str();
     m_stages[PipelineStage::VERTEX] = glCreateShaderProgramv(GL_VERTEX_SHADER, 1, &vertSourceRaw);
     m_stages[PipelineStage::FRAGMENT] = glCreateShaderProgramv(GL_FRAGMENT_SHADER, 1, &fragSourceRaw);
-    checkProgramLinkStatus(PipelineStage::VERTEX);
-    checkProgramLinkStatus(PipelineStage::FRAGMENT);
+    checkStageProgramLinkStatus(PipelineStage::VERTEX);
+    checkStageProgramLinkStatus(PipelineStage::FRAGMENT);
     glUseProgramStages(m_name, GL_VERTEX_SHADER_BIT, m_stages[PipelineStage::VERTEX]);
     glUseProgramStages(m_name, GL_FRAGMENT_SHADER_BIT, m_stages[PipelineStage::FRAGMENT]);
 
@@ -33,7 +33,7 @@ RenderPipeline::RenderPipeline(RenderPipelineDescriptor desc)
         const std::string geomSource = readShaderFile(desc.geomPath);
         const char* geomSourceRaw = geomSource.c_str();
         m_stages[PipelineStage::GEOMETRY] = glCreateShaderProgramv(GL_GEOMETRY_SHADER, 1, &geomSourceRaw);
-        checkProgramLinkStatus(PipelineStage::GEOMETRY);
+        checkStageProgramLinkStatus(PipelineStage::GEOMETRY);
         glUseProgramStages(m_name, GL_GEOMETRY_SHADER_BIT, m_stages[PipelineStage::GEOMETRY]);
     }
 
@@ -60,7 +60,7 @@ void RenderPipeline::freeResources() const noexcept
 
 //------------------------------------------------------------------------
 
-void RenderPipeline::checkProgramLinkStatus(PipelineStage::Type stage) const noexcept
+void RenderPipeline::checkStageProgramLinkStatus(PipelineStage::Type stage) const noexcept
 {
     const GLuint program = m_stages[stage];
     if (program == 0) [[unlikely]] return;
