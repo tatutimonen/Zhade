@@ -4,7 +4,7 @@
 #include "Handle.hpp"
 #include "Model.hpp"
 #include "Renderer.hpp"
-#include "RenderPipeline.hpp"
+#include "Pipeline.hpp"
 #include "ResourceManager.hpp"
 #include "Scene.hpp"
 #include "StbImageResource.hpp"
@@ -65,7 +65,7 @@ int main()
 
         ResourceManager mngr;
 
-        const auto pipeline = RenderPipeline({
+        const auto pipeline = Pipeline({
             .vertPath = SHADER_PATH / "debug.vert",
             .fragPath = SHADER_PATH / "debug.frag"
         });

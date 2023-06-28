@@ -12,7 +12,7 @@ set(src_files
     Model.cpp
     ObjectPool.cpp
     Renderer.cpp
-    RenderPipeline.cpp
+    Pipeline.cpp
     ResourceManager.cpp
     Scene.cpp
     Stack.cpp

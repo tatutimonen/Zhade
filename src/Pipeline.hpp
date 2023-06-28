@@ -29,7 +29,7 @@ namespace PipelineStage
     };
 }
 
-struct RenderPipelineDescriptor
+struct PipelineDescriptor
 {
     fs::path vertPath;
     fs::path fragPath;
@@ -39,17 +39,17 @@ struct RenderPipelineDescriptor
 
 //------------------------------------------------------------------------
 
-class RenderPipeline
+class Pipeline
 {
 public:
-    RenderPipeline() = default;
-    explicit RenderPipeline(RenderPipelineDescriptor desc);
-    ~RenderPipeline();
+    Pipeline() = default;
+    explicit Pipeline(PipelineDescriptor desc);
+    ~Pipeline();
 
-    RenderPipeline(const RenderPipeline&) = delete;
-    RenderPipeline& operator=(const RenderPipeline&) = delete;
-    RenderPipeline(RenderPipeline&&) = delete;
-    RenderPipeline& operator=(RenderPipeline&&) = delete;
+    Pipeline(const Pipeline&) = delete;
+    Pipeline& operator=(const Pipeline&) = delete;
+    Pipeline(Pipeline&&) = delete;
+    Pipeline& operator=(Pipeline&&) = delete;
 
     void bind() const noexcept { glBindProgramPipeline(m_name); }
     void freeResources() const noexcept;

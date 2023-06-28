@@ -1,4 +1,4 @@
-#include "RenderPipeline.hpp"
+#include "Pipeline.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -12,7 +12,7 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
-RenderPipeline::RenderPipeline(RenderPipelineDescriptor desc)
+Pipeline::Pipeline(PipelineDescriptor desc)
     : m_managed{desc.managed}
 {
     glCreateProgramPipelines(1, &m_name);
@@ -44,7 +44,7 @@ RenderPipeline::RenderPipeline(RenderPipelineDescriptor desc)
 
 //------------------------------------------------------------------------
 
-RenderPipeline::~RenderPipeline()
+Pipeline::~Pipeline()
 {
     if (m_managed) [[likely]] return;
     freeResources();
@@ -52,7 +52,7 @@ RenderPipeline::~RenderPipeline()
 
 //------------------------------------------------------------------------
 
-void RenderPipeline::freeResources() const noexcept
+void Pipeline::freeResources() const noexcept
 {
     glDeleteProgramPipelines(1, &m_name);
     glDeleteProgram(m_stages[PipelineStage::VERTEX]);
@@ -62,7 +62,7 @@ void RenderPipeline::freeResources() const noexcept
 
 //------------------------------------------------------------------------
 
-void RenderPipeline::checkStageProgramLinkStatus(PipelineStage::Type stage) const noexcept
+void Pipeline::checkStageProgramLinkStatus(PipelineStage::Type stage) const noexcept
 {
     const GLuint program = m_stages[stage];
     if (program == 0) [[unlikely]] return;
@@ -80,7 +80,7 @@ void RenderPipeline::checkStageProgramLinkStatus(PipelineStage::Type stage) cons
 
 //------------------------------------------------------------------------
 
-std::string RenderPipeline::readShaderFile(const fs::path& path) const noexcept
+std::string Pipeline::readShaderFile(const fs::path& path) const noexcept
 {
     std::ifstream shaderFile{path};
     if (shaderFile.bad()) [[unlikely]]
@@ -95,7 +95,7 @@ std::string RenderPipeline::readShaderFile(const fs::path& path) const noexcept
 
 //------------------------------------------------------------------------
 
-void RenderPipeline::validate() const noexcept
+void Pipeline::validate() const noexcept
 {
     GLchar infoLog[constants::LOCAL_CHAR_BUF_SIZE];
     GLint status = GL_FALSE;
