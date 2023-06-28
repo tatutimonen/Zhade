@@ -59,7 +59,7 @@ private:
             m_data = stbi_load_16(pathStr.c_str(), &m_dims.x, &m_dims.y, nullptr, 4);
         else if (std::same_as<T, float>)
             m_data = stbi_loadf(pathStr.c_str(), &m_dims.x, &m_dims.y, nullptr, 4);
-        
+
         if (m_data == nullptr) [[unlikely]]
             std::cerr << std::format("Error loading data from '{}'\n", pathStr);
     }
