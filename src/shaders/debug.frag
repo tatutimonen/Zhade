@@ -17,7 +17,7 @@ in VERT_OUT {
 //------------------------------------------------------------------------
 // Uniforms.
 
-layout (binding = 2, std430) buffer Texture {
+layout (binding = 2, std430) readonly buffer Texture {
     sampler2D diffuse[];
 } b_tex;
 

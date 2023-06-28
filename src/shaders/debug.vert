@@ -32,7 +32,7 @@ layout (binding = 0, std140) uniform Camera {
     mat4 P;
 } u_camera;
 
-layout (binding = 1, std430) buffer Model {
+layout (binding = 1, std430) readonly buffer Model {
     mat3x4 MT[];
 } b_model;
 

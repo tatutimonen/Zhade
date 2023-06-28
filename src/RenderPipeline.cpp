@@ -21,17 +21,17 @@ RenderPipeline::RenderPipeline(RenderPipelineDescriptor desc)
     const std::string fragSource = readShaderFile(desc.fragPath);
     const char* vertSourceRaw = vertSource.c_str();
     const char* fragSourceRaw = fragSource.c_str();
-    m_vertexStage = glCreateShaderProgramv(GL_VERTEX_SHADER, 1, &vertSourceRaw);
-    m_fragmentStage = glCreateShaderProgramv(GL_FRAGMENT_SHADER, 1, &fragSourceRaw);
-    glUseProgramStages(m_name, GL_VERTEX_SHADER_BIT, m_vertexStage);
-    glUseProgramStages(m_name, GL_FRAGMENT_SHADER_BIT, m_fragmentStage);
+    m_stages[PipelineStage::VERTEX] = glCreateShaderProgramv(GL_VERTEX_SHADER, 1, &vertSourceRaw);
+    m_stages[PipelineStage::FRAGMENT] = glCreateShaderProgramv(GL_FRAGMENT_SHADER, 1, &fragSourceRaw);
+    glUseProgramStages(m_name, GL_VERTEX_SHADER_BIT, m_stages[PipelineStage::VERTEX]);
+    glUseProgramStages(m_name, GL_FRAGMENT_SHADER_BIT, m_stages[PipelineStage::FRAGMENT]);
 
-    if (desc.geomPath)
+    if (!desc.geomPath.empty())
     {
-        const std::string geomSource = readShaderFile(desc.geomPath.value());
+        const std::string geomSource = readShaderFile(desc.geomPath);
         const char* geomSourceRaw = geomSource.c_str();
-        m_geometryStage = glCreateShaderProgramv(GL_GEOMETRY_SHADER, 1, &geomSourceRaw);
-        glUseProgramStages(m_name, GL_GEOMETRY_SHADER_BIT, m_geometryStage);
+        m_stages[PipelineStage::GEOMETRY] = glCreateShaderProgramv(GL_GEOMETRY_SHADER, 1, &geomSourceRaw);
+        glUseProgramStages(m_name, GL_GEOMETRY_SHADER_BIT, m_stages[PipelineStage::GEOMETRY]);
     }
 
     validate();
@@ -50,9 +50,27 @@ RenderPipeline::~RenderPipeline()
 void RenderPipeline::freeResources() const noexcept
 {
     glDeleteProgramPipelines(1, &m_name);
-    glDeleteProgram(m_vertexStage);
-    glDeleteProgram(m_fragmentStage);
-    glDeleteProgram(m_geometryStage);
+    glDeleteProgram(m_stages[PipelineStage::VERTEX]);
+    glDeleteProgram(m_stages[PipelineStage::FRAGMENT]);
+    glDeleteProgram(m_stages[PipelineStage::GEOMETRY]);
+}
+
+//------------------------------------------------------------------------
+
+void RenderPipeline::checkProgramLinkStatus(PipelineStage::Type stage) const noexcept
+{
+    if (m_stages[stage] == 0) [[unlikely]] return;
+
+    GLchar infoLog[constants::LOCAL_CHAR_BUF_SIZE] = { 0 };
+    GLint status = GL_FALSE;
+
+    const GLuint program = m_stages[stage];
+    glGetProgramiv(program, GL_LINK_STATUS, &status);
+    if (status == GL_FALSE) [[unlikely]]
+    {
+        glGetProgramInfoLog(program, sizeof(infoLog), nullptr, infoLog);
+        std::cerr << std::format("Error preparing shader with ID {}: {}", program, infoLog);
+    }
 }
 
 //------------------------------------------------------------------------
@@ -74,17 +92,20 @@ std::string RenderPipeline::readShaderFile(const fs::path& path) const noexcept
 
 void RenderPipeline::validate() const noexcept
 {
-    glValidateProgramPipeline(m_name);
+    checkProgramLinkStatus(PipelineStage::VERTEX);
+    checkProgramLinkStatus(PipelineStage::FRAGMENT);
+    checkProgramLinkStatus(PipelineStage::GEOMETRY);
 
-    GLint status;
+    GLchar infoLog[constants::LOCAL_CHAR_BUF_SIZE] = { 0 };
+    GLint status = GL_FALSE;
+
+    glValidateProgramPipeline(m_name);
     glGetProgramPipelineiv(m_name, GL_VALIDATE_STATUS, &status);
-    if (status == GL_TRUE) [[likely]] return;
-    GLint logLength;
-    glGetProgramPipelineiv(m_name, GL_INFO_LOG_LENGTH, &logLength);
-    std::string infoLog;
-    infoLog.resize(static_cast<std::string::size_type>(logLength - 1));
-    glGetProgramPipelineInfoLog(m_name, logLength, nullptr, infoLog.data());
-    std::cerr << std::format("Error validating pipeline with ID {}: {}", m_name, infoLog);
+    if (status == GL_FALSE) [[unlikely]]
+    {
+        glGetProgramPipelineInfoLog(m_name, sizeof(infoLog), nullptr, infoLog);
+        std::cerr << std::format("Error validating pipeline with ID {}: {}", m_name, infoLog);
+    }
 }
 
 //------------------------------------------------------------------------

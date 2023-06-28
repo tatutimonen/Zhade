@@ -7,7 +7,6 @@ extern "C" {
 }
 
 #include <iostream>
-#include <optional>
 #include <string>
 #include <string_view>
 
@@ -18,11 +17,23 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
+namespace PipelineStage
+{
+    using Type = uint8_t;
+    enum : Type
+    {
+        VERTEX,
+        FRAGMENT,
+        GEOMETRY,
+        NUM_SUPPORTED_STAGES
+    };
+}
+
 struct RenderPipelineDescriptor
 {
     fs::path vertPath;
     fs::path fragPath;
-    std::optional<fs::path> geomPath = std::nullopt;
+    fs::path geomPath = "";
     bool managed = true;
 };
 
@@ -44,13 +55,12 @@ public:
     void freeResources() const noexcept;
 
 private:
+    void checkProgramLinkStatus(PipelineStage::Type stage) const noexcept;
     [[nodiscard]] std::string readShaderFile(const fs::path& path) const noexcept;
     void validate() const noexcept;
 
     GLuint m_name = 0;
-    GLuint m_vertexStage = 0;
-    GLuint m_fragmentStage = 0;
-    GLuint m_geometryStage = 0;
+    GLuint m_stages[PipelineStage::NUM_SUPPORTED_STAGES] = { 0 };
     bool m_managed = true;
 };
 

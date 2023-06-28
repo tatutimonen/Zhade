@@ -40,17 +40,13 @@ int main()
 
     app.init();
     {
-        Assimp::Importer importer{};
+        /*Assimp::Importer importer{};
         const aiScene* scene = importer.ReadFile((ASSET_PATH / "sponza" / "sponza.obj").string().c_str(), constants::ASSIMP_LOAD_FLAGS);
         if (scene == nullptr)
         {
             std::cerr << importer.GetErrorString() << "\n";
             // TODO: Get some sort of default geometry instead.
         }
-
-        std::filesystem::path path1 = "foo";
-        std::filesystem::path path2 = "bar";
-        std::cout << (path1 / path2.concat("asd.c\n")).parent_path().string();
 
         std::cout << std::format("numMeshes: {}, numMaterirals: {}\n", scene->mNumMeshes, scene->mNumMaterials);
         std::cout << BufferUsage2Alignment[BufferUsage::UNIFORM] << " " << BufferUsage2Alignment[BufferUsage::STORAGE] << "\n";
@@ -65,7 +61,7 @@ int main()
                 if (material->GetTexture(aiTextureType_DIFFUSE, 0, &path) == AI_FAILURE) continue;
                 std::cout << std::format("{}\n", path.data);
             }
-        }
+        }*/
 
         ResourceManager mngr;
 
@@ -75,12 +71,12 @@ int main()
         });
         pipeline.bind();
 
-        const auto scene2 = Scene(&mngr);
+        /*const auto scene2 = Scene(&mngr);
         scene2.addModelFromFile(ASSET_PATH / "dragon" / "dragon.obj");
         for (const auto& modelHandle : scene2.getModels())
         {
             std::cout << mngr.get(modelHandle)->getID() << "\n";
-        }
+        }*/
 
         const auto camera = Camera({.mngr = &mngr, .app = &app});
 
