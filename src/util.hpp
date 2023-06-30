@@ -20,35 +20,35 @@ namespace util
 
 //------------------------------------------------------------------------
 
-inline auto divup(std::integral auto a, std::integral auto b) noexcept
+[[nodiscard]] inline auto divup(std::integral auto a, std::integral auto b) noexcept
 {
     return (a + b - 1) / b;
 }
 
-inline auto roundup(std::integral auto a, std::integral auto b) noexcept
+[[nodiscard]] inline auto roundup(std::integral auto a, std::integral auto b) noexcept
 {
     return divup(a, b) * b;
 }
 
 //------------------------------------------------------------------------
 
-inline glm::vec3 makeUnitVec3x() noexcept
+[[nodiscard]] inline glm::vec3 makeUnitVec3x() noexcept
 {
     return glm::vec3(1.0f, 0.0f, 0.0f);
 }
 
-inline glm::vec3 makeUnitVec3y() noexcept
+[[nodiscard]] inline glm::vec3 makeUnitVec3y() noexcept
 {
     return glm::vec3(0.0f, 1.0f, 0.0f);
 }
 
-inline glm::vec3 makeUnitVec3z() noexcept
+[[nodiscard]] inline glm::vec3 makeUnitVec3z() noexcept
 {
     return glm::vec3(0.0f, 0.0f, 1.0f);
 }
 
 // Adapted from: https://www.gamedev.net/forums/topic/685081-normal-vector-artifacts-with-nvmeshmender/5326137/.
-inline GLuint vec4_to_INT_2_10_10_10_REV(const glm::vec4& v) noexcept
+[[nodiscard]] inline GLuint vec4_to_INT_2_10_10_10_REV(const glm::vec4& v) noexcept
 {
     const GLuint xs = v.x < 0;
     const GLuint ys = v.y < 0;
@@ -60,32 +60,32 @@ inline GLuint vec4_to_INT_2_10_10_10_REV(const glm::vec4& v) noexcept
            xs << 9  | (static_cast<GLuint>(v.x * 511 + (xs << 9)) & 511);
 }
 
-inline GLuint makeUnitVec3xPacked() noexcept
+[[nodiscard]] inline GLuint makeUnitVec3xPacked() noexcept
 {
     return vec4_to_INT_2_10_10_10_REV(glm::vec4(makeUnitVec3x(), 0.0f));
 }
 
-inline GLuint makeNegUnitVec3xPacked() noexcept
+[[nodiscard]] inline GLuint makeNegUnitVec3xPacked() noexcept
 {
     return vec4_to_INT_2_10_10_10_REV(glm::vec4(-makeUnitVec3x(), 0.0f));
 }
 
-inline GLuint makeUnitVec3yPacked() noexcept
+[[nodiscard]] inline GLuint makeUnitVec3yPacked() noexcept
 {
     return vec4_to_INT_2_10_10_10_REV(glm::vec4(makeUnitVec3y(), 0.0f));
 }
 
-inline GLuint makeNegUnitVec3yPacked() noexcept
+[[nodiscard]] inline GLuint makeNegUnitVec3yPacked() noexcept
 {
     return vec4_to_INT_2_10_10_10_REV(glm::vec4(-makeUnitVec3y(), 0.0f));
 }
 
-inline GLuint makeUnitVec3zPacked() noexcept
+[[nodiscard]] inline GLuint makeUnitVec3zPacked() noexcept
 {
     return vec4_to_INT_2_10_10_10_REV(glm::vec4(makeUnitVec3z(), 0.0f));
 }
 
-inline GLuint makeNegUnitVec3zPacked() noexcept
+[[nodiscard]] inline GLuint makeNegUnitVec3zPacked() noexcept
 {
     return vec4_to_INT_2_10_10_10_REV(glm::vec4(-makeUnitVec3z(), 0.0f));
 }
@@ -93,7 +93,7 @@ inline GLuint makeNegUnitVec3zPacked() noexcept
 //------------------------------------------------------------------------
 
 template<std::floating_point T>
-inline T average(std::span<T> values) noexcept
+[[nodiscard]] inline T average(std::span<T> values) noexcept
 {
     T sum{};
     for (const auto value : values)
@@ -103,12 +103,12 @@ inline T average(std::span<T> values) noexcept
 
 //------------------------------------------------------------------------
 
-inline glm::vec3 vec3FromAiVector3D(const aiVector3D& vec) noexcept
+[[nodiscard]] inline glm::vec3 vec3FromAiVector3D(const aiVector3D& vec) noexcept
 {
     return glm::vec3(vec.x, vec.y, vec.z);
 }
 
-inline glm::vec2 vec2FromAiVector3D(const aiVector3D& vec) noexcept
+[[nodiscard]] inline glm::vec2 vec2FromAiVector3D(const aiVector3D& vec) noexcept
 {
     return glm::vec2(vec.x, vec.y);
 }
