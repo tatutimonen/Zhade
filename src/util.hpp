@@ -20,6 +20,18 @@ namespace util
 
 //------------------------------------------------------------------------
 
+inline auto divup(std::integral auto a, std::integral auto b)
+{
+    return (a + b - 1) / b;
+}
+
+inline auto roundup(std::integral auto a, std::integral auto b)
+{
+    return divup(a, b) * b;
+}
+
+//------------------------------------------------------------------------
+
 inline glm::vec3 makeUnitVec3x() noexcept
 {
     return glm::vec3(1.0f, 0.0f, 0.0f);

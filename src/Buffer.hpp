@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.hpp"
+#include "util.hpp"
 
 #include <glm/glm.hpp>
 extern "C" {
@@ -8,7 +9,6 @@ extern "C" {
 }
 
 #include <bit>
-#include <cmath>
 #include <cstdint>
 #include <cstring>
 #include <span>
@@ -116,7 +116,7 @@ private:
     [[nodiscard]] GLsizeiptr calculateWriteOffsetIncrement(GLsizei byteSize) const noexcept
     {
         const GLint alignment = BufferUsage2Alignment[m_usage];
-        return static_cast<GLsizeiptr>(std::ceil(static_cast<float>(byteSize) / alignment) * alignment);
+        return util::roundup(byteSize, alignment);
     }
 
     GLuint m_name = 0;
