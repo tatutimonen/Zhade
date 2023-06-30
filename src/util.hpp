@@ -20,12 +20,12 @@ namespace util
 
 //------------------------------------------------------------------------
 
-inline auto divup(std::integral auto a, std::integral auto b)
+inline auto divup(std::integral auto a, std::integral auto b) noexcept
 {
     return (a + b - 1) / b;
 }
 
-inline auto roundup(std::integral auto a, std::integral auto b)
+inline auto roundup(std::integral auto a, std::integral auto b) noexcept
 {
     return divup(a, b) * b;
 }
