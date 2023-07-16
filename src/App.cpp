@@ -72,7 +72,7 @@ void App::updateTemporalState() const noexcept
 
     static float timer = 0.0f;
     timer += deltaTime;
-    if (timer < 0.166f) return;  // Update performance info every 6th of a second.
+    if (timer < 0.16667f) return;  // Update performance info every 6th of a second.
     timer = 0.0f;
 
     const uint16_t averageFPS = static_cast<uint16_t>(util::average<float>(FPS));

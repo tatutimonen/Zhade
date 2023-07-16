@@ -18,7 +18,6 @@ Buffer::Buffer(BufferDescriptor desc)
     glCreateBuffers(1, &m_name);
     glNamedBufferStorage(m_name, m_wholeByteSize, nullptr, GL_DYNAMIC_STORAGE_BIT | s_access);
     m_ptr = std::bit_cast<uint8_t*>(glMapNamedBufferRange(m_name, 0, m_wholeByteSize, s_access));
-    glUnmapNamedBuffer(m_name);
 }
 
 //------------------------------------------------------------------------
@@ -26,6 +25,7 @@ Buffer::Buffer(BufferDescriptor desc)
 Buffer::~Buffer()
 {
     if (m_managed) [[likely]] return;
+    glUnmapNamedBuffer(m_name);
     glDeleteBuffers(1, &m_name);
 }
 
