@@ -41,6 +41,15 @@ inline constexpr GLenum BufferUsage2GLenum[] {
     GL_DRAW_INDIRECT_BUFFER
 };
 
+struct DrawElementsIndirectCommand
+{
+    GLuint vertexCount;
+    GLuint instanceCount;
+    GLuint firstIndex;
+    GLuint baseVertex;
+    GLuint baseInstance;
+};
+
 inline constexpr GLint TBD = 0;
 
 inline GLint BufferUsage2Alignment[] {
