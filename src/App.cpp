@@ -14,6 +14,9 @@ namespace Zhade
 
 App::~App()
 {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
     glfwTerminate();
 }
 
@@ -51,33 +54,31 @@ void App::init() const noexcept
     glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &BufferUsage2Alignment[BufferUsage::UNIFORM]);
     glGetIntegerv(GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT, &BufferUsage2Alignment[BufferUsage::STORAGE]);
 
-    // Other.
+    // stb.
     stbi_set_flip_vertically_on_load(1);
+
+    // ImGui.
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui_ImplGlfw_InitForOpenGL(m_window, true);
+    ImGui_ImplOpenGL3_Init("#version 460 core");
+    ImGui::StyleColorsDark();
 }
 
 //------------------------------------------------------------------------
 
-void App::updateTemporalState() const noexcept
+void App::updateAndRenderGUI() const noexcept
 {
-    auto& [deltaTime, prevTime, FPS, frameTimes, writeIdx] = m_temporalState;
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
 
-    const float currTime = glfwGetTime();
-    deltaTime = currTime - prevTime;
-    prevTime = currTime;
+    ImGui::Begin("Foo");
+    ImGui::Text("Bar");
+    ImGui::End();
 
-    const float frameTime = 1.0f / deltaTime;
-    FPS[writeIdx] = frameTime;
-    frameTimes[writeIdx] = deltaTime * 1000.0f;  // Seconds to milliseconds.
-    writeIdx = (writeIdx + 1) % FPS.size();
-
-    static float timer = 0.0f;
-    timer += deltaTime;
-    if (timer < 0.16667f) return;  // Update performance info every 6th of a second.
-    timer = 0.0f;
-
-    const uint16_t averageFPS = static_cast<uint16_t>(util::average<float>(FPS));
-    const float averageFrameTime = util::average<float>(frameTimes);
-    glfwSetWindowTitle(m_window, std::format("Zhade - {} FPS, {:.2f} ms - ESC to quit", averageFPS, averageFrameTime).c_str());
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 //------------------------------------------------------------------------

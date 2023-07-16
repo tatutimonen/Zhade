@@ -8,6 +8,9 @@ extern "C" {
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 }
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 
 #include <array>
 #include <cstdint>
@@ -28,17 +31,8 @@ public:
     struct GLFWState
     {
         std::array<bool, 512> keys;
-        float pitch{};
-        float yaw{-glm::half_pi<float>()};
-    };
-
-    struct TemporalState
-    {
-        float deltaTime{};
-        float prevTime{};
-        std::array<float, constants::TEMPORAL_CACHE_SIZE> FPS;
-        std::array<float, constants::TEMPORAL_CACHE_SIZE> frameTimes;
-        uint8_t writeIdx{};
+        float pitch = 0.0f;
+        float yaw = -glm::half_pi<float>();
     };
 
     App() = default;
@@ -50,11 +44,11 @@ public:
     App& operator=(App&&) = default;
            
     GLFWwindow* getGLCtx() const noexcept { return m_window; }
-    float getDeltaTime() const noexcept { return m_temporalState.deltaTime; }
+    float getDeltaTime() const noexcept { return ImGui::GetIO().DeltaTime; }
     const GLFWState& getGLFWState() const noexcept { return s_state; }
 
     void init() const noexcept;
-    void updateTemporalState() const noexcept;
+    void updateAndRenderGUI() const noexcept;
 
     // According to the GLFW input reference.
     static void keyCallback(GLFWwindow* window, int key, [[maybe_unused]] int scancode, int action, int mode) noexcept
@@ -70,11 +64,11 @@ public:
         static float xPosPrev = xPos;
         static float yPosPrev = yPos;
 
-        static constexpr float mouseSensitivity{0.002f};
+        static constexpr float mouseSensitivity = 0.002f;
         float xOffset = mouseSensitivity * (xPos - xPosPrev);
         float yOffset = mouseSensitivity * (yPosPrev - yPos);
 
-        static constexpr float pitchBound{glm::half_pi<float>() - 0.01f};
+        static constexpr float pitchBound = glm::half_pi<float>() - 0.01f;
         s_state.pitch = glm::clamp(s_state.pitch + yOffset, -pitchBound, pitchBound);
         s_state.yaw += xOffset;
 
@@ -89,15 +83,14 @@ public:
             std::cerr << message << "\n";
     }
 
-    static constexpr std::string_view s_title{"Zhade - ESC to quit"};
-    static constexpr uint32_t s_windowWidth{1920u};
-    static constexpr uint32_t s_windowHeight{1080u};
+    static constexpr std::string_view s_title = "Zhade - ESC to quit";
+    static constexpr uint32_t s_windowWidth = 1920u;
+    static constexpr uint32_t s_windowHeight = 1080u;
 
 private:
     static inline GLFWState s_state;
 
-    mutable GLFWwindow* m_window{};
-    mutable TemporalState m_temporalState;
+    mutable GLFWwindow* m_window = nullptr;
 };
 
 //------------------------------------------------------------------------

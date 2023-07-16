@@ -149,10 +149,10 @@ int main()
 
         while (!glfwWindowShouldClose(app.getGLCtx()))
         {
-            app.updateTemporalState();
             glfwPollEvents();
             camera.update();
             renderer.render();
+            app.updateAndRenderGUI();
             glfwSwapBuffers(app.getGLCtx());
         }
     }
