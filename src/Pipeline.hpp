@@ -29,6 +29,20 @@ namespace PipelineStage
     };
 }
 
+inline constexpr GLenum PipelineStage2GLShader[] {
+    GL_VERTEX_SHADER,
+    GL_FRAGMENT_SHADER,
+    GL_GEOMETRY_SHADER,
+    GL_NONE
+};
+
+inline constexpr GLenum PipelineStage2GLShaderBit[] {
+    GL_VERTEX_SHADER_BIT,
+    GL_FRAGMENT_SHADER_BIT,
+    GL_GEOMETRY_SHADER_BIT,
+    GL_NONE
+};
+
 struct PipelineDescriptor
 {
     fs::path vertPath;
@@ -57,10 +71,11 @@ public:
 private:
     void checkStageProgramLinkStatus(PipelineStage::Type stage) const noexcept;
     [[nodiscard]] std::string readShaderFile(const fs::path& path) const noexcept;
+    void setupStageProgram(PipelineStage::Type stage, const fs::path& shaderPath) const noexcept; 
     void validate() const noexcept;
 
     GLuint m_name = 0;
-    GLuint m_stages[PipelineStage::NUM_SUPPORTED_STAGES] = { 0 };
+    mutable GLuint m_stages[PipelineStage::NUM_SUPPORTED_STAGES] = { 0 };
     bool m_managed = true;
 };
 

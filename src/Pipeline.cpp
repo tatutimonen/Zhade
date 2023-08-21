@@ -17,27 +17,11 @@ Pipeline::Pipeline(PipelineDescriptor desc)
 {
     glCreateProgramPipelines(1, &m_name);
 
-    const std::string vertSource = readShaderFile(desc.vertPath);
-    const std::string fragSource = readShaderFile(desc.fragPath);
-    const char* vertSourceRaw = vertSource.c_str();
-    const char* fragSourceRaw = fragSource.c_str();
-
-    m_stages[PipelineStage::VERTEX] = glCreateShaderProgramv(GL_VERTEX_SHADER, 1, &vertSourceRaw);
-    m_stages[PipelineStage::FRAGMENT] = glCreateShaderProgramv(GL_FRAGMENT_SHADER, 1, &fragSourceRaw);
-    checkStageProgramLinkStatus(PipelineStage::VERTEX);
-    checkStageProgramLinkStatus(PipelineStage::FRAGMENT);
-    glUseProgramStages(m_name, GL_VERTEX_SHADER_BIT, m_stages[PipelineStage::VERTEX]);
-    glUseProgramStages(m_name, GL_FRAGMENT_SHADER_BIT, m_stages[PipelineStage::FRAGMENT]);
+    setupStageProgram(PipelineStage::VERTEX, desc.vertPath);
+    setupStageProgram(PipelineStage::FRAGMENT, desc.fragPath);
 
     if (!desc.geomPath.empty())
-    {
-        const std::string geomSource = readShaderFile(desc.geomPath);
-        const char* geomSourceRaw = geomSource.c_str();
-
-        m_stages[PipelineStage::GEOMETRY] = glCreateShaderProgramv(GL_GEOMETRY_SHADER, 1, &geomSourceRaw);
-        checkStageProgramLinkStatus(PipelineStage::GEOMETRY);
-        glUseProgramStages(m_name, GL_GEOMETRY_SHADER_BIT, m_stages[PipelineStage::GEOMETRY]);
-    }
+        setupStageProgram(PipelineStage::GEOMETRY, desc.geomPath);
 
     validate();
 }
@@ -90,6 +74,18 @@ std::string Pipeline::readShaderFile(const fs::path& path) const noexcept
     std::ostringstream osstream;
     osstream << shaderFile.rdbuf();
     return osstream.str();
+}
+
+//------------------------------------------------------------------------
+
+void Pipeline::setupStageProgram(PipelineStage::Type stage, const fs::path& shaderPath) const noexcept
+{
+    const std::string shaderSource = readShaderFile(shaderPath);
+    const char* shaderSourceRaw = shaderSource.c_str();
+
+    m_stages[stage] = glCreateShaderProgramv(PipelineStage2GLShader[stage], 1, &shaderSourceRaw);
+    checkStageProgramLinkStatus(stage);
+    glUseProgramStages(m_name, PipelineStage2GLShaderBit[stage], m_stages[stage]);
 }
 
 //------------------------------------------------------------------------

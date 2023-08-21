@@ -23,24 +23,12 @@ namespace Zhade
 void Scene::addModelFromFile(const fs::path& path) const noexcept
 {
     const std::string modelName = path.stem().string();
-    if (m_modelCache.contains(modelName))
-    {
-        m_models.push_back(m_modelCache.at(modelName));
-        return;
-    }
 
     const auto modelHandle = m_mngr->createModel2();
     Model2* model = m_mngr->get(modelHandle);
 
     Assimp::Importer importer{};
     const aiScene* scene = importer.ReadFile(path.string().c_str(), constants::ASSIMP_LOAD_FLAGS);
-    if (scene == nullptr)
-    {
-        std::cerr << importer.GetErrorString() << "\n";
-        // TODO: Get some sort of default geometry instead.
-        m_mngr->destroy(modelHandle);
-        return;
-    }
 
     for (const aiMesh* mesh : std::span(scene->mMeshes, scene->mNumMeshes))
     {
