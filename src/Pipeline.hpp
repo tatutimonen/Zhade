@@ -20,27 +20,25 @@ namespace Zhade
 namespace PipelineStage
 {
     using Type = uint8_t;
+    inline constexpr Type NUM_SUPPORTED_STAGES = 3;
     enum : Type
     {
         VERTEX,
         FRAGMENT,
-        GEOMETRY,
-        NUM_SUPPORTED_STAGES
+        GEOMETRY
     };
 }
 
 inline constexpr GLenum PipelineStage2GLShader[] {
     GL_VERTEX_SHADER,
     GL_FRAGMENT_SHADER,
-    GL_GEOMETRY_SHADER,
-    GL_NONE
+    GL_GEOMETRY_SHADER
 };
 
 inline constexpr GLenum PipelineStage2GLShaderBit[] {
     GL_VERTEX_SHADER_BIT,
     GL_FRAGMENT_SHADER_BIT,
-    GL_GEOMETRY_SHADER_BIT,
-    GL_NONE
+    GL_GEOMETRY_SHADER_BIT
 };
 
 struct PipelineDescriptor
