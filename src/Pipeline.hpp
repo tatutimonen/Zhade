@@ -20,12 +20,12 @@ namespace Zhade
 namespace PipelineStage
 {
     using Type = uint8_t;
-    inline constexpr Type NUM_SUPPORTED_STAGES = 3;
     enum : Type
     {
         VERTEX,
         FRAGMENT,
-        GEOMETRY
+        GEOMETRY,
+        NUM_SUPPORTED_STAGES
     };
 }
 
