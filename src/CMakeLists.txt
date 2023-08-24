@@ -19,7 +19,6 @@ set(src_files
     StbImageResource.cpp
     Texture.cpp
     common.cpp
-    constants.cpp
     main.cpp
     util.cpp
 )

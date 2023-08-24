@@ -14,8 +14,7 @@ namespace Zhade
 
 IndirectRenderer::IndirectRenderer(ResourceManager* mngr, Scene* scene)
     : m_mngr{mngr},
-      m_scene{scene},
-      m_commandBuffer{mngr->createBuffer({.byteSize = 1 << 17, .usage = BufferUsage::INDIRECT})}
+      m_scene{scene}
 {
     glCreateVertexArrays(1, &m_vao);
 
@@ -33,6 +32,12 @@ IndirectRenderer::IndirectRenderer(ResourceManager* mngr, Scene* scene)
     glVertexArrayAttribBinding(m_vao, 0, 0);
     glVertexArrayAttribBinding(m_vao, 1, 0);
     glVertexArrayAttribBinding(m_vao, 2, 0);
+
+    m_buffers = {
+        .commandBuffer = m_mngr->createBuffer({.byteSize = KIB_BYTES*100, .usage = BufferUsage::INDIRECT}),
+        .transformBuffer = m_mngr->createBuffer({.byteSize = GIB_BYTES/2, .usage = BufferUsage::STORAGE}),
+        .textureBuffer = m_mngr->createBuffer({.byteSize = KIB_BYTES*100, .usage = BufferUsage::STORAGE})
+    };
 }
 
 //------------------------------------------------------------------------

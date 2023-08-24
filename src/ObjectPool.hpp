@@ -2,7 +2,7 @@
 
 #include "Handle.hpp"
 #include "Stack.hpp"
-#include "constants.hpp"
+
 
 #include <cstdint>
 #include <memory>
@@ -21,7 +21,7 @@ template<std::default_initializable T>
 class ObjectPool<T>
 {
 public:
-    explicit ObjectPool(size_t size = constants::OBJECT_POOL_INIT_SIZE)
+    explicit ObjectPool(size_t size = OBJECT_POOL_INIT_SIZE)
         : m_size{size},
           m_freeList{Stack<uint32_t>(size)}
     {
@@ -102,7 +102,7 @@ private:
     void resize() const noexcept
     {
         const size_t size_prev = m_size;
-        m_size = std::max(1ull, m_size) * constants::DYNAMIC_STORAGE_GROWTH_FACTOR;
+        m_size = std::max(1ull, m_size) * DYNAMIC_STORAGE_GROWTH_FACTOR;
 
         m_pool.resize(m_size);
         m_generations.resize(m_size);

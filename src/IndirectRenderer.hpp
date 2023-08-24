@@ -15,32 +15,39 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
+struct Buffers
+{
+    Handle<Buffer> commandBuffer;
+    Handle<Buffer> transformBuffer;
+    Handle<Buffer> textureBuffer;
+};
+
+struct RenderPass
+{
+    Handle<Framebuffer> framebuffer;
+    GLbitfield clearMask;
+};
+
+//------------------------------------------------------------------------
+
 class IndirectRenderer
 {
 public:
-    struct RenderPass
-    {
-        Handle<Framebuffer> framebuffer;
-        GLbitfield clearMask;
-    };
-
     IndirectRenderer(ResourceManager* mngr, Scene* scene);
 
     void render() const noexcept;
 
 private:
-    const Buffer* commandBuffer() const noexcept { return m_mngr->get(m_commandBuffer); }
-    const Buffer* modelMatrixBuffer() const noexcept { return m_mngr->get(m_modelMatrixBuffer); }
-    const Buffer* textureBuffer() const noexcept { return m_mngr->get(m_textureBuffer); }
+    const Buffer* commandBuffer() const noexcept { return m_mngr->get(m_buffers.commandBuffer); }
+    const Buffer* modelMatrixBuffer() const noexcept { return m_mngr->get(m_buffers.transformBuffer); }
+    const Buffer* textureBuffer() const noexcept { return m_mngr->get(m_buffers.textureBuffer); }
 
     void processSceneGraph() const noexcept;
 
     ResourceManager* m_mngr;
     Scene* m_scene;
     GLuint m_vao;
-    Handle<Buffer> m_commandBuffer;
-    Handle<Buffer> m_modelMatrixBuffer;
-    Handle<Buffer> m_textureBuffer;
+    Buffers m_buffers;
     std::vector<RenderPass> m_extraPasses;
 };
 

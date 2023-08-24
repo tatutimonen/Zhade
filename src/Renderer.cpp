@@ -1,5 +1,5 @@
 #include "Renderer.hpp"
-#include "constants.hpp"
+
 
 #include <format>
 #include <iostream>
@@ -42,8 +42,8 @@ Renderer::Renderer(ResourceManager* mngr, const Specification& spec)
 
     glBindVertexArray(m_vao);
     dibo->bind();
-    tbo->bindBase(constants::MODEL_BINDING);
-    tebo->bindBase(constants::TEXTURE_BINDING);
+    tbo->bindBase(MODEL_BINDING);
+    tebo->bindBase(TEXTURE_BINDING);
 }
 
 //------------------------------------------------------------------------

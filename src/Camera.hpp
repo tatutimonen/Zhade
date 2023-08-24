@@ -69,7 +69,7 @@ public:
           m_mngr{desc.mngr},
           m_app{desc.app}
     {
-        uniformBuffer()->bindBase(constants::CAMERA_BINDING);
+        uniformBuffer()->bindBase(CAMERA_BINDING);
         updateView();
         updateProjectivity();
     }

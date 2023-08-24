@@ -7,6 +7,7 @@
 #include "Texture.hpp"
 #include "common.hpp"
 
+#include <assimp/scene.h>
 #include <robin_hood.h>
 
 #include <atomic>
@@ -21,13 +22,23 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
+struct SceneBuffers
+{
+    Handle<Buffer> vertexBuffer;
+    Handle<Buffer> indexBuffer;
+};
+
+//------------------------------------------------------------------------
+
 class Scene
 {
 public:
     Scene(ResourceManager* mngr)
         : m_mngr{mngr},
-          m_vertexBuffer{mngr->createBuffer({.byteSize = 1 << 28, .usage = BufferUsage::VERTEX})},
-          m_indexBuffer{mngr->createBuffer({.byteSize = 1 << 28, .usage = BufferUsage::INDEX})},
+          m_buffers{
+              .vertexBuffer = m_mngr->createBuffer({.byteSize = GIB_BYTES/2, .usage = BufferUsage::VERTEX}),
+              .indexBuffer = m_mngr->createBuffer({.byteSize = GIB_BYTES/2, .usage = BufferUsage::INDEX}),
+          },
           m_textures{Texture::makeDefault(mngr)}
     {}
 
@@ -36,17 +47,16 @@ public:
     void addModelFromFile(const fs::path& path) const noexcept;
 
 private:
-    const Buffer* vertexBuffer() const noexcept { return m_mngr->get(m_vertexBuffer); }
-    const Buffer* indexBuffer() const noexcept { return m_mngr->get(m_indexBuffer); }
+    const Buffer* vertexBuffer() const noexcept { return m_mngr->get(m_buffers.vertexBuffer); }
+    const Buffer* indexBuffer() const noexcept { return m_mngr->get(m_buffers.indexBuffer); }
+
+    [[nodiscard]] std::span<Vertex> loadVertices(const aiMesh* mesh) const noexcept;
+    [[nodiscard]] std::span<GLuint> loadIndices(const aiMesh* mesh) const noexcept;
 
     ResourceManager* m_mngr;
-    Handle<Buffer> m_vertexBuffer;
-    Handle<Buffer> m_indexBuffer;
-    mutable std::vector<Handle<Texture>> m_textures;
-    mutable uint32_t m_diffuseID{1};
+    SceneBuffers m_buffers;
     mutable std::vector<Handle<Model2>> m_models;
-    mutable robin_hood::unordered_map<std::string, Handle<Model2>> m_modelCache;
-    mutable std::atomic_uint32_t m_modelID;
+    mutable std::vector<Handle<Texture>> m_textures;
 
     friend class IndirectRenderer;
 };

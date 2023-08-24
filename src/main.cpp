@@ -10,7 +10,7 @@
 #include "StbImageResource.hpp"
 #include "Texture.hpp"
 #include "common.hpp"
-#include "constants.hpp"
+
 #include "util.hpp"
 #include "ObjectPool.hpp"
 
@@ -41,7 +41,7 @@ int main()
     app.init();
     {
         /*Assimp::Importer importer{};
-        const aiScene* scene = importer.ReadFile((ASSET_PATH / "sponza" / "sponza.obj").string().c_str(), constants::ASSIMP_LOAD_FLAGS);
+        const aiScene* scene = importer.ReadFile((ASSET_PATH / "sponza" / "sponza.obj").string().c_str(), ASSIMP_LOAD_FLAGS);
         if (scene == nullptr)
         {
             std::cerr << importer.GetErrorString() << "\n";
