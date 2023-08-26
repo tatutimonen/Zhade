@@ -6,9 +6,7 @@ extern "C" {
 #include <GLFW/glfw3.h>
 }
 
-#include <iostream>
 #include <string>
-#include <string_view>
 
 //------------------------------------------------------------------------
 
