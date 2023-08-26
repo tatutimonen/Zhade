@@ -1,6 +1,7 @@
 #pragma once
 
-
+#include "Handle.hpp"
+#include "Texture.hpp"
 
 #include <glm/glm.hpp>
 extern "C" {
@@ -28,6 +29,7 @@ struct MeshDescriptor
 {
     std::span<Vertex> vertices;
     std::span<GLuint> indices;
+    Handle<Texture> diffuse;
 };
 
 //------------------------------------------------------------------------
@@ -36,7 +38,7 @@ class Mesh
 {
 public:
     Mesh() = default;
-    explicit Mesh(MeshDescriptor desc) : m_vertices{desc.vertices}, m_indices{desc.indices} {}
+    explicit Mesh(MeshDescriptor desc);
 
     [[nodiscard]] std::span<Vertex> vertices() const noexcept { return m_vertices; }
     [[nodiscard]] std::span<GLuint> indices() const noexcept { return m_indices; }
@@ -46,6 +48,7 @@ public:
 private:
     std::span<Vertex> m_vertices{};
     std::span<GLuint> m_indices{};
+    Handle<Texture> m_diffuse{};
 };
 
 //------------------------------------------------------------------------

@@ -4,9 +4,12 @@
 #include "common.hpp"
 
 #include <glm/glm.hpp>
+#include <robin_hood.h>
 extern "C" {
 #include <GL/glew.h>
 }
+
+#include <mutex>
 
 //------------------------------------------------------------------------
 
@@ -63,6 +66,9 @@ public:
 
     static Handle<Texture> fromFile(ResourceManager* mngr, const fs::path& path, TextureDescriptor desc = TextureDescriptor{}) noexcept;
     static Handle<Texture> makeDefault(ResourceManager* mngr) noexcept;
+
+    static inline robin_hood::unordered_map<fs::path, Handle<Texture>> s_cache;
+    static inline std::mutex s_mtx;
 
 private:
     GLuint m_texture = 0;

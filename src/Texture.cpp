@@ -55,15 +55,23 @@ void Texture::freeResources() const noexcept
 
 Handle<Texture> Texture::fromFile(ResourceManager* mngr, const fs::path& path, TextureDescriptor desc) noexcept
 {
+    
+    {
+        std::lock_guard lock{s_mtx};
+        if (s_cache.contains(path)) return s_cache[path];
+    }
+
     const StbImageResource img{path};
     desc.dims = img.getDims();
 
     desc.managed = true;
     auto textureHandle = mngr->createTexture(desc);
-
     auto texture = mngr->get(textureHandle);
     texture->setData(img.data());
     texture->generateMipmap();
+
+    std::lock_guard lock{s_mtx};
+    s_cache[path] = textureHandle;
 
     return textureHandle;
 }

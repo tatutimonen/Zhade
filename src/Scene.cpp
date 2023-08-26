@@ -18,32 +18,44 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
+Scene::Scene(SceneDescriptor desc)
+    : m_mngr{desc.mngr}
+{
+    m_buffers = {
+        .vertex = m_mngr->createBuffer(desc.vertexBufferDesc),
+        .index = m_mngr->createBuffer(desc.vertexBufferDesc)
+    };
+    m_defaultTexture = Texture::makeDefault(m_mngr);
+}
+
+//------------------------------------------------------------------------
+
+Scene::~Scene()
+{
+    m_mngr->destroy(m_buffers.vertex);
+    m_mngr->destroy(m_buffers.index);
+    m_mngr->destroy(m_defaultTexture);
+}
+
+//------------------------------------------------------------------------
+
 void Scene::addModelFromFile(const fs::path& path) const noexcept
 {
-    const std::string modelName = path.stem().string();
-
     const auto modelHandle = m_mngr->createModel2();
     Model2* model = m_mngr->get(modelHandle);
 
-    Assimp::Importer importer{};
+    static Assimp::Importer importer{};
     const aiScene* scene = importer.ReadFile(path.string().c_str(), ASSIMP_LOAD_FLAGS);
 
     for (const aiMesh* mesh : std::span(scene->mMeshes, scene->mNumMeshes))
     {
-        const aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-        if (material->GetTextureCount(aiTextureType_DIFFUSE) > 0)
-        {
-            aiString tempMaterialPath;
-            material->GetTexture(aiTextureType_DIFFUSE, 0, &tempMaterialPath);
-            const fs::path materialPath = path.parent_path() / tempMaterialPath.data;
-            m_textures.push_back(Texture::fromFile(m_mngr, materialPath));
-        }
-
-        const auto meshHandle = m_mngr->createMesh({
-            .vertices = loadVertices(mesh),
-            .indices = loadIndices(mesh)
-        });
-        model->addMesh(meshHandle);
+        model->addMesh(
+            m_mngr->createMesh({
+                .vertices = loadVertices(mesh),
+                .indices = loadIndices(mesh),
+                .diffuse = loadTexture(scene, mesh, aiTextureType_DIFFUSE, path)
+            })
+        );
     }
 
     m_models.push_back(modelHandle);
@@ -80,6 +92,21 @@ std::span<GLuint> Scene::loadIndices(const aiMesh* mesh) const noexcept
     }
 
     return std::span(indicesStart, mesh->mNumFaces * 3);
+}
+
+//------------------------------------------------------------------------
+
+Handle<Texture> Scene::loadTexture(const aiScene* scene, const aiMesh* mesh, aiTextureType textureType,
+    const fs::path& modelPath) const noexcept
+{
+    const aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+
+    if (material->GetTextureCount(textureType) == 0) return m_defaultTexture;
+
+    aiString tempMaterialPath;
+    material->GetTexture(textureType, 0, &tempMaterialPath);
+    const fs::path materialPath = modelPath.parent_path() / tempMaterialPath.data;
+    return Texture::fromFile(m_mngr, materialPath);
 }
 
 //------------------------------------------------------------------------
