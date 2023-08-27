@@ -2,7 +2,7 @@
 
 #include "Handle.hpp"
 #include "Stack.hpp"
-
+#include "common.hpp"
 
 #include <cstdint>
 #include <memory>
@@ -28,7 +28,7 @@ public:
         m_pool.resize(m_size);
         m_generations.resize(m_size);
 
-        for (size_t idx : std::views::iota(0u, m_size) | std::views::reverse)
+        for (size_t idx : stdv::iota(0u, m_size) | stdv::reverse)
             m_freeList.push(idx);
     }
 
@@ -108,7 +108,7 @@ private:
         m_generations.resize(m_size);
         m_freeList.resize(m_size);
 
-        for (size_t idx : std::views::iota(size_prev, m_size) | std::views::reverse)
+        for (size_t idx : stdv::iota(size_prev, m_size) | stdv::reverse)
             m_freeList.push(idx);
     }
 

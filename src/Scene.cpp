@@ -64,22 +64,21 @@ MeshDescriptor Scene::loadMeshConstituentsAsync(const aiScene* scene, const aiMe
 {
     auto verticesFuture = std::async(
         std::launch::async,
-        [this](auto&& mesh) { return loadVertices(std::forward<decltype(mesh)>(mesh)); },
+        [this] (auto&& mesh) { return loadVertices(std::forward<decltype(mesh)>(mesh)); },
         mesh
     );
     auto indicesFuture = std::async(
         std::launch::async,
-        [this](auto&& mesh) { return loadIndices(std::forward<decltype(mesh)>(mesh)); },
+        [this] (auto&& mesh) { return loadIndices(std::forward<decltype(mesh)>(mesh)); },
         mesh
     );
 
     std::array<std::future<Handle<Texture>>, AI_TEXTURE_TYPE_MAX> textureFutures;
-    for (uint32_t textureType = aiTextureType_NONE; textureType < AI_TEXTURE_TYPE_MAX; ++textureType)
+    for (auto textureType : stdv::iota(0u, AI_TEXTURE_TYPE_MAX) | stdv::filter([&] (auto pos) { return textureTypes.test(pos); }))
     {
-        if (textureTypes.test(textureType) == false) continue;
         textureFutures[textureType] = std::async(
             std::launch::async,
-            [this](auto&&... args) { return loadTexture(std::forward<decltype(args)>(args)...); },
+            [this] (auto&&... args) { return loadTexture(std::forward<decltype(args)>(args)...); },
             scene, mesh, static_cast<aiTextureType>(textureType), basePath
         );
     }
