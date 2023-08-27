@@ -9,6 +9,7 @@
 
 #include <assimp/scene.h>
 
+#include <bitset>
 #include <filesystem>
 #include <string>
 #include <vector>
@@ -20,12 +21,15 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
-struct SceneBuffers
+constexpr std::bitset<AI_TEXTURE_TYPE_MAX> makeSupportedTextureTypeTable()
 {
-    Handle<Buffer> vertex;
-    Handle<Buffer> index;
-};
- 
+    std::bitset<AI_TEXTURE_TYPE_MAX> table{};
+    table.set(aiTextureType_DIFFUSE);
+    return table;
+}
+
+inline constexpr auto SUPPORTED_TEXTURE_TYPES = makeSupportedTextureTypeTable();
+
 struct SceneDescriptor
 {
     ResourceManager* mngr;
@@ -46,16 +50,19 @@ public:
     void addModelFromFile(const fs::path& path) const noexcept;
 
 private:
-    const Buffer* vertexBuffer() const noexcept { return m_mngr->get(m_buffers.vertex); }
-    const Buffer* indexBuffer() const noexcept { return m_mngr->get(m_buffers.index); }
+    [[nodiscard]] const Buffer* vertexBuffer() const noexcept { return m_mngr->get(m_vertexBuffer); }
+    [[nodiscard]] const Buffer* indexBuffer() const noexcept { return m_mngr->get(m_indexBuffer); }
 
+    [[nodiscard]] MeshDescriptor loadMeshConstituentsAsync(const aiScene* scene, const aiMesh* mesh,
+        const std::bitset<AI_TEXTURE_TYPE_MAX>& textureTypes, const fs::path& basePath) const noexcept;
     [[nodiscard]] std::span<Vertex> loadVertices(const aiMesh* mesh) const noexcept;
     [[nodiscard]] std::span<GLuint> loadIndices(const aiMesh* mesh) const noexcept;
-    [[nodiscard]] Handle<Texture> loadTexture(const aiScene* scene, const aiMesh* mesh, aiTextureType textureType,
-        const fs::path& modelPath) const noexcept;
+    [[nodiscard]] Handle<Texture> loadTexture(const aiScene* scene, const aiMesh* mesh,
+        aiTextureType textureType, const fs::path& path) const noexcept;
 
     ResourceManager* m_mngr;
-    SceneBuffers m_buffers;
+    Handle<Buffer> m_vertexBuffer;
+    Handle<Buffer> m_indexBuffer;
     Handle<Texture> m_defaultTexture;
     mutable std::vector<Handle<Model2>> m_models;
 

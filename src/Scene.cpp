@@ -5,8 +5,10 @@
 
 #include <assimp/Importer.hpp>
 
+#include <array>
 #include <cstdint>
 #include <format>
+#include <future>
 #include <iostream>
 #include <ranges>
 #include <span>
@@ -21,10 +23,8 @@ namespace Zhade
 Scene::Scene(SceneDescriptor desc)
     : m_mngr{desc.mngr}
 {
-    m_buffers = {
-        .vertex = m_mngr->createBuffer(desc.vertexBufferDesc),
-        .index = m_mngr->createBuffer(desc.vertexBufferDesc)
-    };
+    m_vertexBuffer = m_mngr->createBuffer(desc.vertexBufferDesc);
+    m_indexBuffer = m_mngr->createBuffer(desc.vertexBufferDesc);
     m_defaultTexture = Texture::makeDefault(m_mngr);
 }
 
@@ -32,8 +32,8 @@ Scene::Scene(SceneDescriptor desc)
 
 Scene::~Scene()
 {
-    m_mngr->destroy(m_buffers.vertex);
-    m_mngr->destroy(m_buffers.index);
+    m_mngr->destroy(m_vertexBuffer);
+    m_mngr->destroy(m_vertexBuffer);
     m_mngr->destroy(m_defaultTexture);
 }
 
@@ -44,21 +44,51 @@ void Scene::addModelFromFile(const fs::path& path) const noexcept
     const auto modelHandle = m_mngr->createModel2();
     Model2* model = m_mngr->get(modelHandle);
 
-    static Assimp::Importer importer{};
+    Assimp::Importer importer{};
     const aiScene* scene = importer.ReadFile(path.string().c_str(), ASSIMP_LOAD_FLAGS);
 
     for (const aiMesh* mesh : std::span(scene->mMeshes, scene->mNumMeshes))
     {
-        model->addMesh(
-            m_mngr->createMesh({
-                .vertices = loadVertices(mesh),
-                .indices = loadIndices(mesh),
-                .diffuse = loadTexture(scene, mesh, aiTextureType_DIFFUSE, path)
-            })
-        );
+        const auto desc = loadMeshConstituentsAsync(scene, mesh, SUPPORTED_TEXTURE_TYPES, path.parent_path());
+        const auto meshHandle = m_mngr->createMesh(desc);
+        model->addMesh(meshHandle);
     }
 
     m_models.push_back(modelHandle);
+}
+
+//------------------------------------------------------------------------
+
+MeshDescriptor Scene::loadMeshConstituentsAsync(const aiScene* scene, const aiMesh* mesh,
+    const std::bitset<AI_TEXTURE_TYPE_MAX>& textureTypes, const fs::path& basePath) const noexcept
+{
+    auto verticesFuture = std::async(
+        std::launch::async,
+        [this](auto&& mesh) { return loadVertices(std::forward<decltype(mesh)>(mesh)); },
+        mesh
+    );
+    auto indicesFuture = std::async(
+        std::launch::async,
+        [this](auto&& mesh) { return loadIndices(std::forward<decltype(mesh)>(mesh)); },
+        mesh
+    );
+
+    std::array<std::future<Handle<Texture>>, AI_TEXTURE_TYPE_MAX> textureFutures;
+    for (uint32_t textureType = aiTextureType_NONE; textureType < AI_TEXTURE_TYPE_MAX; ++textureType)
+    {
+        if (textureTypes.test(textureType) == false) continue;
+        textureFutures[textureType] = std::async(
+            std::launch::async,
+            [this](auto&&... args) { return loadTexture(std::forward<decltype(args)>(args)...); },
+            scene, mesh, static_cast<aiTextureType>(textureType), basePath
+        );
+    }
+
+    return MeshDescriptor{
+        .vertices = verticesFuture.get(),
+        .indices = indicesFuture.get(),
+        .diffuse = textureFutures[aiTextureType_DIFFUSE].get()
+    };
 }
 
 //------------------------------------------------------------------------
@@ -96,8 +126,8 @@ std::span<GLuint> Scene::loadIndices(const aiMesh* mesh) const noexcept
 
 //------------------------------------------------------------------------
 
-Handle<Texture> Scene::loadTexture(const aiScene* scene, const aiMesh* mesh, aiTextureType textureType,
-    const fs::path& modelPath) const noexcept
+Handle<Texture> Scene::loadTexture(const aiScene* scene, const aiMesh* mesh,
+    aiTextureType textureType, const fs::path& basePath) const noexcept
 {
     const aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
@@ -105,7 +135,7 @@ Handle<Texture> Scene::loadTexture(const aiScene* scene, const aiMesh* mesh, aiT
 
     aiString tempMaterialPath;
     material->GetTexture(textureType, 0, &tempMaterialPath);
-    const fs::path materialPath = modelPath.parent_path() / tempMaterialPath.data;
+    const fs::path materialPath = basePath / tempMaterialPath.data;
     return Texture::fromFile(m_mngr, materialPath);
 }
 
