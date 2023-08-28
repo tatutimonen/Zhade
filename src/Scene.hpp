@@ -53,11 +53,11 @@ private:
     [[nodiscard]] const Buffer* vertexBuffer() const noexcept { return m_mngr->get(m_vertexBuffer); }
     [[nodiscard]] const Buffer* indexBuffer() const noexcept { return m_mngr->get(m_indexBuffer); }
 
-    [[nodiscard]] Handle<Mesh> loadMesh(const aiScene* scene, const aiMesh* mesh, const fs::path& basePath)const noexcept;
+    [[nodiscard]] Handle<Mesh> loadMesh(const aiScene* scene, const aiMesh* mesh, const fs::path& dir) const noexcept;
     [[nodiscard]] std::span<Vertex> loadVertices(const aiMesh* mesh) const noexcept;
     [[nodiscard]] std::span<GLuint> loadIndices(const aiMesh* mesh) const noexcept;
-    [[nodiscard]] Handle<Texture> loadTexture(const aiScene* scene, const aiMesh* mesh,
-        aiTextureType textureType, const fs::path& path) const noexcept;
+    [[nodiscard]] Handle<Texture> loadTexture(const aiScene* scene, const aiMesh* mesh, aiTextureType textureType,
+        const fs::path& dir) const noexcept;
 
     ResourceManager* m_mngr;
     Handle<Buffer> m_vertexBuffer;

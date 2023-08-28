@@ -57,7 +57,7 @@ void Scene::addModelFromFile(const fs::path& path) const noexcept
 
 //------------------------------------------------------------------------
 
-Handle<Mesh> Scene::loadMesh(const aiScene* scene, const aiMesh* mesh, const fs::path& basePath) const noexcept
+Handle<Mesh> Scene::loadMesh(const aiScene* scene, const aiMesh* mesh, const fs::path& dir) const noexcept
 {
     auto verticesFuture = std::async(
         std::launch::async,
@@ -71,13 +71,13 @@ Handle<Mesh> Scene::loadMesh(const aiScene* scene, const aiMesh* mesh, const fs:
     );
 
     std::array<std::future<Handle<Texture>>, AI_TEXTURE_TYPE_MAX> textureFutures;
-    for (uint8_t textureType : stdv::iota(0u, AI_TEXTURE_TYPE_MAX) 
+    for (uint8_t textureType : stdv::iota(0u, AI_TEXTURE_TYPE_MAX)
                                | stdv::filter([&] (auto pos) { return SUPPORTED_TEXTURE_TYPES.test(pos); }))
     {
         textureFutures[textureType] = std::async(
             std::launch::async,
             [this] (auto&&... args) { return loadTexture(std::forward<decltype(args)>(args)...); },
-            scene, mesh, static_cast<aiTextureType>(textureType), basePath
+            scene, mesh, static_cast<aiTextureType>(textureType), dir
         );
     }
 
@@ -124,8 +124,8 @@ std::span<GLuint> Scene::loadIndices(const aiMesh* mesh) const noexcept
 
 //------------------------------------------------------------------------
 
-Handle<Texture> Scene::loadTexture(const aiScene* scene, const aiMesh* mesh,
-    aiTextureType textureType, const fs::path& basePath) const noexcept
+Handle<Texture> Scene::loadTexture(const aiScene* scene, const aiMesh* mesh, aiTextureType textureType,
+    const fs::path& dir) const noexcept
 {
     const aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
@@ -133,7 +133,7 @@ Handle<Texture> Scene::loadTexture(const aiScene* scene, const aiMesh* mesh,
 
     aiString tempMaterialPath;
     material->GetTexture(textureType, 0, &tempMaterialPath);
-    const fs::path materialPath = basePath / tempMaterialPath.data;
+    const fs::path materialPath = dir / tempMaterialPath.data;
     return Texture::fromFile(m_mngr, materialPath);
 }
 
