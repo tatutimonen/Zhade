@@ -71,12 +71,8 @@ int main()
         });
         pipeline.bind();
 
-        /*const auto scene2 = Scene(&mngr);
+        const auto scene2 = Scene({.mngr = &mngr});
         scene2.addModelFromFile(ASSET_PATH / "dragon" / "dragon.obj");
-        for (const auto& modelHandle : scene2.getModels())
-        {
-            std::cout << mngr.get(modelHandle)->getID() << "\n";
-        }*/
 
         const auto camera = Camera({.mngr = &mngr, .app = &app});
 

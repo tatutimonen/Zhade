@@ -49,9 +49,7 @@ void Scene::addModelFromFile(const fs::path& path) const noexcept
 
     for (const aiMesh* mesh : std::span(scene->mMeshes, scene->mNumMeshes))
     {
-        const auto desc = loadMeshConstituentsAsync(scene, mesh, SUPPORTED_TEXTURE_TYPES, path.parent_path());
-        const auto meshHandle = m_mngr->createMesh(desc);
-        model->addMesh(meshHandle);
+        model->addMesh(loadMesh(scene, mesh, path.parent_path()));
     }
 
     m_models.push_back(modelHandle);
@@ -59,8 +57,7 @@ void Scene::addModelFromFile(const fs::path& path) const noexcept
 
 //------------------------------------------------------------------------
 
-MeshDescriptor Scene::loadMeshConstituentsAsync(const aiScene* scene, const aiMesh* mesh,
-    const std::bitset<AI_TEXTURE_TYPE_MAX>& textureTypes, const fs::path& basePath) const noexcept
+Handle<Mesh> Scene::loadMesh(const aiScene* scene, const aiMesh* mesh, const fs::path& basePath) const noexcept
 {
     auto verticesFuture = std::async(
         std::launch::async,
@@ -74,7 +71,9 @@ MeshDescriptor Scene::loadMeshConstituentsAsync(const aiScene* scene, const aiMe
     );
 
     std::array<std::future<Handle<Texture>>, AI_TEXTURE_TYPE_MAX> textureFutures;
-    for (auto textureType : stdv::iota(0u, AI_TEXTURE_TYPE_MAX) | stdv::filter([&] (auto pos) { return textureTypes.test(pos); }))
+
+    for (uint32_t textureType : stdv::iota(0u, AI_TEXTURE_TYPE_MAX) 
+                                | stdv::filter([&] (auto pos) { return SUPPORTED_TEXTURE_TYPES.test(pos); }))
     {
         textureFutures[textureType] = std::async(
             std::launch::async,
@@ -83,11 +82,11 @@ MeshDescriptor Scene::loadMeshConstituentsAsync(const aiScene* scene, const aiMe
         );
     }
 
-    return MeshDescriptor{
+    return m_mngr->createMesh({
         .vertices = verticesFuture.get(),
         .indices = indicesFuture.get(),
         .diffuse = textureFutures[aiTextureType_DIFFUSE].get()
-    };
+    });
 }
 
 //------------------------------------------------------------------------
@@ -96,12 +95,13 @@ std::span<Vertex> Scene::loadVertices(const aiMesh* mesh) const noexcept
 {
     Vertex* verticesStart = vertexBuffer()->getWritePtr<Vertex>();
 
-    for (uint32_t idx : std::views::iota(0u, mesh->mNumVertices))
+    for (uint32_t idx : stdv::iota(0u, mesh->mNumVertices))
     {
         const Vertex vertex{
             .pos = util::vec3FromAiVector3D(mesh->mVertices[idx]),
             .nrm = util::vec3FromAiVector3D(mesh->mNormals[idx]),
-            .uv = mesh->HasTextureCoords(0) ? util::vec2FromAiVector3D(mesh->mTextureCoords[0][idx]) : glm::vec2{}
+            .uv = mesh->HasTextureCoords(0) ? util::vec2FromAiVector3D(mesh->mTextureCoords[0][idx])
+                                            : glm::vec2{}
         };
         vertexBuffer()->pushData<Vertex>(&vertex);
     }
