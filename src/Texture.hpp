@@ -3,7 +3,7 @@
 #include "Handle.hpp"
 #include "common.hpp"
 
-#include <assimp/scene.h>
+#include <assimp/material.h>
 #include <glm/glm.hpp>
 #include <robin_hood.h>
 extern "C" {
