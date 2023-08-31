@@ -77,7 +77,7 @@ Handle<Mesh> Scene::loadMesh(const aiScene* scene, const aiMesh* mesh, const fs:
 
     std::array<std::future<Handle<Texture>>, AI_TEXTURE_TYPE_MAX> textureFutures;
     for (uint8_t textureType : stdv::iota(0u, AI_TEXTURE_TYPE_MAX)
-                               | stdv::filter([&](auto pos) { return SUPPORTED_TEXTURE_TYPES.test(pos); }))
+                             | stdv::filter([&](auto pos) { return SUPPORTED_TEXTURE_TYPES.test(pos); }))
     {
         textureFutures[textureType] = std::async(
             std::launch::async,
