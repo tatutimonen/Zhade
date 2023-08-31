@@ -3,12 +3,14 @@
 #include "Handle.hpp"
 #include "common.hpp"
 
+#include <assimp/scene.h>
 #include <glm/glm.hpp>
 #include <robin_hood.h>
 extern "C" {
 #include <GL/glew.h>
 }
 
+#include <bitset>
 #include <mutex>
 
 //------------------------------------------------------------------------
@@ -37,6 +39,15 @@ struct TextureDescriptor
     SamplerDescriptor sampler{};
     bool managed = true;
 };
+
+constexpr std::bitset<AI_TEXTURE_TYPE_MAX> makeSupportedTextureTypeTable()
+{
+    std::bitset<AI_TEXTURE_TYPE_MAX> table;
+    table.set(aiTextureType_DIFFUSE);
+    return table;
+}
+
+inline constexpr auto SUPPORTED_TEXTURE_TYPES = makeSupportedTextureTypeTable();
 
 //------------------------------------------------------------------------
 

@@ -7,9 +7,7 @@
 
 #include <array>
 #include <cstdint>
-#include <format>
 #include <future>
-#include <iostream>
 #include <ranges>
 #include <span>
 
@@ -24,7 +22,7 @@ Scene::Scene(SceneDescriptor desc)
     : m_mngr{desc.mngr}
 {
     m_vertexBuffer = m_mngr->createBuffer(desc.vertexBufferDesc);
-    m_indexBuffer = m_mngr->createBuffer(desc.vertexBufferDesc);
+    m_indexBuffer = m_mngr->createBuffer(desc.indexBufferDesc);
     m_defaultTexture = Texture::makeDefault(m_mngr);
 }
 
@@ -33,7 +31,7 @@ Scene::Scene(SceneDescriptor desc)
 Scene::~Scene()
 {
     m_mngr->destroy(m_vertexBuffer);
-    m_mngr->destroy(m_vertexBuffer);
+    m_mngr->destroy(m_indexBuffer);
     m_mngr->destroy(m_defaultTexture);
 }
 
@@ -41,6 +39,12 @@ Scene::~Scene()
 
 void Scene::addModelFromFile(const fs::path& path) const noexcept
 {
+    if (m_cache.contains(path))
+    {
+        m_models.push_back(m_cache[path]);
+        return;
+    }
+
     const auto modelHandle = m_mngr->createModel2();
     Model2* model = m_mngr->get(modelHandle);
 
@@ -53,6 +57,7 @@ void Scene::addModelFromFile(const fs::path& path) const noexcept
     }
 
     m_models.push_back(modelHandle);
+    m_cache[path] = modelHandle;
 }
 
 //------------------------------------------------------------------------
@@ -61,22 +66,22 @@ Handle<Mesh> Scene::loadMesh(const aiScene* scene, const aiMesh* mesh, const fs:
 {
     auto verticesFuture = std::async(
         std::launch::async,
-        [this] (auto&& mesh) { return loadVertices(std::forward<decltype(mesh)>(mesh)); },
+        [this](auto&& mesh) { return loadVertices(std::forward<decltype(mesh)>(mesh)); },
         mesh
     );
     auto indicesFuture = std::async(
         std::launch::async,
-        [this] (auto&& mesh) { return loadIndices(std::forward<decltype(mesh)>(mesh)); },
+        [this](auto&& mesh) { return loadIndices(std::forward<decltype(mesh)>(mesh)); },
         mesh
     );
 
     std::array<std::future<Handle<Texture>>, AI_TEXTURE_TYPE_MAX> textureFutures;
     for (uint8_t textureType : stdv::iota(0u, AI_TEXTURE_TYPE_MAX)
-                               | stdv::filter([&] (auto pos) { return SUPPORTED_TEXTURE_TYPES.test(pos); }))
+                               | stdv::filter([&](auto pos) { return SUPPORTED_TEXTURE_TYPES.test(pos); }))
     {
         textureFutures[textureType] = std::async(
             std::launch::async,
-            [this] (auto&&... args) { return loadTexture(std::forward<decltype(args)>(args)...); },
+            [this](auto&&... args) { return loadTexture(std::forward<decltype(args)>(args)...); },
             scene, mesh, static_cast<aiTextureType>(textureType), dir
         );
     }

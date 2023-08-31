@@ -20,9 +20,9 @@ namespace Zhade
 
 struct Vertex
 {
-    glm::vec3 pos{};
-    glm::vec3 nrm{};
-    glm::vec2 uv{};
+    glm::vec3 pos;
+    glm::vec3 nrm;
+    glm::vec2 uv;
 };
 
 struct MeshDescriptor
@@ -46,9 +46,9 @@ public:
     [[nodiscard]] size_t numIndices() const noexcept { return m_indices.size(); }
 
 private:
-    std::span<Vertex> m_vertices{};
-    std::span<GLuint> m_indices{};
-    Handle<Texture> m_diffuse{};
+    std::span<Vertex> m_vertices;
+    std::span<GLuint> m_indices;
+    Handle<Texture> m_diffuse;
 };
 
 //------------------------------------------------------------------------
