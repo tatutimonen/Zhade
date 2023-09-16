@@ -21,7 +21,7 @@ namespace Zhade
 
 template<typename T>
 concept StbImageDataFormat = (
-    std::same_as<T, stbi_uc> || std::same_as<T, stbi_us> || std::same_as<T, float>
+    std::same_as<T, stbi_uc> or std::same_as<T, stbi_us> or std::same_as<T, float>
 );
 
 //------------------------------------------------------------------------

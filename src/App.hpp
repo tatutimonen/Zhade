@@ -79,7 +79,7 @@ public:
     static void debugCallback([[maybe_unused]] GLenum source, [[maybe_unused]] GLenum type, [[maybe_unused]] GLuint id,
         GLenum severity, [[maybe_unused]] GLsizei length, const char* message, [[maybe_unused]] const void* userParam) noexcept
     {
-        if (severity == GL_DEBUG_SEVERITY_MEDIUM || severity == GL_DEBUG_SEVERITY_HIGH) [[unlikely]]
+        if (severity == GL_DEBUG_SEVERITY_MEDIUM or severity == GL_DEBUG_SEVERITY_HIGH) [[unlikely]]
             std::cerr << message << "\n";
     }
 

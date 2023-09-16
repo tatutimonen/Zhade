@@ -46,7 +46,7 @@ public:
     void freeResources() const noexcept;
 
 private:
-    const Texture* texture() const noexcept;
+    [[nodiscard]] const Texture* texture() const noexcept;
 
     GLuint m_name = 0;
     Handle<Texture> m_texture{};

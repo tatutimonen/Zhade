@@ -31,6 +31,7 @@ public:
     [[nodiscard]] Handle<Buffer> createBuffer(BufferDescriptor desc) { return m_buffers.allocate(desc); }
     [[nodiscard]] Handle<Framebuffer> createFramebuffer(FramebufferDescriptor desc) { return m_framebuffers.allocate(desc); }
     [[nodiscard]] Handle<Mesh> createMesh(MeshDescriptor desc) { return m_meshes.allocate(desc); }
+    [[nodiscard]] Handle<Model2> createModel2(ModelDescriptor desc) { return m_models2.allocate(desc); }
     [[nodiscard]] Handle<Texture> createTexture(TextureDescriptor desc) { return m_textures.allocate(desc); }
 
     template<typename... Args>
@@ -38,13 +39,6 @@ public:
     [[nodiscard]] Handle<Model> createModel(Args&& ...args)
     {
         return m_models.allocate(std::forward<Args>(args)...);
-    }
-
-    template<typename... Args>
-    requires std::constructible_from<Model2, Args...>
-    [[nodiscard]] Handle<Model2> createModel2(Args&& ...args)
-    {
-        return m_models2.allocate(std::forward<Args>(args)...);
     }
 
     [[nodiscard]] Buffer* get(const Handle<Buffer>& handle) const noexcept { return m_buffers.get(handle); }

@@ -58,7 +58,8 @@ Handle<Texture> Texture::fromFile(ResourceManager* mngr, const fs::path& path, T
     
     {
         std::lock_guard lock{s_mtx};
-        if (s_cache.contains(path)) return s_cache[path];
+        if (s_cache.contains(path) and mngr->get(s_cache[path]) != nullptr)
+            return s_cache[path];
     }
 
     const StbImageResource img{path};

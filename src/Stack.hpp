@@ -64,7 +64,7 @@ public:
     void emplace(Args&& ...args) noexcept
     {
         if (m_size == m_underlying.size()) [[unlikely]] resize();
-        std::construct_at(&at(m_size++), std::forward<Args>(args)...);
+        std::construct_at(&this[m_size++], std::forward<Args>(args)...);
     }
 
     void resize(size_t size) noexcept

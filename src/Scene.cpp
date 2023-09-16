@@ -39,25 +39,27 @@ Scene::~Scene()
 
 void Scene::addModelFromFile(const fs::path& path) const noexcept
 {
-    if (m_cache.contains(path))
+    if (m_cache.contains(path) and m_mngr->get(m_cache[path]) != nullptr)
     {
         m_models.push_back(m_cache[path]);
         return;
     }
 
-    const auto modelHandle = m_mngr->createModel2();
-    Model2* model = m_mngr->get(modelHandle);
-
     Assimp::Importer importer{};
     const aiScene* scene = importer.ReadFile(path.string().c_str(), ASSIMP_LOAD_FLAGS);
 
+    std::vector<Handle<Mesh>> meshes;
     for (const aiMesh* mesh : std::span(scene->mMeshes, scene->mNumMeshes))
     {
-        model->addMesh(loadMesh(scene, mesh, path.parent_path()));
+        meshes.push_back(loadMesh(scene, mesh, path.parent_path()));
     }
 
-    m_models.push_back(modelHandle);
-    m_cache[path] = modelHandle;
+    const auto model = m_mngr->createModel2({
+        .mngr = m_mngr,
+        .meshes = std::move(meshes)
+    });
+    m_models.push_back(model);
+    m_cache[path] = model;
 }
 
 //------------------------------------------------------------------------

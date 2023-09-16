@@ -21,12 +21,27 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
+class ResourceManager;
+
+struct ModelDescriptor
+{
+    ResourceManager* mngr;
+    std::vector<Handle<Mesh>> meshes;
+    glm::mat3x4 transformation;
+};
+
+//------------------------------------------------------------------------
+
 class Model2
 {
 public:
     Model2() = default;
+    Model2(ModelDescriptor desc);
 
-    auto operator<=>(const Model2& rhs) const noexcept { &m_meshes.front() <=> &rhs.m_meshes.front(); }
+    auto operator<=>(const Model2& rhs) const noexcept
+    {
+        getFirstMesh()->vertices().data() <=> rhs.getFirstMesh()->vertices().data();
+    }
 
     void setTransformation(const glm::mat3x4& transformation) const noexcept { m_transformation = transformation; }
 
@@ -35,6 +50,9 @@ public:
     void addMesh(const Handle<Mesh>& mesh) const noexcept { return m_meshes.push_back(mesh); }
 
 private:
+    [[nodiscard]] const Mesh* getFirstMesh() const noexcept;
+
+    ResourceManager* m_mngr = nullptr;
     mutable std::vector<Handle<Mesh>> m_meshes;
     mutable glm::mat3x4 m_transformation;
 

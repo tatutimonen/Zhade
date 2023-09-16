@@ -84,7 +84,7 @@ public:
         const bool moved = move();
         const bool rotated = rotate();
 
-        if (moved || rotated)
+        if (moved or rotated)
             uniformBuffer()->setData<glm::mat3x4>(&m_matrices.VT, offsetof(Matrices, VT));
     }
 
