@@ -50,14 +50,14 @@ void Buffer::bindBase(GLuint bindingIndex) const noexcept
 
 //------------------------------------------------------------------------
 
-void Buffer::bindRange(GLuint bindingIndex, GLintptr offsetBytes, GLsizeiptr byteSize) const noexcept
+void Buffer::bindRange(GLuint bindingIndex, GLintptr byteOffset, GLsizeiptr byteSize) const noexcept
 {
     if (m_usage != BufferUsage::UNIFORM and m_usage != BufferUsage::STORAGE) [[unlikely]]
     {
         std::cerr << "Bind range of non-UBO or non-SSBO\n";
         return;
     }
-    glBindBufferRange(BufferUsage2GLenum[m_usage], bindingIndex, m_name, offsetBytes, byteSize);
+    glBindBufferRange(BufferUsage2GLenum[m_usage], bindingIndex, m_name, byteOffset, byteSize);
 }
 
 //------------------------------------------------------------------------

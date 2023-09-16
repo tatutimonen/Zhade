@@ -75,9 +75,9 @@ public:
     void freeResources() const noexcept;
     void generateMipmap() const noexcept { glGenerateTextureMipmap(m_texture); }
 
-    static Handle<Texture> fromFile(ResourceManager* mngr, const fs::path& path,
+    [[nodiscard]] static Handle<Texture> fromFile(ResourceManager* mngr, const fs::path& path,
         TextureDescriptor desc = TextureDescriptor{}) noexcept;
-    static Handle<Texture> makeDefault(ResourceManager* mngr) noexcept;
+    [[nodiscard]] static Handle<Texture> makeDefault(ResourceManager* mngr) noexcept;
 
     static inline robin_hood::unordered_map<fs::path, Handle<Texture>> s_cache;
     static inline std::mutex s_mtx;

@@ -108,14 +108,14 @@ public:
     }
 
     template<typename T>
-    void setData(const T* data, GLintptr offsetBytes = 0, GLsizei size = 1) const noexcept
+    void setData(const T* data, GLintptr byteOffset = 0, GLsizei size = 1) const noexcept
     {
-        glNamedBufferSubData(m_name, offsetBytes, sizeof(T) * size, data);
+        glNamedBufferSubData(m_name, byteOffset, sizeof(T) * size, data);
     }
 
     void bind() const noexcept;
     void bindBase(GLuint bindingIndex) const noexcept;
-    void bindRange(GLuint bindingIndex, GLintptr offsetBytes, GLsizeiptr byteSize) const noexcept;
+    void bindRange(GLuint bindingIndex, GLintptr byteOffset, GLsizeiptr byteSize) const noexcept;
     void freeResources() const noexcept;
     void invalidate(GLintptr offset = 0, GLsizeiptr length = 0) const noexcept;
 
