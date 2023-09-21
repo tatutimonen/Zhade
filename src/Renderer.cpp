@@ -1,6 +1,5 @@
 #include "Renderer.hpp"
 
-
 #include <format>
 #include <iostream>
 

@@ -10,6 +10,7 @@
 #include <assimp/scene.h>
 #include <robin_hood.h>
 
+#include <atomic>
 #include <filesystem>
 #include <string>
 #include <vector>
@@ -46,8 +47,6 @@ public:
     void addModelFromFile(const fs::path& path) const noexcept;
 
 private:
-    using ModelCache = robin_hood::unordered_map<fs::path, Handle<Model2>>;
-
     [[nodiscard]] const Buffer* vertexBuffer() const noexcept { return m_mngr->get(m_vertexBuffer); }
     [[nodiscard]] const Buffer* indexBuffer() const noexcept { return m_mngr->get(m_indexBuffer); }
 
@@ -57,12 +56,14 @@ private:
     [[nodiscard]] Handle<Texture> loadTexture(const aiScene* scene, const aiMesh* mesh, aiTextureType textureType,
         const fs::path& dir) const noexcept;
 
+    static inline std::atomic_uint32_t s_modelIdCounter = 0;
+
     ResourceManager* m_mngr;
     Handle<Buffer> m_vertexBuffer;
     Handle<Buffer> m_indexBuffer;
     Handle<Texture> m_defaultTexture;
     mutable std::vector<Handle<Model2>> m_models;
-    mutable ModelCache m_cache;
+    mutable robin_hood::unordered_map<fs::path, Handle<Model2>> m_cache;
 
     friend class IndirectRenderer;
 };

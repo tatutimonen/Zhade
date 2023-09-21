@@ -11,7 +11,6 @@ extern "C" {
 }
 
 #include <bitset>
-#include <mutex>
 
 //------------------------------------------------------------------------
 
@@ -80,7 +79,6 @@ public:
     [[nodiscard]] static Handle<Texture> makeDefault(ResourceManager* mngr) noexcept;
 
     static inline robin_hood::unordered_map<fs::path, Handle<Texture>> s_cache;
-    static inline std::mutex s_mtx;
 
 private:
     GLuint m_texture = 0;

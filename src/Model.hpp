@@ -8,7 +8,6 @@ extern "C" {
 #include <GL/glew.h>
 }
 
-#include <compare>
 #include <cstdint>
 #include <span>
 #include <string_view>
@@ -28,6 +27,7 @@ struct ModelDescriptor
     ResourceManager* mngr;
     std::vector<Handle<Mesh>> meshes;
     glm::mat3x4 transformation;
+    uint32_t id;
 };
 
 //------------------------------------------------------------------------
@@ -38,23 +38,20 @@ public:
     Model2() = default;
     Model2(ModelDescriptor desc);
 
-    auto operator<=>(const Model2& rhs) const noexcept
-    {
-        getFirstMesh()->vertices().data() <=> rhs.getFirstMesh()->vertices().data();
-    }
+    auto operator<=>(const Model2& rhs) const noexcept { m_id <=> rhs.m_id; }
 
     void setTransformation(const glm::mat3x4& transformation) const noexcept { m_transformation = transformation; }
 
     [[nodiscard]] const glm::mat3x4& getTransformation() const noexcept { return m_transformation; }
+    [[nodiscard]] uint32_t getId() const noexcept { return m_id; }
 
     void addMesh(const Handle<Mesh>& mesh) const noexcept { return m_meshes.push_back(mesh); }
 
 private:
-    [[nodiscard]] const Mesh* getFirstMesh() const noexcept;
-
     ResourceManager* m_mngr = nullptr;
     mutable std::vector<Handle<Mesh>> m_meshes;
     mutable glm::mat3x4 m_transformation;
+    uint32_t m_id;
 
     friend class Scene;
 };

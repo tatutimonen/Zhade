@@ -56,7 +56,8 @@ void Scene::addModelFromFile(const fs::path& path) const noexcept
 
     const auto model = m_mngr->createModel2({
         .mngr = m_mngr,
-        .meshes = std::move(meshes)
+        .meshes = std::move(meshes),
+        .id = s_modelIdCounter++
     });
     m_models.push_back(model);
     m_cache[path] = model;
@@ -77,21 +78,10 @@ Handle<Mesh> Scene::loadMesh(const aiScene* scene, const aiMesh* mesh, const fs:
         mesh
     );
 
-    std::array<std::future<Handle<Texture>>, AI_TEXTURE_TYPE_MAX> textureFutures;
-    for (uint8_t textureType : stdv::iota(0u, AI_TEXTURE_TYPE_MAX)
-                             | stdv::filter([&](auto pos) { return SUPPORTED_TEXTURE_TYPES.test(pos); }))
-    {
-        textureFutures[textureType] = std::async(
-            std::launch::async,
-            [this](auto&&... args) { return loadTexture(std::forward<decltype(args)>(args)...); },
-            scene, mesh, static_cast<aiTextureType>(textureType), dir
-        );
-    }
-
     return m_mngr->createMesh({
         .vertices = verticesFuture.get(),
         .indices = indicesFuture.get(),
-        .diffuse = textureFutures[aiTextureType_DIFFUSE].get()
+        .diffuse = loadTexture(scene, mesh, aiTextureType_DIFFUSE, dir)
     });
 }
 

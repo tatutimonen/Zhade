@@ -10,7 +10,6 @@
 #include "StbImageResource.hpp"
 #include "Texture.hpp"
 #include "common.hpp"
-
 #include "util.hpp"
 #include "ObjectPool.hpp"
 
@@ -73,6 +72,12 @@ int main()
 
         const auto scene2 = Scene({.mngr = &mngr});
         scene2.addModelFromFile(ASSET_PATH / "dragon" / "dragon.obj");
+        scene2.addModelFromFile(ASSET_PATH / "sponza" / "sponza.obj");
+        scene2.addModelFromFile(ASSET_PATH / "dragon" / "dragon.obj");
+        for (const auto& modelHandle : scene2.getModels())
+        {
+            std::cout << mngr.get(modelHandle)->getId() << "\n";
+        }
 
         const auto camera = Camera({.mngr = &mngr, .app = &app});
 
