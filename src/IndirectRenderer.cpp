@@ -2,8 +2,6 @@
 
 #include "common.hpp"
 
-#include <glm/gtc/type_ptr.hpp>
-
 #include <array>
 #include <cstring>
 #include <memory_resource>
@@ -149,7 +147,7 @@ void IndirectRenderer::invalidateBuffers() const noexcept
 
 void IndirectRenderer::pushMeshDataToBuffers(const Mesh* mesh) const noexcept
 {
-    transformBuffer()->pushData(glm::value_ptr(mesh->model()->transformation()));
+    transformBuffer()->pushData(&mesh->model()->transformation());
     const auto diffuseGPUHandle = m_mngr->get(mesh->diffuse())->getHandle();
     textureBuffer()->pushData(&diffuseGPUHandle);
 }

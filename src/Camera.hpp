@@ -7,7 +7,6 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 extern "C" {
 #include <GLFW/glfw3.h>
 }
@@ -86,7 +85,7 @@ public:
         const bool rotated = rotate();
 
         if (moved or rotated)
-            uniformBuffer()->setData<glm::mat3x4>(glm::value_ptr(m_matrices.VT), offsetof(Matrices, VT));
+            uniformBuffer()->setData<glm::mat3x4>(&m_matrices.VT, offsetof(Matrices, VT));
     }
 
     // According to the GLFW input reference.
@@ -121,7 +120,7 @@ private:
             const auto [xmin, xmax, ymin, ymax] = std::get<OrthoSettings>(m_varSettings);
             m_matrices.P = glm::ortho(xmin, xmax, ymin, ymax, m_settings.zNear, m_settings.zFar);
         }
-        uniformBuffer()->setData<glm::mat4>(glm::value_ptr(m_matrices.P), offsetof(Matrices, P));
+        uniformBuffer()->setData<glm::mat4>(&m_matrices.P, offsetof(Matrices, P));
     }
 
     bool move() const noexcept

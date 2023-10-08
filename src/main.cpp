@@ -45,7 +45,6 @@ int main()
 
         auto scene = Scene({.mngr = &mngr});
         scene.addModelFromFile(ASSET_PATH / "sponza" / "sponza.obj");
-        scene.addModelFromFile(ASSET_PATH / "sponza" / "sponza.obj");
         std::cout << scene.vertexBuffer()->getByteSize() << "\n";
 
         const auto camera = Camera({.mngr = &mngr, .app = &app});
