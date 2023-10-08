@@ -92,6 +92,9 @@ public:
     [[nodiscard]] T* getWritePtr() const noexcept { return std::bit_cast<T*>(m_ptr + m_writeOffset); }
 
     template<typename T>
+    [[nodiscard]] T& at(size_t pos) const noexcept { return std::bit_cast<T*>(m_ptr)[pos]; }
+
+    template<typename T>
     [[nodiscard]] bool fits(GLsizei size) const noexcept
     {
         return m_writeOffset + sizeof(T)*size <= m_wholeByteSize;
@@ -108,9 +111,14 @@ public:
     }
 
     template<typename T>
-    void setData(const T* data, GLintptr byteOffset = 0, GLsizei size = 1) const noexcept
+    void setData(const void* data, GLintptr byteOffset = 0, GLsizei size = 1) const noexcept
     {
         glNamedBufferSubData(m_name, byteOffset, sizeof(T) * size, data);
+    }
+
+    void setZeros() const noexcept
+    {
+        std::memset(m_ptr, 0, m_wholeByteSize);
     }
 
     void bind() const noexcept;

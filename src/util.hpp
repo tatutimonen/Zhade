@@ -92,17 +92,6 @@ namespace util
 
 //------------------------------------------------------------------------
 
-template<std::floating_point T>
-[[nodiscard]] inline T average(std::span<T> values) noexcept
-{
-    T sum{};
-    for (const auto value : values)
-        sum += value;
-    return sum / values.size();
-}
-
-//------------------------------------------------------------------------
-
 [[nodiscard]] inline glm::vec3 vec3FromAiVector3D(const aiVector3D& vec) noexcept
 {
     return glm::vec3(vec.x, vec.y, vec.z);

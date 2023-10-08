@@ -2,12 +2,14 @@
 
 #include <assimp/postprocess.h>
 #include <glm/glm.hpp>
+#include <glm/gtx/string_cast.hpp>
 extern "C" {
 #include <GL/glew.h>
 }
 
 #include <cstdint>
 #include <filesystem>
+#include <iostream>
 #include <ranges>
 
 namespace fs = std::filesystem;

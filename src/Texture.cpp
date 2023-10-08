@@ -56,7 +56,9 @@ void Texture::freeResources() const noexcept
 Handle<Texture> Texture::fromFile(ResourceManager* mngr, const fs::path& path, TextureDescriptor desc) noexcept
 {
     if (s_cache.contains(path) and mngr->get(s_cache[path]) != nullptr)
+    {
         return s_cache[path];
+    }
 
     const StbImageResource img{path};
     desc.dims = img.getDims();

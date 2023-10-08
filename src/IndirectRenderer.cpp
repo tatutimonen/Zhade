@@ -1,6 +1,11 @@
 #include "IndirectRenderer.hpp"
 
+#include "common.hpp"
+
+#include <glm/gtc/type_ptr.hpp>
+
 #include <array>
+#include <cstring>
 #include <memory_resource>
 #include <numeric>
 #include <ranges>
@@ -12,9 +17,9 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
-IndirectRenderer::IndirectRenderer(ResourceManager* mngr, Scene* scene)
-    : m_mngr{mngr},
-      m_scene{scene}
+IndirectRenderer::IndirectRenderer(RendererDescriptor desc)
+    : m_mngr{desc.mngr},
+      m_scene{desc.scene}
 {
     glCreateVertexArrays(1, &m_vao);
 
@@ -33,11 +38,25 @@ IndirectRenderer::IndirectRenderer(ResourceManager* mngr, Scene* scene)
     glVertexArrayAttribBinding(m_vao, 1, 0);
     glVertexArrayAttribBinding(m_vao, 2, 0);
 
-    m_buffers = {
-        .commandBuffer = m_mngr->createBuffer({.byteSize = KIB_BYTES*100, .usage = BufferUsage::INDIRECT}),
-        .transformBuffer = m_mngr->createBuffer({.byteSize = GIB_BYTES/2, .usage = BufferUsage::STORAGE}),
-        .textureBuffer = m_mngr->createBuffer({.byteSize = KIB_BYTES*100, .usage = BufferUsage::STORAGE})
-    };
+    m_commandBuffer = m_mngr->createBuffer(desc.commandBufferDesc);
+    m_transformBuffer = m_mngr->createBuffer(desc.transformBufferDesc);
+    m_textureBuffer = m_mngr->createBuffer(desc.textureBufferDesc);
+
+    glBindVertexArray(m_vao);
+    commandBuffer()->setZeros();
+    commandBuffer()->bind();
+    transformBuffer()->bindBase(MODEL_BINDING);
+    textureBuffer()->bindBase(TEXTURE_BINDING);
+}
+
+//------------------------------------------------------------------------
+
+IndirectRenderer::~IndirectRenderer()
+{
+    glDeleteVertexArrays(1, &m_vao);
+    m_mngr->destroy(m_commandBuffer);
+    m_mngr->destroy(m_transformBuffer);
+    m_mngr->destroy(m_textureBuffer);
 }
 
 //------------------------------------------------------------------------
@@ -45,35 +64,94 @@ IndirectRenderer::IndirectRenderer(ResourceManager* mngr, Scene* scene)
 void IndirectRenderer::render() const noexcept
 {
     processSceneGraph();
-
-    for (const auto& renderPass : m_extraPasses)
-    {
-        m_mngr->get(renderPass.framebuffer)->bind();
-        glClear(renderPass.clearMask);
-        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, 1, 0);
-    }
-
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, 1, 0);
+    glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, drawCount(), 0);
 }
 
 //------------------------------------------------------------------------
 
 void IndirectRenderer::processSceneGraph() const noexcept
 {
-    static std::array<uint8_t, 2048> buf;
+    if (m_scene->getModels().empty()) [[unlikely]] return;
+
+    // Collect the scene meshes to a local container and sort according to ID.
+    static std::array<uint8_t, KIB_BYTES> buf;
     std::pmr::monotonic_buffer_resource rsrc{buf.data(), buf.size()};
-    std::pmr::vector<uint32_t> modelIndices{&rsrc};
-
-    std::iota(modelIndices.begin(), modelIndices.end(), 0u);
-    auto idx2model = [this](uint32_t idx) { return m_mngr->get(m_scene->getModels()[idx]); };
-    std::ranges::sort(modelIndices, std::less{}, idx2model);
-
-    for (const Model2* model : std::ranges::views::transform(modelIndices, idx2model))
+    std::pmr::vector<Handle<Mesh>> meshes{&rsrc};
+    for (const auto& model : m_scene->getModels())
     {
-
+        meshes.append_range(m_mngr->get(model)->meshes());
     }
+    stdr::sort(
+        meshes,
+        std::less{},
+        [this](const auto& handle) { return m_mngr->get(handle)->id(); }
+    );
+
+    populateBuffers(meshes);
+}
+
+//------------------------------------------------------------------------
+
+void IndirectRenderer::populateBuffers(std::span<Handle<Mesh>> meshesSorted) const noexcept
+{
+    invalidateBuffers();
+
+    auto mesh = m_mngr->get(meshesSorted.front());
+    DrawElementsIndirectCommand cmd{
+        .vertexCount = mesh->numVertices(),
+        .instanceCount = 1,
+        .firstIndex = 0,
+        .baseVertex = 0,
+        .baseInstance = 0
+    };
+
+    pushMeshDataToBuffers(mesh);
+    if (meshesSorted.size() == 1)
+    {
+        commandBuffer()->pushData(&cmd);
+        return;
+    }
+
+    for (const auto& meshHandle : stdr::drop_view(meshesSorted, 1))
+    {
+        auto prevMesh = mesh;
+        mesh = m_mngr->get(meshHandle);
+
+        if (mesh->id() != prevMesh->id())
+        {
+            commandBuffer()->pushData(&cmd);
+            cmd = {
+                .vertexCount = mesh->numVertices(),
+                .instanceCount = 0,
+                .firstIndex = cmd.firstIndex + prevMesh->numIndices(),
+                .baseVertex = cmd.baseVertex + prevMesh->numVertices(),
+                .baseInstance = cmd.baseInstance + cmd.instanceCount
+            };
+        }
+
+        pushMeshDataToBuffers(mesh);
+        ++cmd.instanceCount;
+    }
+}
+
+//------------------------------------------------------------------------
+
+void IndirectRenderer::invalidateBuffers() const noexcept
+{
+    commandBuffer()->invalidate();
+    transformBuffer()->invalidate();
+    textureBuffer()->invalidate();
+}
+
+//------------------------------------------------------------------------
+
+void IndirectRenderer::pushMeshDataToBuffers(const Mesh* mesh) const noexcept
+{
+    transformBuffer()->pushData(glm::value_ptr(mesh->model()->transformation()));
+    const auto diffuseGPUHandle = m_mngr->get(mesh->diffuse())->getHandle();
+    textureBuffer()->pushData(&diffuseGPUHandle);
 }
 
 //------------------------------------------------------------------------

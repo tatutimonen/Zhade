@@ -1,4 +1,6 @@
 #version 460 core
+precision highp float;
+precision highp int;
 
 //------------------------------------------------------------------------
 // Constants.

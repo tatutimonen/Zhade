@@ -6,6 +6,7 @@
 #include "ResourceManager.hpp"
 #include "Scene.hpp"
 
+#include <utility>
 #include <vector>
 
 //------------------------------------------------------------------------
@@ -15,17 +16,27 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
-struct Buffers
-{
-    Handle<Buffer> commandBuffer;
-    Handle<Buffer> transformBuffer;
-    Handle<Buffer> textureBuffer;
-};
-
 struct RenderPass
 {
+    using Stage = uint8_t;
+    enum : Stage
+    {
+        SHADOW,
+        MAIN
+    };
+
     Handle<Framebuffer> framebuffer;
     GLbitfield clearMask;
+    Stage stage;
+};
+
+struct RendererDescriptor
+{
+    ResourceManager* mngr;
+    Scene* scene;
+    BufferDescriptor commandBufferDesc{.byteSize = KIB_BYTES*100, .usage = BufferUsage::INDIRECT};
+    BufferDescriptor transformBufferDesc{.byteSize = GIB_BYTES/2, .usage = BufferUsage::STORAGE};
+    BufferDescriptor textureBufferDesc{.byteSize = KIB_BYTES*100, .usage = BufferUsage::STORAGE};
 };
 
 //------------------------------------------------------------------------
@@ -33,21 +44,32 @@ struct RenderPass
 class IndirectRenderer
 {
 public:
-    IndirectRenderer(ResourceManager* mngr, Scene* scene);
+    explicit IndirectRenderer(RendererDescriptor desc);
+    ~IndirectRenderer();
 
     void render() const noexcept;
 
+    [[nodiscard]] const Buffer* commandBuffer() const noexcept { return m_mngr->get(m_commandBuffer); }
+    [[nodiscard]] const Buffer* transformBuffer() const noexcept { return m_mngr->get(m_transformBuffer); }
+    [[nodiscard]] const Buffer* textureBuffer() const noexcept { return m_mngr->get(m_textureBuffer); }
 private:
-    const Buffer* commandBuffer() const noexcept { return m_mngr->get(m_buffers.commandBuffer); }
-    const Buffer* modelMatrixBuffer() const noexcept { return m_mngr->get(m_buffers.transformBuffer); }
-    const Buffer* textureBuffer() const noexcept { return m_mngr->get(m_buffers.textureBuffer); }
+
+    [[nodiscard]] GLsizei drawCount() const noexcept
+    {
+        return commandBuffer()->getByteSize() / sizeof(DrawElementsIndirectCommand);
+    }
 
     void processSceneGraph() const noexcept;
+    void populateBuffers(std::span<Handle<Mesh>> meshesSorted) const noexcept;
+    void invalidateBuffers() const noexcept;
+    void pushMeshDataToBuffers(const Mesh* mesh) const noexcept;
 
     ResourceManager* m_mngr;
     Scene* m_scene;
     GLuint m_vao;
-    Buffers m_buffers;
+    Handle<Buffer> m_commandBuffer;
+    Handle<Buffer> m_transformBuffer;
+    Handle<Buffer> m_textureBuffer;
     std::vector<RenderPass> m_extraPasses;
 };
 

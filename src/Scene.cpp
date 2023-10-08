@@ -8,6 +8,7 @@
 #include <array>
 #include <cstdint>
 #include <future>
+#include <memory_resource>
 #include <ranges>
 #include <span>
 
@@ -39,34 +40,39 @@ Scene::~Scene()
 
 void Scene::addModelFromFile(const fs::path& path) const noexcept
 {
-    if (m_cache.contains(path) and m_mngr->get(m_cache[path]) != nullptr)
+    if (m_modelCache.contains(path) and m_mngr->get(m_modelCache[path]) != nullptr)
     {
-        m_models.push_back(m_cache[path]);
+        m_models.push_back(m_modelCache[path]);
         return;
     }
 
     Assimp::Importer importer{};
     const aiScene* scene = importer.ReadFile(path.string().c_str(), ASSIMP_LOAD_FLAGS);
 
+    const auto model = m_mngr->createModel2({.mngr = m_mngr});
+
     std::vector<Handle<Mesh>> meshes;
     for (const aiMesh* mesh : std::span(scene->mMeshes, scene->mNumMeshes))
     {
-        meshes.push_back(loadMesh(scene, mesh, path.parent_path()));
+        meshes.push_back(loadMesh(scene, mesh, path, m_mngr->get(model)));
     }
 
-    const auto model = m_mngr->createModel2({
-        .mngr = m_mngr,
-        .meshes = std::move(meshes),
-        .id = s_modelIdCounter++
-    });
+    m_mngr->get(model)->appendMeshes(meshes);
     m_models.push_back(model);
-    m_cache[path] = model;
+    m_modelCache[path] = model;
 }
 
 //------------------------------------------------------------------------
 
-Handle<Mesh> Scene::loadMesh(const aiScene* scene, const aiMesh* mesh, const fs::path& dir) const noexcept
+Handle<Mesh> Scene::loadMesh(const aiScene* scene, const aiMesh* mesh, const fs::path& path, Model2* model) const noexcept
 {
+    const auto meshKey = path.stem() / mesh->mName.data;
+
+    if (m_meshCache.contains(meshKey) and m_mngr->get(m_meshCache[meshKey]) != nullptr)
+    {
+        return m_meshCache[meshKey];
+    }
+
     auto verticesFuture = std::async(
         std::launch::async,
         [this](auto&& mesh) { return loadVertices(std::forward<decltype(mesh)>(mesh)); },
@@ -78,29 +84,36 @@ Handle<Mesh> Scene::loadMesh(const aiScene* scene, const aiMesh* mesh, const fs:
         mesh
     );
 
-    return m_mngr->createMesh({
+    auto meshHandle = m_mngr->createMesh({
         .vertices = verticesFuture.get(),
         .indices = indicesFuture.get(),
-        .diffuse = loadTexture(scene, mesh, aiTextureType_DIFFUSE, dir)
+        .diffuse = loadTexture(scene, mesh, aiTextureType_DIFFUSE, path.parent_path()),
+        .model = model,
+        .id = s_meshIdCounter++
     });
+    m_meshCache[meshKey] = meshHandle;
+    return meshHandle;
 }
 
 //------------------------------------------------------------------------
 
 std::span<Vertex> Scene::loadVertices(const aiMesh* mesh) const noexcept
 {
-    Vertex* verticesStart = vertexBuffer()->getWritePtr<Vertex>();
+    static std::array<uint8_t, KIB_BYTES * 2> buf;
+    std::pmr::monotonic_buffer_resource rsrc{buf.data(), buf.size()};
+    std::pmr::vector<Vertex> vertices{&rsrc};
 
     for (uint32_t idx : stdv::iota(0u, mesh->mNumVertices))
     {
-        const Vertex vertex{
-            .pos = util::vec3FromAiVector3D(mesh->mVertices[idx]),
-            .nrm = util::vec3FromAiVector3D(mesh->mNormals[idx]),
-            .uv = mesh->HasTextureCoords(0) ? util::vec2FromAiVector3D(mesh->mTextureCoords[0][idx])
-                                            : glm::vec2{}
-        };
-        vertexBuffer()->pushData<Vertex>(&vertex);
+        vertices.emplace_back(
+            util::vec3FromAiVector3D(mesh->mVertices[idx]),
+            util::vec3FromAiVector3D(mesh->mNormals[idx]),
+            mesh->HasTextureCoords(0) ? util::vec2FromAiVector3D(mesh->mTextureCoords[0][idx]) : glm::vec2{}
+        );
     }
+
+    Vertex* verticesStart = vertexBuffer()->getWritePtr<Vertex>();
+    vertexBuffer()->pushData<Vertex>(vertices.data(), vertices.size());
 
     return std::span(verticesStart, mesh->mNumVertices);
 }
@@ -109,12 +122,17 @@ std::span<Vertex> Scene::loadVertices(const aiMesh* mesh) const noexcept
 
 std::span<GLuint> Scene::loadIndices(const aiMesh* mesh) const noexcept
 {
-    GLuint* indicesStart = indexBuffer()->getWritePtr<GLuint>();
+    static std::array<uint8_t, KIB_BYTES> buf;
+    std::pmr::monotonic_buffer_resource rsrc{buf.data(), buf.size()};
+    std::pmr::vector<GLuint> indices{&rsrc};
 
     for (const aiFace& face : std::span(mesh->mFaces, mesh->mNumFaces))
     {
-        indexBuffer()->pushData<GLuint>(face.mIndices, face.mNumIndices);
+        indices.append_range(std::span(face.mIndices, face.mNumIndices));
     }
+
+    GLuint* indicesStart = indexBuffer()->getWritePtr<GLuint>();
+    indexBuffer()->pushData(indices.data(), indices.size());
 
     return std::span(indicesStart, mesh->mNumFaces * 3);
 }
@@ -126,11 +144,15 @@ Handle<Texture> Scene::loadTexture(const aiScene* scene, const aiMesh* mesh, aiT
 {
     const aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
-    if (material->GetTextureCount(textureType) == 0) return m_defaultTexture;
+    if (material->GetTextureCount(textureType) == 0)
+    {
+        return m_defaultTexture;
+    }
 
     aiString tempMaterialPath;
     material->GetTexture(textureType, 0, &tempMaterialPath);
     const fs::path materialPath = dir / tempMaterialPath.data;
+
     return Texture::fromFile(m_mngr, materialPath);
 }
 

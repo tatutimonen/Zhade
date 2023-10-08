@@ -21,7 +21,9 @@ Pipeline::Pipeline(PipelineDescriptor desc)
     setupStageProgram(PipelineStage::FRAGMENT, desc.fragPath);
 
     if (!desc.geomPath.empty())
+    {   
         setupStageProgram(PipelineStage::GEOMETRY, desc.geomPath);
+    }
 
     validate();
 }

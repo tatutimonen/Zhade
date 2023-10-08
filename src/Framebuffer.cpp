@@ -21,7 +21,9 @@ Framebuffer::Framebuffer(FramebufferDescriptor desc)
     glNamedFramebufferTexture(m_name, desc.attachment, texture()->getName(), 0);
 
     if (glCheckNamedFramebufferStatus(m_name, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) [[unlikely]]
+    {
         std::cerr << std::format("Framebuffer with ID {} is incomplete\n", m_name);
+    }
 }
 
 //------------------------------------------------------------------------

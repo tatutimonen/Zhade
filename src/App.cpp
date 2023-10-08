@@ -40,6 +40,8 @@ void App::init() const noexcept
     glfwSetCursorPosCallback(m_window, mouseCallback);
     glfwSetScrollCallback(m_window, Camera<>::scrollCallback);
 
+    glfwSwapInterval(0);
+
     // GLEW.
     glewExperimental = GL_TRUE;
     glewInit();

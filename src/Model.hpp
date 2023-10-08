@@ -24,10 +24,9 @@ class ResourceManager;
 
 struct ModelDescriptor
 {
-    ResourceManager* mngr;
+    ResourceManager* mngr = nullptr;
     std::vector<Handle<Mesh>> meshes;
-    glm::mat3x4 transformation;
-    uint32_t id;
+    glm::mat3x4 transformation{1.0f};
 };
 
 //------------------------------------------------------------------------
@@ -36,22 +35,24 @@ class Model2
 {
 public:
     Model2() = default;
-    Model2(ModelDescriptor desc);
+    explicit Model2(ModelDescriptor desc) : m_desc{desc} {};
 
-    auto operator<=>(const Model2& rhs) const noexcept { m_id <=> rhs.m_id; }
+    [[nodiscard]] std::span<Handle<Mesh>> meshes() const noexcept { return m_desc.meshes; }
+    [[nodiscard]] const glm::mat3x4& transformation() const noexcept { return m_desc.transformation; }
+    [[nodiscard]] bool isDirty() const noexcept { return m_dirty; }
 
-    void setTransformation(const glm::mat3x4& transformation) const noexcept { m_transformation = transformation; }
+    void appendMeshes(std::span<Handle<Mesh>> meshes) const noexcept { return m_desc.meshes.append_range(meshes); }
+    void clean() const noexcept { m_dirty = false; }
 
-    [[nodiscard]] const glm::mat3x4& getTransformation() const noexcept { return m_transformation; }
-    [[nodiscard]] uint32_t getId() const noexcept { return m_id; }
-
-    void addMesh(const Handle<Mesh>& mesh) const noexcept { return m_meshes.push_back(mesh); }
+    void setTransformation(const glm::mat3x4& transformation) const noexcept
+    {
+        m_desc.transformation = transformation;
+        m_dirty = true;
+    }
 
 private:
-    ResourceManager* m_mngr = nullptr;
-    mutable std::vector<Handle<Mesh>> m_meshes;
-    mutable glm::mat3x4 m_transformation;
-    uint32_t m_id;
+    mutable ModelDescriptor m_desc{};
+    mutable bool m_dirty = true;
 
     friend class Scene;
 };

@@ -7,6 +7,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 extern "C" {
 #include <GLFW/glfw3.h>
 }
@@ -85,7 +86,7 @@ public:
         const bool rotated = rotate();
 
         if (moved or rotated)
-            uniformBuffer()->setData<glm::mat3x4>(&m_matrices.VT, offsetof(Matrices, VT));
+            uniformBuffer()->setData<glm::mat3x4>(glm::value_ptr(m_matrices.VT), offsetof(Matrices, VT));
     }
 
     // According to the GLFW input reference.
@@ -105,9 +106,7 @@ private:
 
     void updateView() const noexcept
     {
-        m_matrices.VT = glm::mat3x4(
-            glm::transpose(glm::lookAt(m_settings.center, m_settings.center + m_settings.target, m_settings.up))
-        );
+        m_matrices.VT = glm::transpose(glm::lookAt(m_settings.center, m_settings.center + m_settings.target, m_settings.up));
     }
 
     void updateProjectivity() const noexcept
@@ -122,7 +121,7 @@ private:
             const auto [xmin, xmax, ymin, ymax] = std::get<OrthoSettings>(m_varSettings);
             m_matrices.P = glm::ortho(xmin, xmax, ymin, ymax, m_settings.zNear, m_settings.zFar);
         }
-        uniformBuffer()->setData<glm::mat4>(&m_matrices.P, offsetof(Matrices, P));
+        uniformBuffer()->setData<glm::mat4>(glm::value_ptr(m_matrices.P), offsetof(Matrices, P));
     }
 
     bool move() const noexcept
@@ -131,7 +130,7 @@ private:
         const float cameraSpeed = s_cameraSpeed * m_app->getDeltaTime();
 
         const glm::vec3 centerPrev = m_settings.center;
-        
+
         if (keys[GLFW_KEY_W])
             m_settings.center += cameraSpeed * m_settings.target;
         if (keys[GLFW_KEY_S]) 
@@ -144,7 +143,7 @@ private:
             m_settings.center += cameraSpeed * util::makeUnitVec3y();
         if (keys[GLFW_KEY_LEFT_SHIFT])
             m_settings.center += cameraSpeed * -util::makeUnitVec3y();
-        
+
         if (m_settings.center != centerPrev)
         {
             updateView();
