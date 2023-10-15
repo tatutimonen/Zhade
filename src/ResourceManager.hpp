@@ -15,6 +15,17 @@ namespace Zhade
 {
 
 //------------------------------------------------------------------------
+
+template<typename T>
+concept ManagedType = (
+    std::same_as<T, Buffer>
+    or std::same_as<T, Framebuffer>
+    or std::same_as<T, Mesh>
+    or std::same_as<T, Model>
+    or std::same_as<T, Texture>
+);
+
+//------------------------------------------------------------------------
 // Inspired by: https://twitter.com/SebAaltonen/status/1535175559067713536.
 
 class ResourceManager
@@ -34,7 +45,7 @@ public:
     [[nodiscard]] Handle<Model> createModel(ModelDescriptor desc) { return m_models.allocate(desc); }
     [[nodiscard]] Handle<Texture> createTexture(TextureDescriptor desc) { return m_textures.allocate(desc); }
 
-    template<typename T>
+    template<ManagedType T>
     [[nodiscard]] T* get(const Handle<T>& handle) const noexcept
     {
         if constexpr (std::same_as<T, Buffer>)
@@ -49,7 +60,7 @@ public:
             return m_textures.get(handle);
     }
 
-    template<typename T>
+    template<ManagedType T>
     void destroy(const Handle<T>& handle) const noexcept
     {
         if constexpr (std::same_as<T, Buffer>)

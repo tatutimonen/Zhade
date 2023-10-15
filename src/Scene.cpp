@@ -97,7 +97,7 @@ Handle<Mesh> Scene::loadMesh(const aiScene* scene, const aiMesh* mesh, const fs:
 
 Scene::LoadInfo<Vertex> Scene::loadVertices(const aiMesh* mesh) const noexcept
 {
-    static std::array<uint8_t, KIB_BYTES * 2> buf;
+    static std::array<uint8_t, KIB_BYTES*2> buf;
     std::pmr::monotonic_buffer_resource rsrc{buf.data(), buf.size()};
     std::pmr::vector<Vertex> vertices{&rsrc};
 
