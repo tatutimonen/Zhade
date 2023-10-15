@@ -87,7 +87,7 @@ Handle<Texture> Texture::makeDefault(ResourceManager* mngr) noexcept
             .anisotropy = 1.0f
         }
     };
-    static constexpr uint8_t data = 0xff;
+    static constexpr uint32_t data = 0xffffff;
 
     auto textureHandle = mngr->createTexture(desc);
     mngr->get(textureHandle)->setData(&data);

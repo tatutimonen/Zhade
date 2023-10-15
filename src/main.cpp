@@ -2,9 +2,8 @@
 #include "Buffer.hpp"
 #include "Camera.hpp"
 #include "Handle.hpp"
-#include "IndirectRenderer.hpp"
-#include "Model.hpp"
 #include "Renderer.hpp"
+#include "Model.hpp"
 #include "Pipeline.hpp"
 #include "ResourceManager.hpp"
 #include "Scene.hpp"
@@ -20,6 +19,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include <array>
 #include <cmath>
@@ -44,8 +44,9 @@ int main()
         ResourceManager mngr;
 
         auto scene = Scene({.mngr = &mngr});
+        //scene.addModelFromFile(ASSET_PATH / "cornell" / "CornellBox-Empty-RG.obj");
         scene.addModelFromFile(ASSET_PATH / "sponza" / "sponza.obj");
-        std::cout << scene.vertexBuffer()->getByteSize() << "\n";
+        //scene.addModelFromFile(ASSET_PATH / "dragon" / "dragon.obj");
 
         const auto camera = Camera({.mngr = &mngr, .app = &app});
 
@@ -55,7 +56,7 @@ int main()
         });
         pipeline.bind();
 
-        const auto renderer = IndirectRenderer({.mngr = &mngr, .scene = &scene});
+        const auto renderer = Renderer({.mngr = &mngr, .scene = &scene});
 
         while (!glfwWindowShouldClose(app.getGLCtx()))
         {
@@ -66,9 +67,19 @@ int main()
             glfwSwapBuffers(app.getGLCtx());
         }
 
-        std::cout << renderer.commandBuffer()->getByteSize() << "\n";
-        std::cout << renderer.transformBuffer()->getByteSize() << "\n";
-        std::cout << renderer.textureBuffer()->getByteSize() << "\n";
+        /*for (const auto& cmd : std::span(renderer.commandBuffer()->getPtr<DrawElementsIndirectCommand>(),
+                                         renderer.commandBuffer()->getByteSize() / sizeof(DrawElementsIndirectCommand)))
+        {
+            std::cout << std::format("vCount: {}, iCount: {}, firstIdx: {}, bVertex: {}, baseInst: {}\n",
+                cmd.vertexCount, cmd.instanceCount, cmd.firstIndex, cmd.baseVertex, cmd.baseInstance);
+        }
+        for (const auto& vtx : std::span(scene.vertexBuffer()->getPtr<Vertex>(),
+                                         scene.vertexBuffer()->getByteSize() / sizeof(Vertex)))
+        {
+            std::cout << glm::to_string(vtx.pos) << "\n";
+        }*/
+        std::cout << renderer.commandBuffer()->getByteSize() / sizeof(DrawElementsIndirectCommand) << "\n";
+        std::cout << renderer.textureBuffer()->getByteSize() / sizeof(GLuint64) << "\n";
     }
 
     return 0;

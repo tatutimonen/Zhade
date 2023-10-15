@@ -55,9 +55,9 @@ private:
 
         if constexpr (std::same_as<T, stbi_uc>)
             m_data = stbi_load(pathStr.c_str(), &m_dims.x, &m_dims.y, nullptr, 4);
-        else if (std::same_as<T, stbi_us>)
+        else if constexpr (std::same_as<T, stbi_us>)
             m_data = stbi_load_16(pathStr.c_str(), &m_dims.x, &m_dims.y, nullptr, 4);
-        else if (std::same_as<T, float>)
+        else if constexpr (std::same_as<T, float>)
             m_data = stbi_loadf(pathStr.c_str(), &m_dims.x, &m_dims.y, nullptr, 4);
 
         if (m_data == nullptr) [[unlikely]]

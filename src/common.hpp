@@ -42,7 +42,7 @@ inline constexpr GLint MODEL_BINDING   = 1;
 inline constexpr GLint TEXTURE_BINDING = 2;
 
 inline constexpr int32_t ASSIMP_LOAD_FLAGS = aiProcess_Triangulate | aiProcess_GenSmoothNormals
-    | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
+    | aiProcess_FlipUVs;
 
 inline constexpr size_t OBJECT_POOL_INIT_SIZE         = 32ull;
 inline constexpr size_t DYNAMIC_STORAGE_GROWTH_FACTOR = 2ull;

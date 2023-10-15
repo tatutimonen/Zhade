@@ -49,12 +49,12 @@ void Scene::addModelFromFile(const fs::path& path) const noexcept
     Assimp::Importer importer{};
     const aiScene* scene = importer.ReadFile(path.string().c_str(), ASSIMP_LOAD_FLAGS);
 
-    const auto model = m_mngr->createModel2({.mngr = m_mngr});
+    const auto model = m_mngr->createModel({.mngr = m_mngr});
 
     std::vector<Handle<Mesh>> meshes;
     for (const aiMesh* mesh : std::span(scene->mMeshes, scene->mNumMeshes))
     {
-        meshes.push_back(loadMesh(scene, mesh, path, m_mngr->get(model)));
+        meshes.push_back(loadMesh(scene, mesh, path, model));
     }
 
     m_mngr->get(model)->appendMeshes(meshes);
@@ -64,15 +64,9 @@ void Scene::addModelFromFile(const fs::path& path) const noexcept
 
 //------------------------------------------------------------------------
 
-Handle<Mesh> Scene::loadMesh(const aiScene* scene, const aiMesh* mesh, const fs::path& path, Model2* model) const noexcept
+Handle<Mesh> Scene::loadMesh(const aiScene* scene, const aiMesh* mesh, const fs::path& path,
+    const Handle<Model>& model) const noexcept
 {
-    const auto meshKey = path.stem() / mesh->mName.data;
-
-    if (m_meshCache.contains(meshKey) and m_mngr->get(m_meshCache[meshKey]) != nullptr)
-    {
-        return m_meshCache[meshKey];
-    }
-
     auto verticesFuture = std::async(
         std::launch::async,
         [this](auto&& mesh) { return loadVertices(std::forward<decltype(mesh)>(mesh)); },
@@ -84,20 +78,24 @@ Handle<Mesh> Scene::loadMesh(const aiScene* scene, const aiMesh* mesh, const fs:
         mesh
     );
 
+    const auto verticesLoadInfo = verticesFuture.get();
+    const auto indicesLoadInfo = indicesFuture.get();
+
     auto meshHandle = m_mngr->createMesh({
-        .vertices = verticesFuture.get(),
-        .indices = indicesFuture.get(),
+        .vertices = verticesLoadInfo.span,
+        .indices = indicesLoadInfo.span,
+        .baseVertex = verticesLoadInfo.base,
+        .firstIndex = indicesLoadInfo.base,
         .diffuse = loadTexture(scene, mesh, aiTextureType_DIFFUSE, path.parent_path()),
         .model = model,
         .id = s_meshIdCounter++
     });
-    m_meshCache[meshKey] = meshHandle;
     return meshHandle;
 }
 
 //------------------------------------------------------------------------
 
-std::span<Vertex> Scene::loadVertices(const aiMesh* mesh) const noexcept
+Scene::LoadInfo<Vertex> Scene::loadVertices(const aiMesh* mesh) const noexcept
 {
     static std::array<uint8_t, KIB_BYTES * 2> buf;
     std::pmr::monotonic_buffer_resource rsrc{buf.data(), buf.size()};
@@ -113,14 +111,17 @@ std::span<Vertex> Scene::loadVertices(const aiMesh* mesh) const noexcept
     }
 
     Vertex* verticesStart = vertexBuffer()->getWritePtr<Vertex>();
-    vertexBuffer()->pushData<Vertex>(vertices.data(), vertices.size());
+    vertexBuffer()->pushData(vertices.data(), vertices.size());
 
-    return std::span(verticesStart, mesh->mNumVertices);
+    return {
+        .base = static_cast<GLuint>(verticesStart - vertexBuffer()->getPtr<Vertex>()),
+        .span = std::span(verticesStart, mesh->mNumVertices)
+    };
 }
 
 //------------------------------------------------------------------------
 
-std::span<GLuint> Scene::loadIndices(const aiMesh* mesh) const noexcept
+Scene::LoadInfo<GLuint> Scene::loadIndices(const aiMesh* mesh) const noexcept
 {
     static std::array<uint8_t, KIB_BYTES> buf;
     std::pmr::monotonic_buffer_resource rsrc{buf.data(), buf.size()};
@@ -134,7 +135,10 @@ std::span<GLuint> Scene::loadIndices(const aiMesh* mesh) const noexcept
     GLuint* indicesStart = indexBuffer()->getWritePtr<GLuint>();
     indexBuffer()->pushData(indices.data(), indices.size());
 
-    return std::span(indicesStart, mesh->mNumFaces * 3);
+    return {
+        .base = static_cast<GLuint>(indicesStart - indexBuffer()->getPtr<GLuint>()),
+        .span = std::span(indicesStart, mesh->mNumFaces * 3)
+    };
 }
 
 //------------------------------------------------------------------------

@@ -7,12 +7,11 @@ set(src_files
     Camera.cpp
     Framebuffer.cpp
     Handle.cpp
-    IndirectRenderer.cpp
     Mesh.cpp
     Model.cpp
     ObjectPool.cpp
-    Renderer.cpp
     Pipeline.cpp
+    Renderer.cpp
     ResourceManager.cpp
     Scene.cpp
     Stack.cpp

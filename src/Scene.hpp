@@ -42,17 +42,25 @@ public:
     Scene(Scene&&) = delete;
     Scene& operator=(Scene&&) = delete;
 
-    [[nodiscard]] std::span<Handle<Model2>> getModels() const noexcept { return m_models; }
+    [[nodiscard]] std::span<Handle<Model>> getModels() const noexcept { return m_models; }
 
     void addModelFromFile(const fs::path& path) const noexcept;
     [[nodiscard]] const Buffer* vertexBuffer() const noexcept { return m_mngr->get(m_vertexBuffer); }
     [[nodiscard]] const Buffer* indexBuffer() const noexcept { return m_mngr->get(m_indexBuffer); }
 
 private:
+    template<typename T>
+    requires std::same_as<T, Vertex> or std::same_as<T, GLuint>
+    struct LoadInfo
+    {
+        GLuint base;
+        std::span<T> span;
+    };
+
     [[nodiscard]] Handle<Mesh> loadMesh(const aiScene* scene, const aiMesh* mesh, const fs::path& path,
-        Model2* model) const noexcept;
-    [[nodiscard]] std::span<Vertex> loadVertices(const aiMesh* mesh) const noexcept;
-    [[nodiscard]] std::span<GLuint> loadIndices(const aiMesh* mesh) const noexcept;
+        const Handle<Model>& model) const noexcept;
+    [[nodiscard]] LoadInfo<Vertex> loadVertices(const aiMesh* mesh) const noexcept;
+    [[nodiscard]] LoadInfo<GLuint> loadIndices(const aiMesh* mesh) const noexcept;
     [[nodiscard]] Handle<Texture> loadTexture(const aiScene* scene, const aiMesh* mesh, aiTextureType textureType,
         const fs::path& dir) const noexcept;
 
@@ -62,11 +70,10 @@ private:
     Handle<Buffer> m_vertexBuffer;
     Handle<Buffer> m_indexBuffer;
     Handle<Texture> m_defaultTexture;
-    mutable std::vector<Handle<Model2>> m_models;
-    mutable robin_hood::unordered_map<fs::path, Handle<Model2>> m_modelCache;
-    mutable robin_hood::unordered_map<fs::path, Handle<Mesh>> m_meshCache;
+    mutable std::vector<Handle<Model>> m_models;
+    mutable robin_hood::unordered_map<fs::path, Handle<Model>> m_modelCache;
 
-    friend class IndirectRenderer;
+    friend class Renderer;
 };
 
 //------------------------------------------------------------------------

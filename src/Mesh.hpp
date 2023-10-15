@@ -18,7 +18,7 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
-class Model2;
+class Model;
 
 struct Vertex
 {
@@ -31,9 +31,11 @@ struct MeshDescriptor
 {
     std::span<Vertex> vertices;
     std::span<GLuint> indices;
-    Handle<Texture> diffuse{};
-    Model2* model = nullptr;
-    uint32_t id{};
+    GLuint baseVertex;
+    GLuint firstIndex;
+    Handle<Texture> diffuse;
+    Handle<Model> model;
+    uint32_t id;
 };
 
 //------------------------------------------------------------------------
@@ -42,21 +44,29 @@ class Mesh
 {
 public:
     Mesh() = default;
-    explicit Mesh(MeshDescriptor desc) : m_desc{desc} {};
+    explicit Mesh(MeshDescriptor desc);
 
-    auto operator<=>(const Mesh& rhs) const noexcept { id() <=> rhs.id(); }
+    auto operator<=>(const Mesh& rhs) const noexcept { m_id <=> rhs.id(); }
 
-    [[nodiscard]] std::span<Vertex> vertices() const noexcept { return m_desc.vertices; }
-    [[nodiscard]] std::span<GLuint> indices() const noexcept { return m_desc.indices; }
-    [[nodiscard]] Handle<Texture> diffuse() const noexcept { return m_desc.diffuse; }
-    [[nodiscard]] const Model2* model() const noexcept { return m_desc.model; }
-    [[nodiscard]] uint32_t id() const noexcept { return m_desc.id; }
+    [[nodiscard]] std::span<Vertex> vertices() const noexcept { return m_vertices; }
+    [[nodiscard]] std::span<GLuint> indices() const noexcept { return m_indices; }
+    [[nodiscard]] GLuint baseVertex() const noexcept { return m_baseVertex; }
+    [[nodiscard]] GLuint firstIndex() const noexcept { return m_firstIndex; }
+    [[nodiscard]] Handle<Texture> diffuse() const noexcept { return m_diffuse; }
+    [[nodiscard]] const Handle<Model>& model() const noexcept { return m_model; }
+    [[nodiscard]] uint32_t id() const noexcept { return m_id; }
 
-    [[nodiscard]] GLuint numVertices() const noexcept { return static_cast<GLuint>(m_desc.vertices.size()); }
-    [[nodiscard]] GLuint numIndices() const noexcept { return static_cast<GLuint>(m_desc.indices.size()); }
+    [[nodiscard]] GLuint numVertices() const noexcept { return static_cast<GLuint>(m_vertices.size()); }
+    [[nodiscard]] GLuint numIndices() const noexcept { return static_cast<GLuint>(m_indices.size()); }
 
 private:
-    MeshDescriptor m_desc{};
+    std::span<Vertex> m_vertices;
+    std::span<GLuint> m_indices;
+    GLuint m_baseVertex;
+    GLuint m_firstIndex;
+    Handle<Texture> m_diffuse{};
+    Handle<Model> m_model{};
+    uint32_t m_id = 0;
 };
 
 //------------------------------------------------------------------------

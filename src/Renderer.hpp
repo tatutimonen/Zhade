@@ -1,17 +1,12 @@
 #pragma once
 
 #include "Buffer.hpp"
+#include "Framebuffer.hpp"
 #include "Handle.hpp"
-#include "Model.hpp"
 #include "ResourceManager.hpp"
-#include "Texture.hpp"
+#include "Scene.hpp"
 
-#include <glm/glm.hpp>
-extern "C" {
-#include <GL/glew.h>
-}
-
-#include <span>
+#include <utility>
 #include <vector>
 
 //------------------------------------------------------------------------
@@ -21,68 +16,62 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
+struct RenderPass
+{
+    using Stage = uint8_t;
+    enum : Stage
+    {
+        SHADOW,
+        MAIN
+    };
+
+    Handle<Framebuffer> framebuffer;
+    GLbitfield clearMask;
+    Stage stage;
+};
+
+struct RendererDescriptor
+{
+    ResourceManager* mngr;
+    Scene* scene;
+    BufferDescriptor commandBufferDesc{.byteSize = KIB_BYTES*100, .usage = BufferUsage::INDIRECT};
+    BufferDescriptor transformBufferDesc{.byteSize = GIB_BYTES/2, .usage = BufferUsage::STORAGE};
+    BufferDescriptor textureBufferDesc{.byteSize = KIB_BYTES*100, .usage = BufferUsage::STORAGE};
+};
+
+//------------------------------------------------------------------------
+
 class Renderer
 {
 public:
-    struct Specification
-    {
-        Handle<Buffer> vertexBuffer;
-        Handle<Buffer> indexBuffer;
-    };
-
-    struct Task
-    {
-        Handle<Model> model;
-        GLuint instanceCount;
-        std::span<glm::mat3x4> transformations;
-        std::span<Handle<Texture>> textures;
-    };
-
-    Renderer(ResourceManager* mngr, const Specification& spec);
+    explicit Renderer(RendererDescriptor desc);
     ~Renderer();
 
     void render() const noexcept;
-    void submit(const Task& task) const noexcept;
 
+    [[nodiscard]] const Buffer* commandBuffer() const noexcept { return m_mngr->get(m_commandBuffer); }
+    [[nodiscard]] const Buffer* transformBuffer() const noexcept { return m_mngr->get(m_transformBuffer); }
+    [[nodiscard]] const Buffer* textureBuffer() const noexcept { return m_mngr->get(m_textureBuffer); }
 private:
+
+    [[nodiscard]] GLsizei drawCount() const noexcept
+    {
+        return commandBuffer()->getByteSize() / sizeof(DrawElementsIndirectCommand);
+    }
+
+    void processSceneGraph() const noexcept;
+    void populateBuffers(std::span<Handle<Mesh>> meshesSorted) const noexcept;
+    void invalidateBuffers() const noexcept;
+    void pushMeshDataToBuffers(const Mesh* mesh) const noexcept;
+
     ResourceManager* m_mngr;
+    Scene* m_scene;
     GLuint m_vao;
-    mutable Handle<Buffer> m_vertexBuffer;
-    mutable Handle<Buffer> m_indexBuffer;
-    mutable Handle<Buffer> m_drawIndirectBuffer;
-    mutable Handle<Buffer> m_transformsBuffer;
-    mutable Handle<Buffer> m_textureBuffer;
-    mutable std::vector<Task> m_tasks;
+    Handle<Buffer> m_commandBuffer;
+    Handle<Buffer> m_transformBuffer;
+    Handle<Buffer> m_textureBuffer;
+    std::vector<RenderPass> m_extraPasses;
 };
-
-// Some resources:
-// https://www.opengl.org/wiki/Vertex_Specification_Best_Practices
-// https://www.youtube.com/watch?v=-bCeNzgiJ8I&t=1920s
-// https://youtu.be/K70QbvzB6II?t=552
-
-// * sort or bucket visible objects *
-// foreach( render target )      // framebuffer
-// foreach( pass )               // depth, blending, etc. states
-// foreach( material )           // shaders
-// foreach( material instance )  // textures
-// foreach( vertex format )      // vertex buffers (batched)
-// foreach( object )
-// {
-//     writeUniformData( object );
-//     glDrawElementsbaseVertex(
-//         GL_TRIANGLES,
-//         object->indexCount,
-//         GL_UNSIGNED_SHORT,
-//         object->indexDataOffset,
-//         object->baseVertex );
-//     );   
-// }
-
-// - should maybe keep track of programs, textures, materials
-// - data structure holding key-value pairs where key is like, e.g., here:
-//   https://realtimecollisiondetection.net/blog/?p=86
-// - sort according to the keys before looping through it and making the draw calls
-// - or maybe separate queues for different types of objects?
 
 //------------------------------------------------------------------------
 
