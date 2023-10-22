@@ -95,17 +95,19 @@ void Renderer::populateBuffers(std::span<Handle<Mesh>> meshesSorted) const noexc
 {
     invalidateBuffers();
 
-    Mesh* mesh = nullptr;
     Mesh* prevMesh = nullptr;
     DrawElementsIndirectCommand cmd{};
 
     for (const auto& [idx, meshHandle] : stdv::enumerate(meshesSorted))
     {
-        mesh = m_mngr->get(meshHandle);
+        Mesh* mesh = m_mngr->get(meshHandle);
 
         if (prevMesh == nullptr or mesh->id() != prevMesh->id())
         {
-            if (idx > 0) [[likely]] commandBuffer()->pushData(&cmd);
+            if (idx > 0) [[likely]]
+            {
+                commandBuffer()->pushData(&cmd);
+            }
             cmd = {
                 .count = mesh->numIndices(),
                 .instanceCount = 0,
@@ -118,7 +120,11 @@ void Renderer::populateBuffers(std::span<Handle<Mesh>> meshesSorted) const noexc
         pushMeshDataToBuffers(mesh);
         ++cmd.instanceCount;
         prevMesh = mesh;
-        if (idx == meshesSorted.size() - 1) [[unlikely]] commandBuffer()->pushData(&cmd);
+
+        if (idx == meshesSorted.size() - 1) [[unlikely]]
+        {
+            commandBuffer()->pushData(&cmd);
+        }
     }
 }
 
