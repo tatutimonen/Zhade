@@ -1,5 +1,7 @@
 #pragma once
 
+#include "util.hpp"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 extern "C" {
@@ -53,7 +55,7 @@ public:
     {
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) [[unlikely]]
             glfwSetWindowShouldClose(window, GL_TRUE);
-        s_state.keys[key] = static_cast<bool>(action);
+        s_state.keys[key] = action;
     }
 
     // According to the GLFW input reference.

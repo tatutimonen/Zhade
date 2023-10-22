@@ -48,6 +48,7 @@ public:
     [[nodiscard]] const Buffer* vertexBuffer() const noexcept { return m_mngr->get(m_vertexBuffer); }
     [[nodiscard]] const Buffer* indexBuffer() const noexcept { return m_mngr->get(m_indexBuffer); }
 
+    Handle<Texture> m_defaultTexture;
 private:
     template<typename T>
     requires std::same_as<T, Vertex> or std::same_as<T, GLuint>
@@ -69,7 +70,6 @@ private:
     ResourceManager* m_mngr;
     Handle<Buffer> m_vertexBuffer;
     Handle<Buffer> m_indexBuffer;
-    Handle<Texture> m_defaultTexture;
     mutable std::vector<Handle<Model>> m_models;
     mutable robin_hood::unordered_map<fs::path, Handle<Model>> m_modelCache;
 

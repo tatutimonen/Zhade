@@ -43,7 +43,7 @@ inline constexpr GLenum BufferUsage2GLenum[] {
 
 struct DrawElementsIndirectCommand
 {
-    GLuint vertexCount;
+    GLuint count;
     GLuint instanceCount;
     GLuint firstIndex;
     GLuint baseVertex;
@@ -57,7 +57,7 @@ inline GLint BufferUsage2Alignment[] {
     1,
     TBD,
     TBD,
-    static_cast<GLint>(sizeof(DrawElementsIndirectCommand)),
+    sizeof(DrawElementsIndirectCommand),
 };
 
 struct BufferDescriptor
@@ -132,8 +132,7 @@ public:
 private:
     [[nodiscard]] GLsizeiptr calculateWriteOffsetIncrement(GLsizei byteSize) const noexcept
     {
-        const GLint alignment = BufferUsage2Alignment[m_usage];
-        return util::roundup(byteSize, alignment);
+        return util::roundup(byteSize, BufferUsage2Alignment[m_usage]);
     }
 
     GLuint m_name = 0;

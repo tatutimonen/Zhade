@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common.hpp"
+
 #include <assimp/vector3.h>
 #include <glm/glm.hpp>
 extern "C" {
@@ -14,18 +16,27 @@ namespace Zhade
 {
 
 //------------------------------------------------------------------------
+// As described by Logan Smith [https://youtu.be/SmlLdd1Q2V8].
+
+template<typename T>
+[[nodiscard]] constexpr T implicit_cast(std::type_identity_t<T> val) noexcept
+{
+    return val;
+}
+
+//------------------------------------------------------------------------
 
 namespace util
 {
 
 //------------------------------------------------------------------------
 
-[[nodiscard]] inline auto divup(std::integral auto a, std::integral auto b) noexcept
+[[nodiscard]] constexpr auto divup(std::integral auto a, std::integral auto b) noexcept
 {
     return (a + b - 1) / b;
 }
 
-[[nodiscard]] inline auto roundup(std::integral auto a, std::integral auto b) noexcept
+[[nodiscard]] constexpr auto roundup(std::integral auto a, std::integral auto b) noexcept
 {
     return divup(a, b) * b;
 }
@@ -54,10 +65,10 @@ namespace util
     const GLuint ys = v.y < 0;
     const GLuint zs = v.z < 0;
     const GLuint ws = v.w < 0;
-    return ws << 31 | (static_cast<GLuint>(v.w       + (ws << 1)) &   1) << 30 |
-           zs << 29 | (static_cast<GLuint>(v.z * 511 + (zs << 9)) & 511) << 20 |
-           ys << 19 | (static_cast<GLuint>(v.y * 511 + (ys << 9)) & 511) << 10 |
-           xs << 9  | (static_cast<GLuint>(v.x * 511 + (xs << 9)) & 511);
+    return ws << 31 | (implicit_cast<GLuint>(v.w       + (ws << 1)) &   1) << 30 |
+           zs << 29 | (implicit_cast<GLuint>(v.z * 511 + (zs << 9)) & 511) << 20 |
+           ys << 19 | (implicit_cast<GLuint>(v.y * 511 + (ys << 9)) & 511) << 10 |
+           xs << 9  | (implicit_cast<GLuint>(v.x * 511 + (xs << 9)) & 511);
 }
 
 [[nodiscard]] inline GLuint makeUnitVec3xPacked() noexcept

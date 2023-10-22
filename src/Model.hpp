@@ -24,7 +24,6 @@ class ResourceManager;
 
 struct ModelDescriptor
 {
-    ResourceManager* mngr = nullptr;
     std::vector<Handle<Mesh>> meshes;
     glm::mat3x4 transformation{1.0f};
 };
@@ -51,7 +50,6 @@ public:
     }
 
 private:
-    ResourceManager* m_mngr = nullptr;
     mutable std::vector<Handle<Mesh>> m_meshes;
     mutable glm::mat3x4 m_transformation{1.0f};
     mutable bool m_dirty = true;

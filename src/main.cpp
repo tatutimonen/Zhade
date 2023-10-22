@@ -72,14 +72,29 @@ int main()
         {
             std::cout << std::format("vCount: {}, iCount: {}, firstIdx: {}, bVertex: {}, baseInst: {}\n",
                 cmd.vertexCount, cmd.instanceCount, cmd.firstIndex, cmd.baseVertex, cmd.baseInstance);
-        }
-        for (const auto& vtx : std::span(scene.vertexBuffer()->getPtr<Vertex>(),
+        }*/
+        /*for (const auto& vtx : std::span(scene.vertexBuffer()->getPtr<Vertex>(),
                                          scene.vertexBuffer()->getByteSize() / sizeof(Vertex)))
         {
             std::cout << glm::to_string(vtx.pos) << "\n";
-        }*/
+        }
+        for (const auto& idx : std::span(scene.indexBuffer()->getPtr<GLuint>(),
+                                         scene.indexBuffer()->getByteSize() / sizeof(GLuint)))
+        {
+            std::cout << idx << "\n";
+        }
+        std::cout << "\n";*/
+        for (const auto han : std::span(renderer.textureBuffer()->getPtr<GLuint64>(),
+                                        renderer.textureBuffer()->getByteSize() / sizeof(GLuint64)))
+        {
+            std::cout << han << "\n";
+        }
+        std::cout << "\n";
+        std::cout << BufferUsage2Alignment[BufferUsage::STORAGE] << "\n";
+        std::cout << mngr.get(scene.m_defaultTexture)->getHandle() << "\n";
         std::cout << renderer.commandBuffer()->getByteSize() / sizeof(DrawElementsIndirectCommand) << "\n";
         std::cout << renderer.textureBuffer()->getByteSize() / sizeof(GLuint64) << "\n";
+        std::cout << _MSC_VER << std::endl;
     }
 
     return 0;

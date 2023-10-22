@@ -49,7 +49,7 @@ void Scene::addModelFromFile(const fs::path& path) const noexcept
     Assimp::Importer importer{};
     const aiScene* scene = importer.ReadFile(path.string().c_str(), ASSIMP_LOAD_FLAGS);
 
-    const auto model = m_mngr->createModel({.mngr = m_mngr});
+    const auto model = m_mngr->createModel({});
 
     std::vector<Handle<Mesh>> meshes;
     for (const aiMesh* mesh : std::span(scene->mMeshes, scene->mNumMeshes))
@@ -114,7 +114,7 @@ Scene::LoadInfo<Vertex> Scene::loadVertices(const aiMesh* mesh) const noexcept
     vertexBuffer()->pushData(vertices.data(), vertices.size());
 
     return {
-        .base = static_cast<GLuint>(verticesStart - vertexBuffer()->getPtr<Vertex>()),
+        .base = implicit_cast<GLuint>(verticesStart - vertexBuffer()->getPtr<Vertex>()),
         .span = std::span(verticesStart, mesh->mNumVertices)
     };
 }
@@ -136,7 +136,7 @@ Scene::LoadInfo<GLuint> Scene::loadIndices(const aiMesh* mesh) const noexcept
     indexBuffer()->pushData(indices.data(), indices.size());
 
     return {
-        .base = static_cast<GLuint>(indicesStart - indexBuffer()->getPtr<GLuint>()),
+        .base = implicit_cast<GLuint>(indicesStart - indexBuffer()->getPtr<GLuint>()),
         .span = std::span(indicesStart, mesh->mNumFaces * 3)
     };
 }

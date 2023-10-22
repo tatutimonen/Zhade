@@ -39,7 +39,7 @@ struct TextureDescriptor
     bool managed = true;
 };
 
-constexpr std::bitset<AI_TEXTURE_TYPE_MAX> makeSupportedTextureTypeTable()
+[[nodiscard]] constexpr std::bitset<AI_TEXTURE_TYPE_MAX> makeSupportedTextureTypeTable()
 {
     std::bitset<AI_TEXTURE_TYPE_MAX> table;
     table.set(aiTextureType_DIFFUSE);
@@ -62,14 +62,14 @@ public:
     Texture(Texture&&) = delete;
     Texture& operator=(Texture&&) = delete;
 
+    [[nodiscard]] GLuint getName() const noexcept { return m_texture; }
+    [[nodiscard]] GLuint64 getHandle() const noexcept { return m_handle; }
+    [[nodiscard]] const glm::ivec2& getDims() const noexcept { return m_dims; }
+
     void setData(const void* data) const noexcept
     {
         glTextureSubImage2D(m_texture, 0, 0, 0, m_dims.x, m_dims.y, GL_RGBA, GL_UNSIGNED_BYTE, data);
     }
-
-    [[nodiscard]] GLuint getName() const noexcept { return m_texture; }
-    [[nodiscard]] GLuint64 getHandle() const noexcept { return m_handle; }
-    [[nodiscard]] const glm::ivec2& getDims() const noexcept { return m_dims; }
 
     void freeResources() const noexcept;
     void generateMipmap() const noexcept { glGenerateTextureMipmap(m_texture); }

@@ -31,14 +31,14 @@ struct CameraSettings
     glm::vec3 center{0.0f, 1.0f, 3.0f};
     glm::vec3 target{0.0f, 0.0f, -1.0f};
     glm::vec3 up{0.0f, 1.0f, 0.0f};
-    float zNear = 0.1f;
+    float zNear = 0.01f;
     float zFar = 1000.0f;
 };
 
 struct PerspectiveSettings
 {
     float fov = 70.0f;
-    float aspectRatio = static_cast<float>(App::s_windowWidth) / App::s_windowHeight;
+    float aspectRatio = implicit_cast<float>(App::s_windowWidth) / App::s_windowHeight;
 };
 
 struct OrthoSettings
@@ -65,7 +65,7 @@ public:
     explicit Camera(CameraDescriptor desc)
         : m_settings{desc.settings},
           m_varSettings{desc.varSettings},
-          m_uniformBuffer{desc.mngr->createBuffer({.byteSize = static_cast<GLsizei>(sizeof(Matrices)), .usage = BufferUsage::UNIFORM})},
+          m_uniformBuffer{desc.mngr->createBuffer({.byteSize = sizeof(Matrices), .usage = BufferUsage::UNIFORM})},
           m_mngr{desc.mngr},
           m_app{desc.app}
     {
@@ -91,7 +91,7 @@ public:
     // According to the GLFW input reference.
     static void scrollCallback([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xoffset, double yoffset) noexcept
     {
-        s_cameraSpeed = std::max(1.0f, s_cameraSpeed + 2.0f*static_cast<float>(yoffset));
+        s_cameraSpeed = std::max(1.0f, s_cameraSpeed + 2.0f * implicit_cast<float>(yoffset));
     }
 
 private:

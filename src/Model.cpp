@@ -8,8 +8,7 @@ namespace Zhade
 //------------------------------------------------------------------------
 
 Model::Model(ModelDescriptor desc)
-    : m_mngr{desc.mngr},
-      m_meshes{desc.meshes},
+    : m_meshes{desc.meshes},
       m_transformation{desc.transformation}
 {}
 

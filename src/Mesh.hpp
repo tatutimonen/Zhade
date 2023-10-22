@@ -56,8 +56,8 @@ public:
     [[nodiscard]] const Handle<Model>& model() const noexcept { return m_model; }
     [[nodiscard]] uint32_t id() const noexcept { return m_id; }
 
-    [[nodiscard]] GLuint numVertices() const noexcept { return static_cast<GLuint>(m_vertices.size()); }
-    [[nodiscard]] GLuint numIndices() const noexcept { return static_cast<GLuint>(m_indices.size()); }
+    [[nodiscard]] GLuint numVertices() const noexcept { return m_vertices.size(); }
+    [[nodiscard]] GLuint numIndices() const noexcept { return m_indices.size(); }
 
 private:
     std::span<Vertex> m_vertices;

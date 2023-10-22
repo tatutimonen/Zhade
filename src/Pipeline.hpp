@@ -43,7 +43,7 @@ struct PipelineDescriptor
 {
     fs::path vertPath;
     fs::path fragPath;
-    fs::path geomPath = "";
+    fs::path geomPath{};
     bool managed = true;
 };
 
@@ -65,8 +65,9 @@ public:
     void freeResources() const noexcept;
 
 private:
-    void checkStageProgramLinkStatus(PipelineStage::Type stage) const noexcept;
     [[nodiscard]] std::string readShaderFile(const fs::path& path) const noexcept;
+
+    void checkStageProgramLinkStatus(PipelineStage::Type stage) const noexcept;
     void setupStageProgram(PipelineStage::Type stage, const fs::path& shaderPath) const noexcept; 
     void validate() const noexcept;
 

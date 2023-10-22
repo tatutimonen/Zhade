@@ -95,32 +95,19 @@ void Renderer::populateBuffers(std::span<Handle<Mesh>> meshesSorted) const noexc
 {
     invalidateBuffers();
 
-    auto mesh = m_mngr->get(meshesSorted.front());
-    DrawElementsIndirectCommand cmd{
-        .vertexCount = mesh->numVertices(),
-        .instanceCount = 1,
-        .firstIndex = mesh->firstIndex(),
-        .baseVertex = mesh->baseVertex(),
-        .baseInstance = 0
-    };
+    Mesh* mesh = nullptr;
+    Mesh* prevMesh = nullptr;
+    DrawElementsIndirectCommand cmd{};
 
-    pushMeshDataToBuffers(mesh);
-    if (meshesSorted.size() == 1)
+    for (const auto& [idx, meshHandle] : stdv::enumerate(meshesSorted))
     {
-        commandBuffer()->pushData(&cmd);
-        return;
-    }
-
-    for (const auto& meshHandle : stdr::drop_view(meshesSorted, 1))
-    {
-        auto prevMesh = mesh;
         mesh = m_mngr->get(meshHandle);
 
-        if (mesh->id() != prevMesh->id())
+        if (prevMesh == nullptr or mesh->id() != prevMesh->id())
         {
-            commandBuffer()->pushData(&cmd);
+            if (idx > 0) [[likely]] commandBuffer()->pushData(&cmd);
             cmd = {
-                .vertexCount = mesh->numVertices(),
+                .count = mesh->numIndices(),
                 .instanceCount = 0,
                 .firstIndex = mesh->firstIndex(),
                 .baseVertex = mesh->baseVertex(),
@@ -130,6 +117,8 @@ void Renderer::populateBuffers(std::span<Handle<Mesh>> meshesSorted) const noexc
 
         pushMeshDataToBuffers(mesh);
         ++cmd.instanceCount;
+        prevMesh = mesh;
+        if (idx == meshesSorted.size() - 1) [[unlikely]] commandBuffer()->pushData(&cmd);
     }
 }
 

@@ -14,7 +14,7 @@ extern "C" {
 
 namespace fs = std::filesystem;
 
-// As per the presentation by Bryce Adelstein Lelbach (https://youtu.be/LW_T2RGXego).
+// As per the presentation by Bryce Adelstein Lelbach [https://youtu.be/LW_T2RGXego].
 namespace stdv = std::views;
 namespace stdr = std::ranges;
 

@@ -17,7 +17,7 @@ in VERT_OUT {
 } FragIn;
 
 //------------------------------------------------------------------------
-// Uniforms.
+// Uniforms etc.
 
 layout (binding = 2, std430) readonly buffer Texture {
     sampler2D diffuse[];
