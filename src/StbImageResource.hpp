@@ -8,8 +8,7 @@ extern "C" {
 }
 
 #include <bit>
-#include <format>
-#include <iostream>
+#include <print>
 #include <utility>
 
 //------------------------------------------------------------------------
@@ -61,7 +60,7 @@ private:
             m_data = stbi_loadf(pathStr.c_str(), &m_dims.x, &m_dims.y, nullptr, 4);
 
         if (m_data == nullptr) [[unlikely]]
-            std::cerr << std::format("Error loading data from '{}'\n", pathStr);
+            std::println("Error loading data from '{}'", pathStr);
     }
 
     glm::ivec2 m_dims{};

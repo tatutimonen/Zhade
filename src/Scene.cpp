@@ -49,7 +49,7 @@ void Scene::addModelFromFile(const fs::path& path) const noexcept
     Assimp::Importer importer{};
     const aiScene* scene = importer.ReadFile(path.string().c_str(), ASSIMP_LOAD_FLAGS);
 
-    const auto model = m_mngr->createModel({});
+    const Handle<Model> model = m_mngr->createModel({});
 
     std::vector<Handle<Mesh>> meshes;
     for (const aiMesh* mesh : std::span(scene->mMeshes, scene->mNumMeshes))
@@ -78,8 +78,8 @@ Handle<Mesh> Scene::loadMesh(const aiScene* scene, const aiMesh* mesh, const fs:
         mesh
     );
 
-    const auto verticesLoadInfo = verticesFuture.get();
-    const auto indicesLoadInfo = indicesFuture.get();
+    const LoadInfo<Vertex> verticesLoadInfo = verticesFuture.get();
+    const LoadInfo<GLuint> indicesLoadInfo = indicesFuture.get();
 
     auto meshHandle = m_mngr->createMesh({
         .vertices = verticesLoadInfo.span,
@@ -155,7 +155,7 @@ Handle<Texture> Scene::loadTexture(const aiScene* scene, const aiMesh* mesh, aiT
 
     aiString tempMaterialPath;
     material->GetTexture(textureType, 0, &tempMaterialPath);
-    const fs::path materialPath = dir / tempMaterialPath.data;
+    const fs::path materialPath = dir / tempMaterialPath.C_Str();
 
     return Texture::fromFile(m_mngr, materialPath);
 }

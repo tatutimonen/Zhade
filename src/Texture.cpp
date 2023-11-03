@@ -59,7 +59,6 @@ Handle<Texture> Texture::fromFile(ResourceManager* mngr, const fs::path& path, T
 {
     if (s_cache.contains(path) and mngr->get(s_cache[path]) != nullptr)
     {
-        std::cout << std::format("Cached from {}, with handle {}\n", path.string(), mngr->get(s_cache[path])->getHandle());
         return s_cache[path];
     }
 
@@ -67,12 +66,10 @@ Handle<Texture> Texture::fromFile(ResourceManager* mngr, const fs::path& path, T
     desc.dims = img.getDims();
 
     desc.managed = true;
-    auto textureHandle = mngr->createTexture(desc);
-    auto texture = mngr->get(textureHandle);
+    const auto textureHandle = mngr->createTexture(desc);
+    Texture* texture = mngr->get(textureHandle);
     texture->setData(img.data());
     texture->generateMipmap();
-
-    std::cout << std::format("Loading from {}, with handle {}\n", path.string(), texture->getHandle());
 
     s_cache[path] = textureHandle;
 
@@ -94,7 +91,7 @@ Handle<Texture> Texture::makeDefault(ResourceManager* mngr) noexcept
     };
     static constexpr uint32_t data = 0xffffffff;
 
-    auto textureHandle = mngr->createTexture(desc);
+    const auto textureHandle = mngr->createTexture(desc);
     mngr->get(textureHandle)->setData(&data);
     return textureHandle;
 }

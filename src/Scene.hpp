@@ -14,6 +14,7 @@
 #include <filesystem>
 #include <string>
 #include <vector>
+#include <utility>
 
 //------------------------------------------------------------------------
 
@@ -45,10 +46,9 @@ public:
     [[nodiscard]] std::span<Handle<Model>> getModels() const noexcept { return m_models; }
 
     void addModelFromFile(const fs::path& path) const noexcept;
-    [[nodiscard]] const Buffer* vertexBuffer() const noexcept { return m_mngr->get(m_vertexBuffer); }
-    [[nodiscard]] const Buffer* indexBuffer() const noexcept { return m_mngr->get(m_indexBuffer); }
 
     Handle<Texture> m_defaultTexture;
+
 private:
     template<typename T>
     requires std::same_as<T, Vertex> or std::same_as<T, GLuint>
@@ -64,6 +64,9 @@ private:
     [[nodiscard]] LoadInfo<GLuint> loadIndices(const aiMesh* mesh) const noexcept;
     [[nodiscard]] Handle<Texture> loadTexture(const aiScene* scene, const aiMesh* mesh, aiTextureType textureType,
         const fs::path& dir) const noexcept;
+
+    [[nodiscard]] const Buffer* vertexBuffer() const noexcept { return m_mngr->get(m_vertexBuffer); }
+    [[nodiscard]] const Buffer* indexBuffer() const noexcept { return m_mngr->get(m_indexBuffer); }
 
     static inline std::atomic_uint32_t s_meshIdCounter = 0;
 

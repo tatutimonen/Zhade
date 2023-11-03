@@ -2,8 +2,7 @@
 
 #include "ResourceManager.hpp"
 
-#include <iostream>
-#include <format>
+#include <print>
 
 //------------------------------------------------------------------------
 
@@ -22,7 +21,7 @@ Framebuffer::Framebuffer(FramebufferDescriptor desc)
 
     if (glCheckNamedFramebufferStatus(m_name, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) [[unlikely]]
     {
-        std::cerr << std::format("Framebuffer with ID {} is incomplete\n", m_name);
+        std::println("Framebuffer with ID {} is incomplete", m_name);
     }
 }
 

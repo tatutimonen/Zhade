@@ -44,7 +44,7 @@ int main()
         ResourceManager mngr;
 
         auto scene = Scene({.mngr = &mngr});
-        //scene.addModelFromFile(ASSET_PATH / "cornell" / "CornellBox-Empty-RG.obj");
+        //scene.addModelFromFile(ASSET_PATH / "cornell" / "CornellBox-Original.obj");
         scene.addModelFromFile(ASSET_PATH / "sponza" / "sponza.obj");
         //scene.addModelFromFile(ASSET_PATH / "dragon" / "dragon.obj");
 
@@ -84,7 +84,7 @@ int main()
             std::cout << idx << "\n";
         }
         std::cout << "\n";*/
-        for (const auto han : std::span(renderer.textureBuffer()->getPtr<GLuint64>(),
+        /*for (const auto han : std::span(renderer.textureBuffer()->getPtr<GLuint64>(),
                                         renderer.textureBuffer()->getByteSize() / sizeof(GLuint64)))
         {
             std::cout << han << "\n";
@@ -93,8 +93,7 @@ int main()
         std::cout << BufferUsage2Alignment[BufferUsage::STORAGE] << "\n";
         std::cout << mngr.get(scene.m_defaultTexture)->getHandle() << "\n";
         std::cout << renderer.commandBuffer()->getByteSize() / sizeof(DrawElementsIndirectCommand) << "\n";
-        std::cout << renderer.textureBuffer()->getByteSize() / sizeof(GLuint64) << "\n";
-        std::cout << _MSC_VER << std::endl;
+        std::cout << renderer.textureBuffer()->getByteSize() / sizeof(GLuint64) << "\n";*/
     }
 
     return 0;

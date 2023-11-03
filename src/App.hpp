@@ -14,8 +14,7 @@ extern "C" {
 
 #include <array>
 #include <cstdint>
-#include <format>
-#include <iostream>
+#include <print>
 #include <string_view>
 
 //------------------------------------------------------------------------
@@ -54,7 +53,9 @@ public:
     static void keyCallback(GLFWwindow* window, int key, [[maybe_unused]] int scancode, int action, int mode) noexcept
     {
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) [[unlikely]]
+        {
             glfwSetWindowShouldClose(window, GL_TRUE);
+        }
         s_state.keys[key] = action;
     }
 
@@ -80,7 +81,9 @@ public:
         GLenum severity, [[maybe_unused]] GLsizei length, const char* message, [[maybe_unused]] const void* userParam) noexcept
     {
         if (severity == GL_DEBUG_SEVERITY_MEDIUM || severity == GL_DEBUG_SEVERITY_HIGH) [[unlikely]]
-            std::cerr << message << "\n";
+        {
+            std::println("{}", message);
+        }
     }
 
     static constexpr std::string_view s_title = "Zhade - ESC to quit";

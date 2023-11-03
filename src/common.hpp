@@ -9,7 +9,6 @@ extern "C" {
 
 #include <cstdint>
 #include <filesystem>
-#include <iostream>
 #include <ranges>
 
 namespace fs = std::filesystem;

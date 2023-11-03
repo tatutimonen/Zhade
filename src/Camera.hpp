@@ -115,7 +115,7 @@ private:
             const auto [fov, aspectRatio] = std::get<PerspectiveSettings>(m_varSettings);
             m_matrices.P = glm::perspective(fov, aspectRatio, m_settings.zNear, m_settings.zFar);
         }
-        else if (T == CameraType::ORTHO)
+        else if constexpr (T == CameraType::ORTHO)
         {
             const auto [xmin, xmax, ymin, ymax] = std::get<OrthoSettings>(m_varSettings);
             m_matrices.P = glm::ortho(xmin, xmax, ymin, ymax, m_settings.zNear, m_settings.zFar);

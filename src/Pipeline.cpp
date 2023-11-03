@@ -1,8 +1,7 @@
 #include "Pipeline.hpp"
 
-#include <iostream>
 #include <fstream>
-#include <format>
+#include <print>
 #include <sstream>
 
 //------------------------------------------------------------------------
@@ -59,7 +58,7 @@ void Pipeline::checkStageProgramLinkStatus(PipelineStage::Type stage) const noex
     {
         GLchar infoLog[LOCAL_CHAR_BUF_SIZE];
         glGetProgramInfoLog(program, sizeof(infoLog), nullptr, infoLog);
-        std::cerr << std::format("Error preparing shader with ID {}: {}", program, infoLog);
+        std::println("Error preparing shader with ID {}: {}", program, infoLog);
     }
 }
 
@@ -70,7 +69,7 @@ std::string Pipeline::readShaderFile(const fs::path& path) const noexcept
     std::ifstream shaderFile{path};
     if (shaderFile.bad()) [[unlikely]]
     {
-        std::cerr << std::format("Error reading shader from '{}'\n", path.string());
+        std::println("Error reading shader from '{}'", path.string());
         return "";
     }
     std::ostringstream osstream;
@@ -102,7 +101,7 @@ void Pipeline::validate() const noexcept
     {
         GLchar infoLog[LOCAL_CHAR_BUF_SIZE];
         glGetProgramPipelineInfoLog(m_name, sizeof(infoLog), nullptr, infoLog);
-        std::cerr << std::format("Error validating pipeline with ID {}: {}", m_name, infoLog);
+        std::println("Error validating pipeline with ID {}: {}", m_name, infoLog);
     }
 }
 

@@ -3,8 +3,8 @@
 #include "common.hpp"
 
 #include <algorithm>
-#include <iostream>
 #include <memory>
+#include <print>
 #include <vector>
 
 //------------------------------------------------------------------------
@@ -18,7 +18,14 @@ template<std::default_initializable T>
 class Stack
 {
 public:
-    explicit Stack(size_t capacity = 0) { if (capacity > 0) [[likely]] resize(capacity); }
+    explicit Stack(size_t capacity = 0)
+    {
+        if (capacity > 0) [[likely]] 
+        {
+            resize(capacity);
+        }
+    }
+    
     ~Stack() = default;
 
     Stack(const Stack&) = default;
@@ -30,32 +37,47 @@ public:
 
     T& top()
     {
-        if (m_size == 0) [[unlikely]] std::cerr << "Top of an empty Stack\n";
+        if (m_size == 0) [[unlikely]]
+        {
+            std::println("Top of an empty Stack");
+        }
         return at(m_size - 1);
     }
 
     const T& top() const
     {
-        if (m_size == 0) [[unlikely]] std::cerr << "Top of an empty Stack\n";
+        if (m_size == 0) [[unlikely]]
+        {
+            std::println("Top of an empty Stack");
+        }
         return at(m_size - 1);
     }
 
     void pop()
     {
-        if (m_size > 0) [[likely]] --m_size;
+        if (m_size > 0) [[likely]]
+        {
+            --m_size;
+        }
     }
 
     void push(const T& item) noexcept
     requires std::copyable<T>
     {
-        if (m_size == m_underlying.size()) [[unlikely]] resize();
+        if (m_size == m_underlying.size()) [[unlikely]]
+        {
+            resize();
+        }
         at(m_size++) = item;
     }
 
     void push(T&& item) noexcept
     requires std::movable<T>
     {
-        if (m_size == m_underlying.size()) [[unlikely]] resize();
+        if (m_size == m_underlying.size()) [[unlikely]]
+        {
+            resize();
+        }
         at(m_size++) = item;
     }
 
@@ -63,7 +85,10 @@ public:
     requires std::constructible_from<T, Args...>
     void emplace(Args&& ...args) noexcept
     {
-        if (m_size == m_underlying.size()) [[unlikely]] resize();
+        if (m_size == m_underlying.size()) [[unlikely]]
+        {   
+            resize();
+        }
         std::construct_at(&this[m_size++], std::forward<Args>(args)...);
     }
 

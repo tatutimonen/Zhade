@@ -1,7 +1,7 @@
 #include "Buffer.hpp"
 
 #include <cstring>
-#include <iostream>
+#include <print>
 
 //------------------------------------------------------------------------
 
@@ -42,7 +42,7 @@ void Buffer::bindBase(GLuint bindingIndex) const noexcept
 {
     if (m_usage != BufferUsage::UNIFORM and m_usage != BufferUsage::STORAGE) [[unlikely]]
     {
-        std::cerr << "Bind base of non-UBO or non-SSBO\n";
+        std::println("Bind base of non-UBO or non-SSBO");
         return;
     }
     glBindBufferBase(BufferUsage2GLenum[m_usage], bindingIndex, m_name);
@@ -54,7 +54,7 @@ void Buffer::bindRange(GLuint bindingIndex, GLintptr byteOffset, GLsizeiptr byte
 {
     if (m_usage != BufferUsage::UNIFORM and m_usage != BufferUsage::STORAGE) [[unlikely]]
     {
-        std::cerr << "Bind range of non-UBO or non-SSBO\n";
+        std::println("Bind range of non-UBO or non-SSBO");
         return;
     }
     glBindBufferRange(BufferUsage2GLenum[m_usage], bindingIndex, m_name, byteOffset, byteSize);
