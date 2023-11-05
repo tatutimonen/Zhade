@@ -116,11 +116,6 @@ public:
         glNamedBufferSubData(m_name, byteOffset, sizeof(T) * size, data);
     }
 
-    void setZeros() const noexcept
-    {
-        std::memset(m_ptr, 0, m_wholeByteSize);
-    }
-
     void bind() const noexcept;
     void bindBase(GLuint bindingIndex) const noexcept;
     void bindRange(GLuint bindingIndex, GLintptr byteOffset, GLsizeiptr byteSize) const noexcept;

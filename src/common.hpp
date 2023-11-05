@@ -1,6 +1,6 @@
 #pragma once
 
-#include "shaders/bindings.h"
+#include "bindings.h"
 
 #include <assimp/postprocess.h>
 #include <glm/glm.hpp>
@@ -30,9 +30,10 @@ inline constexpr size_t GIB_BYTES = 1ull << 30;
 inline constexpr size_t MIB_BYTES = 1ull << 20;
 inline constexpr size_t KIB_BYTES = 1ull << 10;
 
-inline const fs::path SHADER_PATH = fs::path{".."} / "src" / "shaders";
+inline const fs::path SOURCE_PATH  = fs::path{".."} / "src";
+inline const fs::path SHADER_PATH  = SOURCE_PATH / "shaders";
 inline const fs::path TEXTURE_PATH = fs::path{".."} / "texture";
-inline const fs::path ASSET_PATH = fs::path{".."} / "assets";
+inline const fs::path ASSET_PATH   = fs::path{".."} / "assets";
 
 inline constexpr GLuint STD_140_PAD_UINT   = 0;
 inline constexpr GLfloat STD_140_PAD_FLOAT = 0.0f;

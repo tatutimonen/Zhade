@@ -4,7 +4,6 @@
 #include <fstream>
 #include <print>
 #include <sstream>
-#include <string>
 
 //------------------------------------------------------------------------
 
@@ -116,7 +115,7 @@ GLuint Pipeline::createShaderProgram(PipelineStage::Type stage, const std::strin
  {
     for (const auto& header : m_headers)
     {
-        const fs::path path = SHADER_PATH / fs::path{header}.filename();
+        const fs::path path = SOURCE_PATH / fs::path{header}.filename();
         const std::string contents = readFileContents(path);
         glNamedStringARB(GL_SHADER_INCLUDE_ARB, header.size(), header.c_str(), contents.size(), contents.c_str());
     }
