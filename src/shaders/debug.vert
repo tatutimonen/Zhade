@@ -1,6 +1,9 @@
 #version 460 core
+#extension GL_ARB_shading_language_include : require
 precision highp float;
 precision highp int;
+
+#include "bindings.h"
 
 //------------------------------------------------------------------------
 // Constants.
@@ -29,12 +32,12 @@ out VERT_OUT {
 //------------------------------------------------------------------------
 // Uniforms etc.
 
-layout (binding = 0, std140) uniform Camera {
+layout (binding = CAMERA_BINDING, std140) uniform Camera {
     mat3x4 VT;
     mat4 P;
 } u_camera;
 
-layout (binding = 1, std430) readonly buffer Model {
+layout (binding = MODEL_BINDING, std430) readonly buffer Model {
     mat3x4 MT[];
 } b_model;
 

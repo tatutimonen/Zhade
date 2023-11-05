@@ -117,15 +117,12 @@ void Renderer::populateBuffers(std::span<Handle<Mesh>> meshesSorted) const noexc
             };
         }
 
-        pushMeshDataToBuffers(mesh);
         ++cmd.instanceCount;
+        pushMeshDataToBuffers(mesh);
         prevMesh = mesh;
-
-        if (idx == meshesSorted.size() - 1) [[unlikely]]
-        {
-            commandBuffer()->pushData(&cmd);
-        }
     }
+
+    commandBuffer()->pushData(&cmd);
 }
 
 //------------------------------------------------------------------------

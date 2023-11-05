@@ -7,6 +7,7 @@ extern "C" {
 }
 
 #include <string>
+#include <vector>
 
 //------------------------------------------------------------------------
 
@@ -44,6 +45,7 @@ struct PipelineDescriptor
     fs::path vertPath;
     fs::path fragPath;
     fs::path geomPath{};
+    std::vector<std::string> namedStrings{"/bindings.h"};
     bool managed = true;
 };
 
@@ -65,14 +67,16 @@ public:
     void freeResources() const noexcept;
 
 private:
-    [[nodiscard]] std::string readShaderFile(const fs::path& path) const noexcept;
+    [[nodiscard]] std::string readFileContents(const fs::path& path) const noexcept;
+    [[nodiscard]] GLuint createShaderProgram(PipelineStage::Type stage, const std::string& shaderSource) const noexcept;
 
-    void checkStageProgramLinkStatus(PipelineStage::Type stage) const noexcept;
-    void setupStageProgram(PipelineStage::Type stage, const fs::path& shaderPath) const noexcept; 
+    void setupShaderHeaders() const noexcept;
+    void setupStageProgram(PipelineStage::Type stage, const fs::path& shaderPath) const noexcept;
     void validate() const noexcept;
 
     GLuint m_name = 0;
     mutable GLuint m_stages[PipelineStage::NUM_SUPPORTED_STAGES] = { 0 };
+    std::vector<std::string> m_namedStrings;
     bool m_managed = true;
 };
 
