@@ -24,7 +24,9 @@ Pipeline::Pipeline(PipelineDescriptor desc)
     setupStageProgram(PipelineStage::FRAGMENT, desc.fragPath);
 
     if (!desc.geomPath.empty())
+    {   
         setupStageProgram(PipelineStage::GEOMETRY, desc.geomPath);
+    }
 
     validate();
 }
@@ -46,7 +48,9 @@ void Pipeline::freeResources() const noexcept
     glDeleteProgram(m_stages[PipelineStage::FRAGMENT]);
     glDeleteProgram(m_stages[PipelineStage::GEOMETRY]);
     for (const auto& header : m_headers)
+    {
         glDeleteNamedStringARB(header.size(), header.c_str());
+    }
 }
 
 //------------------------------------------------------------------------
