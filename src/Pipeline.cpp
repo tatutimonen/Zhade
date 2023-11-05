@@ -76,8 +76,8 @@ GLuint Pipeline::createShaderProgram(PipelineStage::Type stage, const std::strin
 
     const char* shaderSourceRaw = shaderSource.c_str();
     glShaderSource(shader, 1, &shaderSourceRaw, nullptr);
-    static const GLchar* shaderFileSystemRoot[] = { "/" };
-    glCompileShaderIncludeARB(shader, 1, shaderFileSystemRoot, nullptr);
+    static const GLchar* shaderFilesystemRoot[] = { "/" };
+    glCompileShaderIncludeARB(shader, 1, shaderFilesystemRoot, nullptr);
 
     const GLuint program = glCreateProgram();
 
