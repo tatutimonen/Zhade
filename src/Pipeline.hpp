@@ -45,7 +45,7 @@ struct PipelineDescriptor
     fs::path vertPath;
     fs::path fragPath;
     fs::path geomPath{};
-    std::vector<std::string> namedStrings{"/bindings.h"};
+    std::vector<std::string> headers{"/bindings.h"};
     bool managed = true;
 };
 
@@ -76,7 +76,7 @@ private:
 
     GLuint m_name = 0;
     mutable GLuint m_stages[PipelineStage::NUM_SUPPORTED_STAGES] = { 0 };
-    std::vector<std::string> m_namedStrings;
+    std::vector<std::string> m_headers;
     bool m_managed = true;
 };
 

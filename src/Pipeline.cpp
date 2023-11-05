@@ -1,6 +1,5 @@
 #include "Pipeline.hpp"
 
-#include <bit>
 #include <format>
 #include <fstream>
 #include <print>
@@ -15,7 +14,7 @@ namespace Zhade
 //------------------------------------------------------------------------
 
 Pipeline::Pipeline(PipelineDescriptor desc)
-    : m_namedStrings{std::move(desc.namedStrings)},
+    : m_headers{std::move(desc.headers)},
       m_managed{desc.managed}
 {
     glCreateProgramPipelines(1, &m_name);
@@ -49,9 +48,9 @@ void Pipeline::freeResources() const noexcept
     glDeleteProgram(m_stages[PipelineStage::VERTEX]);
     glDeleteProgram(m_stages[PipelineStage::FRAGMENT]);
     glDeleteProgram(m_stages[PipelineStage::GEOMETRY]);
-    for (const auto& namedString : m_namedStrings)
+    for (const auto& header : m_headers)
     {
-        glDeleteNamedStringARB(namedString.size(), namedString.c_str());
+        glDeleteNamedStringARB(header.size(), header.c_str());
     }
 }
 
@@ -115,17 +114,11 @@ GLuint Pipeline::createShaderProgram(PipelineStage::Type stage, const std::strin
 
  void Pipeline::setupShaderHeaders() const noexcept
  {
-    for (const auto& namedString : m_namedStrings)
+    for (const auto& header : m_headers)
     {
-        const fs::path headerPath = SHADER_PATH / fs::path{namedString}.filename();
-        const std::string headerContents = readFileContents(headerPath);
-        glNamedStringARB(
-            GL_SHADER_INCLUDE_ARB,
-            namedString.size(),
-            namedString.c_str(),
-            headerContents.size(),
-            headerContents.c_str()
-        );
+        const fs::path path = SHADER_PATH / fs::path{header}.filename();
+        const std::string contents = readFileContents(path);
+        glNamedStringARB(GL_SHADER_INCLUDE_ARB, header.size(), header.c_str(), contents.size(), contents.c_str());
     }
  }
 
