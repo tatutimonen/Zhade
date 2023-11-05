@@ -70,7 +70,7 @@ private:
     [[nodiscard]] std::string readFileContents(const fs::path& path) const noexcept;
     [[nodiscard]] GLuint createShaderProgram(PipelineStage::Type stage, const std::string& shaderSource) const noexcept;
 
-    void setupShaderHeaders() const noexcept;
+    void setupHeaders() const noexcept;
     void setupStageProgram(PipelineStage::Type stage, const fs::path& shaderPath) const noexcept;
     void validate() const noexcept;
 

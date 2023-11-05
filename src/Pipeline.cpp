@@ -111,7 +111,7 @@ GLuint Pipeline::createShaderProgram(PipelineStage::Type stage, const std::strin
 
 //------------------------------------------------------------------------
 
- void Pipeline::setupShaderHeaders() const noexcept
+ void Pipeline::setupHeaders() const noexcept
  {
     for (const auto& header : m_headers)
     {
