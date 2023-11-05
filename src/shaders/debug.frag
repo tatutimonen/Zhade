@@ -1,7 +1,10 @@
 #version 460 core
+#extension GL_ARB_shading_language_include : require
 #extension GL_ARB_bindless_texture : require
 precision mediump float;
 precision highp int;
+
+#include "bindings.h"
 
 //------------------------------------------------------------------------
 // Outputs.
@@ -19,7 +22,7 @@ in VERT_OUT {
 //------------------------------------------------------------------------
 // Uniforms etc.
 
-layout (binding = 2, std430) readonly buffer Texture {
+layout (binding = TEXTURE_BINDING, std430) readonly buffer Texture {
     sampler2D diffuse[];
 } b_tex;
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "shaders/bindings.h"
+
 #include <assimp/postprocess.h>
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -35,10 +37,6 @@ inline const fs::path ASSET_PATH = fs::path{".."} / "assets";
 inline constexpr GLuint STD_140_PAD_UINT   = 0;
 inline constexpr GLfloat STD_140_PAD_FLOAT = 0.0f;
 inline constexpr float Z_FIGHT_EPSILON     = 1e-5f;
-
-inline constexpr GLint CAMERA_BINDING  = 0;
-inline constexpr GLint MODEL_BINDING   = 1;
-inline constexpr GLint TEXTURE_BINDING = 2;
 
 inline constexpr int32_t ASSIMP_LOAD_FLAGS = aiProcess_Triangulate | aiProcess_GenSmoothNormals
     | aiProcess_FlipUVs;
