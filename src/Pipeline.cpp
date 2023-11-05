@@ -24,9 +24,7 @@ Pipeline::Pipeline(PipelineDescriptor desc)
     setupStageProgram(PipelineStage::FRAGMENT, desc.fragPath);
 
     if (!desc.geomPath.empty())
-    {   
         setupStageProgram(PipelineStage::GEOMETRY, desc.geomPath);
-    }
 
     validate();
 }
@@ -48,9 +46,7 @@ void Pipeline::freeResources() const noexcept
     glDeleteProgram(m_stages[PipelineStage::FRAGMENT]);
     glDeleteProgram(m_stages[PipelineStage::GEOMETRY]);
     for (const auto& header : m_headers)
-    {
         glDeleteNamedStringARB(header.size(), header.c_str());
-    }
 }
 
 //------------------------------------------------------------------------
@@ -76,8 +72,8 @@ GLuint Pipeline::createShaderProgram(PipelineStage::Type stage, const std::strin
 
     const char* shaderSourceRaw = shaderSource.c_str();
     glShaderSource(shader, 1, &shaderSourceRaw, nullptr);
-    static const GLchar* shaderFilesystemRoot[] = { "/" };
-    glCompileShaderIncludeARB(shader, 1, shaderFilesystemRoot, nullptr);
+    static const GLchar* shaderVirtualPath[] = { "/" };
+    glCompileShaderIncludeARB(shader, 1, shaderVirtualPath, nullptr);
 
     const GLuint program = glCreateProgram();
 
