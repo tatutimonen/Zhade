@@ -18,7 +18,7 @@ Pipeline::Pipeline(PipelineDescriptor desc)
 {
     glCreateProgramPipelines(1, &m_name);
 
-    setupShaderHeaders();
+    setupHeaders();
 
     setupStageProgram(PipelineStage::VERTEX, desc.vertPath);
     setupStageProgram(PipelineStage::FRAGMENT, desc.fragPath);
