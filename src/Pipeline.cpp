@@ -77,7 +77,7 @@ GLuint Pipeline::createShaderProgram(PipelineStage::Type stage, const std::strin
     const char* shaderSourceRaw = shaderSource.c_str();
     glShaderSource(shader, 1, &shaderSourceRaw, nullptr);
     static const GLchar* virtualIncludePaths[] = { "/" };
-    glCompileShaderIncludeARB(shader, 1, virtualIncludePaths, nullptr);
+    glCompileShaderIncludeARB(shader, sizeof(virtualIncludePaths) / sizeof(GLchar*), virtualIncludePaths, nullptr);
 
     const GLuint program = glCreateProgram();
 
