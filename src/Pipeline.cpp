@@ -70,11 +70,11 @@ std::string Pipeline::readFileContents(const fs::path& path) const noexcept
 
 //------------------------------------------------------------------------
 
-GLuint Pipeline::createShaderProgram(PipelineStage::Type stage, const std::string& shaderSource) const noexcept
+GLuint Pipeline::createShaderProgram(PipelineStage::Type stage, std::string_view shaderSource) const noexcept
 {
     const GLuint shader = glCreateShader(PipelineStage2GLShader[stage]);
 
-    const char* shaderSourceRaw = shaderSource.c_str();
+    const char* shaderSourceRaw = shaderSource.data();
     glShaderSource(shader, 1, &shaderSourceRaw, nullptr);
     static const GLchar* virtualIncludePaths[] = { "/" };
     glCompileShaderIncludeARB(shader, sizeof(virtualIncludePaths) / sizeof(GLchar*), virtualIncludePaths, nullptr);
