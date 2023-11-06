@@ -7,6 +7,7 @@ extern "C" {
 }
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 //------------------------------------------------------------------------
@@ -68,7 +69,7 @@ public:
 
 private:
     [[nodiscard]] std::string readFileContents(const fs::path& path) const noexcept;
-    [[nodiscard]] GLuint createShaderProgram(PipelineStage::Type stage, const std::string& shaderSource) const noexcept;
+    [[nodiscard]] GLuint createShaderProgram(PipelineStage::Type stage, std::string_view shaderSource) const noexcept;
 
     void setupHeaders() const noexcept;
     void setupStageProgram(PipelineStage::Type stage, const fs::path& shaderPath) const noexcept;
