@@ -26,6 +26,7 @@ struct ModelDescriptor
 {
     std::vector<Handle<Mesh>> meshes;
     glm::mat3x4 transformation{1.0f};
+    uint32_t id;
 };
 
 //------------------------------------------------------------------------
@@ -38,6 +39,7 @@ public:
 
     [[nodiscard]] std::span<Handle<Mesh>> meshes() const noexcept { return m_meshes; }
     [[nodiscard]] const glm::mat3x4& transformation() const noexcept { return m_transformation; }
+    [[nodiscard]] uint32_t id() const noexcept { return m_id; }
     [[nodiscard]] bool isDirty() const noexcept { return m_dirty; }
 
     void appendMeshes(std::span<Handle<Mesh>> meshes) const noexcept { return m_meshes.append_range(meshes); }
@@ -52,6 +54,7 @@ public:
 private:
     mutable std::vector<Handle<Mesh>> m_meshes;
     mutable glm::mat3x4 m_transformation{1.0f};
+    uint32_t m_id = 0;
     mutable bool m_dirty = true;
 
     friend class Scene;

@@ -97,7 +97,7 @@ public:
     template<typename T>
     [[nodiscard]] bool fits(GLsizei size) const noexcept
     {
-        return m_writeOffset + sizeof(T)*size <= m_wholeByteSize;
+        return m_writeOffset + sizeof(T) * size <= m_wholeByteSize;
     }
 
     template<typename T>

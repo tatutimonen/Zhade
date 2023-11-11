@@ -49,7 +49,7 @@ void Scene::addModelFromFile(const fs::path& path) const noexcept
     Assimp::Importer importer{};
     const aiScene* scene = importer.ReadFile(path.string().c_str(), ASSIMP_LOAD_FLAGS);
 
-    const Handle<Model> model = m_mngr->createModel({});
+    const Handle<Model> model = m_mngr->createModel({.id = s_modelIdCounter++});
 
     std::vector<Handle<Mesh>> meshes;
     for (const aiMesh* mesh : std::span(scene->mMeshes, scene->mNumMeshes))

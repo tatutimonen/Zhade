@@ -43,7 +43,7 @@ public:
     Scene(Scene&&) = delete;
     Scene& operator=(Scene&&) = delete;
 
-    [[nodiscard]] std::span<Handle<Model>> getModels() const noexcept { return m_models; }
+    [[nodiscard]] std::span<Handle<Model>> models() const noexcept { return m_models; }
 
     void addModelFromFile(const fs::path& path) const noexcept;
 
@@ -69,6 +69,7 @@ private:
     [[nodiscard]] const Buffer* indexBuffer() const noexcept { return m_mngr->get(m_indexBuffer); }
 
     static inline std::atomic_uint32_t s_meshIdCounter = 0;
+    static inline std::atomic_uint32_t s_modelIdCounter = 0;
 
     ResourceManager* m_mngr;
     Handle<Buffer> m_vertexBuffer;

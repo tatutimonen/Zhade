@@ -1,14 +1,6 @@
 #version 460 core
-#extension GL_ARB_shading_language_include : require
 precision highp float;
 precision highp int;
-
-#include "bindings.h"
-
-//------------------------------------------------------------------------
-// Constants.
-
-const uint INSTANCE_ID = gl_BaseInstance + gl_InstanceID;
 
 //------------------------------------------------------------------------
 // Vertex attributes.
@@ -26,28 +18,33 @@ out gl_PerVertex {
 
 out VERT_OUT {
     vec2 uv;
-    flat uint instanceID;
-} VertOut;
+    flat uint drawID;
+} Out;
 
 //------------------------------------------------------------------------
 // Uniforms etc.
 
-layout (binding = CAMERA_BINDING, std140) uniform Camera {
+layout (binding = 0, std140) uniform Camera {
     mat3x4 VT;
     mat4 P;
 } u_camera;
 
-layout (binding = MODEL_BINDING, std430) readonly buffer Model {
+layout (binding = 1, std140) readonly buffer Model {
     mat3x4 MT[];
 } b_model;
+
+layout (binding = 2, std140) readonly buffer DrawID2ModelIdx {
+    uint b_drawID2ModelIdx[];
+};
 
 //------------------------------------------------------------------------
 
 void main()
 {
-    VertOut.uv = a_uv;
-    VertOut.instanceID = INSTANCE_ID;
-    vec3 modelPos = vec4(a_pos, 1.0) * b_model.MT[INSTANCE_ID];
+    Out.uv = a_uv;
+    Out.drawID = gl_DrawID;
+    uint modelIdx = b_drawID2ModelIdx[gl_DrawID];
+    vec3 modelPos = vec4(a_pos, 1.0) * b_model.MT[modelIdx];
     vec3 viewModel = vec4(modelPos, 1.0) * u_camera.VT;
     gl_Position = u_camera.P * vec4(viewModel, 1.0);
 }

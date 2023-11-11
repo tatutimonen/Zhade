@@ -31,8 +31,8 @@ struct CameraSettings
     glm::vec3 center{0.0f, 1.0f, 3.0f};
     glm::vec3 target{0.0f, 0.0f, -1.0f};
     glm::vec3 up{0.0f, 1.0f, 0.0f};
-    float zNear = 0.01f;
-    float zFar = 1000.0f;
+    float zNear = 10.0f;
+    float zFar = 10000.0f;
 };
 
 struct PerspectiveSettings

@@ -1,0 +1,149 @@
+newmtl 0
+Ka 0 0 0
+Kd 1 1 1
+d 1
+Ks 0 0 0
+Ns 64
+map_Kd SP_LUK.png
+
+newmtl 1
+Ka 0 0 0
+Kd 1 1 1
+d 1
+Ks 0 0 0
+Ns 64
+map_Kd 00_SKAP.png
+
+newmtl 2
+Ka 0 0 0
+Kd 0.784314 0.784314 0.784314
+d 1
+Ks 0 0 0
+Ns 8
+
+newmtl 3
+Ka 0 0 0
+Kd 1 1 1
+d 1
+Ks 0 0 0
+Ns 64
+map_Kd 01_STUB.png
+
+newmtl 4
+Ka 0 0 0
+Kd 1 1 1
+d 1
+Ks 0 0 0
+Ns 64
+map_Kd 01_STUB.png
+
+newmtl 5
+Ka 0 0 0
+Kd 1 1 1
+d 1
+Ks 0 0 0
+Ns 64
+map_Kd 01_S_BA.png
+
+newmtl 6
+Ka 0 0 0
+Kd 1 1 1
+d 1
+Ks 0 0 0
+Ns 64
+map_Kd 01_ST_KP.png
+
+newmtl 7
+Ka 0 0 0
+Kd 1 1 1
+d 1
+Ks 0 0 0
+Ns 64
+map_Kd 01_STUB.png
+
+newmtl 8
+Ka 0 0 0
+Kd 1 1 1
+d 1
+Ks 0 0 0
+Ns 64
+map_Kd X01_ST.png
+
+newmtl 9
+Ka 0 0 0
+Kd 1 1 1
+d 1
+Ks 0 0 0
+Ns 64
+map_Kd 00_SKAP.png
+
+newmtl 10
+Ka 0 0 0
+Kd 0.941177 0.866667 0.737255
+d 1
+Ks 0.85098 0.807843 0.733333
+Ns 2.14355
+
+newmtl 11
+Ka 0 0 0
+Kd 1 1 1
+d 1
+Ks 0 0 0
+Ns 64
+map_Kd RELJEF.png
+
+newmtl 12
+Ka 0 0 0
+Kd 1 1 1
+d 1
+Ks 0 0 0
+Ns 64
+map_Kd SP_LUK.png
+
+newmtl 13
+Ka 0 0 0
+Kd 1 1 1
+d 1
+Ks 0 0 0
+Ns 64
+map_Kd 01_S_BA.png
+
+newmtl 14
+Ka 0 0 0
+Kd 1 1 1
+d 1
+Ks 0 0 0
+Ns 64
+map_Kd KAMEN.png
+
+newmtl 15
+Ka 0 0 0
+Kd 1 1 1
+d 1
+Ks 0 0 0
+Ns 64
+map_Kd PROZOR1.png
+
+newmtl 16
+Ka 0 0 0
+Kd 1 1 1
+d 1
+Ks 0 0 0
+Ns 8
+map_Kd VRATA_KR.png
+
+newmtl 17
+Ka 0 0 0
+Kd 1 1 1
+d 1
+Ks 0 0 0
+Ns 8
+map_Kd VRATA_KO.png
+
+newmtl 18
+Ka 0 0 0
+Kd 1 1 1
+d 1
+Ks 0 0 0
+Ns 64
+map_Kd KAMEN.png

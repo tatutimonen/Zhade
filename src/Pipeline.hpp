@@ -46,7 +46,6 @@ struct PipelineDescriptor
     fs::path vertPath;
     fs::path fragPath;
     fs::path geomPath{};
-    std::vector<std::string> headers{"/bindings.h"};
     bool managed = true;
 };
 
@@ -69,15 +68,12 @@ public:
 
 private:
     [[nodiscard]] std::string readFileContents(const fs::path& path) const noexcept;
-    [[nodiscard]] GLuint createShaderProgram(PipelineStage::Type stage, std::string_view shaderSource) const noexcept;
 
-    void setupHeaders() const noexcept;
     void setupStageProgram(PipelineStage::Type stage, const fs::path& shaderPath) const noexcept;
     void validate() const noexcept;
 
     GLuint m_name = 0;
     mutable GLuint m_stages[PipelineStage::NUM_SUPPORTED_STAGES] = { 0 };
-    std::vector<std::string> m_headers;
     bool m_managed = true;
 };
 

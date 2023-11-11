@@ -23,8 +23,8 @@ class ResourceManager;
 
 struct SamplerDescriptor
 {
-    GLenum wrapS = GL_CLAMP_TO_EDGE;
-    GLenum wrapT = GL_CLAMP_TO_EDGE;
+    GLenum wrapS = GL_REPEAT;
+    GLenum wrapT = GL_REPEAT;
     GLenum magFilter = GL_LINEAR;
     GLenum minFilter = GL_LINEAR_MIPMAP_LINEAR;
     GLfloat anisotropy = 8.0f;

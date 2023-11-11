@@ -38,11 +38,13 @@ Renderer::Renderer(RendererDescriptor desc)
 
     m_commandBuffer = m_mngr->createBuffer(desc.commandBufferDesc);
     m_transformBuffer = m_mngr->createBuffer(desc.transformBufferDesc);
+    m_drawID2ModelBuffer = m_mngr->createBuffer(desc.drawID2ModelBufferDesc);
     m_textureBuffer = m_mngr->createBuffer(desc.textureBufferDesc);
 
     glBindVertexArray(m_vao);
     commandBuffer()->bind();
     transformBuffer()->bindBase(MODEL_BINDING);
+    drawID2ModelBuffer()->bindBase(DRAW_ID_2_MODEL_IDX_BINDING);
     textureBuffer()->bindBase(TEXTURE_BINDING);
 }
 
@@ -53,6 +55,7 @@ Renderer::~Renderer()
     glDeleteVertexArrays(1, &m_vao);
     m_mngr->destroy(m_commandBuffer);
     m_mngr->destroy(m_transformBuffer);
+    m_mngr->destroy(m_drawID2ModelBuffer);
     m_mngr->destroy(m_textureBuffer);
 }
 
@@ -60,8 +63,6 @@ Renderer::~Renderer()
 
 void Renderer::render() const noexcept
 {
-    processSceneGraph();
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, drawCount(), 0);
 }
@@ -70,59 +71,38 @@ void Renderer::render() const noexcept
 
 void Renderer::processSceneGraph() const noexcept
 {
-    if (m_scene->getModels().empty()) [[unlikely]] return;
-
-    // Collect the scene meshes to a local container and sort according to ID.
-    static std::array<uint8_t, KIB_BYTES> buf;
-    std::pmr::monotonic_buffer_resource rsrc{buf.data(), buf.size()};
-    std::pmr::vector<Handle<Mesh>> meshes{&rsrc};
-    for (const auto& model : m_scene->getModels())
-    {
-        meshes.append_range(m_mngr->get(model)->meshes());
-    }
+    if (m_scene->models().empty()) [[unlikely]] return;
     stdr::sort(
-        meshes,
+        m_scene->m_models,
         std::less{},
         [this](const auto& handle) { return m_mngr->get(handle)->id(); }
     );
-
-    populateBuffers(meshes);
+    populateBuffers();
 }
 
 //------------------------------------------------------------------------
 
-void Renderer::populateBuffers(std::span<Handle<Mesh>> meshesSorted) const noexcept
+void Renderer::populateBuffers() const noexcept
 {
     invalidateBuffers();
 
-    Mesh* prevMesh = nullptr;
-    DrawElementsIndirectCommand cmd{};
-
-    for (const auto& [idx, meshHandle] : stdv::enumerate(meshesSorted))
+    for (const auto& modelHandle : m_scene->models())
     {
-        Mesh* mesh = m_mngr->get(meshHandle);
-
-        if (prevMesh == nullptr or mesh->id() != prevMesh->id())
+        const Model* model = m_mngr->get(modelHandle);
+        for (const auto& meshHandle : model->meshes())
         {
-            if (idx > 0) [[likely]]
-            {
-                commandBuffer()->pushData(&cmd);
-            }
-            cmd = {
+            const Mesh* mesh = m_mngr->get(meshHandle);
+            DrawElementsIndirectCommand cmd{
                 .count = mesh->numIndices(),
-                .instanceCount = 0,
+                .instanceCount = 1,
                 .firstIndex = mesh->firstIndex(),
                 .baseVertex = mesh->baseVertex(),
-                .baseInstance = cmd.baseInstance + cmd.instanceCount
+                .baseInstance = 0
             };
+            pushMeshDataToBuffers(mesh);
+            commandBuffer()->pushData(&cmd);
         }
-
-        ++cmd.instanceCount;
-        pushMeshDataToBuffers(mesh);
-        prevMesh = mesh;
     }
-
-    commandBuffer()->pushData(&cmd);
 }
 
 //------------------------------------------------------------------------
@@ -131,6 +111,7 @@ void Renderer::invalidateBuffers() const noexcept
 {
     commandBuffer()->invalidate();
     transformBuffer()->invalidate();
+    drawID2ModelBuffer()->invalidate();
     textureBuffer()->invalidate();
 }
 
@@ -138,9 +119,20 @@ void Renderer::invalidateBuffers() const noexcept
 
 void Renderer::pushMeshDataToBuffers(const Mesh* mesh) const noexcept
 {
-    transformBuffer()->pushData(&m_mngr->get(mesh->model())->transformation());
-    const auto diffuseGPUHandle = m_mngr->get(mesh->diffuse())->getHandle();
-    textureBuffer()->pushData(&diffuseGPUHandle);
+    static uint32_t prevModelId = std::numeric_limits<uint32_t>::max();
+    const Model* model = m_mngr->get(mesh->model());
+    const uint32_t modelId = model->id();
+
+    if (modelId != prevModelId)
+    {
+        transformBuffer()->pushData(&model->transformation());
+    }
+
+    drawID2ModelBuffer()->pushData(&modelId);
+    const GLuint64 diffuseHandle = m_mngr->get(mesh->diffuse())->getHandle();
+    textureBuffer()->pushData(&diffuseHandle);
+
+    prevModelId = modelId;
 }
 
 //------------------------------------------------------------------------
