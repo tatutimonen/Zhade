@@ -68,10 +68,6 @@ public:
 
 private:
     [[nodiscard]] std::string readFileContents(const fs::path& path) const noexcept;
-<<<<<<< HEAD
-=======
-    [[nodiscard]] GLuint createShaderProgram(PipelineStage::Type stage, std::string_view shaderSource) const noexcept;
->>>>>>> 224df0bb5003aa29f3f6ca5c47c53aa7f5880b30
 
     void setupStageProgram(PipelineStage::Type stage, const fs::path& shaderPath) const noexcept;
     void validate() const noexcept;
