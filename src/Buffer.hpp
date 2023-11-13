@@ -35,12 +35,12 @@ namespace BufferUsage
     };
 }
 
-[[nodiscard]] static constexpr bool baseOrRangeBindable(BufferUsage::Type usage)
+[[nodiscard]] constexpr bool baseOrRangeBindable(BufferUsage::Type usage)
 {
     return usage == BufferUsage::UNIFORM
-           or usage == BufferUsage::STORAGE
-           or usage == BufferUsage::ATOMIC_COUNTER
-           or usage == BufferUsage::PARAMETER;
+        or usage == BufferUsage::STORAGE
+        or usage == BufferUsage::ATOMIC_COUNTER
+        or usage == BufferUsage::PARAMETER;
 }
 
 inline constexpr GLenum BufferUsage2GLenum[] {
