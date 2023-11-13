@@ -82,7 +82,7 @@ private:
     void validate() const noexcept;
 
     GLuint m_name = 0;
-    mutable std::array<GLuint, PipelineStage::NUM_SUPPORTED_STAGES> m_stages;
+    mutable std::array<GLuint, PipelineStage::NUM_SUPPORTED_STAGES> m_stages{};
     std::vector<std::string> m_headers;
     bool m_managed = true;
 };
