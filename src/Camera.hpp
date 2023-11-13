@@ -28,11 +28,11 @@ enum class CameraType
 
 struct CameraSettings
 {
-    glm::vec3 center{0.0f, 1.0f, 3.0f};
-    glm::vec3 target{0.0f, 0.0f, -1.0f};
+    glm::vec3 center{-388.0f, 592.0f, 154.0f};
+    glm::vec3 target{0.869f,  0.341f, -0.357f};
     glm::vec3 up{0.0f, 1.0f, 0.0f};
-    float zNear = 10.0f;
-    float zFar = 10000.0f;
+    float zNear = 5.0f;
+    float zFar = 5000.0f;
 };
 
 struct PerspectiveSettings
@@ -78,6 +78,10 @@ public:
     {
         m_mngr->destroy(m_uniformBuffer);
     }
+
+    [[nodiscard]] const glm::vec3& getCenter() const noexcept { return m_settings.center; }
+    [[nodiscard]] const glm::vec3& getTarget() const noexcept { return m_settings.target; }
+    [[nodiscard]] const glm::vec3& getUp() const noexcept { return m_settings.up; }
 
     void update() const noexcept
     {

@@ -38,6 +38,13 @@ void Buffer::bind() const noexcept
 
 //------------------------------------------------------------------------
 
+void Buffer::bindAs(BufferUsage::Type usage) const noexcept
+{
+    glBindBuffer(BufferUsage2GLenum[usage], m_name);
+}
+
+//------------------------------------------------------------------------
+
 void Buffer::bindBase(GLuint bindingIndex) const noexcept
 {
     if (m_usage != BufferUsage::UNIFORM and m_usage != BufferUsage::STORAGE) [[unlikely]]
@@ -59,6 +66,7 @@ void Buffer::bindRange(GLuint bindingIndex, GLintptr byteOffset, GLsizeiptr byte
     }
     glBindBufferRange(BufferUsage2GLenum[m_usage], bindingIndex, m_name, byteOffset, byteSize);
 }
+
 
 //------------------------------------------------------------------------
 

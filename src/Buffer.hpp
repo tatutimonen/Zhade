@@ -41,15 +41,6 @@ inline constexpr GLenum BufferUsage2GLenum[] {
     GL_DRAW_INDIRECT_BUFFER
 };
 
-struct DrawElementsIndirectCommand
-{
-    GLuint count;
-    GLuint instanceCount;
-    GLuint firstIndex;
-    GLuint baseVertex;
-    GLuint baseInstance;
-};
-
 inline constexpr GLint TBD = 0;
 
 inline GLint BufferUsage2Alignment[] {
@@ -117,6 +108,7 @@ public:
     }
 
     void bind() const noexcept;
+    void bindAs(BufferUsage::Type usage) const noexcept;
     void bindBase(GLuint bindingIndex) const noexcept;
     void bindRange(GLuint bindingIndex, GLintptr byteOffset, GLsizeiptr byteSize) const noexcept;
     void freeResources() const noexcept;

@@ -51,8 +51,8 @@ int main()
         const auto camera = Camera({.mngr = &mngr, .app = &app});
 
         const auto pipeline = Pipeline({
-            .vertPath = SHADER_PATH / "debug.vert",
-            .fragPath = SHADER_PATH / "debug.frag"
+            .vertPath = SHADER_PATH / "main.vert",
+            .fragPath = SHADER_PATH / "main.frag"
         });
         pipeline.bind();
 
@@ -67,6 +67,9 @@ int main()
             app.updateAndRenderGUI();
             glfwSwapBuffers(app.getGLCtx());
         }
+        std::println("{}", glm::to_string(camera.getCenter()));
+        std::println("{}", glm::to_string(camera.getTarget()));
+        std::println("{}", glm::to_string(camera.getUp()));
     }
 
     return 0;

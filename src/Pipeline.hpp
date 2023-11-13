@@ -25,6 +25,7 @@ namespace PipelineStage
         VERTEX,
         FRAGMENT,
         GEOMETRY,
+        COMPUTE,
         NUM_SUPPORTED_STAGES
     };
 }
@@ -32,13 +33,15 @@ namespace PipelineStage
 inline constexpr GLenum PipelineStage2GLShader[] {
     GL_VERTEX_SHADER,
     GL_FRAGMENT_SHADER,
-    GL_GEOMETRY_SHADER
+    GL_GEOMETRY_SHADER,
+    GL_COMPUTE_SHADER
 };
 
 inline constexpr GLenum PipelineStage2GLShaderBit[] {
     GL_VERTEX_SHADER_BIT,
     GL_FRAGMENT_SHADER_BIT,
-    GL_GEOMETRY_SHADER_BIT
+    GL_GEOMETRY_SHADER_BIT,
+    GL_COMPUTE_SHADER_BIT
 };
 
 struct PipelineDescriptor
@@ -46,6 +49,8 @@ struct PipelineDescriptor
     fs::path vertPath;
     fs::path fragPath;
     fs::path geomPath{};
+    fs::path compPath{};
+    std::vector<std::string> headers{"/common_defs.h"};
     bool managed = true;
 };
 
@@ -68,12 +73,16 @@ public:
 
 private:
     [[nodiscard]] std::string readFileContents(const fs::path& path) const noexcept;
+    [[nodiscard]] GLuint createShaderProgramInclude(PipelineStage::Type stage, std::string_view shaderSource)
+        const noexcept;
 
+    void setupHeaders() const noexcept;
     void setupStageProgram(PipelineStage::Type stage, const fs::path& shaderPath) const noexcept;
     void validate() const noexcept;
 
     GLuint m_name = 0;
     mutable GLuint m_stages[PipelineStage::NUM_SUPPORTED_STAGES] = { 0 };
+    std::vector<std::string> m_headers;
     bool m_managed = true;
 };
 
