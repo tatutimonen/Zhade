@@ -6,6 +6,7 @@ extern "C" {
 #include <GLFW/glfw3.h>
 }
 
+#include <array>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -81,7 +82,7 @@ private:
     void validate() const noexcept;
 
     GLuint m_name = 0;
-    mutable GLuint m_stages[PipelineStage::NUM_SUPPORTED_STAGES] = { 0 };
+    mutable std::array<GLuint, PipelineStage::NUM_SUPPORTED_STAGES> m_stages{};
     std::vector<std::string> m_headers;
     bool m_managed = true;
 };
