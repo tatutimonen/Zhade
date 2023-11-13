@@ -29,8 +29,18 @@ namespace BufferUsage
         INDEX,
         UNIFORM,
         STORAGE,
-        INDIRECT
+        INDIRECT,
+        ATOMIC_COUNTER,
+        PARAMETER,
     };
+}
+
+[[nodiscard]] static constexpr bool baseOrRangeBindable(BufferUsage::Type usage)
+{
+    return usage == BufferUsage::UNIFORM
+           or usage == BufferUsage::STORAGE
+           or usage == BufferUsage::ATOMIC_COUNTER
+           or usage == BufferUsage::PARAMETER;
 }
 
 inline constexpr GLenum BufferUsage2GLenum[] {
@@ -38,7 +48,9 @@ inline constexpr GLenum BufferUsage2GLenum[] {
     GL_ELEMENT_ARRAY_BUFFER,
     GL_UNIFORM_BUFFER,
     GL_SHADER_STORAGE_BUFFER,
-    GL_DRAW_INDIRECT_BUFFER
+    GL_DRAW_INDIRECT_BUFFER,
+    GL_ATOMIC_COUNTER_BUFFER,
+    GL_PARAMETER_BUFFER
 };
 
 inline constexpr GLint TBD = 0;
@@ -48,6 +60,8 @@ inline GLint BufferUsage2Alignment[] {
     1,
     TBD,
     TBD,
+    1,
+    1,
     sizeof(DrawElementsIndirectCommand),
 };
 
@@ -81,9 +95,6 @@ public:
 
     template<typename T>
     [[nodiscard]] T* getWritePtr() const noexcept { return std::bit_cast<T*>(m_ptr + m_writeOffset); }
-
-    template<typename T>
-    [[nodiscard]] T& at(size_t pos) const noexcept { return std::bit_cast<T*>(m_ptr)[pos]; }
 
     template<typename T>
     [[nodiscard]] bool fits(GLsizei size) const noexcept

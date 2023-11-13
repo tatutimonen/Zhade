@@ -47,7 +47,7 @@ void Buffer::bindAs(BufferUsage::Type usage) const noexcept
 
 void Buffer::bindBase(GLuint bindingIndex) const noexcept
 {
-    if (m_usage != BufferUsage::UNIFORM and m_usage != BufferUsage::STORAGE) [[unlikely]]
+    if (not baseOrRangeBindable(m_usage)) [[unlikely]]
     {
         std::println("Bind base of non-UBO or non-SSBO");
         return;
@@ -59,7 +59,7 @@ void Buffer::bindBase(GLuint bindingIndex) const noexcept
 
 void Buffer::bindRange(GLuint bindingIndex, GLintptr byteOffset, GLsizeiptr byteSize) const noexcept
 {
-    if (m_usage != BufferUsage::UNIFORM and m_usage != BufferUsage::STORAGE) [[unlikely]]
+    if (not baseOrRangeBindable(m_usage)) [[unlikely]]
     {
         std::println("Bind range of non-UBO or non-SSBO");
         return;
