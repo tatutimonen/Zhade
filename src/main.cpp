@@ -67,9 +67,6 @@ int main()
             app.updateAndRenderGUI();
             glfwSwapBuffers(app.getGLCtx());
         }
-        std::println("{}", glm::to_string(camera.getCenter()));
-        std::println("{}", glm::to_string(camera.getTarget()));
-        std::println("{}", glm::to_string(camera.getUp()));
     }
 
     return 0;

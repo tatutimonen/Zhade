@@ -23,9 +23,13 @@ Pipeline::Pipeline(PipelineDescriptor desc)
     setupStageProgram(PipelineStage::VERTEX, desc.vertPath);
     setupStageProgram(PipelineStage::FRAGMENT, desc.fragPath);
 
-    if (!desc.geomPath.empty())
+    if (not desc.geomPath.empty())
     {   
         setupStageProgram(PipelineStage::GEOMETRY, desc.geomPath);
+    }
+    if (not desc.compPath.empty())
+    {   
+        setupStageProgram(PipelineStage::COMPUTE, desc.compPath);
     }
 
     validate();
@@ -47,6 +51,7 @@ void Pipeline::freeResources() const noexcept
     glDeleteProgram(m_stages[PipelineStage::VERTEX]);
     glDeleteProgram(m_stages[PipelineStage::FRAGMENT]);
     glDeleteProgram(m_stages[PipelineStage::GEOMETRY]);
+    glDeleteProgram(m_stages[PipelineStage::COMPUTE]);
     for (const auto& header : m_headers)
     {
         glDeleteNamedStringARB(header.size(), header.c_str());
