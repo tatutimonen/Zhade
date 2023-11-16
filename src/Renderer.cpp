@@ -21,8 +21,8 @@ Renderer::Renderer(RendererDescriptor desc)
 {
     glCreateVertexArrays(1, &m_vao);
 
-    glVertexArrayVertexBuffer(m_vao, 0, m_scene->vertexBuffer()->getName(), 0, sizeof(Vertex));
-    glVertexArrayElementBuffer(m_vao, m_scene->indexBuffer()->getName());
+    glVertexArrayVertexBuffer(m_vao, 0, m_scene->vertexBuffer()->name(), 0, sizeof(Vertex));
+    glVertexArrayElementBuffer(m_vao, m_scene->indexBuffer()->name());
 
     glEnableVertexArrayAttrib(m_vao, 0);
     glEnableVertexArrayAttrib(m_vao, 1);
@@ -129,7 +129,7 @@ void Renderer::pushMeshDataToBuffers(const Mesh* mesh) const noexcept
     }
 
     drawID2ModelBuffer()->pushData(&modelId);
-    const GLuint64 diffuseHandle = m_mngr->get(mesh->diffuse())->getHandle();
+    const GLuint64 diffuseHandle = m_mngr->get(mesh->diffuse())->handle();
     textureBuffer()->pushData(&diffuseHandle);
 
     prevModelId = modelId;

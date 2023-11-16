@@ -10,8 +10,6 @@ extern "C" {
 #include <GL/glew.h>
 }
 
-#include <bitset>
-
 //------------------------------------------------------------------------
 
 namespace Zhade
@@ -39,15 +37,6 @@ struct TextureDescriptor
     bool managed = true;
 };
 
-[[nodiscard]] constexpr std::bitset<AI_TEXTURE_TYPE_MAX> makeSupportedTextureTypeTable()
-{
-    std::bitset<AI_TEXTURE_TYPE_MAX> table;
-    table.set(aiTextureType_DIFFUSE);
-    return table;
-}
-
-inline constexpr auto SUPPORTED_TEXTURE_TYPES = makeSupportedTextureTypeTable();
-
 //------------------------------------------------------------------------
 
 class Texture
@@ -62,9 +51,9 @@ public:
     Texture(Texture&&) = delete;
     Texture& operator=(Texture&&) = delete;
 
-    [[nodiscard]] GLuint getName() const noexcept { return m_texture; }
-    [[nodiscard]] GLuint64 getHandle() const noexcept { return m_handle; }
-    [[nodiscard]] const glm::ivec2& getDims() const noexcept { return m_dims; }
+    [[nodiscard]] GLuint name() const noexcept { return m_texture; }
+    [[nodiscard]] GLuint64 handle() const noexcept { return m_handle; }
+    [[nodiscard]] const glm::ivec2& dims() const noexcept { return m_dims; }
 
     void setData(const void* data) const noexcept
     {

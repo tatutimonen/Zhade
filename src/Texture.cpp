@@ -63,7 +63,7 @@ Handle<Texture> Texture::fromFile(ResourceManager* mngr, const fs::path& path, T
     }
 
     const StbImageResource img{path};
-    desc.dims = img.getDims();
+    desc.dims = img.dims();
 
     desc.managed = true;
     const auto textureHandle = mngr->createTexture(desc);

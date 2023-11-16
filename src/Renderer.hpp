@@ -54,7 +54,7 @@ private:
 
     [[nodiscard]] GLsizei drawCount() const noexcept
     {
-        return commandBuffer()->getByteSize() / sizeof(DrawElementsIndirectCommand);
+        return commandBuffer()->byteSize() / sizeof(DrawElementsIndirectCommand);
     }
 
     void populateBuffers() const noexcept;

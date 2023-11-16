@@ -40,7 +40,7 @@ public:
     Framebuffer(Framebuffer&&) = delete;
     Framebuffer& operator=(Framebuffer&&) = delete;
 
-    [[nodiscard]] GLuint getName() const noexcept { return m_name; }
+    [[nodiscard]] GLuint name() const noexcept { return m_name; }
 
     void bind() const noexcept { glBindFramebuffer(GL_FRAMEBUFFER, m_name); }
     void freeResources() const noexcept;

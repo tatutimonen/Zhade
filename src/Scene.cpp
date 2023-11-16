@@ -110,11 +110,11 @@ Scene::LoadInfo<Vertex> Scene::loadVertices(const aiMesh* mesh) const noexcept
         );
     }
 
-    Vertex* verticesStart = vertexBuffer()->getWritePtr<Vertex>();
+    Vertex* verticesStart = vertexBuffer()->writePtr<Vertex>();
     vertexBuffer()->pushData(vertices.data(), vertices.size());
 
     return {
-        .base = implicit_cast<GLuint>(verticesStart - vertexBuffer()->getPtr<Vertex>()),
+        .base = implicit_cast<GLuint>(verticesStart - vertexBuffer()->ptr<Vertex>()),
         .span = std::span(verticesStart, mesh->mNumVertices)
     };
 }
@@ -132,11 +132,11 @@ Scene::LoadInfo<GLuint> Scene::loadIndices(const aiMesh* mesh) const noexcept
         indices.append_range(std::span(face.mIndices, face.mNumIndices));
     }
 
-    GLuint* indicesStart = indexBuffer()->getWritePtr<GLuint>();
+    GLuint* indicesStart = indexBuffer()->writePtr<GLuint>();
     indexBuffer()->pushData(indices.data(), indices.size());
 
     return {
-        .base = implicit_cast<GLuint>(indicesStart - indexBuffer()->getPtr<GLuint>()),
+        .base = implicit_cast<GLuint>(indicesStart - indexBuffer()->ptr<GLuint>()),
         .span = std::span(indicesStart, mesh->mNumFaces * 3)
     };
 }

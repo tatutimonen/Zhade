@@ -79,9 +79,9 @@ public:
         m_mngr->destroy(m_uniformBuffer);
     }
 
-    [[nodiscard]] const glm::vec3& getCenter() const noexcept { return m_settings.center; }
-    [[nodiscard]] const glm::vec3& getTarget() const noexcept { return m_settings.target; }
-    [[nodiscard]] const glm::vec3& getUp() const noexcept { return m_settings.up; }
+    [[nodiscard]] const glm::vec3& center() const noexcept { return m_settings.center; }
+    [[nodiscard]] const glm::vec3& target() const noexcept { return m_settings.target; }
+    [[nodiscard]] const glm::vec3& up() const noexcept { return m_settings.up; }
 
     void update() const noexcept
     {
@@ -130,7 +130,7 @@ private:
     bool move() const noexcept
     {
         [[maybe_unused]] const auto& [keys, pitch, yaw] = m_app->getGLFWState();
-        const float cameraSpeed = s_cameraSpeed * m_app->getDeltaTime();
+        const float cameraSpeed = s_cameraSpeed * m_app->deltaTime();
 
         const glm::vec3 centerPrev = m_settings.center;
 
@@ -160,14 +160,14 @@ private:
     {
         [[maybe_unused]] const auto& [keys, pitch, yaw] = m_app->getGLFWState();
 
-        const glm::vec3 targetPrev = m_settings.target;
+        const glm::vec3 tarprev = m_settings.target;
         
         m_settings.target.x = glm::cos(pitch) * glm::cos(yaw);
         m_settings.target.y = glm::sin(pitch);
         m_settings.target.z = glm::cos(pitch) * glm::sin(yaw);
         m_settings.target = glm::normalize(m_settings.target);
 
-        if (m_settings.target != targetPrev)
+        if (m_settings.target != tarprev)
         {
             updateView();
             return true;

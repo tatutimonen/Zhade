@@ -35,14 +35,6 @@ namespace BufferUsage
     };
 }
 
-[[nodiscard]] constexpr bool baseOrRangeBindable(BufferUsage::Type usage)
-{
-    return usage == BufferUsage::UNIFORM
-        or usage == BufferUsage::STORAGE
-        or usage == BufferUsage::ATOMIC_COUNTER
-        or usage == BufferUsage::PARAMETER;
-}
-
 inline constexpr GLenum BufferUsage2GLenum[] {
     GL_ARRAY_BUFFER,
     GL_ELEMENT_ARRAY_BUFFER,
@@ -62,7 +54,7 @@ inline GLint BufferUsage2Alignment[] {
     TBD,
     1,
     1,
-    sizeof(DrawElementsIndirectCommand),
+    1
 };
 
 struct BufferDescriptor
@@ -86,15 +78,16 @@ public:
     Buffer(Buffer&&) = delete;
     Buffer& operator=(Buffer&&) = delete;
 
-    [[nodiscard]] GLuint getName() const noexcept { return m_name; }
-    [[nodiscard]] GLsizei getByteSize() const noexcept { return m_writeOffset; }
-    [[nodiscard]] GLsizei getWholeByteSize() const noexcept { return m_wholeByteSize; }
+    [[nodiscard]] GLuint name() const noexcept { return m_name; }
+    [[nodiscard]] GLsizei byteSize() const noexcept { return m_writeOffset; }
+    [[nodiscard]] GLsizei wholeByteSize() const noexcept { return m_wholeByteSize; }
+    [[nodiscard]] bool baseOrRangeBindable() const noexcept;
 
     template<typename T>
-    [[nodiscard]] T* getPtr() const noexcept { return std::bit_cast<T*>(m_ptr); }
+    [[nodiscard]] T* ptr() const noexcept { return std::bit_cast<T*>(m_ptr); }
 
     template<typename T>
-    [[nodiscard]] T* getWritePtr() const noexcept { return std::bit_cast<T*>(m_ptr + m_writeOffset); }
+    [[nodiscard]] T* writePtr() const noexcept { return std::bit_cast<T*>(m_ptr + m_writeOffset); }
 
     template<typename T>
     [[nodiscard]] bool fits(GLsizei size) const noexcept

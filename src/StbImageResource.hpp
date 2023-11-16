@@ -43,7 +43,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] const glm::ivec2& getDims() const noexcept { return m_dims; }
+    [[nodiscard]] const glm::ivec2& dims() const noexcept { return m_dims; }
     [[nodiscard]] T* data() noexcept { return m_data; }
     [[nodiscard]] const T* data() const noexcept { return m_data; }
 

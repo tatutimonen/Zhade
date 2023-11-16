@@ -17,7 +17,7 @@ Framebuffer::Framebuffer(FramebufferDescriptor desc)
       m_managed{desc.managed}
 {
     glCreateFramebuffers(1, &m_name);
-    glNamedFramebufferTexture(m_name, desc.attachment, texture()->getName(), 0);
+    glNamedFramebufferTexture(m_name, desc.attachment, texture()->name(), 0);
 
     if (glCheckNamedFramebufferStatus(m_name, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) [[unlikely]]
     {

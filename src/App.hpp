@@ -43,7 +43,7 @@ public:
     App& operator=(App&&) = default;
            
     GLFWwindow* getGLCtx() const noexcept { return m_window; }
-    float getDeltaTime() const noexcept { return ImGui::GetIO().DeltaTime; }
+    float deltaTime() const noexcept { return ImGui::GetIO().DeltaTime; }
     const GLFWState& getGLFWState() const noexcept { return s_state; }
 
     void init() const noexcept;

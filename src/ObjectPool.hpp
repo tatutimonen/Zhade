@@ -52,7 +52,7 @@ public:
     requires std::constructible_from<T, Args...>
     [[nodiscard]] Handle<T> allocate(Args&& ...args) const noexcept
     {
-        const auto handle = getHandleToNextFree();
+        const auto handle = handleToNextFree();
         std::construct_at(&m_pool[handle.m_index], std::forward<Args>(args)...);
         return handle;
     }
@@ -60,7 +60,7 @@ public:
     [[nodiscard]] Handle<T> allocate(const T& item) const noexcept
     requires std::copyable<T>
     {
-        const auto handle = getHandleToNextFree();
+        const auto handle = handleToNextFree();
         m_pool[handle.m_index] = item;
         return handle;
     }
@@ -68,7 +68,7 @@ public:
     [[nodiscard]] Handle<T> allocate(T&& item) const noexcept
     requires std::movable<T>
     {
-        const auto handle = getHandleToNextFree();
+        const auto handle = handleToNextFree();
         m_pool[handle.m_index] = std::move(item);
         return handle;
     }
@@ -85,13 +85,13 @@ public:
 
     [[nodiscard]] T* get(const Handle<T>& handle) const noexcept
     {
-        const uint32_t getIdx = handle.m_index;
-        if (handle.m_generation < m_generations[getIdx]) [[unlikely]] return nullptr;
+        const uint32_t idx = handle.m_index;
+        if (handle.m_generation < m_generations[idx]) [[unlikely]] return nullptr;
         return &m_pool[handle.m_index];
     }
 
 private:
-    [[nodiscard]] Handle<T> getHandleToNextFree() const noexcept
+    [[nodiscard]] Handle<T> handleToNextFree() const noexcept
     {
         if (m_freeList.size() == 0) [[unlikely]] resize();
         const uint32_t nextFreeIdx = m_freeList.top();
