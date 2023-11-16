@@ -25,6 +25,13 @@ Buffer::Buffer(BufferDescriptor desc)
 Buffer::~Buffer()
 {
     if (m_managed) [[likely]] return;
+    freeResources();
+}
+
+//------------------------------------------------------------------------
+
+void Buffer::freeResources() const noexcept
+{
     glUnmapNamedBuffer(m_name);
     glDeleteBuffers(1, &m_name);
 }
@@ -44,13 +51,6 @@ bool Buffer::baseOrRangeBindable() const noexcept
 void Buffer::bind() const noexcept
 {
     glBindBuffer(BufferUsage2GLenum[m_usage], m_name);
-}
-
-//------------------------------------------------------------------------
-
-void Buffer::bindAs(BufferUsage::Type usage) const noexcept
-{
-    glBindBuffer(BufferUsage2GLenum[usage], m_name);
 }
 
 //------------------------------------------------------------------------
@@ -75,14 +75,6 @@ void Buffer::bindRange(GLuint bindingIndex, GLintptr byteOffset, GLsizeiptr byte
         return;
     }
     glBindBufferRange(BufferUsage2GLenum[m_usage], bindingIndex, m_name, byteOffset, byteSize);
-}
-
-
-//------------------------------------------------------------------------
-
-void Buffer::freeResources() const noexcept
-{
-    glDeleteBuffers(1, &m_name);
 }
 
 //------------------------------------------------------------------------

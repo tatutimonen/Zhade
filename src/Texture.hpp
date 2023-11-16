@@ -3,12 +3,7 @@
 #include "Handle.hpp"
 #include "common.hpp"
 
-#include <assimp/material.h>
-#include <glm/glm.hpp>
 #include <robin_hood.h>
-extern "C" {
-#include <GL/glew.h>
-}
 
 //------------------------------------------------------------------------
 

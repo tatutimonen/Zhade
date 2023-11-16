@@ -3,13 +3,7 @@
 #include "common.hpp"
 #include "util.hpp"
 
-#include <glm/glm.hpp>
-extern "C" {
-#include <GL/glew.h>
-}
-
 #include <bit>
-#include <cstdint>
 #include <cstring>
 #include <span>
 
@@ -78,6 +72,8 @@ public:
     Buffer(Buffer&&) = delete;
     Buffer& operator=(Buffer&&) = delete;
 
+    void freeResources() const noexcept;
+
     [[nodiscard]] GLuint name() const noexcept { return m_name; }
     [[nodiscard]] GLsizei byteSize() const noexcept { return m_writeOffset; }
     [[nodiscard]] GLsizei wholeByteSize() const noexcept { return m_wholeByteSize; }
@@ -112,10 +108,8 @@ public:
     }
 
     void bind() const noexcept;
-    void bindAs(BufferUsage::Type usage) const noexcept;
     void bindBase(GLuint bindingIndex) const noexcept;
     void bindRange(GLuint bindingIndex, GLintptr byteOffset, GLsizeiptr byteSize) const noexcept;
-    void freeResources() const noexcept;
     void invalidate(GLintptr offset = 0, GLsizeiptr length = 0) const noexcept;
 
     static constexpr GLbitfield s_access = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;

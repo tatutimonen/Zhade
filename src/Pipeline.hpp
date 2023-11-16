@@ -2,10 +2,6 @@
 
 #include "common.hpp"
 
-extern "C" {
-#include <GLFW/glfw3.h>
-}
-
 #include <array>
 #include <string>
 #include <string_view>
@@ -74,7 +70,7 @@ public:
 
 private:
     [[nodiscard]] std::string readFileContents(const fs::path& path) const noexcept;
-    [[nodiscard]] GLuint createShaderProgramInclude(PipelineStage::Type stage, std::string_view shaderSource)
+    [[nodiscard]] GLuint createShaderProgramInclude(PipelineStage::Type stage, const fs::path& shaderPath)
         const noexcept;
 
     void setupHeaders() const noexcept;

@@ -27,18 +27,14 @@ out VERT_OUT {
 //------------------------------------------------------------------------
 // Uniforms etc.
 
-layout (binding = CAMERA_BINDING, std140) uniform Camera {
+layout (binding = CAMERA_BINDING, std140) uniform CameraBuffer {
     mat3x4 VT;
     mat4 P;
 } u_camera;
 
-layout (binding = MODEL_BINDING, std140) readonly buffer Model {
+layout (binding = MODEL_BINDING, std140) readonly buffer ModelBuffer {
     mat3x4 MT[];
 } b_model;
-
-layout (binding = DRAW_ID_2_MODEL_IDX_BINDING, std140) readonly buffer DrawID2ModelIdx {
-    uint b_drawID2ModelIdx[];
-};
 
 //------------------------------------------------------------------------
 
@@ -46,8 +42,7 @@ void main()
 {
     Out.uv = a_uv;
     Out.drawID = gl_DrawID;
-    uint modelIdx = b_drawID2ModelIdx[gl_DrawID];
-    vec3 modelPos = vec4(a_pos, 1.0) * b_model.MT[modelIdx];
+    vec3 modelPos = vec4(a_pos, 1.0) * b_model.MT[gl_DrawID];
     vec3 viewModel = vec4(modelPos, 1.0) * u_camera.VT;
     gl_Position = u_camera.P * vec4(viewModel, 1.0);
 }

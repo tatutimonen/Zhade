@@ -9,7 +9,7 @@ precision highp int;
 //------------------------------------------------------------------------
 // Outputs.
 
-layout (location = 0) out vec4 Out;
+layout (location = 0) out vec4 Color;
 
 //------------------------------------------------------------------------
 // Inputs from previous pipeline stages.
@@ -22,15 +22,15 @@ in VERT_OUT {
 //------------------------------------------------------------------------
 // Uniforms etc.
 
-layout (binding = TEXTURE_BINDING, std140) readonly buffer Texture {
-    sampler2D diffuse[];
-} b_tex;
+layout (binding = TEXTURE_BINDING, std140) uniform TextureBuffer {
+    MeshTextures b_tex[MAX_DRAWS];
+};
 
 //------------------------------------------------------------------------
 
 void main()
 {
-    Out = texture(b_tex.diffuse[In.drawID], In.uv);
+    Color = texture(b_tex[In.drawID].diffuse, In.uv);
 }
 
 //------------------------------------------------------------------------

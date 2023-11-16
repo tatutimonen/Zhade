@@ -11,10 +11,8 @@
 #include <robin_hood.h>
 
 #include <atomic>
-#include <filesystem>
 #include <string>
 #include <vector>
-#include <utility>
 
 //------------------------------------------------------------------------
 
@@ -28,6 +26,7 @@ struct SceneDescriptor
     ResourceManager* mngr;
     BufferDescriptor vertexBufferDesc{.byteSize = GIB_BYTES/2, .usage = BufferUsage::VERTEX};
     BufferDescriptor indexBufferDesc{.byteSize = GIB_BYTES/2, .usage = BufferUsage::INDEX};
+    BufferDescriptor meshBufferDesc{.byteSize = GIB_BYTES/4, .usage = BufferUsage::UNIFORM};
 };
 
 //------------------------------------------------------------------------
@@ -47,33 +46,36 @@ public:
 
     void addModelFromFile(const fs::path& path) const noexcept;
 
-    Handle<Texture> m_defaultTexture;
-
 private:
-    template<typename T>
-    requires std::same_as<T, Vertex> or std::same_as<T, GLuint>
-    struct LoadInfo
+    struct VerticesLoadInfo
     {
         GLuint base;
-        std::span<T> span;
     };
 
-    [[nodiscard]] Handle<Mesh> loadMesh(const aiScene* scene, const aiMesh* mesh, const fs::path& path,
-        const Handle<Model>& model) const noexcept;
-    [[nodiscard]] LoadInfo<Vertex> loadVertices(const aiMesh* mesh) const noexcept;
-    [[nodiscard]] LoadInfo<GLuint> loadIndices(const aiMesh* mesh) const noexcept;
-    [[nodiscard]] Handle<Texture> loadTexture(const aiScene* scene, const aiMesh* mesh, aiTextureType textureType,
+    struct IndicesLoadInfo
+    {
+        GLuint base;
+        GLuint extent;
+    };
+
+    [[nodiscard]] Mesh loadMesh(const aiScene* aiScenePtr, const aiMesh* aiMeshPtr, const fs::path& path,
+        const Model* model) const noexcept;
+    [[nodiscard]] VerticesLoadInfo loadVertices(const aiMesh* aiMeshPtr) const noexcept;
+    [[nodiscard]] IndicesLoadInfo loadIndices(const aiMesh* aiMeshPtr) const noexcept;
+    [[nodiscard]] Handle<Texture> loadTexture(const aiMaterial* aiMaterialPtr, aiTextureType textureType,
         const fs::path& dir) const noexcept;
 
     [[nodiscard]] const Buffer* vertexBuffer() const noexcept { return m_mngr->get(m_vertexBuffer); }
     [[nodiscard]] const Buffer* indexBuffer() const noexcept { return m_mngr->get(m_indexBuffer); }
+    [[nodiscard]] const Buffer* meshBuffer() const noexcept { return m_mngr->get(m_meshBuffer); }
 
-    static inline std::atomic_uint32_t s_meshIdCounter = 0;
     static inline std::atomic_uint32_t s_modelIdCounter = 0;
 
     ResourceManager* m_mngr;
     Handle<Buffer> m_vertexBuffer;
     Handle<Buffer> m_indexBuffer;
+    Handle<Buffer> m_meshBuffer;
+    Handle<Texture> m_defaultTexture;
     mutable std::vector<Handle<Model>> m_models;
     mutable robin_hood::unordered_map<fs::path, Handle<Model>> m_modelCache;
 

@@ -7,7 +7,6 @@ set(src_files
     Camera.cpp
     Framebuffer.cpp
     Handle.cpp
-    Mesh.cpp
     Model.cpp
     ObjectPool.cpp
     Pipeline.cpp

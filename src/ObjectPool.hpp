@@ -4,9 +4,7 @@
 #include "Stack.hpp"
 #include "common.hpp"
 
-#include <cstdint>
 #include <memory>
-#include <ranges>
 #include <vector>
 
 //------------------------------------------------------------------------

@@ -12,20 +12,25 @@ layout (
 ) in;
 
 //------------------------------------------------------------------------
+// Inputs.
 
-struct DrawElementsIndirectCommand
-{
-    uint count;
-    uint instanceCount;
-    uint firstIndex;
-    uint baseIndex;
-    uint baseInstance;
+layout (binding = MESH_BINDING, std140) uniform MeshBuffer {
+    Mesh b_mesh[MAX_DRAWS];
 };
 
 //------------------------------------------------------------------------
+// Outputs.
 
-layout (binding = INDIRECT_BINDING, std430) {
-    DrawElementsIndirectCommand cmds[];
+layout (binding = MODEL_BINDING, std140) writeonly buffer ModelBuffer {
+    mat3x4 MT[];
+} b_model;
+
+layout (binding = TEXTURE_BINDING, std140) uniform TextureBuffer {
+    MeshTextures b_tex[MAX_DRAWS];
+};
+
+layout (binding = INDIRECT_BINDING, std430) writeonly buffer DrawIndirectBuffer {
+    DrawElementsIndirectCommand b_cmd[];
 };
 
 layout (binding = ATOMIC_COUNTER_BINDING) uniform atomic_uint drawCount;
@@ -35,7 +40,7 @@ layout (binding = ATOMIC_COUNTER_BINDING) uniform atomic_uint drawCount;
 void appendDraw(DrawElementsIndirectCommand cmd)
 {
     uint idx = atomicCounterIncrement(drawCount);
-    cmds[idx] = cmd;
+    b_cmd[idx] = cmd;
 }
 
 //------------------------------------------------------------------------

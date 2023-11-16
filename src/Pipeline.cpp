@@ -75,11 +75,12 @@ std::string Pipeline::readFileContents(const fs::path& path) const noexcept
 
 //------------------------------------------------------------------------
 
-GLuint Pipeline::createShaderProgramInclude(PipelineStage::Type stage, std::string_view shaderSource) const noexcept
+GLuint Pipeline::createShaderProgramInclude(PipelineStage::Type stage, const fs::path& shaderPath) const noexcept
 {
     const GLuint shader = glCreateShader(PipelineStage2GLShader[stage]);
 
-    const char* shaderSourceRaw = shaderSource.data();
+    const std::string shaderSource = readFileContents(shaderPath);
+    const char* shaderSourceRaw = shaderSource.c_str();
     glShaderSource(shader, 1, &shaderSourceRaw, nullptr);
     static const GLchar* virtualIncludePaths[] = { "/" };
     glCompileShaderIncludeARB(shader, sizeof(virtualIncludePaths) / sizeof(GLchar*), virtualIncludePaths, nullptr);
@@ -89,7 +90,7 @@ GLuint Pipeline::createShaderProgramInclude(PipelineStage::Type stage, std::stri
     {
         GLchar infoLog[LOCAL_CHAR_BUF_SIZE];
         glGetShaderInfoLog(shader, sizeof(infoLog), nullptr, infoLog);
-        std::println("Error compiling shader with ID {}: {}", shader, infoLog);
+        std::println("Error compiling shader {}: {}", shaderPath.string(), infoLog);
         return 0;
     }
 
@@ -106,7 +107,7 @@ GLuint Pipeline::createShaderProgramInclude(PipelineStage::Type stage, std::stri
     {
         GLchar infoLog[LOCAL_CHAR_BUF_SIZE];
         glGetProgramInfoLog(program, sizeof(infoLog), nullptr, infoLog);
-        std::println("Error linking shader with ID {}: {}", program, infoLog);
+        std::println("Error linking shader {}: {}", shaderPath.string(), infoLog);
         return 0;
     }
 
@@ -129,7 +130,7 @@ GLuint Pipeline::createShaderProgramInclude(PipelineStage::Type stage, std::stri
 
 void Pipeline::setupStageProgram(PipelineStage::Type stage, const fs::path& shaderPath) const noexcept
 {
-    m_stages[stage] = createShaderProgramInclude(stage, readFileContents(shaderPath));
+    m_stages[stage] = createShaderProgramInclude(stage, shaderPath);
     glUseProgramStages(m_name, PipelineStage2GLShaderBit[stage], m_stages[stage]);
 }
 

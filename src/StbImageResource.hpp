@@ -2,7 +2,6 @@
 
 #include "common.hpp"
 
-#include <glm/glm.hpp>
 extern "C" {
 #include <stb_image.h>
 }
