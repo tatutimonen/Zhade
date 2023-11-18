@@ -1,4 +1,5 @@
 #version 460 core
+#extension GL_ARB_gpu_shader_int64 : require
 #extension GL_ARB_shading_language_include : require
 precision highp float;
 precision highp int;

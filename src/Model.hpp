@@ -13,17 +13,17 @@ namespace Zhade
 {
 
 //------------------------------------------------------------------------
-
+    
 class ResourceManager;
 
 struct ModelDescriptor
 {
-	uint32_t id;
+    uint32_t id;
     std::span<Mesh> meshes;
-	std::vector<Handle<Texture>> textures;
-	glm::mat3x4 transformation{1.0f};
-	ResourceManager* mngr = nullptr;
-	bool managed = true;
+    std::vector<Handle<Texture>> textures;
+    glm::mat3x4 transformation{1.0f};
+    ResourceManager* mngr = nullptr;
+    bool managed = true;
 };
 
 //------------------------------------------------------------------------
@@ -31,21 +31,21 @@ struct ModelDescriptor
 class Model
 {
 public:
-	Model() = default;
-	explicit Model(ModelDescriptor desc);
-	~Model();
+    Model() = default;
+    explicit Model(ModelDescriptor desc);
+    ~Model();
 
-	void freeResources() const noexcept;
+    void freeResources() const noexcept;
 
 private:
-	uint32_t m_id = 0;
-	mutable std::span<Mesh> m_meshes;
-	mutable std::vector<Handle<Texture>> m_textures;
-	glm::mat3x4 m_transformation;
-	ResourceManager* m_mngr = nullptr;
-	bool m_managed = true;
+    uint32_t m_id = 0;
+    mutable std::span<Mesh> m_meshes;
+    mutable std::vector<Handle<Texture>> m_textures;
+    glm::mat3x4 m_transformation;
+    ResourceManager* m_mngr = nullptr;
+    bool m_managed = true;
 
-	friend class Scene;
+    friend class Scene;
 };
 
 //------------------------------------------------------------------------

@@ -33,22 +33,15 @@ public:
     ~Renderer();
 
     void render() const noexcept;
-    void processSceneGraph() const noexcept;
 
-private:
+    [[nodiscard]] const Buffer* parameterBuffer() const noexcept { return m_mngr->get(m_parameterBuffer); }
     [[nodiscard]] const Buffer* commandBuffer() const noexcept { return m_mngr->get(m_commandBuffer); }
     [[nodiscard]] const Buffer* transformBuffer() const noexcept { return m_mngr->get(m_transformBuffer); }
     [[nodiscard]] const Buffer* textureBuffer() const noexcept { return m_mngr->get(m_textureBuffer); }
     [[nodiscard]] const Buffer* atomicCounterBuffer() const noexcept { return m_mngr->get(m_atomicCounterBuffer); }
-    [[nodiscard]] const Buffer* parameterBuffer() const noexcept { return m_mngr->get(m_parameterBuffer); }
-
-    [[nodiscard]] GLsizei drawCount() const noexcept
-    {
-        return commandBuffer()->byteSize() / sizeof(DrawElementsIndirectCommand);
-    }
-
+    [[nodiscard]] const Buffer* meshBuffer() const noexcept { return m_scene->meshBuffer(); }
+private:
     void populateBuffers() const noexcept;
-    void invalidateBuffers() const noexcept;
 
     ResourceManager* m_mngr;
     Scene* m_scene;

@@ -52,6 +52,7 @@ void Pipeline::freeResources() const noexcept
     glDeleteProgram(m_stages[PipelineStage::FRAGMENT]);
     glDeleteProgram(m_stages[PipelineStage::GEOMETRY]);
     glDeleteProgram(m_stages[PipelineStage::COMPUTE]);
+
     for (const auto& header : m_headers)
     {
         glDeleteNamedStringARB(header.size(), header.c_str());

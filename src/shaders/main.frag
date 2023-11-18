@@ -1,5 +1,6 @@
 #version 460 core
 #extension GL_ARB_bindless_texture : require
+#extension GL_ARB_gpu_shader_int64 : require
 #extension GL_ARB_shading_language_include : require
 precision mediump float;
 precision highp int;
@@ -22,15 +23,15 @@ in VERT_OUT {
 //------------------------------------------------------------------------
 // Uniforms etc.
 
-layout (binding = TEXTURE_BINDING, std140) uniform TextureBuffer {
-    MeshTextures b_tex[MAX_DRAWS];
+layout (binding = TEXTURE_BINDING, std430) readonly buffer TextureBuffer {
+    MeshTextures b_tex[];
 };
 
 //------------------------------------------------------------------------
 
 void main()
 {
-    Color = texture(b_tex[In.drawID].diffuse, In.uv);
+    Color = texture(sampler2D(b_tex[In.drawID].diffuse), In.uv);
 }
 
 //------------------------------------------------------------------------

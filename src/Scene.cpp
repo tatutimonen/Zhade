@@ -99,7 +99,6 @@ Mesh Scene::loadMesh(const aiScene* aiScenePtr, const aiMesh* aiMeshPtr, const f
         .textures = {
             .diffuse = m_mngr->get(diffuse)->handle()
         },
-        .dirty = true,
         .alive = true
     };
 }

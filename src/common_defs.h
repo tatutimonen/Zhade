@@ -8,11 +8,11 @@
 #define INDIRECT_BINDING       4
 #define ATOMIC_COUNTER_BINDING 5
 
-#define WORK_GROUP_LOCAL_SIZE_X 16
-#define WORK_GROUP_LOCAL_SIZE_Y 2
+#define WORK_GROUP_LOCAL_SIZE_X 32
+#define WORK_GROUP_LOCAL_SIZE_Y 1
 #define WORK_GROUP_LOCAL_SIZE_Z 1
 
-#define MAX_DRAWS (1 << 24)
+#define MAX_DRAWS (1 << 12)
 
 #ifdef __cplusplus
 
@@ -29,12 +29,11 @@ struct MeshTextures
 struct Mesh
 {
     GLuint numIndices;
-	GLuint firstIndex;
-	GLuint baseVertex;
-	glm::mat3x4 transformation;
+    GLuint firstIndex;
+    GLuint baseVertex;
+    glm::mat3x4 transformation;
     MeshTextures textures;
-	bool dirty;
-	bool alive;
+    bool alive;
 };
 
 struct DrawElementsIndirectCommand
@@ -42,7 +41,7 @@ struct DrawElementsIndirectCommand
     GLuint count;
     GLuint instanceCount;
     GLuint firstIndex;
-    GLuint baseIndex;
+    GLuint baseVertex;
     GLuint baseInstance;
 };
 
@@ -50,7 +49,7 @@ struct DrawElementsIndirectCommand
 
 struct MeshTextures
 {
-    sampler2D diffuse;
+    uint64_t diffuse;
 };
 
 struct Mesh
@@ -60,7 +59,6 @@ struct Mesh
     uint baseVertex;
     mat3x4 transformation;
     MeshTextures textures;
-    bool dirty;
     bool alive;
 };
 
@@ -69,7 +67,7 @@ struct DrawElementsIndirectCommand
     uint count;
     uint instanceCount;
     uint firstIndex;
-    uint baseIndex;
+    uint baseVertex;
     uint baseInstance;
 };
 

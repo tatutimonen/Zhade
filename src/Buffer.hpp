@@ -86,9 +86,10 @@ public:
     [[nodiscard]] T* writePtr() const noexcept { return std::bit_cast<T*>(m_ptr + m_writeOffset); }
 
     template<typename T>
-    [[nodiscard]] bool fits(GLsizei size) const noexcept
+    [[nodiscard]] size_t size() const noexcept
     {
-        return m_writeOffset + sizeof(T) * size <= m_wholeByteSize;
+        const auto alignment = BufferUsage2Alignment[m_usage];
+        return byteSize() / std::max(implicit_cast<decltype(alignment)>(sizeof(T)), alignment);
     }
 
     template<typename T>

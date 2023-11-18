@@ -55,7 +55,7 @@ int main()
             .mainPipelineDesc = {
                 .vertPath = SHADER_PATH / "main.vert",
                 .fragPath = SHADER_PATH / "main.frag",
-                .compPath = SHADER_PATH / "populateDrawIndirectBuffer.comp",
+                .compPath = SHADER_PATH / "populateBuffers.comp",
                 .managed = false
             }
         });
@@ -67,6 +67,16 @@ int main()
             renderer.render();
             app.updateAndRenderGUI();
             glfwSwapBuffers(app.getGLCtx());
+        }
+
+        std::println("Draw count: {}", renderer.parameterBuffer()->ptr<GLuint>()[0]);
+        for (int i = 0; i < 10; ++i)
+        {
+            std::println("Mesh {} numIndices: {}", i, renderer.meshBuffer()->ptr<Mesh>()[i].numIndices);
+        }
+        for (int i = 0; i < 10; ++i)
+        {
+            std::println("Command {} count: {}", i, renderer.commandBuffer()->ptr<DrawElementsIndirectCommand>()[i].count);
         }
     }
 

@@ -71,25 +71,16 @@ void Renderer::render() const noexcept
     populateBuffers();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glMultiDrawElementsIndirectCount(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, 0, MAX_DRAWS, 0);
+    atomicCounterBuffer()->ptr<GLuint>()[0] = 0;
 }
 
 //------------------------------------------------------------------------
 
 void Renderer::populateBuffers() const noexcept
 {
-    invalidateBuffers();
-    glDispatchCompute(WORK_GROUP_LOCAL_SIZE_X, WORK_GROUP_LOCAL_SIZE_Y, WORK_GROUP_LOCAL_SIZE_Z);
+    glDispatchCompute(util::divup(m_scene->meshBuffer()->size<Mesh>(), WORK_GROUP_LOCAL_SIZE_X), 1, 1);
+    glMemoryBarrier(GL_ALL_BARRIER_BITS);
     glCopyNamedBufferSubData(atomicCounterBuffer()->name(), parameterBuffer()->name(), 0, 0, sizeof(GLuint));
-}
-
-//------------------------------------------------------------------------
-
-void Renderer::invalidateBuffers() const noexcept
-{
-    commandBuffer()->invalidate();
-    transformBuffer()->invalidate();
-    textureBuffer()->invalidate();
-    m_scene->meshBuffer()->invalidate();
 }
 
 //------------------------------------------------------------------------
