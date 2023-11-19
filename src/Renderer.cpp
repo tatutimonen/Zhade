@@ -72,7 +72,6 @@ void Renderer::render() const noexcept
 {
     populateBuffers();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    glMemoryBarrier(GL_ALL_BARRIER_BITS);
     glMultiDrawElementsIndirectCount(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, 0, MAX_DRAWS, 0);
     atomicCounterBuffer()->ptr<GLuint>()[0] = 0;
 }

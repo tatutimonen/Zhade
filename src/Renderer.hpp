@@ -34,13 +34,14 @@ public:
 
     void render() const noexcept;
 
-    [[nodiscard]] const Buffer* parameterBuffer() const noexcept { return m_mngr->get(m_parameterBuffer); }
+private:
     [[nodiscard]] const Buffer* commandBuffer() const noexcept { return m_mngr->get(m_commandBuffer); }
     [[nodiscard]] const Buffer* transformBuffer() const noexcept { return m_mngr->get(m_transformBuffer); }
     [[nodiscard]] const Buffer* textureBuffer() const noexcept { return m_mngr->get(m_textureBuffer); }
     [[nodiscard]] const Buffer* atomicCounterBuffer() const noexcept { return m_mngr->get(m_atomicCounterBuffer); }
+    [[nodiscard]] const Buffer* parameterBuffer() const noexcept { return m_mngr->get(m_parameterBuffer); }
     [[nodiscard]] const Buffer* meshBuffer() const noexcept { return m_scene->meshBuffer(); }
-private:
+
     void populateBuffers() const noexcept;
 
     ResourceManager* m_mngr;
