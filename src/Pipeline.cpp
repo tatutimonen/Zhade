@@ -22,7 +22,6 @@ Pipeline::Pipeline(PipelineDescriptor desc)
 
     setupStageProgram(PipelineStage::VERTEX, desc.vertPath);
     setupStageProgram(PipelineStage::FRAGMENT, desc.fragPath);
-
     if (not desc.geomPath.empty())
     {   
         setupStageProgram(PipelineStage::GEOMETRY, desc.geomPath);
@@ -66,7 +65,7 @@ std::string Pipeline::readFileContents(const fs::path& path) const noexcept
     std::ifstream file{path};
     if (file.bad()) [[unlikely]]
     {
-        std::println("Error reading shader from '{}'", path.string());
+        std::println("Error reading shader from {}", path.string());
         return "";
     }
     std::ostringstream osstream;

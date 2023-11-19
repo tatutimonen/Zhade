@@ -1,5 +1,6 @@
 #include "Scene.hpp"
 
+#include "common.hpp"
 #include "util.hpp"
 
 #include <assimp/Importer.hpp>

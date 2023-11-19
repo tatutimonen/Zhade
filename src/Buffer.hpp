@@ -88,8 +88,7 @@ public:
     template<typename T>
     [[nodiscard]] size_t size() const noexcept
     {
-        const auto alignment = BufferUsage2Alignment[m_usage];
-        return byteSize() / std::max(implicit_cast<decltype(alignment)>(sizeof(T)), alignment);
+        return byteSize() / util::roundup(sizeof(T), BufferUsage2Alignment[m_usage]);
     }
 
     template<typename T>
@@ -109,6 +108,7 @@ public:
     }
 
     void bind() const noexcept;
+    void bindBaseAs(GLuint bindingIndex, BufferUsage::Type usage) const noexcept;
     void bindBase(GLuint bindingIndex) const noexcept;
     void bindRange(GLuint bindingIndex, GLintptr byteOffset, GLsizeiptr byteSize) const noexcept;
     void invalidate(GLintptr offset = 0, GLsizeiptr length = 0) const noexcept;

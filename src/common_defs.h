@@ -31,6 +31,7 @@ struct Mesh
     GLuint numIndices;
     GLuint firstIndex;
     GLuint baseVertex;
+    GLuint _1;
     glm::mat3x4 transformation;
     MeshTextures textures;
     bool alive;
@@ -57,6 +58,7 @@ struct Mesh
     uint numIndices;
     uint firstIndex;
     uint baseVertex;
+    uint _1;
     mat3x4 transformation;
     MeshTextures textures;
     bool alive;

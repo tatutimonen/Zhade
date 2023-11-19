@@ -3,6 +3,7 @@
 #include "common_defs.h"
 
 #include <assimp/postprocess.h>
+#include <glm/gtx/string_cast.hpp>
 
 #include <cstdint>
 #include <filesystem>

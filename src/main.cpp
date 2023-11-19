@@ -68,16 +68,6 @@ int main()
             app.updateAndRenderGUI();
             glfwSwapBuffers(app.getGLCtx());
         }
-
-        std::println("Draw count: {}", renderer.parameterBuffer()->ptr<GLuint>()[0]);
-        for (int i = 0; i < 10; ++i)
-        {
-            std::println("Mesh {} numIndices: {}", i, renderer.meshBuffer()->ptr<Mesh>()[i].numIndices);
-        }
-        for (int i = 0; i < 10; ++i)
-        {
-            std::println("Command {} count: {}", i, renderer.commandBuffer()->ptr<DrawElementsIndirectCommand>()[i].count);
-        }
     }
 
     return 0;
