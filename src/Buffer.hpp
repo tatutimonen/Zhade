@@ -102,9 +102,9 @@ public:
     }
 
     template<typename T>
-    void setData(const void* data, GLintptr byteOffset = 0, GLsizei size = 1) const noexcept
+    void setData(const T* data, GLintptr byteOffset = 0, GLsizei size = 1) const noexcept
     {
-        glNamedBufferSubData(m_name, byteOffset, sizeof(T) * size, data);
+        glNamedBufferSubData(m_name, byteOffset, sizeof(T) * size, std::bit_cast<const void*>(data));
     }
 
     void bind() const noexcept;

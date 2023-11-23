@@ -38,19 +38,17 @@ Renderer::Renderer(RendererDescriptor desc)
     glVertexArrayAttribBinding(m_vao, 2, 0);
 
     m_commandBuffer = m_mngr->createBuffer(desc.commandBufferDesc);
-    m_transformBuffer = m_mngr->createBuffer(desc.transformBufferDesc);
-    m_textureBuffer = m_mngr->createBuffer(desc.textureBufferDesc);
-    m_atomicCounterBuffer = m_mngr->createBuffer({.byteSize = sizeof(GLuint), .usage = BufferUsage::ATOMIC_COUNTER});
+    m_drawMetadataBuffer = m_mngr->createBuffer(desc.drawMetadataBuffer);
+    m_atomicDrawCounterBuffer = m_mngr->createBuffer({.byteSize = sizeof(GLuint), .usage = BufferUsage::ATOMIC_COUNTER});
     m_parameterBuffer = m_mngr->createBuffer({.byteSize = sizeof(GLuint), .usage = BufferUsage::PARAMETER});
 
     glBindVertexArray(m_vao);
     m_mainPipeline.bind();
     commandBuffer()->bind();
     commandBuffer()->bindBaseAs(INDIRECT_BINDING, BufferUsage::STORAGE);
-    transformBuffer()->bindBase(MODEL_BINDING);
-    textureBuffer()->bindBase(TEXTURE_BINDING);
+    drawMetadataBuffer()->bindBase(DRAW_METADATA_BINDING);
     meshBuffer()->bindBase(MESH_BINDING);
-    atomicCounterBuffer()->bindBase(ATOMIC_COUNTER_BINDING);
+    atomicDrawCounterBuffer()->bindBase(ATOMIC_COUNTER_BINDING);
     parameterBuffer()->bind();
 }
 
@@ -60,9 +58,8 @@ Renderer::~Renderer()
 {
     glDeleteVertexArrays(1, &m_vao);
     m_mngr->destroy(m_commandBuffer);
-    m_mngr->destroy(m_transformBuffer);
-    m_mngr->destroy(m_textureBuffer);
-    m_mngr->destroy(m_atomicCounterBuffer);
+    m_mngr->destroy(m_drawMetadataBuffer);
+    m_mngr->destroy(m_atomicDrawCounterBuffer);
     m_mngr->destroy(m_parameterBuffer);
 }
 
@@ -73,15 +70,24 @@ void Renderer::render() const noexcept
     populateBuffers();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glMultiDrawElementsIndirectCount(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, 0, MAX_DRAWS, 0);
-    atomicCounterBuffer()->ptr<GLuint>()[0] = 0;
+    clearDrawCounter();
 }
 
 //------------------------------------------------------------------------
 
 void Renderer::populateBuffers() const noexcept
 {
-    glDispatchCompute(util::divup(m_scene->meshBuffer()->size<Mesh>(), WORK_GROUP_LOCAL_SIZE_X), 1, 1);
-    glCopyNamedBufferSubData(atomicCounterBuffer()->name(), parameterBuffer()->name(), 0, 0, sizeof(GLuint));
+    glDispatchCompute(util::divup(meshBuffer()->size<Mesh>(), WORK_GROUP_LOCAL_SIZE_X), 1, 1);
+    glCopyNamedBufferSubData(atomicDrawCounterBuffer()->name(), parameterBuffer()->name(), 0, 0, sizeof(GLuint));
+}
+
+//------------------------------------------------------------------------
+
+void Renderer::clearDrawCounter() const noexcept
+{
+    atomicDrawCounterBuffer()->invalidate();
+    static constexpr GLuint zero = 0;
+    glClearNamedBufferData(atomicDrawCounterBuffer()->name(), GL_R32UI, GL_RED, GL_UNSIGNED_INT, &zero);
 }
 
 //------------------------------------------------------------------------

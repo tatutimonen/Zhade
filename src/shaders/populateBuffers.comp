@@ -26,12 +26,8 @@ layout (binding = INDIRECT_BINDING, std430) writeonly buffer DrawIndirectBuffer 
     DrawElementsIndirectCommand b_cmd[];
 };
 
-layout (binding = MODEL_BINDING, std140) writeonly buffer ModelBuffer {
-    mat3x4 MT[];
-} b_model;
-
-layout (binding = TEXTURE_BINDING, std430) writeonly buffer TextureBuffer {
-    MeshTextures b_tex[];
+layout (binding = DRAW_METADATA_BINDING, std430) writeonly buffer DrawMetadataBuffer {
+    DrawMetadata b_meta[];
 };
 
 layout (binding = ATOMIC_COUNTER_BINDING) uniform atomic_uint drawCount;
@@ -50,8 +46,8 @@ void main()
     cmd.baseInstance = 0;
 
     b_cmd[idx] = cmd;
-    b_model.MT[idx] = b_mesh[idx].transformation;
-    b_tex[idx].diffuse = b_mesh[idx].textures.diffuse;
+    b_meta[idx].MT = b_mesh[idx].transformation;
+    b_meta[idx].textures = b_mesh[idx].textures;
 }
 
 //------------------------------------------------------------------------

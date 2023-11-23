@@ -2,11 +2,10 @@
 #define COMMON_DEFS_H
 
 #define CAMERA_BINDING         0
-#define MODEL_BINDING          1
-#define TEXTURE_BINDING        2
-#define MESH_BINDING           3
-#define INDIRECT_BINDING       4
-#define ATOMIC_COUNTER_BINDING 5
+#define DRAW_METADATA_BINDING  1
+#define MESH_BINDING           2
+#define INDIRECT_BINDING       3
+#define ATOMIC_COUNTER_BINDING 4
 
 #define WORK_GROUP_LOCAL_SIZE_X 32
 #define WORK_GROUP_LOCAL_SIZE_Y 1
@@ -46,6 +45,12 @@ struct DrawElementsIndirectCommand
     GLuint baseInstance;
 };
 
+struct DrawMetadata
+{
+    glm::mat3x4 MT;
+    MeshTextures textures;
+};
+
 #else
 
 struct MeshTextures
@@ -71,6 +76,12 @@ struct DrawElementsIndirectCommand
     uint firstIndex;
     uint baseVertex;
     uint baseInstance;
+};
+
+struct DrawMetadata
+{
+    mat3x4 MT;
+    MeshTextures textures;
 };
 
 #endif  // __cplusplus

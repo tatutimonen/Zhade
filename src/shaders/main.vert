@@ -33,9 +33,9 @@ layout (binding = CAMERA_BINDING, std140) uniform CameraBuffer {
     mat4 P;
 } u_camera;
 
-layout (binding = MODEL_BINDING, std140) readonly buffer ModelBuffer {
-    mat3x4 MT[];
-} b_model;
+layout (binding = DRAW_METADATA_BINDING, std430) readonly buffer DrawMetadataBuffer {
+    DrawMetadata b_meta[];
+};
 
 //------------------------------------------------------------------------
 
@@ -43,7 +43,7 @@ void main()
 {
     Out.uv = a_uv;
     Out.drawID = gl_DrawID;
-    vec3 modelPos = vec4(a_pos, 1.0) * b_model.MT[gl_DrawID];
+    vec3 modelPos = vec4(a_pos, 1.0) * b_meta[gl_DrawID].MT;
     vec3 viewModel = vec4(modelPos, 1.0) * u_camera.VT;
     gl_Position = u_camera.P * vec4(viewModel, 1.0);
 }

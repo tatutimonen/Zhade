@@ -23,15 +23,15 @@ in VERT_OUT {
 //------------------------------------------------------------------------
 // Uniforms etc.
 
-layout (binding = TEXTURE_BINDING, std430) readonly buffer TextureBuffer {
-    MeshTextures b_tex[];
+layout (binding = DRAW_METADATA_BINDING, std430) readonly buffer DrawMetadataBuffer {
+    DrawMetadata b_meta[];
 };
 
 //------------------------------------------------------------------------
 
 void main()
 {
-    Color = texture(sampler2D(b_tex[In.drawID].diffuse), In.uv);
+    Color = texture(sampler2D(b_meta[In.drawID].textures.diffuse), In.uv);
 }
 
 //------------------------------------------------------------------------
