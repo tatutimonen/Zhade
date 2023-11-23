@@ -1,0 +1,53 @@
+#version 460 core
+#extension GL_ARB_gpu_shader_int64 : require
+#extension GL_ARB_shading_language_include : require
+
+#include "common_defs.h"
+
+//------------------------------------------------------------------------
+
+layout (
+    local_size_x = WORK_GROUP_LOCAL_SIZE_X,
+    local_size_y = WORK_GROUP_LOCAL_SIZE_Y,
+    local_size_y = WORK_GROUP_LOCAL_SIZE_Z
+) in;
+
+//------------------------------------------------------------------------
+// Inputs.
+
+layout (binding = MESH_BINDING, std430) readonly buffer MeshBuffer {
+    Mesh b_mesh[];
+};
+
+//------------------------------------------------------------------------
+// Outputs.
+
+layout (binding = INDIRECT_BINDING, std430) writeonly buffer DrawIndirectBuffer {
+    DrawElementsIndirectCommand b_cmd[];
+};
+
+layout (binding = DRAW_METADATA_BINDING, std430) writeonly buffer DrawMetadataBuffer {
+    DrawMetadata b_meta[];
+};
+
+layout (binding = ATOMIC_COUNTER_BINDING) uniform atomic_uint drawCount;
+
+//------------------------------------------------------------------------
+
+void main()
+{
+    uint idx = atomicCounterIncrement(drawCount);
+
+    DrawElementsIndirectCommand cmd;
+    cmd.count = b_mesh[idx].numIndices;
+    cmd.instanceCount = 1;
+    cmd.firstIndex = b_mesh[idx].firstIndex;
+    cmd.baseVertex = b_mesh[idx].baseVertex;
+    cmd.baseInstance = 0;
+
+    b_cmd[idx] = cmd;
+    b_meta[idx].MT = b_mesh[idx].transformation;
+    b_meta[idx].textures = b_mesh[idx].textures;
+}
+
+//------------------------------------------------------------------------

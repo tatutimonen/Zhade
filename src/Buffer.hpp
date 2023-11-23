@@ -3,13 +3,7 @@
 #include "common.hpp"
 #include "util.hpp"
 
-#include <glm/glm.hpp>
-extern "C" {
-#include <GL/glew.h>
-}
-
 #include <bit>
-#include <cstdint>
 #include <cstring>
 #include <span>
 
@@ -78,6 +72,8 @@ public:
     Buffer(Buffer&&) = delete;
     Buffer& operator=(Buffer&&) = delete;
 
+    void freeResources() const noexcept;
+
     [[nodiscard]] GLuint name() const noexcept { return m_name; }
     [[nodiscard]] GLsizei byteSize() const noexcept { return m_writeOffset; }
     [[nodiscard]] GLsizei wholeByteSize() const noexcept { return m_wholeByteSize; }
@@ -90,9 +86,9 @@ public:
     [[nodiscard]] T* writePtr() const noexcept { return std::bit_cast<T*>(m_ptr + m_writeOffset); }
 
     template<typename T>
-    [[nodiscard]] bool fits(GLsizei size) const noexcept
+    [[nodiscard]] size_t size() const noexcept
     {
-        return m_writeOffset + sizeof(T) * size <= m_wholeByteSize;
+        return byteSize() / util::roundup(sizeof(T), BufferUsage2Alignment[m_usage]);
     }
 
     template<typename T>
@@ -106,16 +102,15 @@ public:
     }
 
     template<typename T>
-    void setData(const void* data, GLintptr byteOffset = 0, GLsizei size = 1) const noexcept
+    void setData(const T* data, GLintptr byteOffset = 0, GLsizei size = 1) const noexcept
     {
-        glNamedBufferSubData(m_name, byteOffset, sizeof(T) * size, data);
+        glNamedBufferSubData(m_name, byteOffset, sizeof(T) * size, std::bit_cast<const void*>(data));
     }
 
     void bind() const noexcept;
-    void bindAs(BufferUsage::Type usage) const noexcept;
+    void bindBaseAs(GLuint bindingIndex, BufferUsage::Type usage) const noexcept;
     void bindBase(GLuint bindingIndex) const noexcept;
     void bindRange(GLuint bindingIndex, GLintptr byteOffset, GLsizeiptr byteSize) const noexcept;
-    void freeResources() const noexcept;
     void invalidate(GLintptr offset = 0, GLsizeiptr length = 0) const noexcept;
 
     static constexpr GLbitfield s_access = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;

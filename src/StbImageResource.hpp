@@ -2,7 +2,6 @@
 
 #include "common.hpp"
 
-#include <glm/glm.hpp>
 extern "C" {
 #include <stb_image.h>
 }
@@ -60,7 +59,7 @@ private:
             m_data = stbi_loadf(pathStr.c_str(), &m_dims.x, &m_dims.y, nullptr, 4);
 
         if (m_data == nullptr) [[unlikely]]
-            std::println("Error loading data from '{}'", pathStr);
+            std::println("Error loading image data from {}", pathStr);
     }
 
     glm::ivec2 m_dims{};

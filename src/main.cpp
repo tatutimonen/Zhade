@@ -3,7 +3,6 @@
 #include "Camera.hpp"
 #include "Handle.hpp"
 #include "Renderer.hpp"
-#include "Model.hpp"
 #include "Pipeline.hpp"
 #include "ResourceManager.hpp"
 #include "Scene.hpp"
@@ -50,16 +49,18 @@ int main()
 
         const auto camera = Camera({.mngr = &mngr, .app = &app});
 
-        const auto pipeline = Pipeline({
-            .vertPath = SHADER_PATH / "main.vert",
-            .fragPath = SHADER_PATH / "main.frag"
+        const auto renderer = Renderer({
+            .mngr = &mngr,
+            .scene = &scene,
+            .mainPipelineDesc = {
+                .vertPath = SHADER_PATH / "main.vert",
+                .fragPath = SHADER_PATH / "main.frag",
+                .compPath = SHADER_PATH / "populateBuffers.comp",
+                .managed = false
+            }
         });
-        pipeline.bind();
 
-        const auto renderer = Renderer({.mngr = &mngr, .scene = &scene});
-
-        renderer.processSceneGraph();
-        while (!glfwWindowShouldClose(app.getGLCtx()))
+        while (not glfwWindowShouldClose(app.getGLCtx()))
         {
             glfwPollEvents();
             camera.update();

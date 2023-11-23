@@ -1,5 +1,6 @@
 #version 460 core
 #extension GL_ARB_bindless_texture : require
+#extension GL_ARB_gpu_shader_int64 : require
 #extension GL_ARB_shading_language_include : require
 precision mediump float;
 precision highp int;
@@ -9,7 +10,7 @@ precision highp int;
 //------------------------------------------------------------------------
 // Outputs.
 
-layout (location = 0) out vec4 Out;
+layout (location = 0) out vec4 Color;
 
 //------------------------------------------------------------------------
 // Inputs from previous pipeline stages.
@@ -22,15 +23,15 @@ in VERT_OUT {
 //------------------------------------------------------------------------
 // Uniforms etc.
 
-layout (binding = TEXTURE_BINDING, std140) readonly buffer Texture {
-    sampler2D diffuse[];
-} b_tex;
+layout (binding = DRAW_METADATA_BINDING, std430) readonly buffer DrawMetadataBuffer {
+    DrawMetadata b_meta[];
+};
 
 //------------------------------------------------------------------------
 
 void main()
 {
-    Out = texture(b_tex.diffuse[In.drawID], In.uv);
+    Color = texture(sampler2D(b_meta[In.drawID].textures.diffuse), In.uv);
 }
 
 //------------------------------------------------------------------------

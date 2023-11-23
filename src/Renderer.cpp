@@ -17,7 +17,8 @@ namespace Zhade
 
 Renderer::Renderer(RendererDescriptor desc)
     : m_mngr{desc.mngr},
-      m_scene{desc.scene}
+      m_scene{desc.scene},
+      m_mainPipeline{Pipeline(desc.mainPipelineDesc)}
 {
     glCreateVertexArrays(1, &m_vao);
 
@@ -37,15 +38,18 @@ Renderer::Renderer(RendererDescriptor desc)
     glVertexArrayAttribBinding(m_vao, 2, 0);
 
     m_commandBuffer = m_mngr->createBuffer(desc.commandBufferDesc);
-    m_transformBuffer = m_mngr->createBuffer(desc.transformBufferDesc);
-    m_drawID2ModelBuffer = m_mngr->createBuffer(desc.drawID2ModelBufferDesc);
-    m_textureBuffer = m_mngr->createBuffer(desc.textureBufferDesc);
+    m_drawMetadataBuffer = m_mngr->createBuffer(desc.drawMetadataBuffer);
+    m_atomicDrawCounterBuffer = m_mngr->createBuffer({.byteSize = sizeof(GLuint), .usage = BufferUsage::ATOMIC_COUNTER});
+    m_parameterBuffer = m_mngr->createBuffer({.byteSize = sizeof(GLuint), .usage = BufferUsage::PARAMETER});
 
     glBindVertexArray(m_vao);
+    m_mainPipeline.bind();
     commandBuffer()->bind();
-    transformBuffer()->bindBase(MODEL_BINDING);
-    drawID2ModelBuffer()->bindBase(DRAW_ID_2_MODEL_IDX_BINDING);
-    textureBuffer()->bindBase(TEXTURE_BINDING);
+    commandBuffer()->bindBaseAs(INDIRECT_BINDING, BufferUsage::STORAGE);
+    drawMetadataBuffer()->bindBase(DRAW_METADATA_BINDING);
+    meshBuffer()->bindBase(MESH_BINDING);
+    atomicDrawCounterBuffer()->bindBase(ATOMIC_COUNTER_BINDING);
+    parameterBuffer()->bind();
 }
 
 //------------------------------------------------------------------------
@@ -54,85 +58,36 @@ Renderer::~Renderer()
 {
     glDeleteVertexArrays(1, &m_vao);
     m_mngr->destroy(m_commandBuffer);
-    m_mngr->destroy(m_transformBuffer);
-    m_mngr->destroy(m_drawID2ModelBuffer);
-    m_mngr->destroy(m_textureBuffer);
+    m_mngr->destroy(m_drawMetadataBuffer);
+    m_mngr->destroy(m_atomicDrawCounterBuffer);
+    m_mngr->destroy(m_parameterBuffer);
 }
 
 //------------------------------------------------------------------------
 
 void Renderer::render() const noexcept
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, drawCount(), 0);
-}
-
-//------------------------------------------------------------------------
-
-void Renderer::processSceneGraph() const noexcept
-{
-    if (m_scene->models().empty()) [[unlikely]] return;
-    stdr::sort(
-        m_scene->m_models,
-        std::less{},
-        [this](const auto& handle) { return m_mngr->get(handle)->id(); }
-    );
     populateBuffers();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glMultiDrawElementsIndirectCount(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, 0, MAX_DRAWS, 0);
+    clearDrawCounter();
 }
 
 //------------------------------------------------------------------------
 
 void Renderer::populateBuffers() const noexcept
 {
-    invalidateBuffers();
-
-    for (const auto& modelHandle : m_scene->models())
-    {
-        const Model* model = m_mngr->get(modelHandle);
-        for (const auto& meshHandle : model->meshes())
-        {
-            const Mesh* mesh = m_mngr->get(meshHandle);
-            DrawElementsIndirectCommand cmd{
-                .count = mesh->numIndices(),
-                .instanceCount = 1,
-                .firstIndex = mesh->firstIndex(),
-                .baseVertex = mesh->baseVertex(),
-                .baseInstance = 0
-            };
-            pushMeshDataToBuffers(mesh);
-            commandBuffer()->pushData(&cmd);
-        }
-    }
+    glDispatchCompute(util::divup(meshBuffer()->size<Mesh>(), WORK_GROUP_LOCAL_SIZE_X), 1, 1);
+    glCopyNamedBufferSubData(atomicDrawCounterBuffer()->name(), parameterBuffer()->name(), 0, 0, sizeof(GLuint));
 }
 
 //------------------------------------------------------------------------
 
-void Renderer::invalidateBuffers() const noexcept
+void Renderer::clearDrawCounter() const noexcept
 {
-    commandBuffer()->invalidate();
-    transformBuffer()->invalidate();
-    drawID2ModelBuffer()->invalidate();
-    textureBuffer()->invalidate();
-}
-
-//------------------------------------------------------------------------
-
-void Renderer::pushMeshDataToBuffers(const Mesh* mesh) const noexcept
-{
-    static uint32_t prevModelId = std::numeric_limits<uint32_t>::max();
-    const Model* model = m_mngr->get(mesh->model());
-    const uint32_t modelId = model->id();
-
-    if (modelId != prevModelId)
-    {
-        transformBuffer()->pushData(&model->transformation());
-    }
-
-    drawID2ModelBuffer()->pushData(&modelId);
-    const GLuint64 diffuseHandle = m_mngr->get(mesh->diffuse())->handle();
-    textureBuffer()->pushData(&diffuseHandle);
-
-    prevModelId = modelId;
+    atomicDrawCounterBuffer()->invalidate();
+    static constexpr GLuint zero = 0;
+    glClearNamedBufferData(atomicDrawCounterBuffer()->name(), GL_R32UI, GL_RED, GL_UNSIGNED_INT, &zero);
 }
 
 //------------------------------------------------------------------------

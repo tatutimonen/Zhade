@@ -3,14 +3,11 @@
 #include "common_defs.h"
 
 #include <assimp/postprocess.h>
-#include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
-extern "C" {
-#include <GL/glew.h>
-}
 
 #include <cstdint>
 #include <filesystem>
+#include <print>
 #include <ranges>
 
 namespace fs = std::filesystem;
@@ -26,13 +23,11 @@ namespace Zhade
 
 //------------------------------------------------------------------------
 
-struct DrawElementsIndirectCommand
+struct Vertex
 {
-    GLuint count;
-    GLuint instanceCount;
-    GLuint firstIndex;
-    GLuint baseVertex;
-    GLuint baseInstance;
+    glm::vec3 pos;
+    glm::vec3 nrm;
+    glm::vec2 uv;
 };
 
 //------------------------------------------------------------------------

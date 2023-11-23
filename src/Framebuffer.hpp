@@ -4,11 +4,6 @@
 #include "Texture.hpp"
 #include "common.hpp"
 
-#include <glm/glm.hpp>
-extern "C" {
-#include <GL/glew.h>
-}
-
 //------------------------------------------------------------------------
 
 namespace Zhade

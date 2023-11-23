@@ -17,21 +17,11 @@ Pipeline::Pipeline(PipelineDescriptor desc)
       m_managed{desc.managed}
 {
     glCreateProgramPipelines(1, &m_name);
-
     setupHeaders();
-
     setupStageProgram(PipelineStage::VERTEX, desc.vertPath);
     setupStageProgram(PipelineStage::FRAGMENT, desc.fragPath);
-
-    if (not desc.geomPath.empty())
-    {   
-        setupStageProgram(PipelineStage::GEOMETRY, desc.geomPath);
-    }
-    if (not desc.compPath.empty())
-    {   
-        setupStageProgram(PipelineStage::COMPUTE, desc.compPath);
-    }
-
+    setupStageProgram(PipelineStage::GEOMETRY, desc.geomPath);
+    setupStageProgram(PipelineStage::COMPUTE, desc.compPath);
     validate();
 }
 
@@ -48,10 +38,14 @@ Pipeline::~Pipeline()
 void Pipeline::freeResources() const noexcept
 {
     glDeleteProgramPipelines(1, &m_name);
-    glDeleteProgram(m_stages[PipelineStage::VERTEX]);
-    glDeleteProgram(m_stages[PipelineStage::FRAGMENT]);
-    glDeleteProgram(m_stages[PipelineStage::GEOMETRY]);
-    glDeleteProgram(m_stages[PipelineStage::COMPUTE]);
+
+    for (const auto program : m_stages)
+    {
+        if (glIsProgram(program))
+        {
+            glDeleteProgram(program);
+        }
+    }
     for (const auto& header : m_headers)
     {
         glDeleteNamedStringARB(header.size(), header.c_str());
@@ -65,7 +59,7 @@ std::string Pipeline::readFileContents(const fs::path& path) const noexcept
     std::ifstream file{path};
     if (file.bad()) [[unlikely]]
     {
-        std::println("Error reading shader from '{}'", path.string());
+        std::println("Error reading shader from {}", path.string());
         return "";
     }
     std::ostringstream osstream;
@@ -75,11 +69,12 @@ std::string Pipeline::readFileContents(const fs::path& path) const noexcept
 
 //------------------------------------------------------------------------
 
-GLuint Pipeline::createShaderProgramInclude(PipelineStage::Type stage, std::string_view shaderSource) const noexcept
+GLuint Pipeline::createShaderProgramInclude(PipelineStage::Type stage, const fs::path& shaderPath) const noexcept
 {
     const GLuint shader = glCreateShader(PipelineStage2GLShader[stage]);
 
-    const char* shaderSourceRaw = shaderSource.data();
+    const std::string shaderSource = readFileContents(shaderPath);
+    const char* shaderSourceRaw = shaderSource.c_str();
     glShaderSource(shader, 1, &shaderSourceRaw, nullptr);
     static const GLchar* virtualIncludePaths[] = { "/" };
     glCompileShaderIncludeARB(shader, sizeof(virtualIncludePaths) / sizeof(GLchar*), virtualIncludePaths, nullptr);
@@ -89,7 +84,7 @@ GLuint Pipeline::createShaderProgramInclude(PipelineStage::Type stage, std::stri
     {
         GLchar infoLog[LOCAL_CHAR_BUF_SIZE];
         glGetShaderInfoLog(shader, sizeof(infoLog), nullptr, infoLog);
-        std::println("Error compiling shader with ID {}: {}", shader, infoLog);
+        std::println("Error compiling shader {}: {}", shaderPath.string(), infoLog);
         return 0;
     }
 
@@ -106,7 +101,7 @@ GLuint Pipeline::createShaderProgramInclude(PipelineStage::Type stage, std::stri
     {
         GLchar infoLog[LOCAL_CHAR_BUF_SIZE];
         glGetProgramInfoLog(program, sizeof(infoLog), nullptr, infoLog);
-        std::println("Error linking shader with ID {}: {}", program, infoLog);
+        std::println("Error linking shader {}: {}", shaderPath.string(), infoLog);
         return 0;
     }
 
@@ -115,21 +110,22 @@ GLuint Pipeline::createShaderProgramInclude(PipelineStage::Type stage, std::stri
 
 //------------------------------------------------------------------------
 
- void Pipeline::setupHeaders() const noexcept
- {
+void Pipeline::setupHeaders() const noexcept
+{
     for (const auto& header : m_headers)
     {
         const fs::path path = SOURCE_PATH / fs::path{header}.filename();
         const std::string contents = readFileContents(path);
         glNamedStringARB(GL_SHADER_INCLUDE_ARB, header.size(), header.c_str(), contents.size(), contents.c_str());
     }
- }
+}
 
 //------------------------------------------------------------------------
 
 void Pipeline::setupStageProgram(PipelineStage::Type stage, const fs::path& shaderPath) const noexcept
 {
-    m_stages[stage] = createShaderProgramInclude(stage, readFileContents(shaderPath));
+    if (shaderPath.empty()) return;
+    m_stages[stage] = createShaderProgramInclude(stage, shaderPath);
     glUseProgramStages(m_name, PipelineStage2GLShaderBit[stage], m_stages[stage]);
 }
 
