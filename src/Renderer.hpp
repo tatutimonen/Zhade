@@ -43,7 +43,6 @@ private:
     [[nodiscard]] const Buffer* commandBuffer() const noexcept { return m_mngr->get(m_commandBuffer); }
     [[nodiscard]] const Buffer* drawMetadataBuffer() const noexcept { return m_mngr->get(m_drawMetadataBuffer); }
     [[nodiscard]] const Buffer* atomicDrawCounterBuffer() const noexcept { return m_mngr->get(m_atomicDrawCounterBuffer); }
-    [[nodiscard]] const Buffer* parameterBuffer() const noexcept { return m_mngr->get(m_parameterBuffer); }
     [[nodiscard]] const Buffer* meshBuffer() const noexcept { return m_scene->meshBuffer(); }
 
     void populateBuffers() const noexcept;
@@ -56,7 +55,6 @@ private:
     Handle<Buffer> m_commandBuffer;
     Handle<Buffer> m_drawMetadataBuffer;
     Handle<Buffer> m_atomicDrawCounterBuffer;
-    Handle<Buffer> m_parameterBuffer;
 };
 
 //------------------------------------------------------------------------

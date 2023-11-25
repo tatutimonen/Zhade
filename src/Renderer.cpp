@@ -40,7 +40,6 @@ Renderer::Renderer(RendererDescriptor desc)
     m_commandBuffer = m_mngr->createBuffer(desc.commandBufferDesc);
     m_drawMetadataBuffer = m_mngr->createBuffer(desc.drawMetadataBuffer);
     m_atomicDrawCounterBuffer = m_mngr->createBuffer({.byteSize = sizeof(GLuint), .usage = BufferUsage::ATOMIC_COUNTER});
-    m_parameterBuffer = m_mngr->createBuffer({.byteSize = sizeof(GLuint), .usage = BufferUsage::PARAMETER});
 
     glBindVertexArray(m_vao);
     m_mainPipeline.bind();
@@ -49,7 +48,7 @@ Renderer::Renderer(RendererDescriptor desc)
     drawMetadataBuffer()->bindBase(DRAW_METADATA_BINDING);
     meshBuffer()->bindBase(MESH_BINDING);
     atomicDrawCounterBuffer()->bindBase(ATOMIC_COUNTER_BINDING);
-    parameterBuffer()->bind();
+    atomicDrawCounterBuffer()->bindAs(BufferUsage::PARAMETER);
 }
 
 //------------------------------------------------------------------------
@@ -60,7 +59,6 @@ Renderer::~Renderer()
     m_mngr->destroy(m_commandBuffer);
     m_mngr->destroy(m_drawMetadataBuffer);
     m_mngr->destroy(m_atomicDrawCounterBuffer);
-    m_mngr->destroy(m_parameterBuffer);
 }
 
 //------------------------------------------------------------------------
@@ -78,7 +76,6 @@ void Renderer::render() const noexcept
 void Renderer::populateBuffers() const noexcept
 {
     glDispatchCompute(util::divup(meshBuffer()->size<Mesh>(), WORK_GROUP_LOCAL_SIZE_X), 1, 1);
-    glCopyNamedBufferSubData(atomicDrawCounterBuffer()->name(), parameterBuffer()->name(), 0, 0, sizeof(GLuint));
 }
 
 //------------------------------------------------------------------------

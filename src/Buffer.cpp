@@ -55,9 +55,9 @@ void Buffer::bind() const noexcept
 
 //------------------------------------------------------------------------
 
-void Buffer::bindBaseAs(GLuint bindingIndex, BufferUsage::Type usage) const noexcept
+void Buffer::bindAs(BufferUsage::Type usage) const noexcept
 {
-    glBindBufferBase(BufferUsage2GLenum[usage], bindingIndex, m_name);
+    glBindBuffer(BufferUsage2GLenum[usage], m_name);
 }
 
 //------------------------------------------------------------------------
@@ -70,6 +70,13 @@ void Buffer::bindBase(GLuint bindingIndex) const noexcept
         return;
     }
     glBindBufferBase(BufferUsage2GLenum[m_usage], bindingIndex, m_name);
+}
+
+//------------------------------------------------------------------------
+
+void Buffer::bindBaseAs(GLuint bindingIndex, BufferUsage::Type usage) const noexcept
+{
+    glBindBufferBase(BufferUsage2GLenum[usage], bindingIndex, m_name);
 }
 
 //------------------------------------------------------------------------

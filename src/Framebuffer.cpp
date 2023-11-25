@@ -21,7 +21,7 @@ Framebuffer::Framebuffer(FramebufferDescriptor desc)
 
     if (glCheckNamedFramebufferStatus(m_name, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) [[unlikely]]
     {
-        std::println("Framebuffer with ID {} is incomplete", m_name);
+        std::println("Framebuffer {} is incomplete", m_name);
     }
 }
 

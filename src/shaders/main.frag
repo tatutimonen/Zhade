@@ -23,7 +23,7 @@ in VERT_OUT {
 //------------------------------------------------------------------------
 // Uniforms etc.
 
-layout (binding = DRAW_METADATA_BINDING, std430) readonly buffer DrawMetadataBuffer {
+layout (binding = DRAW_METADATA_BINDING, std430) restrict readonly buffer DrawMetadataBuffer {
     DrawMetadata b_meta[];
 };
 
