@@ -15,18 +15,18 @@ layout (
 //------------------------------------------------------------------------
 // Inputs.
 
-layout (binding = MESH_BINDING, std430) readonly buffer MeshBuffer {
+layout (binding = MESH_BINDING, std430) restrict readonly buffer MeshBuffer {
     Mesh b_mesh[];
 };
 
 //------------------------------------------------------------------------
 // Outputs.
 
-layout (binding = INDIRECT_BINDING, std430) writeonly buffer DrawIndirectBuffer {
+layout (binding = INDIRECT_BINDING, std430) restrict writeonly buffer DrawIndirectBuffer {
     DrawElementsIndirectCommand b_cmd[];
 };
 
-layout (binding = DRAW_METADATA_BINDING, std430) writeonly buffer DrawMetadataBuffer {
+layout (binding = DRAW_METADATA_BINDING, std430) restrict writeonly buffer DrawMetadataBuffer {
     DrawMetadata b_meta[];
 };
 
