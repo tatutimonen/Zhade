@@ -42,7 +42,14 @@ public:
     void render() const noexcept;
 
 private:
+<<<<<<< HEAD
     [[nodiscard]] const Buffer* buffer(const Handle<Buffer>& handle) const noexcept { return m_mngr->get(handle); }
+=======
+    [[nodiscard]] const Buffer* commandBuffer() const noexcept { return m_mngr->get(m_commandBuffer); }
+    [[nodiscard]] const Buffer* drawMetadataBuffer() const noexcept { return m_mngr->get(m_drawMetadataBuffer); }
+    [[nodiscard]] const Buffer* atomicDrawCounterBuffer() const noexcept { return m_mngr->get(m_atomicDrawCounterBuffer); }
+    [[nodiscard]] const Buffer* meshBuffer() const noexcept { return m_scene->meshBuffer(); }
+>>>>>>> 61fcd7157e2ba21f012052e37935a927eb9e21c7
 
     void populateBuffers() const noexcept;
     void clearDrawCounter() const noexcept;
