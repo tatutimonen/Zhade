@@ -7,6 +7,8 @@
 #include "ResourceManager.hpp"
 #include "Scene.hpp"
 
+#include <optional>
+
 //------------------------------------------------------------------------
 
 namespace Zhade
@@ -40,10 +42,7 @@ public:
     void render() const noexcept;
 
 private:
-    [[nodiscard]] const Buffer* commandBuffer() const noexcept { return m_mngr->get(m_commandBuffer); }
-    [[nodiscard]] const Buffer* drawMetadataBuffer() const noexcept { return m_mngr->get(m_drawMetadataBuffer); }
-    [[nodiscard]] const Buffer* atomicDrawCounterBuffer() const noexcept { return m_mngr->get(m_atomicDrawCounterBuffer); }
-    [[nodiscard]] const Buffer* meshBuffer() const noexcept { return m_scene->meshBuffer(); }
+    [[nodiscard]] const Buffer* buffer(const Handle<Buffer>& handle) const noexcept { return m_mngr->get(handle); }
 
     void populateBuffers() const noexcept;
     void clearDrawCounter() const noexcept;

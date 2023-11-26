@@ -3,8 +3,6 @@
 #include "ResourceManager.hpp"
 #include "StbImageResource.hpp"
 
-#include <format>
-
 //------------------------------------------------------------------------
 
 namespace Zhade

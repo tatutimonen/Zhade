@@ -60,8 +60,8 @@ public:
     explicit Pipeline(PipelineDescriptor desc);
     ~Pipeline();
 
-    Pipeline(const Pipeline&) = delete;
-    Pipeline& operator=(const Pipeline&) = delete;
+    Pipeline(const Pipeline&) = default;
+    Pipeline& operator=(const Pipeline&) = default;
     Pipeline(Pipeline&&) = delete;
     Pipeline& operator=(Pipeline&&) = delete;
 

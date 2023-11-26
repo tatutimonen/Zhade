@@ -5,6 +5,7 @@
 #include "Handle.hpp"
 #include "Model.hpp"
 #include "ObjectPool.hpp"
+#include "Pipeline.hpp"
 #include "Texture.hpp"
 #include "common.hpp"
 
@@ -20,6 +21,7 @@ concept ManagedType = (
     std::same_as<T, Buffer>
     or std::same_as<T, Framebuffer>
     or std::same_as<T, Model>
+    or std::same_as<T, Pipeline>
     or std::same_as<T, Texture>
 );
 
@@ -37,10 +39,35 @@ public:
     ResourceManager(ResourceManager&&) = delete;
     ResourceManager& operator=(ResourceManager&&) = delete;
 
-    [[nodiscard]] Handle<Buffer> createBuffer(BufferDescriptor desc) { return m_buffers.allocate(desc); }
-    [[nodiscard]] Handle<Framebuffer> createFramebuffer(FramebufferDescriptor desc) { return m_framebuffers.allocate(desc); }
-    [[nodiscard]] Handle<Model> createModel(ModelDescriptor desc) { return m_models.allocate(desc); }
-    [[nodiscard]] Handle<Texture> createTexture(TextureDescriptor desc) { return m_textures.allocate(desc); }
+    [[nodiscard]] Handle<Buffer> createBuffer(BufferDescriptor desc) const noexcept
+    {
+        return m_buffers.allocate(desc);
+    }
+    
+    [[nodiscard]] Handle<Framebuffer> createFramebuffer(FramebufferDescriptor desc) const noexcept
+    {
+        return m_framebuffers.allocate(desc);
+    }
+    
+    [[nodiscard]] Handle<Framebuffer> createFramebuffer() const noexcept
+    {
+        return m_framebuffers.allocate();
+    }
+    
+    [[nodiscard]] Handle<Model> createModel(ModelDescriptor desc) const noexcept
+    {
+        return m_models.allocate(desc);
+    }
+    
+    [[nodiscard]] Handle<Pipeline> createPipeline(PipelineDescriptor desc) const noexcept
+    {
+        return m_pipelines.allocate(desc);
+    }
+    
+    [[nodiscard]] Handle<Texture> createTexture(TextureDescriptor desc) const noexcept
+    {
+        return m_textures.allocate(desc);
+    }
 
     template<ManagedType T>
     [[nodiscard]] T* get(const Handle<T>& handle) const noexcept
@@ -51,6 +78,8 @@ public:
             return m_framebuffers.get(handle);
         else if constexpr (std::same_as<T, Model>)
             return m_models.get(handle);
+        else if constexpr (std::same_as<T, Pipeline>)
+            return m_pipelines.get(handle);
         else if constexpr (std::same_as<T, Texture>)
             return m_textures.get(handle);
     }
@@ -64,6 +93,8 @@ public:
             m_framebuffers.deallocate(handle);
         else if constexpr (std::same_as<T, Model>)
             m_models.deallocate(handle);
+        else if constexpr (std::same_as<T, Pipeline>)
+            m_pipelines.deallocate(handle);
         else if constexpr (std::same_as<T, Texture>)
             m_textures.deallocate(handle);
     }
@@ -72,6 +103,7 @@ private:
     ObjectPool<Buffer> m_buffers;
     ObjectPool<Framebuffer> m_framebuffers;
     ObjectPool<Model> m_models;
+    ObjectPool<Pipeline> m_pipelines;
     ObjectPool<Texture> m_textures;
 };
 

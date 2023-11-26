@@ -65,9 +65,7 @@ private:
     [[nodiscard]] Handle<Texture> loadTexture(const aiMaterial* aiMaterialPtr, aiTextureType textureType,
         const fs::path& dir) const noexcept;
 
-    [[nodiscard]] const Buffer* vertexBuffer() const noexcept { return m_mngr->get(m_vertexBuffer); }
-    [[nodiscard]] const Buffer* indexBuffer() const noexcept { return m_mngr->get(m_indexBuffer); }
-    [[nodiscard]] const Buffer* meshBuffer() const noexcept { return m_mngr->get(m_meshBuffer); }
+    [[nodiscard]] const Buffer* buffer(const Handle<Buffer>& handle) const noexcept { return m_mngr->get(handle); }
 
     static inline std::atomic_uint32_t s_modelIdCounter = 0;
 

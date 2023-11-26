@@ -5,6 +5,7 @@ set(src_files
     App.cpp
     Buffer.cpp
     Camera.cpp
+    DirectionalLight.cpp
     Framebuffer.cpp
     Handle.cpp
     Model.cpp

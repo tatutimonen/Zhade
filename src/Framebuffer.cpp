@@ -38,7 +38,7 @@ Framebuffer::~Framebuffer()
 void Framebuffer::freeResources() const noexcept
 {
     m_mngr->destroy(m_texture);
-    glDeleteFramebuffers(1, &m_name);
+    if (m_name != 0) [[likely]] glDeleteFramebuffers(1, &m_name);
 }
 
 //------------------------------------------------------------------------

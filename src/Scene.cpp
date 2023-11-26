@@ -55,11 +55,11 @@ void Scene::addModelFromFile(const fs::path& path) const noexcept
     });
     const Model* modelPtr = m_mngr->get(model);
 
-    Mesh* meshesStart = meshBuffer()->writePtr<Mesh>();
+    Mesh* meshesStart = buffer(m_meshBuffer)->writePtr<Mesh>();
     for (const aiMesh* aiMeshPtr : std::span(aiScenePtr->mMeshes, aiScenePtr->mNumMeshes))
     {
         const Mesh mesh = loadMesh(aiScenePtr, aiMeshPtr, path, modelPtr);
-        meshBuffer()->pushData(&mesh);
+        buffer(m_meshBuffer)->pushData(&mesh);
     }
     modelPtr->m_meshes = std::span(meshesStart, aiScenePtr->mNumMeshes);
 
@@ -74,13 +74,11 @@ Mesh Scene::loadMesh(const aiScene* aiScenePtr, const aiMesh* aiMeshPtr, const f
 {
     auto verticesFuture = std::async(
         std::launch::async,
-        [this](auto&& mesh) { return loadVertices(std::forward<decltype(mesh)>(mesh)); },
-        aiMeshPtr
+        [&] { return loadVertices(std::forward<decltype(aiMeshPtr)>(aiMeshPtr)); }
     );
     auto indicesFuture = std::async(
         std::launch::async,
-        [this](auto&& mesh) { return loadIndices(std::forward<decltype(mesh)>(mesh)); },
-        aiMeshPtr
+        [&] { return loadIndices(std::forward<decltype(aiMeshPtr)>(aiMeshPtr)); }
     );
     auto diffuse = loadTexture(
         aiScenePtr->mMaterials[aiMeshPtr->mMaterialIndex],
@@ -122,11 +120,11 @@ Scene::VerticesLoadInfo Scene::loadVertices(const aiMesh* aiMeshPtr) const noexc
         );
     }
 
-    Vertex* verticesStart = vertexBuffer()->writePtr<Vertex>();
-    vertexBuffer()->pushData(vertices.data(), vertices.size());
+    Vertex* verticesStart = buffer(m_vertexBuffer)->writePtr<Vertex>();
+    buffer(m_vertexBuffer)->pushData(vertices.data(), vertices.size());
 
     return {
-        .base = implicit_cast<GLuint>(verticesStart - vertexBuffer()->ptr<Vertex>())
+        .base = implicit_cast<GLuint>(verticesStart - buffer(m_vertexBuffer)->ptr<Vertex>())
     };
 }
 
@@ -143,11 +141,11 @@ Scene::IndicesLoadInfo Scene::loadIndices(const aiMesh* aiMeshPtr) const noexcep
         indices.append_range(std::span(face.mIndices, face.mNumIndices));
     }
 
-    GLuint* indicesStart = indexBuffer()->writePtr<GLuint>();
-    indexBuffer()->pushData(indices.data(), indices.size());
+    GLuint* indicesStart = buffer(m_indexBuffer)->writePtr<GLuint>();
+    buffer(m_indexBuffer)->pushData(indices.data(), indices.size());
 
     return {
-        .base = implicit_cast<GLuint>(indicesStart - indexBuffer()->ptr<GLuint>()),
+        .base = implicit_cast<GLuint>(indicesStart - buffer(m_indexBuffer)->ptr<GLuint>()),
         .extent = aiMeshPtr->mNumFaces * 3
     };
 }

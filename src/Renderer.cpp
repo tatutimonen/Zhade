@@ -22,8 +22,8 @@ Renderer::Renderer(RendererDescriptor desc)
 {
     glCreateVertexArrays(1, &m_vao);
 
-    glVertexArrayVertexBuffer(m_vao, 0, m_scene->vertexBuffer()->name(), 0, sizeof(Vertex));
-    glVertexArrayElementBuffer(m_vao, m_scene->indexBuffer()->name());
+    glVertexArrayVertexBuffer(m_vao, 0, buffer(m_scene->m_vertexBuffer)->name(), 0, sizeof(Vertex));
+    glVertexArrayElementBuffer(m_vao, buffer(m_scene->m_indexBuffer)->name());
 
     glEnableVertexArrayAttrib(m_vao, 0);
     glEnableVertexArrayAttrib(m_vao, 1);
@@ -43,12 +43,12 @@ Renderer::Renderer(RendererDescriptor desc)
 
     glBindVertexArray(m_vao);
     m_mainPipeline.bind();
-    commandBuffer()->bind();
-    commandBuffer()->bindBaseAs(INDIRECT_BINDING, BufferUsage::STORAGE);
-    drawMetadataBuffer()->bindBase(DRAW_METADATA_BINDING);
-    meshBuffer()->bindBase(MESH_BINDING);
-    atomicDrawCounterBuffer()->bindBase(ATOMIC_COUNTER_BINDING);
-    atomicDrawCounterBuffer()->bindAs(BufferUsage::PARAMETER);
+    buffer(m_commandBuffer)->bind();
+    buffer(m_commandBuffer)->bindBaseAs(INDIRECT_BINDING, BufferUsage::STORAGE);
+    buffer(m_drawMetadataBuffer)->bindBase(DRAW_METADATA_BINDING);
+    buffer(m_scene->m_meshBuffer)->bindBase(MESH_BINDING);
+    buffer(m_atomicDrawCounterBuffer)->bindBase(ATOMIC_COUNTER_BINDING);
+    buffer(m_atomicDrawCounterBuffer)->bindAs(BufferUsage::PARAMETER);
 }
 
 //------------------------------------------------------------------------
@@ -75,16 +75,16 @@ void Renderer::render() const noexcept
 
 void Renderer::populateBuffers() const noexcept
 {
-    glDispatchCompute(util::divup(meshBuffer()->size<Mesh>(), WORK_GROUP_LOCAL_SIZE_X), 1, 1);
+    glDispatchCompute(util::divup(buffer(m_scene->m_meshBuffer)->size<Mesh>(), WORK_GROUP_LOCAL_SIZE_X), 1, 1);
 }
 
 //------------------------------------------------------------------------
 
 void Renderer::clearDrawCounter() const noexcept
 {
-    atomicDrawCounterBuffer()->invalidate();
+    buffer(m_atomicDrawCounterBuffer)->invalidate();
     static constexpr GLuint zero = 0;
-    glClearNamedBufferData(atomicDrawCounterBuffer()->name(), GL_R32UI, GL_RED, GL_UNSIGNED_INT, &zero);
+    glClearNamedBufferData(buffer(m_atomicDrawCounterBuffer)->name(), GL_R32UI, GL_RED, GL_UNSIGNED_INT, &zero);
 }
 
 //------------------------------------------------------------------------
