@@ -71,7 +71,7 @@ public:
     requires std::movable<T>
     {
         const auto handle = handleToNextFree();
-        m_pool[handle.m_index] = std::move(item);
+        m_pool[handle.m_index] = item;
         return handle;
     }
 

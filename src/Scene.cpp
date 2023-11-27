@@ -49,11 +49,8 @@ void Scene::addModelFromFile(const fs::path& path) const noexcept
     Assimp::Importer importer{};
     const aiScene* aiScenePtr = importer.ReadFile(path.string().c_str(), ASSIMP_LOAD_FLAGS);
 
-    const Handle<Model> model = m_mngr->createModel({
-        .id = s_modelIdCounter++,
-        .mngr = m_mngr
-    });
-    const Model* modelPtr = m_mngr->get(model);
+    const Handle<Model> model = m_mngr->createModel({.mngr = m_mngr});
+    Model* modelPtr = m_mngr->get(model);
 
     Mesh* meshesStart = buffer(m_meshBuffer)->writePtr<Mesh>();
     for (const aiMesh* aiMeshPtr : std::span(aiScenePtr->mMeshes, aiScenePtr->mNumMeshes))
@@ -70,7 +67,7 @@ void Scene::addModelFromFile(const fs::path& path) const noexcept
 //------------------------------------------------------------------------
 
 Mesh Scene::loadMesh(const aiScene* aiScenePtr, const aiMesh* aiMeshPtr, const fs::path& path,
-    const Model* modelPtr) const noexcept
+    Model* modelPtr) const noexcept
 {
     auto verticesFuture = std::async(
         std::launch::async,

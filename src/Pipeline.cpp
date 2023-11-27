@@ -13,7 +13,7 @@ namespace Zhade
 //------------------------------------------------------------------------
 
 Pipeline::Pipeline(PipelineDescriptor desc)
-    : m_headers{std::move(desc.headers)},
+    : m_headers{desc.headers},
       m_managed{desc.managed}
 {
     glCreateProgramPipelines(1, &m_name);

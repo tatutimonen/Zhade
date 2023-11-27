@@ -10,8 +10,6 @@
 #include <assimp/scene.h>
 #include <robin_hood.h>
 
-#include <atomic>
-#include <string>
 #include <vector>
 
 //------------------------------------------------------------------------
@@ -59,15 +57,13 @@ private:
     };
 
     [[nodiscard]] Mesh loadMesh(const aiScene* aiScenePtr, const aiMesh* aiMeshPtr, const fs::path& path,
-        const Model* model) const noexcept;
+        Model* model) const noexcept;
     [[nodiscard]] VerticesLoadInfo loadVertices(const aiMesh* aiMeshPtr) const noexcept;
     [[nodiscard]] IndicesLoadInfo loadIndices(const aiMesh* aiMeshPtr) const noexcept;
     [[nodiscard]] Handle<Texture> loadTexture(const aiMaterial* aiMaterialPtr, aiTextureType textureType,
         const fs::path& dir) const noexcept;
 
     [[nodiscard]] const Buffer* buffer(const Handle<Buffer>& handle) const noexcept { return m_mngr->get(handle); }
-
-    static inline std::atomic_uint32_t s_modelIdCounter = 0;
 
     ResourceManager* m_mngr;
     Handle<Buffer> m_vertexBuffer;

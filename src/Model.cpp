@@ -10,9 +10,8 @@ namespace Zhade
 //------------------------------------------------------------------------
 
 Model::Model(ModelDescriptor desc)
-    : m_id{desc.id},
-      m_meshes{desc.meshes},
-      m_textures{std::move(desc.textures)},
+    : m_meshes{desc.meshes},
+      m_textures{desc.textures},
       m_transformation{desc.transformation},
       m_mngr{desc.mngr},
       m_managed{desc.managed}
