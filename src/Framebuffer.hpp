@@ -15,7 +15,7 @@ class ResourceManager;
 
 struct FramebufferDescriptor
 {
-    TextureDescriptor texture;
+    TextureDescriptor textureDesc;
     GLenum attachment;
     ResourceManager* mngr;
     bool managed = true;
