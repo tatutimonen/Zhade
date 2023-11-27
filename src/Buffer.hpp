@@ -109,10 +109,6 @@ public:
 
     void bind() const noexcept;
     void bindAs(BufferUsage::Type usage) const noexcept;
-<<<<<<< HEAD
-=======
-    void bindBaseAs(GLuint bindingIndex, BufferUsage::Type usage) const noexcept;
->>>>>>> 61fcd7157e2ba21f012052e37935a927eb9e21c7
     void bindBase(GLuint bindingIndex) const noexcept;
     void bindBaseAs(GLuint bindingIndex, BufferUsage::Type usage) const noexcept;
     void bindRange(GLuint bindingIndex, GLintptr byteOffset, GLsizeiptr byteSize) const noexcept;
