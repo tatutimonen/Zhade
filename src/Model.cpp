@@ -29,12 +29,10 @@ Model::~Model()
 
 void Model::freeResources() const noexcept
 {
-    for (const auto& texHandle : m_textures)
-    {
+    for (const auto& texHandle : m_textures) {
         m_mngr->destroy(texHandle);
     }
-    for (auto& mesh : m_meshes)
-    {
+    for (auto& mesh : m_meshes) {
         mesh.alive = false;
     }
 }

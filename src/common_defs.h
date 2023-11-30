@@ -1,11 +1,12 @@
 #ifndef COMMON_DEFS_H
 #define COMMON_DEFS_H
 
-#define CAMERA_BINDING         0
-#define DRAW_METADATA_BINDING  1
-#define MESH_BINDING           2
-#define INDIRECT_BINDING       3
-#define ATOMIC_COUNTER_BINDING 4
+#define VIEW_PROJ_BINDING         0
+#define DRAW_METADATA_BINDING     1
+#define MESH_BINDING              2
+#define INDIRECT_BINDING          3
+#define ATOMIC_COUNTER_BINDING    4
+#define DIRECTIONAL_LIGHT_BINDING 5
 
 #define WORK_GROUP_LOCAL_SIZE_X 256
 #define WORK_GROUP_LOCAL_SIZE_Y 1
@@ -33,7 +34,7 @@ struct Mesh
     GLuint _1;
     glm::mat3x4 transformation;
     MeshTextures textures;
-    bool alive;
+    bool alive;  // TODO: Proper GL type?
 };
 
 struct DrawElementsIndirectCommand
@@ -49,6 +50,13 @@ struct DrawMetadata
 {
     glm::mat3x4 MT;
     MeshTextures textures;
+};
+
+struct DirectionalLightData
+{
+    glm::vec3 direction;
+    GLfloat strength;
+    glm::vec3 color;
 };
 
 #else
@@ -82,6 +90,13 @@ struct DrawMetadata
 {
     mat3x4 MT;
     MeshTextures textures;
+};
+
+struct DirectionalLightData
+{
+    vec3 direction;
+    float strength;
+    vec3 color;
 };
 
 #endif  // __cplusplus

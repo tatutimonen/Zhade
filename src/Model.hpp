@@ -34,6 +34,11 @@ public:
     explicit Model(ModelDescriptor desc);
     ~Model();
 
+    Model(const Model&) = default;
+    Model& operator=(const Model&) = default;
+    Model(Model&&) = delete;
+    Model& operator=(Model&&) = delete;
+
     void freeResources() const noexcept;
 
 private:

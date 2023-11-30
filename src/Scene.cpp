@@ -30,6 +30,9 @@ Scene::Scene(SceneDescriptor desc)
 
 Scene::~Scene()
 {
+    for (const auto& modelHandle : m_models) {
+        m_mngr->destroy(modelHandle);
+    }
     m_mngr->destroy(m_vertexBuffer);
     m_mngr->destroy(m_indexBuffer);
     m_mngr->destroy(m_meshBuffer);
@@ -40,8 +43,7 @@ Scene::~Scene()
 
 void Scene::addModelFromFile(const fs::path& path) const noexcept
 {
-    if (m_modelCache.contains(path) and m_mngr->get(m_modelCache[path]) != nullptr)
-    {
+    if (m_modelCache.contains(path) and m_mngr->get(m_modelCache[path]) != nullptr) {
         m_models.push_back(m_modelCache[path]);
         return;
     }
@@ -53,8 +55,7 @@ void Scene::addModelFromFile(const fs::path& path) const noexcept
     Model* modelPtr = m_mngr->get(model);
 
     Mesh* meshesStart = buffer(m_meshBuffer)->writePtr<Mesh>();
-    for (const aiMesh* aiMeshPtr : std::span(aiScenePtr->mMeshes, aiScenePtr->mNumMeshes))
-    {
+    for (const aiMesh* aiMeshPtr : std::span(aiScenePtr->mMeshes, aiScenePtr->mNumMeshes)) {
         const Mesh mesh = loadMesh(aiScenePtr, aiMeshPtr, path, modelPtr);
         buffer(m_meshBuffer)->pushData(&mesh);
     }
@@ -103,12 +104,11 @@ Mesh Scene::loadMesh(const aiScene* aiScenePtr, const aiMesh* aiMeshPtr, const f
 
 Scene::VerticesLoadInfo Scene::loadVertices(const aiMesh* aiMeshPtr) const noexcept
 {
-    static std::array<uint8_t, KIB_BYTES*2> buf;
+    std::array<uint8_t, KIB_BYTES * 2> buf;
     std::pmr::monotonic_buffer_resource rsrc{buf.data(), buf.size()};
     std::pmr::vector<Vertex> vertices{&rsrc};
 
-    for (uint32_t idx : stdv::iota(0u, aiMeshPtr->mNumVertices))
-    {
+    for (uint32_t idx : stdv::iota(0u, aiMeshPtr->mNumVertices)) {
         vertices.emplace_back(
             util::vec3FromAiVector3D(aiMeshPtr->mVertices[idx]),
             util::vec3FromAiVector3D(aiMeshPtr->mNormals[idx]),
@@ -129,12 +129,11 @@ Scene::VerticesLoadInfo Scene::loadVertices(const aiMesh* aiMeshPtr) const noexc
 
 Scene::IndicesLoadInfo Scene::loadIndices(const aiMesh* aiMeshPtr) const noexcept
 {
-    static std::array<uint8_t, KIB_BYTES> buf;
+    std::array<uint8_t, KIB_BYTES> buf;
     std::pmr::monotonic_buffer_resource rsrc{buf.data(), buf.size()};
     std::pmr::vector<GLuint> indices{&rsrc};
 
-    for (const aiFace& face : std::span(aiMeshPtr->mFaces, aiMeshPtr->mNumFaces))
-    {
+    for (const aiFace& face : std::span(aiMeshPtr->mFaces, aiMeshPtr->mNumFaces)) {
         indices.append_range(std::span(face.mIndices, face.mNumIndices));
     }
 
@@ -152,8 +151,7 @@ Scene::IndicesLoadInfo Scene::loadIndices(const aiMesh* aiMeshPtr) const noexcep
 Handle<Texture> Scene::loadTexture(const aiMaterial* aiMaterialPtr, aiTextureType textureType, const fs::path& dir)
     const noexcept
 {
-    if (aiMaterialPtr->GetTextureCount(textureType) == 0)
-    {
+    if (aiMaterialPtr->GetTextureCount(textureType) == 0) [[unlikely]] {
         return m_defaultTexture;
     }
 

@@ -24,8 +24,7 @@ Texture::Texture(TextureDescriptor desc)
     glSamplerParameteri(m_sampler, GL_TEXTURE_MIN_FILTER, desc.sampler.minFilter);
     glSamplerParameterf(m_sampler, GL_TEXTURE_MAX_ANISOTROPY, desc.sampler.anisotropy);
 
-    if (desc.internalFormat == GL_DEPTH_COMPONENT32F)  // Depth texture?
-    {
+    if (desc.internalFormat == GL_DEPTH_COMPONENT32F) {  // Depth texture?
         glSamplerParameteri(m_sampler, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
         glSamplerParameteri(m_sampler, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
     }
@@ -55,8 +54,7 @@ void Texture::freeResources() const noexcept
 
 Handle<Texture> Texture::fromFile(ResourceManager* mngr, const fs::path& path, TextureDescriptor desc) noexcept
 {
-    if (s_cache.contains(path) and mngr->get(s_cache[path]) != nullptr)
-    {
+    if (s_cache.contains(path) and mngr->get(s_cache[path]) != nullptr) {
         return s_cache[path];
     }
 

@@ -20,8 +20,7 @@ class Stack
 public:
     explicit Stack(size_t capacity = 0)
     {
-        if (capacity > 0) [[likely]] 
-        {
+        if (capacity > 0) [[likely]] {
             resize(capacity);
         }
     }
@@ -37,8 +36,7 @@ public:
 
     T& top()
     {
-        if (m_size == 0) [[unlikely]]
-        {
+        if (m_size == 0) [[unlikely]] {
             std::println("Top of an empty Stack");
         }
         return at(m_size - 1);
@@ -46,8 +44,7 @@ public:
 
     const T& top() const
     {
-        if (m_size == 0) [[unlikely]]
-        {
+        if (m_size == 0) [[unlikely]] {
             std::println("Top of an empty Stack");
         }
         return at(m_size - 1);
@@ -55,8 +52,7 @@ public:
 
     void pop()
     {
-        if (m_size > 0) [[likely]]
-        {
+        if (m_size > 0) [[likely]] {
             --m_size;
         }
     }
@@ -64,8 +60,7 @@ public:
     void push(const T& item) noexcept
     requires std::copyable<T>
     {
-        if (m_size == m_underlying.size()) [[unlikely]]
-        {
+        if (m_size == m_underlying.size()) [[unlikely]] {
             resize();
         }
         at(m_size++) = item;
@@ -74,8 +69,7 @@ public:
     void push(T&& item) noexcept
     requires std::movable<T>
     {
-        if (m_size == m_underlying.size()) [[unlikely]]
-        {
+        if (m_size == m_underlying.size()) [[unlikely]] {
             resize();
         }
         at(m_size++) = item;
@@ -85,8 +79,7 @@ public:
     requires std::constructible_from<T, Args...>
     void emplace(Args&& ...args) noexcept
     {
-        if (m_size == m_underlying.size()) [[unlikely]]
-        {   
+        if (m_size == m_underlying.size()) [[unlikely]] {   
             resize();
         }
         std::construct_at(&this[m_size++], std::forward<Args>(args)...);

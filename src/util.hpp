@@ -65,10 +65,10 @@ namespace util
     const GLuint ys = v.y < 0;
     const GLuint zs = v.z < 0;
     const GLuint ws = v.w < 0;
-    return ws << 31 | (implicit_cast<GLuint>(v.w       + (ws << 1)) &   1) << 30 |
-           zs << 29 | (implicit_cast<GLuint>(v.z * 511 + (zs << 9)) & 511) << 20 |
-           ys << 19 | (implicit_cast<GLuint>(v.y * 511 + (ys << 9)) & 511) << 10 |
-           xs << 9  | (implicit_cast<GLuint>(v.x * 511 + (xs << 9)) & 511);
+    return ws << 31 | (static_cast<GLuint>(v.w       + (ws << 1)) &   1) << 30 |
+           zs << 29 | (static_cast<GLuint>(v.z * 511 + (zs << 9)) & 511) << 20 |
+           ys << 19 | (static_cast<GLuint>(v.y * 511 + (ys << 9)) & 511) << 10 |
+           xs << 9  | (static_cast<GLuint>(v.x * 511 + (xs << 9)) & 511);
 }
 
 [[nodiscard]] inline GLuint makeUnitVec3xPacked() noexcept

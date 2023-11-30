@@ -10,7 +10,7 @@ precision highp int;
 //------------------------------------------------------------------------
 // Outputs.
 
-layout (location = 0) out vec4 Color;
+layout (location = 0) out vec4 FragColor;
 
 //------------------------------------------------------------------------
 // Inputs from previous pipeline stages.
@@ -31,7 +31,7 @@ layout (binding = DRAW_METADATA_BINDING, std430) restrict readonly buffer DrawMe
 
 void main()
 {
-    Color = texture(sampler2D(b_meta[In.drawID].textures.diffuse), In.uv);
+    FragColor = texture(sampler2D(b_meta[In.drawID].textures.diffuse), In.uv);
 }
 
 //------------------------------------------------------------------------

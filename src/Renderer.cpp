@@ -75,7 +75,8 @@ void Renderer::render() const noexcept
 
 void Renderer::populateBuffers() const noexcept
 {
-    glDispatchCompute(util::divup(buffer(m_scene->m_meshBuffer)->size<Mesh>(), WORK_GROUP_LOCAL_SIZE_X), 1, 1);
+    const GLuint numWorkGroups = util::divup(buffer(m_scene->m_meshBuffer)->size<Mesh>(), WORK_GROUP_LOCAL_SIZE_X);
+    glDispatchCompute(numWorkGroups, 1, 1);
 }
 
 //------------------------------------------------------------------------

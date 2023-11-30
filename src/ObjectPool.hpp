@@ -26,18 +26,15 @@ public:
         m_pool.resize(m_size);
         m_generations.resize(m_size);
 
-        for (size_t idx : stdv::iota(0u, m_size) | stdv::reverse)
-        {
+        for (size_t idx : stdv::iota(0u, m_size) | stdv::reverse) {
             m_freeList.push(idx);
         }
     }
 
     ~ObjectPool()
     {
-        if constexpr (requires { T::freeResources(); })
-        {
-            for (const auto& item : m_pool)
-            {
+        if constexpr (requires { T::freeResources(); }) {
+            for (const auto& item : m_pool) {
                 item.freeResources();
             }
         }

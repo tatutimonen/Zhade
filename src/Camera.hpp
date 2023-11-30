@@ -69,7 +69,7 @@ public:
           m_mngr{desc.mngr},
           m_app{desc.app}
     {
-        uniformBuffer()->bindBase(CAMERA_BINDING);
+        uniformBuffer()->bindBase(VIEW_PROJ_BINDING);
         updateView();
         updateProjectivity();
     }
@@ -88,8 +88,9 @@ public:
         const bool moved = move();
         const bool rotated = rotate();
 
-        if (moved or rotated)
+        if (moved or rotated) {
             uniformBuffer()->setData<glm::mat3x4>(&m_matrices.VT, offsetof(Matrices, VT));
+        }
     }
 
     // According to the GLFW input reference.
@@ -114,13 +115,11 @@ private:
 
     void updateProjectivity() const noexcept
     {
-        if constexpr (T == CameraType::PERSPECTIVE)
-        {
+        if constexpr (T == CameraType::PERSPECTIVE) {
             const auto [fov, aspectRatio] = std::get<PerspectiveSettings>(m_varSettings);
             m_matrices.P = glm::perspective(fov, aspectRatio, m_settings.zNear, m_settings.zFar);
         }
-        else if constexpr (T == CameraType::ORTHO)
-        {
+        else if constexpr (T == CameraType::ORTHO) {
             const auto [xmin, xmax, ymin, ymax] = std::get<OrthoSettings>(m_varSettings);
             m_matrices.P = glm::ortho(xmin, xmax, ymin, ymax, m_settings.zNear, m_settings.zFar);
         }
@@ -147,8 +146,7 @@ private:
         if (keys[GLFW_KEY_LEFT_SHIFT])
             m_settings.center += cameraSpeed * -util::makeUnitVec3y();
 
-        if (m_settings.center != centerPrev)
-        {
+        if (m_settings.center != centerPrev) {
             updateView();
             return true;
         }
@@ -167,8 +165,7 @@ private:
         m_settings.target.z = glm::cos(pitch) * glm::sin(yaw);
         m_settings.target = glm::normalize(m_settings.target);
 
-        if (m_settings.target != tarprev)
-        {
+        if (m_settings.target != tarprev) {
             updateView();
             return true;
         }

@@ -20,8 +20,11 @@ Framebuffer::Framebuffer(FramebufferDescriptor desc)
     glCreateFramebuffers(1, &m_name);
     glNamedFramebufferTexture(m_name, desc.attachment, texture()->name(), 0);
 
-    if (glCheckNamedFramebufferStatus(m_name, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) [[unlikely]]
-    {
+    if (desc.attachment == GL_DEPTH_ATTACHMENT or desc.attachment == GL_DEPTH_STENCIL_ATTACHMENT) {
+        glNamedFramebufferDrawBuffer(m_name, GL_NONE);
+    }
+
+    if (glCheckNamedFramebufferStatus(m_name, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) [[unlikely]] {
         std::println("Framebuffer {} is incomplete", m_name);
     }
 }
