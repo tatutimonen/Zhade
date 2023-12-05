@@ -28,12 +28,15 @@ out VERT_OUT {
 //------------------------------------------------------------------------
 // Uniforms etc.
 
-layout (binding = VIEW_PROJ_BINDING, std140) uniform ViewProjBuffer {
-    mat3x4 VT;
-    mat4 P;
-} u_viewProj;
+layout (binding = VIEW_PROJ_BINDING, std140) uniform ViewProj {
+    ViewProjMatrices u_viewProj;
+};
 
-layout (binding = DRAW_METADATA_BINDING, std430) restrict readonly buffer DrawMetadataBuffer {
+layout (binding = HALF_VECTOR_BINDING, std140) uniform HalfVector {
+    vec3 u_halfVector;
+};
+
+layout (binding = DRAW_METADATA_BINDING, std430) restrict readonly buffer DrawMeta {
     DrawMetadata b_meta[];
 };
 
@@ -43,9 +46,9 @@ void main()
 {
     Out.uv = a_uv;
     Out.drawID = gl_DrawID;
-    vec3 modelPos = vec4(a_pos, 1.0) * b_meta[gl_DrawID].MT;
-    vec3 viewModel = vec4(modelPos, 1.0) * u_viewProj.VT;
-    gl_Position = u_viewProj.P * vec4(viewModel, 1.0);
+    vec3 modelPos = vec4(a_pos, 1.0) * b_meta[gl_DrawID].modelMatT;
+    vec3 viewModel = vec4(modelPos, 1.0) * u_viewProj.viewMatT;
+    gl_Position = u_viewProj.projMat * vec4(viewModel, 1.0);
 }
 
 //------------------------------------------------------------------------

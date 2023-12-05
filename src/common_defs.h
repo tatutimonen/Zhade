@@ -2,11 +2,12 @@
 #define COMMON_DEFS_H
 
 #define VIEW_PROJ_BINDING         0
-#define DRAW_METADATA_BINDING     1
-#define MESH_BINDING              2
-#define INDIRECT_BINDING          3
-#define ATOMIC_COUNTER_BINDING    4
-#define DIRECTIONAL_LIGHT_BINDING 5
+#define HALF_VECTOR_BINDING       1
+#define DRAW_METADATA_BINDING     2
+#define MESH_BINDING              3
+#define INDIRECT_BINDING          4
+#define ATOMIC_COUNTER_BINDING    5
+#define DIRECTIONAL_LIGHT_BINDING 6
 
 #define WORK_GROUP_LOCAL_SIZE_X 256
 #define WORK_GROUP_LOCAL_SIZE_Y 1
@@ -21,6 +22,8 @@ extern "C" {
 #include <GL/glew.h>
 }
 
+#include <atomic>
+
 struct MeshTextures
 {
     GLuint64 diffuse;
@@ -31,10 +34,9 @@ struct Mesh
     GLuint numIndices;
     GLuint firstIndex;
     GLuint baseVertex;
-    GLuint _1;
-    glm::mat3x4 transformation;
+    std::atomic_uint32_t refCount = 1;
+    glm::mat3x4 modelMatT;
     MeshTextures textures;
-    bool alive;  // TODO: Proper GL type?
 };
 
 struct DrawElementsIndirectCommand
@@ -48,7 +50,8 @@ struct DrawElementsIndirectCommand
 
 struct DrawMetadata
 {
-    glm::mat3x4 MT;
+    glm::mat3x4 modelMatT;
+    glm::mat3 normalMat;
     MeshTextures textures;
 };
 
@@ -57,6 +60,14 @@ struct DirectionalLightData
     glm::vec3 direction;
     GLfloat strength;
     glm::vec3 color;
+    GLfloat _1;
+    glm::vec3 ambient;
+};
+
+struct ViewProjMatrices
+{
+    glm::mat3x4 viewMatT;
+    glm::mat4 projMat;
 };
 
 #else
@@ -71,10 +82,9 @@ struct Mesh
     uint numIndices;
     uint firstIndex;
     uint baseVertex;
-    uint _1;
-    mat3x4 transformation;
+    uint refCount;
+    mat3x4 modelMatT;
     MeshTextures textures;
-    bool alive;
 };
 
 struct DrawElementsIndirectCommand
@@ -88,7 +98,8 @@ struct DrawElementsIndirectCommand
 
 struct DrawMetadata
 {
-    mat3x4 MT;
+    mat3x4 modelMatT;
+    mat3 normalMat;
     MeshTextures textures;
 };
 
@@ -97,6 +108,14 @@ struct DirectionalLightData
     vec3 direction;
     float strength;
     vec3 color;
+    float _1;
+    vec3 ambient;
+};
+
+struct ViewProjMatrices
+{
+    mat3x4 viewMatT;
+    mat4 projMat;
 };
 
 #endif  // __cplusplus

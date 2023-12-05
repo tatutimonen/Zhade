@@ -44,7 +44,11 @@ Scene::~Scene()
 void Scene::addModelFromFile(const fs::path& path) const noexcept
 {
     if (m_modelCache.contains(path) and m_mngr->get(m_modelCache[path]) != nullptr) {
-        m_models.push_back(m_modelCache[path]);
+        const Handle<Model> modelHandle = m_modelCache[path];
+        m_models.push_back(modelHandle);
+        for (auto& mesh : m_mngr->get(modelHandle)->m_meshes) {
+            ++mesh.refCount;
+        }
         return;
     }
 
@@ -92,11 +96,10 @@ Mesh Scene::loadMesh(const aiScene* aiScenePtr, const aiMesh* aiMeshPtr, const f
         .numIndices = indicesLoadInfo.extent,
         .firstIndex = indicesLoadInfo.base,
         .baseVertex = verticesLoadInfo.base,
-        .transformation = modelPtr->m_transformation,
+        .modelMatT = glm::transpose(modelPtr->m_mat),
         .textures = {
             .diffuse = m_mngr->get(diffuse)->handle()
-        },
-        .alive = true
+        }
     };
 }
 

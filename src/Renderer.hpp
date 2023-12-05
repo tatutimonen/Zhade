@@ -39,6 +39,8 @@ public:
     explicit Renderer(RendererDescriptor desc);
     ~Renderer();
 
+    [[nodiscard]] const Handle<Buffer>& viewProjBufferHandle() const noexcept { return m_viewProjUniformBuffer; }
+
     void render() const noexcept;
 
 private:
@@ -54,6 +56,7 @@ private:
     Handle<Buffer> m_commandBuffer;
     Handle<Buffer> m_drawMetadataBuffer;
     Handle<Buffer> m_atomicDrawCounterBuffer;
+    Handle<Buffer> m_viewProjUniformBuffer;
 };
 
 //------------------------------------------------------------------------

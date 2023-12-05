@@ -47,8 +47,6 @@ int main()
         scene.addModelFromFile(ASSET_PATH / "crytek-sponza" / "sponza.obj");
         //scene.addModelFromFile(ASSET_PATH / "dragon" / "dragon.obj");
 
-        const auto camera = Camera({.mngr = &mngr, .app = &app});
-
         const auto renderer = Renderer({
             .mngr = &mngr,
             .scene = &scene,
@@ -58,6 +56,12 @@ int main()
                 .compPath = SHADER_PATH / "populateBuffers.comp",
                 .managed = false
             }
+        });
+
+        const auto camera = Camera({
+            .uniformBuffer = renderer.viewProjBufferHandle(),
+            .mngr = &mngr,
+            .app = &app
         });
 
         while (not glfwWindowShouldClose(app.getGLCtx()))

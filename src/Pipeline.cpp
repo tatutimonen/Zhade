@@ -38,7 +38,6 @@ Pipeline::~Pipeline()
 void Pipeline::freeResources() const noexcept
 {
     glDeleteProgramPipelines(1, &m_name);
-
     for (const auto program : m_stages) {
         if (glIsProgram(program)) {
             glDeleteProgram(program);
@@ -68,7 +67,6 @@ std::string Pipeline::readFileContents(const fs::path& path) const noexcept
 GLuint Pipeline::createShaderProgramInclude(PipelineStage::Type stage, const fs::path& shaderPath) const noexcept
 {
     const GLuint shader = glCreateShader(PipelineStage2GLShader[stage]);
-
     const std::string shaderSource = readFileContents(shaderPath);
     const char* shaderSourceRaw = shaderSource.c_str();
     glShaderSource(shader, 1, &shaderSourceRaw, nullptr);
@@ -84,7 +82,6 @@ GLuint Pipeline::createShaderProgramInclude(PipelineStage::Type stage, const fs:
     }
 
     const GLuint program = glCreateProgram();
-
     glProgramParameteri(program, GL_PROGRAM_SEPARABLE, GL_TRUE);
     glAttachShader(program, shader);
     glLinkProgram(program);

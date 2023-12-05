@@ -1,6 +1,8 @@
 #version 460 core
 #extension GL_ARB_gpu_shader_int64 : require
 #extension GL_ARB_shading_language_include : require
+precision lowp float;
+precision highp int;
 
 #include "common_defs.h"
 
@@ -15,18 +17,18 @@ layout (
 //------------------------------------------------------------------------
 // Inputs.
 
-layout (binding = MESH_BINDING, std430) restrict readonly buffer MeshBuffer {
+layout (binding = MESH_BINDING, std140) restrict readonly buffer MeshBlock {
     Mesh b_mesh[];
 };
 
 //------------------------------------------------------------------------
 // Outputs.
 
-layout (binding = INDIRECT_BINDING, std430) restrict writeonly buffer DrawIndirectBuffer {
+layout (binding = INDIRECT_BINDING, std430) restrict writeonly buffer DrawIndirect {
     DrawElementsIndirectCommand b_cmd[];
 };
 
-layout (binding = DRAW_METADATA_BINDING, std430) restrict writeonly buffer DrawMetadataBuffer {
+layout (binding = DRAW_METADATA_BINDING, std430) restrict writeonly buffer DrawMeta {
     DrawMetadata b_meta[];
 };
 
@@ -38,15 +40,14 @@ void main()
 {
     uint idx = atomicCounterIncrement(drawCount);
 
-    DrawElementsIndirectCommand cmd;
-    cmd.count = b_mesh[idx].numIndices;
-    cmd.instanceCount = 1;
-    cmd.firstIndex = b_mesh[idx].firstIndex;
-    cmd.baseVertex = b_mesh[idx].baseVertex;
-    cmd.baseInstance = 0;
+    b_cmd[idx].count = b_mesh[idx].numIndices;
+    b_cmd[idx].instanceCount = 1;
+    b_cmd[idx].firstIndex = b_mesh[idx].firstIndex;
+    b_cmd[idx].baseVertex = b_mesh[idx].baseVertex;
+    b_cmd[idx].baseInstance = 0;
 
-    b_cmd[idx] = cmd;
-    b_meta[idx].MT = b_mesh[idx].transformation;
+    b_meta[idx].modelMatT = b_mesh[idx].modelMatT;
+    b_meta[idx].normalMat = inverse(mat3(b_mesh[idx].modelMatT));
     b_meta[idx].textures = b_mesh[idx].textures;
 }
 

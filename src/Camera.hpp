@@ -3,6 +3,7 @@
 #include "App.hpp"
 #include "Handle.hpp"
 #include "ResourceManager.hpp"
+#include "common.hpp"
 #include "util.hpp"
 
 #include <glm/glm.hpp>
@@ -52,6 +53,7 @@ struct CameraDescriptor
 {
     CameraSettings settings{};
     VarCameraSettings varSettings = PerspectiveSettings{};
+    Handle<Buffer> uniformBuffer;
     ResourceManager* mngr;
     App* app;
 };
@@ -65,18 +67,12 @@ public:
     explicit Camera(CameraDescriptor desc)
         : m_settings{desc.settings},
           m_varSettings{desc.varSettings},
-          m_uniformBuffer{desc.mngr->createBuffer({.byteSize = sizeof(Matrices), .usage = BufferUsage::UNIFORM})},
+          m_uniformBuffer{desc.uniformBuffer},
           m_mngr{desc.mngr},
           m_app{desc.app}
     {
-        uniformBuffer()->bindBase(VIEW_PROJ_BINDING);
         updateView();
         updateProjectivity();
-    }
-
-    ~Camera()
-    {
-        m_mngr->destroy(m_uniformBuffer);
     }
 
     [[nodiscard]] const glm::vec3& center() const noexcept { return m_settings.center; }
@@ -89,7 +85,7 @@ public:
         const bool rotated = rotate();
 
         if (moved or rotated) {
-            uniformBuffer()->setData<glm::mat3x4>(&m_matrices.VT, offsetof(Matrices, VT));
+            uniformBuffer()->setData<glm::mat3x4>(&m_matrices.viewMatT, offsetof(ViewProjMatrices, viewMatT));
         }
     }
 
@@ -100,30 +96,24 @@ public:
     }
 
 private:
-    struct Matrices
-    {
-        glm::mat3x4 VT;
-        glm::mat4 P;
-    };
-
     const Buffer* uniformBuffer() const noexcept { return m_mngr->get(m_uniformBuffer); }
 
     void updateView() const noexcept
     {
-        m_matrices.VT = glm::transpose(glm::lookAt(m_settings.center, m_settings.center + m_settings.target, m_settings.up));
+        m_matrices.viewMatT = glm::transpose(glm::lookAt(m_settings.center, m_settings.center + m_settings.target, m_settings.up));
     }
 
     void updateProjectivity() const noexcept
     {
         if constexpr (T == CameraType::PERSPECTIVE) {
             const auto [fov, aspectRatio] = std::get<PerspectiveSettings>(m_varSettings);
-            m_matrices.P = glm::perspective(fov, aspectRatio, m_settings.zNear, m_settings.zFar);
+            m_matrices.projMat = glm::perspective(fov, aspectRatio, m_settings.zNear, m_settings.zFar);
         }
         else if constexpr (T == CameraType::ORTHO) {
             const auto [xmin, xmax, ymin, ymax] = std::get<OrthoSettings>(m_varSettings);
-            m_matrices.P = glm::ortho(xmin, xmax, ymin, ymax, m_settings.zNear, m_settings.zFar);
+            m_matrices.projMat = glm::ortho(xmin, xmax, ymin, ymax, m_settings.zNear, m_settings.zFar);
         }
-        uniformBuffer()->setData<glm::mat4>(&m_matrices.P, offsetof(Matrices, P));
+        uniformBuffer()->setData<glm::mat4>(&m_matrices.projMat, offsetof(ViewProjMatrices, projMat));
     }
 
     bool move() const noexcept
@@ -177,7 +167,7 @@ private:
 
     mutable CameraSettings m_settings;
     mutable VarCameraSettings m_varSettings;
-    mutable Matrices m_matrices;
+    mutable ViewProjMatrices m_matrices;
     Handle<Buffer> m_uniformBuffer;
     ResourceManager* m_mngr;
     App* m_app;

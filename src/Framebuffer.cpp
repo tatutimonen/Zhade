@@ -20,7 +20,7 @@ Framebuffer::Framebuffer(FramebufferDescriptor desc)
     glCreateFramebuffers(1, &m_name);
     glNamedFramebufferTexture(m_name, desc.attachment, texture()->name(), 0);
 
-    if (desc.attachment == GL_DEPTH_ATTACHMENT or desc.attachment == GL_DEPTH_STENCIL_ATTACHMENT) {
+    if (desc.attachment == GL_DEPTH_ATTACHMENT) {
         glNamedFramebufferDrawBuffer(m_name, GL_NONE);
     }
 
@@ -42,7 +42,7 @@ Framebuffer::~Framebuffer()
 void Framebuffer::freeResources() const noexcept
 {
     m_mngr->destroy(m_texture);
-    if (m_name != 0) [[likely]] glDeleteFramebuffers(1, &m_name);
+    glDeleteFramebuffers(1, &m_name);
 }
 
 //------------------------------------------------------------------------

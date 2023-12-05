@@ -4,6 +4,7 @@
 #include "Framebuffer.hpp"
 #include "Handle.hpp"
 #include "Pipeline.hpp"
+#include "common.hpp"
 
 #include <glm/glm.hpp>
 
@@ -19,6 +20,8 @@ class ResourceManager;
 struct DirectionalLightDescriptor
 {
     DirectionalLightData data;
+    glm::vec3 position{1600.0f, 5300.0f, 920.0f};
+    glm::vec3 target{};
     glm::ivec2 shadowMapDims;
     PipelineDescriptor shadowPassDesc;
     ResourceManager* mngr;
@@ -47,6 +50,8 @@ private:
     [[nodiscard]] const Pipeline* pipeline() const noexcept;
 
     DirectionalLightData m_data;
+    glm::ivec2 m_shadowMapDims;
+    ViewProjMatrices m_matrices;
     Handle<Framebuffer> m_framebuffer;
     Handle<Buffer> m_uniformBuffer;
     Handle<Pipeline> m_pipeline;

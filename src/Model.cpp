@@ -12,7 +12,7 @@ namespace Zhade
 Model::Model(ModelDescriptor desc)
     : m_meshes{desc.meshes},
       m_textures{desc.textures},
-      m_transformation{desc.transformation},
+      m_mat{desc.mat},
       m_mngr{desc.mngr},
       m_managed{desc.managed}
 {}
@@ -33,7 +33,7 @@ void Model::freeResources() const noexcept
         m_mngr->destroy(texHandle);
     }
     for (auto& mesh : m_meshes) {
-        mesh.alive = false;
+        --mesh.refCount;
     }
 }
 
