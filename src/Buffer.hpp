@@ -77,7 +77,6 @@ public:
     [[nodiscard]] GLuint name() const noexcept { return m_name; }
     [[nodiscard]] GLsizei byteSize() const noexcept { return m_writeOffset; }
     [[nodiscard]] GLsizei wholeByteSize() const noexcept { return m_wholeByteSize; }
-    [[nodiscard]] bool baseOrRangeBindable() const noexcept;
 
     template<typename T>
     [[nodiscard]] T* ptr() const noexcept { return std::bit_cast<T*>(m_ptr); }
