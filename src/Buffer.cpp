@@ -1,8 +1,5 @@
 #include "Buffer.hpp"
 
-#include <cstring>
-#include <print>
-
 //------------------------------------------------------------------------
 
 namespace Zhade
@@ -38,16 +35,6 @@ void Buffer::freeResources() const noexcept
 
 //------------------------------------------------------------------------
 
-bool Buffer::baseOrRangeBindable() const noexcept
-{
-    return m_usage == BufferUsage::UNIFORM
-        or m_usage == BufferUsage::STORAGE
-        or m_usage == BufferUsage::ATOMIC_COUNTER
-        or m_usage == BufferUsage::PARAMETER;
-}
-
-//------------------------------------------------------------------------
-
 void Buffer::bind() const noexcept
 {
     glBindBuffer(BufferUsage2GLenum[m_usage], m_name);
@@ -64,10 +51,6 @@ void Buffer::bindAs(BufferUsage::Type usage) const noexcept
 
 void Buffer::bindBase(GLuint bindingIndex) const noexcept
 {
-    if (not baseOrRangeBindable()) [[unlikely]] {
-        std::println("Bind base of non-UBO or non-SSBO");
-        return;
-    }
     glBindBufferBase(BufferUsage2GLenum[m_usage], bindingIndex, m_name);
 }
 
@@ -82,10 +65,6 @@ void Buffer::bindBaseAs(GLuint bindingIndex, BufferUsage::Type usage) const noex
 
 void Buffer::bindRange(GLuint bindingIndex, GLintptr byteOffset, GLsizeiptr byteSize) const noexcept
 {
-    if (not baseOrRangeBindable()) [[unlikely]] {
-        std::println("Bind range of non-UBO or non-SSBO");
-        return;
-    }
     glBindBufferRange(BufferUsage2GLenum[m_usage], bindingIndex, m_name, byteOffset, byteSize);
 }
 

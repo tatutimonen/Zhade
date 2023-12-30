@@ -17,13 +17,13 @@ namespace Zhade
 
 Renderer::Renderer(RendererDescriptor desc)
     : m_mngr{desc.mngr},
-      m_scene{desc.scene},
+      m_scene{Scene(desc.sceneDesc)},
       m_mainPipeline{Pipeline(desc.mainPipelineDesc)}
 {
     glCreateVertexArrays(1, &m_vao);
 
-    glVertexArrayVertexBuffer(m_vao, 0, buffer(m_scene->m_vertexBuffer)->name(), 0, sizeof(Vertex));
-    glVertexArrayElementBuffer(m_vao, buffer(m_scene->m_indexBuffer)->name());
+    glVertexArrayVertexBuffer(m_vao, 0, buffer(m_scene.m_vertexBuffer)->name(), 0, sizeof(Vertex));
+    glVertexArrayElementBuffer(m_vao, buffer(m_scene.m_indexBuffer)->name());
 
     glEnableVertexArrayAttrib(m_vao, 0);
     glEnableVertexArrayAttrib(m_vao, 1);
@@ -47,7 +47,7 @@ Renderer::Renderer(RendererDescriptor desc)
     buffer(m_commandBuffer)->bind();
     buffer(m_commandBuffer)->bindBaseAs(INDIRECT_BINDING, BufferUsage::STORAGE);
     buffer(m_drawMetadataBuffer)->bindBase(DRAW_METADATA_BINDING);
-    buffer(m_scene->m_meshBuffer)->bindBase(MESH_BINDING);
+    buffer(m_scene.m_meshBuffer)->bindBase(MESH_BINDING);
     buffer(m_atomicDrawCounterBuffer)->bindBase(ATOMIC_COUNTER_BINDING);
     buffer(m_atomicDrawCounterBuffer)->bindAs(BufferUsage::PARAMETER);
     buffer(m_viewProjUniformBuffer)->bindBase(VIEW_PROJ_BINDING);
@@ -68,7 +68,7 @@ Renderer::~Renderer()
 void Renderer::render() const noexcept
 {
     populateBuffers();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMultiDrawElementsIndirectCount(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, 0, MAX_DRAWS, 0);
     clearDrawCounter();
 }
@@ -77,7 +77,7 @@ void Renderer::render() const noexcept
 
 void Renderer::populateBuffers() const noexcept
 {
-    const size_t numMeshes = buffer(m_scene->m_meshBuffer)->size<Mesh>();
+    const size_t numMeshes = buffer(m_scene.m_meshBuffer)->size<Mesh>();
     glDispatchCompute(util::divup(numMeshes, WORK_GROUP_LOCAL_SIZE_X), 1, 1);
 }
 

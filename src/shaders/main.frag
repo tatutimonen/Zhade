@@ -25,6 +25,14 @@ layout (binding = DRAW_METADATA_BINDING, std430) restrict readonly buffer DrawMe
     DrawMetadata b_meta[];
 };
 
+layout (binding = DIRECTIONAL_LIGHT_PROPS_BINDING, std430) restrict readonly buffer SunLight {
+    DirectionalLightProperties b_sunLight;
+};
+
+layout (binding = DIRECTIONAL_LIGHT_DEPTH_TEXTURE_BINDING, std140) uniform SunLightDepthTexture {
+    sampler2D u_sunDepthTexture;
+};
+
 //------------------------------------------------------------------------
 
 void main()

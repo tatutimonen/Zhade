@@ -15,7 +15,7 @@ layout (
 //------------------------------------------------------------------------
 // Inputs.
 
-layout (binding = MESH_BINDING, std140) restrict readonly buffer MeshBlock {
+layout (binding = MESH_BINDING, std140) restrict readonly buffer Meshes {
     Mesh b_mesh[];
 };
 
@@ -37,6 +37,8 @@ layout (binding = ATOMIC_COUNTER_BINDING) uniform atomic_uint drawCount;
 void main()
 {
     uint idx = atomicCounterIncrement(drawCount);
+
+    if (b_mesh[idx].refCount == 0) return;
 
     b_cmd[idx].count = b_mesh[idx].numIndices;
     b_cmd[idx].instanceCount = 1;

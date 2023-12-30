@@ -26,6 +26,7 @@ struct SamplerDescriptor
 struct TextureDescriptor
 {
     glm::ivec2 dims{256, 256};
+    bool isCubemap = false;
     GLsizei levels = 8;
     GLenum internalFormat = GL_RGBA8;
     SamplerDescriptor sampler{};
@@ -50,13 +51,9 @@ public:
     [[nodiscard]] GLuint64 handle() const noexcept { return m_handle; }
     [[nodiscard]] const glm::ivec2& dims() const noexcept { return m_dims; }
 
-    void setData(const void* data) const noexcept
-    {
-        glTextureSubImage2D(m_texture, 0, 0, 0, m_dims.x, m_dims.y, GL_RGBA, GL_UNSIGNED_BYTE, data);
-    }
-
     void freeResources() const noexcept;
     void generateMipmap() const noexcept { glGenerateTextureMipmap(m_texture); }
+    void setData(const void* data, GLsizei depth = 0) const noexcept;
 
     [[nodiscard]] static Handle<Texture> fromFile(ResourceManager* mngr, const fs::path& path,
         TextureDescriptor desc = TextureDescriptor{}) noexcept;
@@ -69,6 +66,7 @@ private:
     GLuint m_sampler = 0;
     GLuint64 m_handle = 0;
     glm::ivec2 m_dims{};
+    bool m_isCubemap = false;
     bool m_managed = true;
 };
 
