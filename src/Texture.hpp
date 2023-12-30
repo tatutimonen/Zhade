@@ -26,7 +26,6 @@ struct SamplerDescriptor
 struct TextureDescriptor
 {
     glm::ivec2 dims{256, 256};
-    bool isCubemap = false;
     GLsizei levels = 8;
     GLenum internalFormat = GL_RGBA8;
     SamplerDescriptor sampler{};
@@ -66,7 +65,6 @@ private:
     GLuint m_sampler = 0;
     GLuint64 m_handle = 0;
     glm::ivec2 m_dims{};
-    bool m_isCubemap = false;
     bool m_managed = true;
 };
 
