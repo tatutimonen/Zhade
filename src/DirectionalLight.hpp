@@ -19,12 +19,12 @@ class ResourceManager;
 
 struct DirectionalLightDescriptor
 {
-    DirectionalLightData data;
+    ResourceManager* mngr;
+    DirectionalLightProperties props;
     glm::vec3 position{1600.0f, 5300.0f, 920.0f};
     glm::vec3 target{};
     glm::ivec2 shadowMapDims;
     PipelineDescriptor shadowPassDesc;
-    ResourceManager* mngr;
 };
 
 //------------------------------------------------------------------------
@@ -40,22 +40,23 @@ public:
     DirectionalLight(DirectionalLight&&) = delete;
     DirectionalLight& operator=(DirectionalLight&&) = delete;
 
-    [[nodiscard]] const glm::vec3& direction() const noexcept { return m_data.direction; }
+    [[nodiscard]] const glm::vec3& direction() const noexcept { return m_props.direction; }
 
     void prepareForRendering() const noexcept;
 
 private:
     [[nodiscard]] const Framebuffer* framebuffer() const noexcept;
-    [[nodiscard]] const Buffer* uniformBuffer() const noexcept;
+    [[nodiscard]] const Buffer* buffer(const Handle<Buffer>& handle) const noexcept;
     [[nodiscard]] const Pipeline* pipeline() const noexcept;
 
-    DirectionalLightData m_data;
+    ResourceManager* m_mngr;
+    DirectionalLightProperties m_props;
     glm::ivec2 m_shadowMapDims;
     ViewProjMatrices m_matrices;
     Handle<Framebuffer> m_framebuffer;
-    Handle<Buffer> m_uniformBuffer;
+    Handle<Buffer> m_propsBuffer;
+    Handle<Buffer> m_depthTextureBuffer;
     Handle<Pipeline> m_pipeline;
-    ResourceManager* m_mngr;
 };
 
 //------------------------------------------------------------------------

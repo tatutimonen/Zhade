@@ -18,7 +18,8 @@ namespace Zhade
 //------------------------------------------------------------------------
 
 Scene::Scene(SceneDescriptor desc)
-    : m_mngr{desc.mngr}
+    : m_sunLight{DirectionalLight(desc.sunLightDesc)},
+      m_mngr{desc.mngr}
 {
     m_vertexBuffer = m_mngr->createBuffer(desc.vertexBufferDesc);
     m_indexBuffer = m_mngr->createBuffer(desc.indexBufferDesc);

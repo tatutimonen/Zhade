@@ -47,6 +47,8 @@ private:
     Handle<Texture> m_texture{};
     ResourceManager* m_mngr = nullptr;
     bool m_managed = true;
+
+    friend class Renderer;
 };
 
 //------------------------------------------------------------------------

@@ -19,7 +19,7 @@ namespace Zhade
 struct RendererDescriptor
 {
     ResourceManager* mngr;
-    Scene* scene;
+    SceneDescriptor sceneDesc;
     BufferDescriptor commandBufferDesc{
         .byteSize = MAX_DRAWS * sizeof(DrawElementsIndirectCommand),
         .usage = BufferUsage::INDIRECT
@@ -39,6 +39,7 @@ public:
     explicit Renderer(RendererDescriptor desc);
     ~Renderer();
 
+    [[nodiscard]] const Scene& scene() const noexcept { return m_scene; }
     [[nodiscard]] const Handle<Buffer>& viewProjBufferHandle() const noexcept { return m_viewProjUniformBuffer; }
 
     void render() const noexcept;
@@ -50,7 +51,7 @@ private:
     void clearDrawCounter() const noexcept;
 
     ResourceManager* m_mngr;
-    Scene* m_scene;
+    Scene m_scene;
     Pipeline m_mainPipeline;
     GLuint m_vao;
     Handle<Buffer> m_commandBuffer;

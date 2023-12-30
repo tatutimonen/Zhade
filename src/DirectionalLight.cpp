@@ -11,7 +11,7 @@ namespace Zhade
 //------------------------------------------------------------------------
 
 DirectionalLight::DirectionalLight(DirectionalLightDescriptor desc)
-    : m_data{desc.data},
+    : m_props{desc.props},
       m_shadowMapDims{desc.shadowMapDims},
       m_mngr{desc.mngr}
 {
@@ -39,12 +39,18 @@ DirectionalLight::DirectionalLight(DirectionalLightDescriptor desc)
         .mngr = m_mngr
     });
 
-    m_uniformBuffer = m_mngr->createBuffer({
-        .byteSize = sizeof(DirectionalLightData),
+    m_propsBuffer = m_mngr->createBuffer({
+        .byteSize = sizeof(DirectionalLightProperties),
+        .usage = BufferUsage::STORAGE
+    });
+    buffer(m_propsBuffer)->bindBase(DIRECTIONAL_LIGHT_PROPS_BINDING);
+    buffer(m_propsBuffer)->setData(&m_props);
+
+    m_depthTextureBuffer = m_mngr->createBuffer({
+        .byteSize = sizeof(GLuint64),
         .usage = BufferUsage::UNIFORM
     });
-    uniformBuffer()->bindBase(DIRECTIONAL_LIGHT_BINDING);
-    uniformBuffer()->setData(&m_data);
+    buffer(m_depthTextureBuffer)->bindBase(DIRECTIONAL_LIGHT_DEPTH_TEXTURE_BINDING);
 
     m_pipeline = m_mngr->createPipeline(desc.shadowPassDesc);
 }
@@ -54,7 +60,8 @@ DirectionalLight::DirectionalLight(DirectionalLightDescriptor desc)
 DirectionalLight::~DirectionalLight()
 {
     m_mngr->destroy(m_framebuffer);
-    m_mngr->destroy(m_uniformBuffer);
+    m_mngr->destroy(m_propsBuffer);
+    m_mngr->destroy(m_depthTextureBuffer);
     m_mngr->destroy(m_pipeline);
 }
 
@@ -67,9 +74,9 @@ const Framebuffer* DirectionalLight::framebuffer() const noexcept
 
 //------------------------------------------------------------------------
 
-const Buffer* DirectionalLight::uniformBuffer() const noexcept
+const Buffer* DirectionalLight::buffer(const Handle<Buffer>& handle) const noexcept
 {
-    return m_mngr->get(m_uniformBuffer);
+    return m_mngr->get(handle);
 }
 
 //------------------------------------------------------------------------

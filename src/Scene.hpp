@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Buffer.hpp"
+#include "DirectionalLight.hpp"
 #include "Handle.hpp"
 #include "Model.hpp"
 #include "ResourceManager.hpp"
@@ -25,6 +26,7 @@ struct SceneDescriptor
     BufferDescriptor vertexBufferDesc{.byteSize = GIB_BYTES/2, .usage = BufferUsage::VERTEX};
     BufferDescriptor indexBufferDesc{.byteSize = GIB_BYTES/2, .usage = BufferUsage::INDEX};
     BufferDescriptor meshBufferDesc{.byteSize = GIB_BYTES/4, .usage = BufferUsage::STORAGE};
+    DirectionalLightDescriptor sunLightDesc;
 };
 
 //------------------------------------------------------------------------
@@ -65,13 +67,14 @@ private:
 
     [[nodiscard]] const Buffer* buffer(const Handle<Buffer>& handle) const noexcept { return m_mngr->get(handle); }
 
-    ResourceManager* m_mngr;
     Handle<Buffer> m_vertexBuffer;
     Handle<Buffer> m_indexBuffer;
     Handle<Buffer> m_meshBuffer;
+    DirectionalLight m_sunLight;
     Handle<Texture> m_defaultTexture;
     mutable std::vector<Handle<Model>> m_models;
     mutable robin_hood::unordered_map<fs::path, Handle<Model>> m_modelCache;
+    ResourceManager* m_mngr;
 
     friend class Renderer;
 };

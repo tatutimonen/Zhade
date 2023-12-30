@@ -1,19 +1,21 @@
 #ifndef COMMON_DEFS_H
 #define COMMON_DEFS_H
 
-#define VIEW_PROJ_BINDING         0
-#define HALF_VECTOR_BINDING       1
-#define DRAW_METADATA_BINDING     2
-#define MESH_BINDING              3
-#define INDIRECT_BINDING          4
-#define ATOMIC_COUNTER_BINDING    5
-#define DIRECTIONAL_LIGHT_BINDING 6
+#define VIEW_PROJ_BINDING                       0
+#define HALF_VECTOR_BINDING                     1
+#define DRAW_METADATA_BINDING                   2
+#define MESH_BINDING                            3
+#define INDIRECT_BINDING                        4
+#define ATOMIC_COUNTER_BINDING                  5
+#define DIRECTIONAL_LIGHT_PROPS_BINDING         6
+#define DIRECTIONAL_LIGHT_DEPTH_TEXTURE_BINDING 7
 
 #define WORK_GROUP_LOCAL_SIZE_X 256
-#define WORK_GROUP_LOCAL_SIZE_Y 1
-#define WORK_GROUP_LOCAL_SIZE_Z 1
+#define WORK_GROUP_LOCAL_SIZE_Y   1
+#define WORK_GROUP_LOCAL_SIZE_Z   1
 
 #define MAX_DRAWS (1 << 24)
+#define MAX_LIGHTS (1 + 8)  // Sun + point lights.
 
 #ifdef __cplusplus
 
@@ -55,7 +57,7 @@ struct DrawMetadata
     MeshTextures textures;
 };
 
-struct DirectionalLightData
+struct DirectionalLightProperties
 {
     glm::vec3 direction;
     GLfloat strength;
@@ -103,7 +105,7 @@ struct DrawMetadata
     MeshTextures textures;
 };
 
-struct DirectionalLightData
+struct DirectionalLightProperties
 {
     vec3 direction;
     float strength;

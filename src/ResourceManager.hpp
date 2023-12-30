@@ -49,11 +49,6 @@ public:
         return m_framebuffers.allocate(desc);
     }
     
-    [[nodiscard]] Handle<Framebuffer> createFramebuffer() const noexcept
-    {
-        return m_framebuffers.allocate();
-    }
-    
     [[nodiscard]] Handle<Model> createModel(ModelDescriptor desc) const noexcept
     {
         return m_models.allocate(desc);

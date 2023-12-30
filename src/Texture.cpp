@@ -14,8 +14,13 @@ Texture::Texture(TextureDescriptor desc)
     : m_dims{desc.dims},
       m_managed{desc.managed}
 {
-    glCreateTextures(GL_TEXTURE_2D, 1, &m_texture);
-    glTextureStorage2D(m_texture, desc.levels, desc.internalFormat, m_dims.x, m_dims.y);
+    if (m_isCubemap) [[unlikely]] {
+        glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_texture);
+        glTextureStorage3D(m_texture, desc.levels, desc.internalFormat, m_dims.x, m_dims.y, 6);
+    } else {
+        glCreateTextures(GL_TEXTURE_2D, 1, &m_texture);
+        glTextureStorage2D(m_texture, desc.levels, desc.internalFormat, m_dims.x, m_dims.y);
+    }
 
     glCreateSamplers(1, &m_sampler);
     glSamplerParameteri(m_sampler, GL_TEXTURE_WRAP_S, desc.sampler.wrapS);
@@ -24,7 +29,7 @@ Texture::Texture(TextureDescriptor desc)
     glSamplerParameteri(m_sampler, GL_TEXTURE_MIN_FILTER, desc.sampler.minFilter);
     glSamplerParameterf(m_sampler, GL_TEXTURE_MAX_ANISOTROPY, desc.sampler.anisotropy);
 
-    if (desc.internalFormat == GL_DEPTH_COMPONENT32F) {  // Depth texture?
+    if (desc.internalFormat == GL_DEPTH_COMPONENT32F) [[unlikely]] {  // Depth texture?
         glSamplerParameteri(m_sampler, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
         glSamplerParameteri(m_sampler, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
     }
@@ -48,6 +53,17 @@ void Texture::freeResources() const noexcept
     glMakeTextureHandleNonResidentARB(m_handle);
     glDeleteTextures(1, &m_texture);
     glDeleteSamplers(1, &m_sampler);
+}
+
+//------------------------------------------------------------------------
+
+void Texture::setData(const void* data, GLsizei depth) const noexcept
+{
+    if (m_isCubemap) [[unlikely]] {
+        glTextureSubImage3D(m_texture, 0, 0, 0, 0, m_dims.x, m_dims.y, depth, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    } else {
+        glTextureSubImage2D(m_texture, 0, 0, 0, m_dims.x, m_dims.y, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    }
 }
 
 //------------------------------------------------------------------------
