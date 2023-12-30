@@ -14,13 +14,8 @@ Texture::Texture(TextureDescriptor desc)
     : m_dims{desc.dims},
       m_managed{desc.managed}
 {
-    if (m_isCubemap) [[unlikely]] {
-        glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_texture);
-        glTextureStorage3D(m_texture, desc.levels, desc.internalFormat, m_dims.x, m_dims.y, 6);
-    } else {
-        glCreateTextures(GL_TEXTURE_2D, 1, &m_texture);
-        glTextureStorage2D(m_texture, desc.levels, desc.internalFormat, m_dims.x, m_dims.y);
-    }
+    glCreateTextures(GL_TEXTURE_2D, 1, &m_texture);
+    glTextureStorage2D(m_texture, desc.levels, desc.internalFormat, m_dims.x, m_dims.y);
 
     glCreateSamplers(1, &m_sampler);
     glSamplerParameteri(m_sampler, GL_TEXTURE_WRAP_S, desc.sampler.wrapS);
@@ -59,11 +54,7 @@ void Texture::freeResources() const noexcept
 
 void Texture::setData(const void* data, GLsizei depth) const noexcept
 {
-    if (m_isCubemap) [[unlikely]] {
-        glTextureSubImage3D(m_texture, 0, 0, 0, 0, m_dims.x, m_dims.y, depth, GL_RGBA, GL_UNSIGNED_BYTE, data);
-    } else {
-        glTextureSubImage2D(m_texture, 0, 0, 0, m_dims.x, m_dims.y, GL_RGBA, GL_UNSIGNED_BYTE, data);
-    }
+    glTextureSubImage2D(m_texture, 0, 0, 0, m_dims.x, m_dims.y, GL_RGBA, GL_UNSIGNED_BYTE, data);
 }
 
 //------------------------------------------------------------------------
