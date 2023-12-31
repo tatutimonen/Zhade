@@ -8,7 +8,7 @@
 
    1. Clone the repository, along with its submodules (`--recurse-submodules`)
 
-   2. Do `./vcpkg/bootstrap-vcpkg.sh -disableMetrics` or `.\vcpkg\bootstrap-vcpkg.bat -disableMetrics` depending on your platform
+   2. Do `.\vcpkg\bootstrap-vcpkg.bat -disableMetrics` or `./vcpkg/bootstrap-vcpkg.sh -disableMetrics` depending on your platform
 
    3. Do `mkdir build; cd build; cmake ..` to generate platform-specific project files
 
