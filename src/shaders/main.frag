@@ -35,11 +35,11 @@ layout (binding = DIRECTIONAL_LIGHT_DEPTH_TEXTURE_BINDING, std140) uniform SunLi
 
 //------------------------------------------------------------------------
 
-#define textureSampler(textureType) sampler2D(b_meta[In.drawID].textures.textureType)
+#define makeSampler2D(textureType) sampler2D(b_meta[In.drawID].textures.textureType)
 
 void main()
 {
-    FragColor = texture(textureSampler(diffuse), In.uv);
+    FragColor = texture(makeSampler2D(diffuse), In.uv);
 }
 
 //------------------------------------------------------------------------
