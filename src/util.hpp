@@ -59,7 +59,7 @@ namespace util
 }
 
 // Adapted from: https://www.gamedev.net/forums/topic/685081-normal-vector-artifacts-with-nvmeshmender/5326137/.
-[[nodiscard]] inline GLuint vec4_to_INT_2_10_10_10_REV(const glm::vec4& v) noexcept
+[[nodiscard]] inline GLuint vec4ToINT_2_10_10_10_REV(const glm::vec4& v) noexcept
 {
     const GLuint xs = v.x < 0;
     const GLuint ys = v.y < 0;
@@ -68,37 +68,37 @@ namespace util
     return ws << 31 | (static_cast<GLuint>(v.w       + (ws << 1)) &   1) << 30 |
            zs << 29 | (static_cast<GLuint>(v.z * 511 + (zs << 9)) & 511) << 20 |
            ys << 19 | (static_cast<GLuint>(v.y * 511 + (ys << 9)) & 511) << 10 |
-           xs << 9  | (static_cast<GLuint>(v.x * 511 + (xs << 9)) & 511);
+           xs <<  9 | (static_cast<GLuint>(v.x * 511 + (xs << 9)) & 511);
 }
 
 [[nodiscard]] inline GLuint makeUnitVec3xPacked() noexcept
 {
-    return vec4_to_INT_2_10_10_10_REV(glm::vec4(makeUnitVec3x(), 0.0f));
+    return vec4ToINT_2_10_10_10_REV(glm::vec4(makeUnitVec3x(), 0.0f));
 }
 
 [[nodiscard]] inline GLuint makeNegUnitVec3xPacked() noexcept
 {
-    return vec4_to_INT_2_10_10_10_REV(glm::vec4(-makeUnitVec3x(), 0.0f));
+    return vec4ToINT_2_10_10_10_REV(glm::vec4(-makeUnitVec3x(), 0.0f));
 }
 
 [[nodiscard]] inline GLuint makeUnitVec3yPacked() noexcept
 {
-    return vec4_to_INT_2_10_10_10_REV(glm::vec4(makeUnitVec3y(), 0.0f));
+    return vec4ToINT_2_10_10_10_REV(glm::vec4(makeUnitVec3y(), 0.0f));
 }
 
 [[nodiscard]] inline GLuint makeNegUnitVec3yPacked() noexcept
 {
-    return vec4_to_INT_2_10_10_10_REV(glm::vec4(-makeUnitVec3y(), 0.0f));
+    return vec4ToINT_2_10_10_10_REV(glm::vec4(-makeUnitVec3y(), 0.0f));
 }
 
 [[nodiscard]] inline GLuint makeUnitVec3zPacked() noexcept
 {
-    return vec4_to_INT_2_10_10_10_REV(glm::vec4(makeUnitVec3z(), 0.0f));
+    return vec4ToINT_2_10_10_10_REV(glm::vec4(makeUnitVec3z(), 0.0f));
 }
 
 [[nodiscard]] inline GLuint makeNegUnitVec3zPacked() noexcept
 {
-    return vec4_to_INT_2_10_10_10_REV(glm::vec4(-makeUnitVec3z(), 0.0f));
+    return vec4ToINT_2_10_10_10_REV(glm::vec4(-makeUnitVec3z(), 0.0f));
 }
 
 //------------------------------------------------------------------------

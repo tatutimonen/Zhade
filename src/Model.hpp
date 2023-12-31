@@ -2,7 +2,7 @@
 
 #include "Handle.hpp"
 #include "Texture.hpp"
-#include "common_defs.h"
+#include "common.hpp"
 
 #include <span>
 #include <vector>

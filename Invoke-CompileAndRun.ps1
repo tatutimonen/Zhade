@@ -1,9 +1,9 @@
 # Compiles and runs the executable.
 
-$curDir = Get-Item -Path . | Select-Object -ExpandProperty Name
-if ($curDir -ne "build") {
+$script:CUR_DIR = Get-Item -Path . | Select-Object -ExpandProperty Name
+if ($script:CUR_DIR -ne "build") {
     Write-Host "Not a build directory, aborting."
-    exit
+    exit 1
 }
 
 cmake --build . --config Release -- /m

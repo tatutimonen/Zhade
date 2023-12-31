@@ -1,6 +1,3 @@
-#-------------------------------------------------------------------------
-# Source files.
-
 set(src_files
     App.cpp
     Buffer.cpp
@@ -22,10 +19,8 @@ set(src_files
     util.cpp
 )
 
-#-------------------------------------------------------------------------
-# Executable definition, library linking, etc.
-
 add_executable(${PROJECT_NAME} ${src_files})
+
 target_link_libraries(${PROJECT_NAME}
     PRIVATE GLEW::GLEW
             glfw
@@ -34,5 +29,3 @@ target_link_libraries(${PROJECT_NAME}
             imgui::imgui
             robin_hood::robin_hood
 )
-
-#-------------------------------------------------------------------------
