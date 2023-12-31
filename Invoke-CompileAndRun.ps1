@@ -6,6 +6,5 @@ if ($curDir -ne "build") {
     exit
 }
 
-$cpuCount = (Get-WmiObject -Class Win32_Processor).NumberOfCores
-cmake --build . -j $cpuCount --config Release
+cmake --build . --config Release -- /m
 .\Zhade\Release\Zhade.exe

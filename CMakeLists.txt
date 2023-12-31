@@ -23,6 +23,15 @@ project(Zhade CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if(WIN32)
+    if(NOT CMAKE_VS_GLOBALS MATCHES "(^|;)UseMultiToolTask=")
+        list(APPEND CMAKE_VS_GLOBALS UseMultiToolTask=true)
+    endif()
+    if(NOT CMAKE_VS_GLOBALS MATCHES "(^|;)EnforceProcessCountAcrossBuilds=")
+        list(APPEND CMAKE_VS_GLOBALS EnforceProcessCountAcrossBuilds=true)
+    endif()
+endif()
+
 #-------------------------------------------------------------------------
 # Libraries.
 

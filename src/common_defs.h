@@ -15,6 +15,7 @@
 #define WORK_GROUP_LOCAL_SIZE_Z   1
 
 #define MAX_DRAWS (1 << 24)
+#define foo 2
 
 #ifdef __cplusplus
 
