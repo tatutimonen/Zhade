@@ -1,1 +1,2 @@
 *.h linguist-language=C++ GLSL
+*.comp linguist-language=GLSL
