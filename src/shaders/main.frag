@@ -30,14 +30,16 @@ layout (binding = DIRECTIONAL_LIGHT_PROPS_BINDING, std430) restrict readonly buf
 };
 
 layout (binding = DIRECTIONAL_LIGHT_DEPTH_TEXTURE_BINDING, std140) uniform SunLightDepthTexture {
-    sampler2D u_sunDepthTexture;
+    sampler2DShadow u_sunLightDepthTexture;
 };
 
 //------------------------------------------------------------------------
 
+#define makeTextureSampler(textureType) sampler2D(b_meta[In.drawID].textures.textureType)
+
 void main()
 {
-    FragColor = texture(sampler2D(b_meta[In.drawID].textures.diffuse), In.uv);
+    FragColor = texture(makeTextureSampler(diffuse), In.uv);
 }
 
 //------------------------------------------------------------------------

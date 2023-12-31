@@ -98,6 +98,7 @@ Mesh Scene::loadMesh(const aiScene* aiScenePtr, const aiMesh* aiMeshPtr, const f
         .firstIndex = indicesLoadInfo.base,
         .baseVertex = verticesLoadInfo.base,
         .modelMatT = glm::transpose(modelPtr->m_mat),
+        .normalMat = glm::mat3x4(glm::inverse(glm::transpose(modelPtr->m_mat))),
         .textures = {
             .diffuse = m_mngr->get(diffuse)->handle()
         }

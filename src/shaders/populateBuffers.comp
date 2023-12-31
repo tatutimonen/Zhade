@@ -47,7 +47,7 @@ void main()
     b_cmd[idx].baseInstance = 0;
 
     b_meta[idx].modelMatT = b_mesh[idx].modelMatT;
-    b_meta[idx].normalMat = inverse(mat3(b_mesh[idx].modelMatT));
+    b_meta[idx].normalMat = mat3(b_mesh[idx].normalMat);
     b_meta[idx].textures = b_mesh[idx].textures;
 }
 

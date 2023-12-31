@@ -15,7 +15,6 @@
 #define WORK_GROUP_LOCAL_SIZE_Z   1
 
 #define MAX_DRAWS (1 << 24)
-#define MAX_LIGHTS (1 + 8)  // Sun + point lights.
 
 #ifdef __cplusplus
 
@@ -38,6 +37,7 @@ struct Mesh
     GLuint baseVertex;
     std::atomic_uint32_t refCount = 1;
     glm::mat3x4 modelMatT;
+    glm::mat3x4 normalMat;
     MeshTextures textures;
 };
 
@@ -86,6 +86,7 @@ struct Mesh
     uint baseVertex;
     uint refCount;
     mat3x4 modelMatT;
+    mat3x4 normalMat;
     MeshTextures textures;
 };
 
