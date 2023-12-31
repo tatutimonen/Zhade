@@ -1,2 +1,4 @@
 *.h linguist-language=C++ GLSL
+*.frag linguist-language=GLSL
+*.geom linguist-language=GLSL
 *.comp linguist-language=GLSL
