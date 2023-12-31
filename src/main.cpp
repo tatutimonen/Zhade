@@ -27,15 +27,15 @@ int main()
                     },
                     .shadowMapDims = {1024, 1024},
                     .shadowPassDesc = {
-                        .vertPath = SHADER_PATH / "shadowMapDirectional.vert",
-                        .fragPath = SHADER_PATH / "passthrough.frag"
+                        .vertPath = SHADER_PATH / "shadowMapDirectional.vert.glsl",
+                        .fragPath = SHADER_PATH / "passthrough.frag.glsl"
                     }
                 }
             },
             .mainPipelineDesc = {
-                .vertPath = SHADER_PATH / "main.vert",
-                .fragPath = SHADER_PATH / "main.frag",
-                .compPath = SHADER_PATH / "populateBuffers.comp",
+                .vertPath = SHADER_PATH / "main.vert.glsl",
+                .fragPath = SHADER_PATH / "main.frag.glsl",
+                .compPath = SHADER_PATH / "populateBuffers.comp.glsl",
                 .managed = false
             }
         });
