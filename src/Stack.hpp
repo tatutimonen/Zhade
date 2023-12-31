@@ -24,13 +24,6 @@ public:
             resize(capacity);
         }
     }
-    
-    ~Stack() = default;
-
-    Stack(const Stack&) = default;
-    Stack& operator=(const Stack&) = default;
-    Stack(Stack&&) = default;
-    Stack& operator=(Stack&&) = default;
 
     [[nodiscard]] size_t size() const noexcept { return m_size; }
 
