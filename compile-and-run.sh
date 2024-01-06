@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Compiles and runs the executable.
-
 readonly CUR_DIR=$(basename "$(pwd)")
 if [[ $CUR_DIR != "build" ]]; then
     echo "Not a build directory, aborting."
