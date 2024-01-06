@@ -7,4 +7,4 @@ if [[ $CUR_DIR != "build" ]]; then
 fi
 
 cmake --build . -j "$(nproc)"
-./Zhade/Release/Zhade
+./Zhade/Zhade
