@@ -52,8 +52,8 @@ private:
 
     void setupVAO() noexcept;
     void setupBuffers(const RendererDescriptor& desc) noexcept;
-    void setupCamera(CameraDescriptor& cameraDesc) noexcept;
-    void setupPipeline(PipelineDescriptor& mainPassDesc) noexcept;
+    void setupCamera(CameraDescriptor cameraDesc) noexcept;
+    void setupPipeline(PipelineDescriptor mainPassDesc) noexcept;
     void populateBuffers() const noexcept;
     void clearDrawCounter() const noexcept;
 
@@ -61,11 +61,11 @@ private:
     Scene m_scene;
     GLuint m_vao;
     Camera<CameraType::PERSPECTIVE> m_camera;
-    Handle<Pipeline> m_pipeline;
     Handle<Buffer> m_commandBuffer;
     Handle<Buffer> m_drawMetadataBuffer;
     Handle<Buffer> m_atomicDrawCounterBuffer;
     Handle<Buffer> m_viewProjUniformBuffer;
+    Handle<Pipeline> m_pipeline;
 };
 
 //------------------------------------------------------------------------

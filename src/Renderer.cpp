@@ -76,22 +76,25 @@ void Renderer::setupVAO() noexcept
 void Renderer::setupBuffers(const RendererDescriptor& desc) noexcept
 {
     m_commandBuffer = m_mngr->createBuffer(desc.commandBufferDesc);
-    m_drawMetadataBuffer = m_mngr->createBuffer(desc.drawMetadataBuffer);
-    m_atomicDrawCounterBuffer = m_mngr->createBuffer({.byteSize = sizeof(GLuint), .usage = BufferUsage::ATOMIC_COUNTER});
-    m_viewProjUniformBuffer = m_mngr->createBuffer({.byteSize = sizeof(ViewProjMatrices), .usage = BufferUsage::UNIFORM});
-
     buffer(m_commandBuffer)->bind();
     buffer(m_commandBuffer)->bindBaseAs(INDIRECT_BINDING, BufferUsage::STORAGE);
+
+    m_drawMetadataBuffer = m_mngr->createBuffer(desc.drawMetadataBuffer);
     buffer(m_drawMetadataBuffer)->bindBase(DRAW_METADATA_BINDING);
-    buffer(m_scene.m_meshBuffer)->bindBase(MESH_BINDING);
+    
+    m_atomicDrawCounterBuffer = m_mngr->createBuffer({.byteSize = sizeof(GLuint), .usage = BufferUsage::ATOMIC_COUNTER});
     buffer(m_atomicDrawCounterBuffer)->bindBase(ATOMIC_COUNTER_BINDING);
     buffer(m_atomicDrawCounterBuffer)->bindAs(BufferUsage::PARAMETER);
+    
+    m_viewProjUniformBuffer = m_mngr->createBuffer({.byteSize = sizeof(ViewProjMatrices), .usage = BufferUsage::UNIFORM});
     buffer(m_viewProjUniformBuffer)->bindBase(VIEW_PROJ_BINDING);
+
+    buffer(m_scene.m_meshBuffer)->bindBase(MESH_BINDING);
 }
 
 //------------------------------------------------------------------------
 
-void Renderer::setupCamera(CameraDescriptor& cameraDesc) noexcept
+void Renderer::setupCamera(CameraDescriptor cameraDesc) noexcept
 {
     cameraDesc.uniformBuffer = m_viewProjUniformBuffer;
     m_camera = Camera(cameraDesc);
@@ -99,7 +102,7 @@ void Renderer::setupCamera(CameraDescriptor& cameraDesc) noexcept
 
 //------------------------------------------------------------------------
 
-void Renderer::setupPipeline(PipelineDescriptor& mainPassDesc) noexcept
+void Renderer::setupPipeline(PipelineDescriptor mainPassDesc) noexcept
 {
     mainPassDesc.managed = true;
     m_pipeline = m_mngr->createPipeline(mainPassDesc);
