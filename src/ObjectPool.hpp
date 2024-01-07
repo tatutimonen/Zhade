@@ -21,7 +21,7 @@ class ObjectPool<T>
 public:
     explicit ObjectPool(size_t size = OBJECT_POOL_INIT_SIZE)
         : m_size{size},
-          m_freeList{Stack<uint32_t>(size)}
+          m_freeList{size}
     {
         m_pool.resize(m_size);
         m_generations.resize(m_size);

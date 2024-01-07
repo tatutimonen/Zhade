@@ -17,7 +17,7 @@ namespace Zhade
 
 Renderer::Renderer(RendererDescriptor desc)
     : m_mngr{desc.mngr},
-      m_scene{Scene(desc.sceneDesc)}
+      m_scene{desc.sceneDesc}
 {
     setupVAO();
     setupBuffers(desc);
