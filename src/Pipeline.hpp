@@ -74,11 +74,11 @@ private:
         const noexcept;
 
     void setupHeaders() const noexcept;
-    void setupStageProgram(PipelineStage::Type stage, const fs::path& shaderPath) const noexcept;
+    void setupStageProgram(PipelineStage::Type stage, const fs::path& shaderPath) noexcept;
     void validate() const noexcept;
 
     GLuint m_name = 0;
-    mutable std::array<GLuint, PipelineStage::NUM_SUPPORTED_STAGES> m_stages;
+    std::array<GLuint, PipelineStage::NUM_SUPPORTED_STAGES> m_stages;
     std::vector<std::string> m_headers;
     bool m_managed = true;
 };

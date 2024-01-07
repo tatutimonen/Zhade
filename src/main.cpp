@@ -9,10 +9,11 @@ int main()
 {
     using namespace Zhade;
 
+    ResourceManager mngr{};
+
     App app{};
     app.init();
     {
-        ResourceManager mngr;
         const auto renderer = Renderer({
             .mngr = &mngr,
             .sceneDesc = {
@@ -32,25 +33,23 @@ int main()
                     }
                 }
             },
-            .mainPipelineDesc = {
+            .cameraDesc = {
+                .mngr = &mngr,
+                .app = &app
+            },
+            .mainPassDesc = {
                 .vertPath = SHADER_PATH / "main.vert",
                 .fragPath = SHADER_PATH / "main.frag",
-                .compPath = SHADER_PATH / "populateBuffers.comp",
-                .managed = false
+                .compPath = SHADER_PATH / "populateBuffers.comp"
             }
         });
-        renderer.scene().addModelFromFile(ASSET_PATH / "crytek-sponza" / "sponza.obj");
 
-        const auto camera = Camera({
-            .uniformBuffer = renderer.viewProjBufferHandle(),
-            .mngr = &mngr,
-            .app = &app
-        });
+        renderer.scene().addModelFromFile(ASSET_PATH / "crytek-sponza" / "sponza.obj");
 
         while (not glfwWindowShouldClose(app.getGLCtx()))
         {
             glfwPollEvents();
-            camera.update();
+            renderer.camera().update();
             renderer.render();
             app.updateAndRenderGUI();
             glfwSwapBuffers(app.getGLCtx());

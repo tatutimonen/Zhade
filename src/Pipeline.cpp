@@ -112,7 +112,7 @@ void Pipeline::setupHeaders() const noexcept
 
 //------------------------------------------------------------------------
 
-void Pipeline::setupStageProgram(PipelineStage::Type stage, const fs::path& shaderPath) const noexcept
+void Pipeline::setupStageProgram(PipelineStage::Type stage, const fs::path& shaderPath) noexcept
 {
     if (shaderPath.empty()) return;
     m_stages[stage] = createShaderProgramInclude(stage, shaderPath);

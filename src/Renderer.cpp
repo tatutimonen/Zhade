@@ -17,40 +17,12 @@ namespace Zhade
 
 Renderer::Renderer(RendererDescriptor desc)
     : m_mngr{desc.mngr},
-      m_scene{Scene(desc.sceneDesc)},
-      m_mainPipeline{Pipeline(desc.mainPipelineDesc)}
+      m_scene{Scene(desc.sceneDesc)}
 {
-    glCreateVertexArrays(1, &m_vao);
-
-    glVertexArrayVertexBuffer(m_vao, 0, buffer(m_scene.m_vertexBuffer)->name(), 0, sizeof(Vertex));
-    glVertexArrayElementBuffer(m_vao, buffer(m_scene.m_indexBuffer)->name());
-
-    glEnableVertexArrayAttrib(m_vao, 0);
-    glEnableVertexArrayAttrib(m_vao, 1);
-    glEnableVertexArrayAttrib(m_vao, 2);
-
-    glVertexArrayAttribFormat(m_vao, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, pos));
-    glVertexArrayAttribFormat(m_vao, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, nrm));
-    glVertexArrayAttribFormat(m_vao, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, uv));
-
-    glVertexArrayAttribBinding(m_vao, 0, 0);
-    glVertexArrayAttribBinding(m_vao, 1, 0);
-    glVertexArrayAttribBinding(m_vao, 2, 0);
-
-    m_commandBuffer = m_mngr->createBuffer(desc.commandBufferDesc);
-    m_drawMetadataBuffer = m_mngr->createBuffer(desc.drawMetadataBuffer);
-    m_atomicDrawCounterBuffer = m_mngr->createBuffer({.byteSize = sizeof(GLuint), .usage = BufferUsage::ATOMIC_COUNTER});
-    m_viewProjUniformBuffer = m_mngr->createBuffer({.byteSize = sizeof(ViewProjMatrices), .usage = BufferUsage::UNIFORM});
-
-    glBindVertexArray(m_vao);
-    m_mainPipeline.bind();
-    buffer(m_commandBuffer)->bind();
-    buffer(m_commandBuffer)->bindBaseAs(INDIRECT_BINDING, BufferUsage::STORAGE);
-    buffer(m_drawMetadataBuffer)->bindBase(DRAW_METADATA_BINDING);
-    buffer(m_scene.m_meshBuffer)->bindBase(MESH_BINDING);
-    buffer(m_atomicDrawCounterBuffer)->bindBase(ATOMIC_COUNTER_BINDING);
-    buffer(m_atomicDrawCounterBuffer)->bindAs(BufferUsage::PARAMETER);
-    buffer(m_viewProjUniformBuffer)->bindBase(VIEW_PROJ_BINDING);
+    setupVAO();
+    setupBuffers(desc);
+    setupCamera(desc.cameraDesc);
+    setupPipeline(desc.mainPassDesc);
 }
 
 //------------------------------------------------------------------------
@@ -71,6 +43,65 @@ void Renderer::render() const noexcept
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMultiDrawElementsIndirectCount(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, 0, MAX_DRAWS, 0);
     clearDrawCounter();
+}
+
+//------------------------------------------------------------------------
+
+void Renderer::setupVAO() noexcept
+{
+    glCreateVertexArrays(1, &m_vao);
+
+    glVertexArrayVertexBuffer(m_vao, 0, buffer(m_scene.m_vertexBuffer)->name(), 0, sizeof(Vertex));
+    glVertexArrayElementBuffer(m_vao, buffer(m_scene.m_indexBuffer)->name());
+
+    glEnableVertexArrayAttrib(m_vao, 0);
+    glEnableVertexArrayAttrib(m_vao, 1);
+    glEnableVertexArrayAttrib(m_vao, 2);
+
+    glVertexArrayAttribFormat(m_vao, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, pos));
+    glVertexArrayAttribFormat(m_vao, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, nrm));
+    glVertexArrayAttribFormat(m_vao, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, uv));
+
+    glVertexArrayAttribBinding(m_vao, 0, 0);
+    glVertexArrayAttribBinding(m_vao, 1, 0);
+    glVertexArrayAttribBinding(m_vao, 2, 0);
+
+    glBindVertexArray(m_vao);
+} 
+
+//------------------------------------------------------------------------
+
+void Renderer::setupBuffers(const RendererDescriptor& desc) noexcept
+{
+    m_commandBuffer = m_mngr->createBuffer(desc.commandBufferDesc);
+    m_drawMetadataBuffer = m_mngr->createBuffer(desc.drawMetadataBuffer);
+    m_atomicDrawCounterBuffer = m_mngr->createBuffer({.byteSize = sizeof(GLuint), .usage = BufferUsage::ATOMIC_COUNTER});
+    m_viewProjUniformBuffer = m_mngr->createBuffer({.byteSize = sizeof(ViewProjMatrices), .usage = BufferUsage::UNIFORM});
+
+    buffer(m_commandBuffer)->bind();
+    buffer(m_commandBuffer)->bindBaseAs(INDIRECT_BINDING, BufferUsage::STORAGE);
+    buffer(m_drawMetadataBuffer)->bindBase(DRAW_METADATA_BINDING);
+    buffer(m_scene.m_meshBuffer)->bindBase(MESH_BINDING);
+    buffer(m_atomicDrawCounterBuffer)->bindBase(ATOMIC_COUNTER_BINDING);
+    buffer(m_atomicDrawCounterBuffer)->bindAs(BufferUsage::PARAMETER);
+    buffer(m_viewProjUniformBuffer)->bindBase(VIEW_PROJ_BINDING);
+}
+
+//------------------------------------------------------------------------
+
+void Renderer::setupCamera(CameraDescriptor& cameraDesc) noexcept
+{
+    cameraDesc.uniformBuffer = m_viewProjUniformBuffer;
+    m_camera = Camera(cameraDesc);
+}
+
+//------------------------------------------------------------------------
+
+void Renderer::setupPipeline(PipelineDescriptor& mainPassDesc) noexcept
+{
+    mainPassDesc.managed = true;
+    m_pipeline = m_mngr->createPipeline(mainPassDesc);
+    pipeline()->bind();
 }
 
 //------------------------------------------------------------------------

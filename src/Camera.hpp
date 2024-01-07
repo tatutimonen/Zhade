@@ -53,7 +53,7 @@ struct CameraDescriptor
 {
     CameraSettings settings{};
     VarCameraSettings varSettings = PerspectiveSettings{};
-    Handle<Buffer> uniformBuffer;
+    Handle<Buffer> uniformBuffer{};
     ResourceManager* mngr;
     App* app;
 };
@@ -74,6 +74,7 @@ public:
         updateView();
         updateProjectivity();
     }
+    Camera() = default;
 
     [[nodiscard]] const glm::vec3& center() const noexcept { return m_settings.center; }
     [[nodiscard]] const glm::vec3& target() const noexcept { return m_settings.target; }
