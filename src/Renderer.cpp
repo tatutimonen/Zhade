@@ -33,6 +33,8 @@ Renderer::~Renderer()
     m_mngr->destroy(m_commandBuffer);
     m_mngr->destroy(m_drawMetadataBuffer);
     m_mngr->destroy(m_atomicDrawCounterBuffer);
+    m_mngr->destroy(m_viewProjUniformBuffer);
+    m_mngr->destroy(m_pipeline);
 }
 
 //------------------------------------------------------------------------
