@@ -49,7 +49,7 @@ public:
 private:
     void load(const fs::path& path)
     {
-        const auto pathStr = path.string();
+        const std::string pathStr{path.string()};
 
         if constexpr (std::same_as<T, stbi_uc>)
             m_data = stbi_load(pathStr.c_str(), &m_dims.x, &m_dims.y, nullptr, 4);

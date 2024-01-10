@@ -18,7 +18,7 @@ namespace Zhade
 //------------------------------------------------------------------------
 
 Scene::Scene(SceneDescriptor desc)
-    : m_sunLight{DirectionalLight(desc.sunLightDesc)},
+    : m_sunLight{desc.sunLightDesc},
       m_mngr{desc.mngr}
 {
     m_vertexBuffer = m_mngr->createBuffer(desc.vertexBufferDesc);
@@ -31,7 +31,7 @@ Scene::Scene(SceneDescriptor desc)
 
 Scene::~Scene()
 {
-    for (const auto& modelHandle : m_models) {
+    for (const Handle<Model>& modelHandle : m_models) {
         m_mngr->destroy(modelHandle);
     }
     m_mngr->destroy(m_vertexBuffer);
@@ -44,7 +44,7 @@ Scene::~Scene()
 
 void Scene::addModelFromFile(const fs::path& path) const noexcept
 {
-    if (m_modelCache.contains(path) and m_mngr->get(m_modelCache[path]) != nullptr) {
+    if (m_modelCache.contains(path) and m_mngr->exists(m_modelCache[path])) {
         const Handle<Model> modelHandle = m_modelCache[path];
         m_models.push_back(modelHandle);
         for (auto& mesh : m_mngr->get(modelHandle)->m_meshes) {
@@ -60,11 +60,11 @@ void Scene::addModelFromFile(const fs::path& path) const noexcept
     Model* modelPtr = m_mngr->get(model);
 
     Mesh* meshesStart = buffer(m_meshBuffer)->writePtr<Mesh>();
-    for (const aiMesh* aiMeshPtr : std::span(aiScenePtr->mMeshes, aiScenePtr->mNumMeshes)) {
-        const Mesh mesh = loadMesh(aiScenePtr, aiMeshPtr, path, modelPtr);
+    for (const aiMesh* aiMeshPtr : std::span{aiScenePtr->mMeshes, aiScenePtr->mNumMeshes}) {
+        Mesh mesh = loadMesh(aiScenePtr, aiMeshPtr, path, modelPtr);
         buffer(m_meshBuffer)->pushData(&mesh);
     }
-    modelPtr->m_meshes = std::span(meshesStart, aiScenePtr->mNumMeshes);
+    modelPtr->m_meshes = std::span{meshesStart, aiScenePtr->mNumMeshes};
 
     m_models.push_back(model);
     m_modelCache[path] = model;
@@ -83,7 +83,7 @@ Mesh Scene::loadMesh(const aiScene* aiScenePtr, const aiMesh* aiMeshPtr, const f
         std::launch::async,
         [&] { return loadIndices(std::forward<decltype(aiMeshPtr)>(aiMeshPtr)); }
     );
-    auto diffuse = loadTexture(
+    const Handle<Texture> diffuse = loadTexture(
         aiScenePtr->mMaterials[aiMeshPtr->mMaterialIndex],
         aiTextureType_DIFFUSE,
         path.parent_path()
@@ -109,7 +109,7 @@ Mesh Scene::loadMesh(const aiScene* aiScenePtr, const aiMesh* aiMeshPtr, const f
 
 Scene::VerticesLoadInfo Scene::loadVertices(const aiMesh* aiMeshPtr) const noexcept
 {
-    std::array<uint8_t, KIB_BYTES * 2> buf;
+    std::array<uint8_t, KIB_BYTES * 3> buf;
     std::pmr::monotonic_buffer_resource rsrc{buf.data(), buf.size()};
     std::pmr::vector<Vertex> vertices{&rsrc};
 
@@ -138,8 +138,8 @@ Scene::IndicesLoadInfo Scene::loadIndices(const aiMesh* aiMeshPtr) const noexcep
     std::pmr::monotonic_buffer_resource rsrc{buf.data(), buf.size()};
     std::pmr::vector<GLuint> indices{&rsrc};
 
-    for (const aiFace& face : std::span(aiMeshPtr->mFaces, aiMeshPtr->mNumFaces)) {
-        indices.append_range(std::span(face.mIndices, face.mNumIndices));
+    for (const aiFace& face : std::span{aiMeshPtr->mFaces, aiMeshPtr->mNumFaces}) {
+        indices.append_range(std::span{face.mIndices, face.mNumIndices});
     }
 
     GLuint* indicesStart = buffer(m_indexBuffer)->writePtr<GLuint>();

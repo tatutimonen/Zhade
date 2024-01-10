@@ -4,6 +4,7 @@
 #include <fstream>
 #include <print>
 #include <sstream>
+#include <string_view>
 
 //------------------------------------------------------------------------
 
@@ -38,13 +39,13 @@ Pipeline::~Pipeline()
 void Pipeline::freeResources() const noexcept
 {
     glDeleteProgramPipelines(1, &m_name);
-    for (const auto program : m_stages) {
+    for (const GLuint program : m_stages) {
         if (glIsProgram(program)) {
             glDeleteProgram(program);
         }
     }
-    for (const auto& header : m_headers) {
-        glDeleteNamedStringARB(header.size(), header.c_str());
+    for (std::string_view header : m_headers) {
+        glDeleteNamedStringARB(header.size(), header.data());
     }
 }
 
@@ -103,10 +104,10 @@ GLuint Pipeline::createShaderProgramInclude(PipelineStage::Type stage, const fs:
 
 void Pipeline::setupHeaders() const noexcept
 {
-    for (const auto& header : m_headers) {
+    for (std::string_view header : m_headers) {
         const fs::path path = SOURCE_PATH / fs::path{header}.filename();
         const std::string contents = readFileContents(path);
-        glNamedStringARB(GL_SHADER_INCLUDE_ARB, header.size(), header.c_str(), contents.size(), contents.c_str());
+        glNamedStringARB(GL_SHADER_INCLUDE_ARB, header.size(), header.data(), contents.size(), contents.data());
     }
 }
 

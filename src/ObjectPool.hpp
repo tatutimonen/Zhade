@@ -34,7 +34,7 @@ public:
     ~ObjectPool()
     {
         if constexpr (requires { T::freeResources(); }) {
-            for (const auto& item : m_pool) {
+            for (const T& item : m_pool) {
                 item.freeResources();
             }
         }
@@ -51,7 +51,7 @@ public:
     requires std::constructible_from<T, Args...>
     [[nodiscard]] Handle<T> allocate(Args&& ...args) const noexcept
     {
-        const auto handle = handleToNextFree();
+        const Handle<T> handle = handleToNextFree();
         std::construct_at(&m_pool[handle.m_index], std::forward<Args>(args)...);
         return handle;
     }
@@ -59,7 +59,7 @@ public:
     [[nodiscard]] Handle<T> allocate(const T& item) const noexcept
     requires std::copyable<T>
     {
-        const auto handle = handleToNextFree();
+        const Handle<T> handle = handleToNextFree();
         m_pool[handle.m_index] = item;
         return handle;
     }
@@ -67,7 +67,7 @@ public:
     [[nodiscard]] Handle<T> allocate(T&& item) const noexcept
     requires std::movable<T>
     {
-        const auto handle = handleToNextFree();
+        const Handle<T> handle = handleToNextFree();
         m_pool[handle.m_index] = item;
         return handle;
     }

@@ -14,7 +14,7 @@ int main()
     App app{};
     app.init();
     {
-        const auto renderer = Renderer({
+        Renderer renderer{{
             .mngr = &mngr,
             .sceneDesc = {
                 .mngr = &mngr,
@@ -42,7 +42,7 @@ int main()
                 .fragPath = SHADER_PATH / "main.frag",
                 .compPath = SHADER_PATH / "populateBuffers.comp"
             }
-        });
+        }};
 
         renderer.scene().addModelFromFile(ASSET_PATH / "crytek-sponza" / "sponza.obj");
 

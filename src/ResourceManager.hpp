@@ -94,6 +94,12 @@ public:
             m_textures.deallocate(handle);
     }
 
+    template<ManagedType T>
+    bool exists(const Handle<T>& handle) const noexcept
+    {
+        return get(handle) != nullptr;
+    }
+
 private:
     ObjectPool<Buffer> m_buffers;
     ObjectPool<Framebuffer> m_framebuffers;

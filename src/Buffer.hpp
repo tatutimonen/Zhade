@@ -97,7 +97,7 @@ public:
         uint8_t* dst = m_ptr + m_writeOffset;
         std::memcpy(dst, data, byteSize);
         m_writeOffset += calculateWriteOffsetIncrement(byteSize);
-        return std::span(std::bit_cast<T*>(dst), size);
+        return std::span{std::bit_cast<T*>(dst), implicit_cast<size_t>(size)};
     }
 
     template<typename T>

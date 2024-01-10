@@ -61,7 +61,7 @@ void Texture::setData(const void* data, GLsizei depth) const noexcept
 
 Handle<Texture> Texture::fromFile(ResourceManager* mngr, const fs::path& path, TextureDescriptor desc) noexcept
 {
-    if (s_cache.contains(path) and mngr->get(s_cache[path]) != nullptr) {
+    if (s_cache.contains(path) and mngr->exists(s_cache[path])) {
         return s_cache[path];
     }
 
@@ -69,7 +69,7 @@ Handle<Texture> Texture::fromFile(ResourceManager* mngr, const fs::path& path, T
     desc.dims = img.dims();
 
     desc.managed = true;
-    const auto textureHandle = mngr->createTexture(desc);
+    const Handle<Texture> textureHandle = mngr->createTexture(desc);
     Texture* texture = mngr->get(textureHandle);
     texture->setData(img.data());
     texture->generateMipmap();
@@ -94,7 +94,7 @@ Handle<Texture> Texture::makeDefault(ResourceManager* mngr) noexcept
     };
     static constexpr uint32_t data = 0xffffffff;
 
-    const auto textureHandle = mngr->createTexture(desc);
+    const Handle<Texture> textureHandle = mngr->createTexture(desc);
     mngr->get(textureHandle)->setData(&data);
     return textureHandle;
 }

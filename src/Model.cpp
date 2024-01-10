@@ -29,10 +29,10 @@ Model::~Model()
 
 void Model::freeResources() const noexcept
 {
-    for (const auto& texHandle : m_textures) {
+    for (const Handle<Texture>& texHandle : m_textures) {
         m_mngr->destroy(texHandle);
     }
-    for (auto& mesh : m_meshes) {
+    for (Mesh& mesh : m_meshes) {
         --mesh.refCount;
     }
 }
