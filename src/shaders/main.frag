@@ -15,6 +15,7 @@ layout (location = 0) out vec4 FragColor;
 
 in VERT_OUT {
     vec2 uv;
+    vec4 shadowCoord;
     flat uint drawID;
 } In;
 
@@ -39,7 +40,8 @@ layout (binding = DIRECTIONAL_LIGHT_DEPTH_TEXTURE_BINDING, std140) uniform SunLi
 
 void main()
 {
-    FragColor = texture(makeSampler2D(diffuse), In.uv);
+    float shadowFactor = textureProj(u_sunLightDepthTexture, In.shadowCoord);
+    FragColor = shadowFactor * texture(makeSampler2D(diffuse), In.uv);
 }
 
 //------------------------------------------------------------------------

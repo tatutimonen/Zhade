@@ -20,6 +20,7 @@ out gl_PerVertex {
 
 out VERT_OUT {
     vec2 uv;
+    vec4 shadowCoord;
     flat uint drawID;
 } Out;
 
@@ -38,6 +39,10 @@ layout (binding = DRAW_METADATA_BINDING, std430) restrict readonly buffer DrawMe
     DrawMetadata b_meta[];
 };
 
+layout (binding = DIRECTIONAL_LIGHT_SHADOW_MATRIX_BINDING, std140) uniform ShadowMatrix {
+    mat4 u_shadowMat;
+};
+
 //------------------------------------------------------------------------
 
 void main()
@@ -46,6 +51,7 @@ void main()
     Out.drawID = gl_DrawID;
     vec3 modelPos = vec4(a_pos, 1.0) * b_meta[gl_DrawID].modelMatT;
     vec3 viewModel = vec4(modelPos, 1.0) * u_viewProj.viewMatT;
+    Out.shadowCoord = u_shadowMat * vec4(modelPos, 1.0);
     gl_Position = u_viewProj.projMat * vec4(viewModel, 1.0);
 }
 

@@ -172,6 +172,8 @@ private:
     Handle<Buffer> m_uniformBuffer;
     ResourceManager* m_mngr;
     App* m_app;
+
+    friend class Renderer;
 };
 
 //------------------------------------------------------------------------

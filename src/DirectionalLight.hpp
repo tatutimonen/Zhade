@@ -42,7 +42,7 @@ public:
 
     [[nodiscard]] const glm::vec3& direction() const noexcept { return m_props.direction; }
 
-    void prepareForRendering() const noexcept;
+    void prepareForRendering(const Handle<Buffer>& viewProjUniformBuffer) const noexcept;
 
 private:
     [[nodiscard]] const Framebuffer* framebuffer() const noexcept;
@@ -56,7 +56,10 @@ private:
     Handle<Framebuffer> m_framebuffer;
     Handle<Buffer> m_propsBuffer;
     Handle<Buffer> m_depthTextureBuffer;
+    Handle<Buffer> m_shadowMatrixBuffer;
     Handle<Pipeline> m_pipeline;
+
+    friend class Renderer;
 };
 
 //------------------------------------------------------------------------

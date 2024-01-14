@@ -51,6 +51,25 @@ DirectionalLight::DirectionalLight(DirectionalLightDescriptor desc)
         .usage = BufferUsage::UNIFORM
     });
     buffer(m_depthTextureBuffer)->bindBase(DIRECTIONAL_LIGHT_DEPTH_TEXTURE_BINDING);
+    const GLuint64 depthTextureHandle = framebuffer()->texture()->handle();
+    buffer(m_depthTextureBuffer)->pushData(&depthTextureHandle);
+
+    m_shadowMatrixBuffer = m_mngr->createBuffer({
+        .byteSize = sizeof(glm::mat4),
+        .usage = BufferUsage::UNIFORM
+    });
+    buffer(m_shadowMatrixBuffer)->bindBase(DIRECTIONAL_LIGHT_SHADOW_MATRIX_BINDING);
+    const glm::mat4 shadowMatrix = (
+        glm::mat4{
+            0.5f, 0.0f, 0.0f, 0.5f,
+            0.0f, 0.5f, 0.0f, 0.5f,
+            0.0f, 0.0f, 0.5f, 0.5f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        }
+        * m_matrices.projMat
+        * glm::mat4(glm::transpose(m_matrices.viewMatT))
+    );
+    buffer(m_shadowMatrixBuffer)->setData(&shadowMatrix);
 
     m_pipeline = m_mngr->createPipeline(desc.shadowPassDesc);
 }
@@ -88,11 +107,12 @@ const Pipeline* DirectionalLight::pipeline() const noexcept
 
 //------------------------------------------------------------------------
 
-void DirectionalLight::prepareForRendering() const noexcept
+void DirectionalLight::prepareForRendering(const Handle<Buffer>& viewProjUniformBuffer) const noexcept
 {
     framebuffer()->bind();
-    pipeline()->bind();
     glViewport(0, 0, m_shadowMapDims.x, m_shadowMapDims.y);
+    pipeline()->bind();
+    buffer(viewProjUniformBuffer)->setData(&m_matrices);
     //glEnable(GL_POLYGON_OFFSET_FILL);
     //glPolygonOffset(2.0f, 4.0f);
 }

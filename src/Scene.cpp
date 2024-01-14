@@ -45,7 +45,7 @@ Scene::~Scene()
 void Scene::addModelFromFile(const fs::path& path) const noexcept
 {
     if (m_modelCache.contains(path) and m_mngr->exists(m_modelCache[path])) {
-        const Handle<Model> modelHandle = m_modelCache[path];
+        const Handle<Model>& modelHandle = m_modelCache[path];
         m_models.push_back(modelHandle);
         for (auto& mesh : m_mngr->get(modelHandle)->m_meshes) {
             ++mesh.refCount;

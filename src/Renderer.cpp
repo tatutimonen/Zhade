@@ -41,9 +41,18 @@ Renderer::~Renderer()
 
 void Renderer::render() const noexcept
 {
+    m_scene.m_sunLight.prepareForRendering(m_viewProjUniformBuffer);
     populateBuffers();
+    glClear(GL_DEPTH_BUFFER_BIT);
+    glMultiDrawElementsIndirectCount(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, 0, MAX_DRAWS, 0);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, App::s_windowWidth, App::s_windowHeight);
+    pipeline()->bind();
+    buffer(m_viewProjUniformBuffer)->setData(&m_camera.m_matrices);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMultiDrawElementsIndirectCount(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, 0, MAX_DRAWS, 0);
+
     clearDrawCounter();
 }
 

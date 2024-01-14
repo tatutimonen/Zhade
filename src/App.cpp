@@ -48,7 +48,6 @@ void App::init() const noexcept
 
     // OpenGL.
     glDebugMessageCallback(debugCallback, nullptr);
-    glViewport(0, 0, s_windowWidth, s_windowHeight);
     glClearColor(15.0f/255.0f, 46.0f/255.0f, 101.0f/255.0f, 1.0f);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);

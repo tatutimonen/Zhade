@@ -29,7 +29,8 @@ int main()
                     .shadowMapDims = {1024, 1024},
                     .shadowPassDesc = {
                         .vertPath = SHADER_PATH / "shadowMapDirectional.vert",
-                        .fragPath = SHADER_PATH / "passthrough.frag"
+                        .fragPath = SHADER_PATH / "passthrough.frag",
+                        .compPath = SHADER_PATH / "populateBuffers.comp"
                     }
                 }
             },
@@ -39,8 +40,7 @@ int main()
             },
             .mainPassDesc = {
                 .vertPath = SHADER_PATH / "main.vert",
-                .fragPath = SHADER_PATH / "main.frag",
-                .compPath = SHADER_PATH / "populateBuffers.comp"
+                .fragPath = SHADER_PATH / "main.frag"
             }
         }};
 

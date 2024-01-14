@@ -36,19 +36,17 @@ public:
     Framebuffer& operator=(Framebuffer&&) = delete;
 
     [[nodiscard]] GLuint name() const noexcept { return m_name; }
+    [[nodiscard]] const Texture* texture() const noexcept;
 
-    void bind() const noexcept { glBindFramebuffer(GL_FRAMEBUFFER, m_name); }
+    void bind(GLenum target = GL_FRAMEBUFFER) const noexcept { glBindFramebuffer(target, m_name); }
     void freeResources() const noexcept;
 
 private:
-    [[nodiscard]] const Texture* texture() const noexcept;
 
     GLuint m_name = 0;
     Handle<Texture> m_texture{};
     ResourceManager* m_mngr = nullptr;
     bool m_managed = true;
-
-    friend class Renderer;
 };
 
 //------------------------------------------------------------------------
