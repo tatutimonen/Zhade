@@ -16,7 +16,7 @@ namespace Zhade
 {
 
 //------------------------------------------------------------------------
-// As described by Logan Smith [https://youtu.be/SmlLdd1Q2V8].
+// As described by Smith [https://youtu.be/SmlLdd1Q2V8].
 
 template<typename T>
 [[nodiscard]] constexpr T implicit_cast(std::type_identity_t<T> val)
@@ -58,7 +58,9 @@ namespace util
     return glm::vec3(0.0f, 0.0f, 1.0f);
 }
 
-// Adapted from: https://www.gamedev.net/forums/topic/685081-normal-vector-artifacts-with-nvmeshmender/5326137/.
+/*
+ * Adapted from: https://www.gamedev.net/forums/topic/685081-normal-vector-artifacts-with-nvmeshmender/5326137/.
+ */
 [[nodiscard]] inline GLuint vec4ToINT_2_10_10_10_REV(const glm::vec4& v)
 {
     const GLuint xs = v.x < 0;

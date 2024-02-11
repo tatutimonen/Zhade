@@ -3,16 +3,16 @@
 #include "common_defs.h"
 
 #include <assimp/postprocess.h>
+#include <fmt/core.h>
 #include <glm/gtx/string_cast.hpp>
 
 #include <cstdint>
 #include <filesystem>
-#include <fmt/core.h>
 #include <ranges>
 
 namespace fs = std::filesystem;
 
-// As per the presentation by Bryce Adelstein Lelbach [https://youtu.be/LW_T2RGXego].
+// As per the presentation by Lelbach [https://youtu.be/LW_T2RGXego].
 namespace stdv = std::views;
 namespace stdr = std::ranges;
 
