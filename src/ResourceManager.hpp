@@ -39,33 +39,33 @@ public:
     ResourceManager(ResourceManager&&) = delete;
     ResourceManager& operator=(ResourceManager&&) = delete;
 
-    [[nodiscard]] Handle<Buffer> createBuffer(BufferDescriptor desc) const noexcept
+    [[nodiscard]] Handle<Buffer> createBuffer(BufferDescriptor desc)
     {
         return m_buffers.allocate(desc);
     }
     
-    [[nodiscard]] Handle<Framebuffer> createFramebuffer(FramebufferDescriptor desc) const noexcept
+    [[nodiscard]] Handle<Framebuffer> createFramebuffer(FramebufferDescriptor desc)
     {
         return m_framebuffers.allocate(desc);
     }
     
-    [[nodiscard]] Handle<Model> createModel(ModelDescriptor desc) const noexcept
+    [[nodiscard]] Handle<Model> createModel(ModelDescriptor desc)
     {
         return m_models.allocate(desc);
     }
     
-    [[nodiscard]] Handle<Pipeline> createPipeline(PipelineDescriptor desc) const noexcept
+    [[nodiscard]] Handle<Pipeline> createPipeline(PipelineDescriptor desc)
     {
         return m_pipelines.allocate(desc);
     }
     
-    [[nodiscard]] Handle<Texture> createTexture(TextureDescriptor desc) const noexcept
+    [[nodiscard]] Handle<Texture> createTexture(TextureDescriptor desc)
     {
         return m_textures.allocate(desc);
     }
 
     template<ManagedType T>
-    [[nodiscard]] T* get(const Handle<T>& handle) const noexcept
+    [[nodiscard]] T* get(const Handle<T>& handle)
     {
         if constexpr (std::same_as<T, Buffer>)
             return m_buffers.get(handle);
@@ -80,7 +80,7 @@ public:
     }
 
     template<ManagedType T>
-    void destroy(const Handle<T>& handle) const noexcept
+    void destroy(const Handle<T>& handle)
     {
         if constexpr (std::same_as<T, Buffer>)
             m_buffers.deallocate(handle);
@@ -95,7 +95,7 @@ public:
     }
 
     template<ManagedType T>
-    bool exists(const Handle<T>& handle) const noexcept
+    bool exists(const Handle<T>& handle)
     {
         return get(handle) != nullptr;
     }

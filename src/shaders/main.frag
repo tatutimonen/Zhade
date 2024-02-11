@@ -5,6 +5,8 @@
 
 #include "common_defs.h"
 
+#define makeSampler2D(textureType) sampler2D(b_meta[In.drawID].textures.textureType)
+
 //------------------------------------------------------------------------
 // Outputs.
 
@@ -22,26 +24,24 @@ in VERT_OUT {
 //------------------------------------------------------------------------
 // Uniforms etc.
 
-layout (binding = DRAW_METADATA_BINDING, std430) restrict readonly buffer DrawMeta {
+layout (binding = DRAW_METADATA_BINDING, std430) restrict readonly buffer DrawMetadataBlock {
     DrawMetadata b_meta[];
 };
 
-layout (binding = DIRECTIONAL_LIGHT_PROPS_BINDING, std430) restrict readonly buffer SunLight {
+layout (binding = DIRECTIONAL_LIGHT_PROPS_BINDING, std430) restrict readonly buffer SunLightBlock {
     DirectionalLightProperties b_sunLight;
 };
 
-layout (binding = DIRECTIONAL_LIGHT_DEPTH_TEXTURE_BINDING, std140) uniform SunLightDepthTexture {
+layout (binding = DIRECTIONAL_LIGHT_DEPTH_TEXTURE_BINDING, std140) uniform SunLightDepthTextureBlock {
     sampler2DShadow u_sunLightDepthTexture;
 };
 
 //------------------------------------------------------------------------
 
-#define makeSampler2D(textureType) sampler2D(b_meta[In.drawID].textures.textureType)
-
 void main()
 {
     float shadowFactor = textureProj(u_sunLightDepthTexture, In.shadowCoord);
-    FragColor = shadowFactor * texture(makeSampler2D(diffuse), In.uv);
+    FragColor = (1.0 - shadowFactor) * texture(makeSampler2D(diffuse), In.uv);
 }
 
 //------------------------------------------------------------------------

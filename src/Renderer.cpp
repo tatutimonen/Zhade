@@ -39,7 +39,7 @@ Renderer::~Renderer()
 
 //------------------------------------------------------------------------
 
-void Renderer::render() const noexcept
+void Renderer::render()
 {
     m_scene.m_sunLight.prepareForRendering(m_viewProjUniformBuffer);
     populateBuffers();
@@ -58,7 +58,7 @@ void Renderer::render() const noexcept
 
 //------------------------------------------------------------------------
 
-void Renderer::setupVAO() noexcept
+void Renderer::setupVAO()
 {
     glCreateVertexArrays(1, &m_vao);
 
@@ -82,7 +82,7 @@ void Renderer::setupVAO() noexcept
 
 //------------------------------------------------------------------------
 
-void Renderer::setupBuffers(const RendererDescriptor& desc) noexcept
+void Renderer::setupBuffers(const RendererDescriptor& desc)
 {
     m_commandBuffer = m_mngr->createBuffer(desc.commandBufferDesc);
     buffer(m_commandBuffer)->bind();
@@ -103,7 +103,7 @@ void Renderer::setupBuffers(const RendererDescriptor& desc) noexcept
 
 //------------------------------------------------------------------------
 
-void Renderer::setupCamera(CameraDescriptor cameraDesc) noexcept
+void Renderer::setupCamera(CameraDescriptor cameraDesc)
 {
     cameraDesc.uniformBuffer = m_viewProjUniformBuffer;
     m_camera = Camera(cameraDesc);
@@ -111,7 +111,7 @@ void Renderer::setupCamera(CameraDescriptor cameraDesc) noexcept
 
 //------------------------------------------------------------------------
 
-void Renderer::setupPipeline(PipelineDescriptor mainPassDesc) noexcept
+void Renderer::setupPipeline(PipelineDescriptor mainPassDesc)
 {
     mainPassDesc.managed = true;
     m_pipeline = m_mngr->createPipeline(mainPassDesc);
@@ -120,7 +120,7 @@ void Renderer::setupPipeline(PipelineDescriptor mainPassDesc) noexcept
 
 //------------------------------------------------------------------------
 
-void Renderer::populateBuffers() const noexcept
+void Renderer::populateBuffers()
 {
     const size_t numMeshes = buffer(m_scene.m_meshBuffer)->size<Mesh>();
     glDispatchCompute(util::divup(numMeshes, WORK_GROUP_LOCAL_SIZE_X), 1, 1);
@@ -128,7 +128,7 @@ void Renderer::populateBuffers() const noexcept
 
 //------------------------------------------------------------------------
 
-void Renderer::clearDrawCounter() const noexcept
+void Renderer::clearDrawCounter()
 {
     buffer(m_atomicDrawCounterBuffer)->invalidate();
     static constexpr GLuint zero = 0;

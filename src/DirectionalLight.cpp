@@ -15,6 +15,58 @@ DirectionalLight::DirectionalLight(DirectionalLightDescriptor desc)
       m_shadowMapDims{desc.shadowMapDims},
       m_mngr{desc.mngr}
 {
+    
+
+    m_pipeline = m_mngr->createPipeline(desc.shadowPassDesc);
+}
+
+//------------------------------------------------------------------------
+
+DirectionalLight::~DirectionalLight()
+{
+    m_mngr->destroy(m_framebuffer);
+    m_mngr->destroy(m_propsBuffer);
+    m_mngr->destroy(m_depthTextureBuffer);
+    m_mngr->destroy(m_pipeline);
+}
+
+//------------------------------------------------------------------------
+
+void DirectionalLight::prepareForRendering(const Handle<Buffer>& viewProjUniformBuffer)
+{
+    framebuffer()->bind();
+    glViewport(0, 0, m_shadowMapDims.x, m_shadowMapDims.y);
+    pipeline()->bind();
+    buffer(viewProjUniformBuffer)->setData(&m_matrices);
+    //glEnable(GL_POLYGON_OFFSET_FILL);
+    //glPolygonOffset(2.0f, 4.0f);
+}
+
+//------------------------------------------------------------------------
+
+Framebuffer* DirectionalLight::framebuffer()
+{
+    return m_mngr->get(m_framebuffer);
+}
+
+//------------------------------------------------------------------------
+
+Buffer* DirectionalLight::buffer(const Handle<Buffer>& handle)
+{
+    return m_mngr->get(handle);
+}
+
+//------------------------------------------------------------------------
+
+Pipeline* DirectionalLight::pipeline()
+{
+    return m_mngr->get(m_pipeline);
+}
+
+//------------------------------------------------------------------------
+
+void DirectionalLight::setupMatrices(const DirectionalLightDescriptor& desc)
+{
     m_matrices = {
         .viewMatT = glm::transpose(glm::lookAt(desc.position, desc.position + desc.target, util::makeUnitVec3y())),
         .projMat = glm::ortho(
@@ -23,7 +75,12 @@ DirectionalLight::DirectionalLight(DirectionalLightDescriptor desc)
             10.0f, 10'000.0f
         )
     };
+}
 
+//------------------------------------------------------------------------
+
+void DirectionalLight::setupFramebuffer()
+{
     m_framebuffer = m_mngr->createFramebuffer({
         .textureDesc = {
             .dims = m_shadowMapDims,
@@ -38,7 +95,12 @@ DirectionalLight::DirectionalLight(DirectionalLightDescriptor desc)
         .attachment = GL_DEPTH_ATTACHMENT,
         .mngr = m_mngr
     });
+}
 
+//------------------------------------------------------------------------
+
+void DirectionalLight::setupBuffers()
+{
     m_propsBuffer = m_mngr->createBuffer({
         .byteSize = sizeof(DirectionalLightProperties),
         .usage = BufferUsage::STORAGE
@@ -70,51 +132,6 @@ DirectionalLight::DirectionalLight(DirectionalLightDescriptor desc)
         * glm::mat4(glm::transpose(m_matrices.viewMatT))
     );
     buffer(m_shadowMatrixBuffer)->setData(&shadowMatrix);
-
-    m_pipeline = m_mngr->createPipeline(desc.shadowPassDesc);
-}
-
-//------------------------------------------------------------------------
-
-DirectionalLight::~DirectionalLight()
-{
-    m_mngr->destroy(m_framebuffer);
-    m_mngr->destroy(m_propsBuffer);
-    m_mngr->destroy(m_depthTextureBuffer);
-    m_mngr->destroy(m_pipeline);
-}
-
-//------------------------------------------------------------------------
-
-const Framebuffer* DirectionalLight::framebuffer() const noexcept
-{
-    return m_mngr->get(m_framebuffer);
-}
-
-//------------------------------------------------------------------------
-
-const Buffer* DirectionalLight::buffer(const Handle<Buffer>& handle) const noexcept
-{
-    return m_mngr->get(handle);
-}
-
-//------------------------------------------------------------------------
-
-const Pipeline* DirectionalLight::pipeline() const noexcept
-{
-    return m_mngr->get(m_pipeline);
-}
-
-//------------------------------------------------------------------------
-
-void DirectionalLight::prepareForRendering(const Handle<Buffer>& viewProjUniformBuffer) const noexcept
-{
-    framebuffer()->bind();
-    glViewport(0, 0, m_shadowMapDims.x, m_shadowMapDims.y);
-    pipeline()->bind();
-    buffer(viewProjUniformBuffer)->setData(&m_matrices);
-    //glEnable(GL_POLYGON_OFFSET_FILL);
-    //glPolygonOffset(2.0f, 4.0f);
 }
 
 //------------------------------------------------------------------------

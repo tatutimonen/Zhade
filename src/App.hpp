@@ -14,7 +14,7 @@ extern "C" {
 
 #include <array>
 #include <cstdint>
-#include <print>
+#include <fmt/core.h>
 #include <string_view>
 
 //------------------------------------------------------------------------
@@ -42,15 +42,15 @@ public:
     App(App&&) = default;
     App& operator=(App&&) = default;
            
-    GLFWwindow* getGLCtx() const noexcept { return m_window; }
-    float deltaTime() const noexcept { return ImGui::GetIO().DeltaTime; }
-    const GLFWState& getGLFWState() const noexcept { return s_state; }
+    GLFWwindow* getGLCtx() { return m_window; }
+    float deltaTime() { return ImGui::GetIO().DeltaTime; }
+    const GLFWState& getGLFWState() { return s_state; }
 
-    void init() const noexcept;
-    void updateAndRenderGUI() const noexcept;
+    void init();
+    void updateAndRenderGUI();
 
     // According to the GLFW input reference.
-    static void keyCallback(GLFWwindow* window, int key, [[maybe_unused]] int scancode, int action, int mode) noexcept
+    static void keyCallback(GLFWwindow* window, int key, [[maybe_unused]] int scancode, int action, int mode)
     {
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) [[unlikely]] {
             glfwSetWindowShouldClose(window, GL_TRUE);
@@ -59,7 +59,7 @@ public:
     }
 
     // According to the GLFW input reference.
-    static void mouseCallback([[maybe_unused]] GLFWwindow* window, double xPos, double yPos) noexcept
+    static void mouseCallback([[maybe_unused]] GLFWwindow* window, double xPos, double yPos)
     {
         static float xPosPrev = xPos;
         static float yPosPrev = yPos;
@@ -77,10 +77,10 @@ public:
     }
 
     static void debugCallback([[maybe_unused]] GLenum source, [[maybe_unused]] GLenum type, [[maybe_unused]] GLuint id,
-        GLenum severity, [[maybe_unused]] GLsizei length, const char* message, [[maybe_unused]] const void* userParam) noexcept
+        GLenum severity, [[maybe_unused]] GLsizei length, const char* message, [[maybe_unused]] const void* userParam)
     {
         if (severity == GL_DEBUG_SEVERITY_MEDIUM || severity == GL_DEBUG_SEVERITY_HIGH) [[unlikely]] {
-            std::println("{}", message);
+            fmt::println("{}", message);
         }
     }
 
@@ -91,7 +91,7 @@ public:
 private:
     static inline GLFWState s_state;
 
-    mutable GLFWwindow* m_window = nullptr;
+    GLFWwindow* m_window = nullptr;
 };
 
 //------------------------------------------------------------------------

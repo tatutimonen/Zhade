@@ -39,7 +39,7 @@ public:
     Model(Model&&) = delete;
     Model& operator=(Model&&) = delete;
 
-    void freeResources() const noexcept;
+    void freeResources();
 
 private:
     std::span<Mesh> m_meshes;

@@ -72,26 +72,26 @@ public:
     Buffer(Buffer&&) = delete;
     Buffer& operator=(Buffer&&) = delete;
 
-    void freeResources() const noexcept;
+    void freeResources();
 
-    [[nodiscard]] GLuint name() const noexcept { return m_name; }
-    [[nodiscard]] GLsizei byteSize() const noexcept { return m_writeOffset; }
-    [[nodiscard]] GLsizei wholeByteSize() const noexcept { return m_wholeByteSize; }
-
-    template<typename T>
-    [[nodiscard]] T* ptr() const noexcept { return std::bit_cast<T*>(m_ptr); }
+    [[nodiscard]] GLuint name() { return m_name; }
+    [[nodiscard]] GLsizei byteSize() { return m_writeOffset; }
+    [[nodiscard]] GLsizei wholeByteSize() { return m_wholeByteSize; }
 
     template<typename T>
-    [[nodiscard]] T* writePtr() const noexcept { return std::bit_cast<T*>(m_ptr + m_writeOffset); }
+    [[nodiscard]] T* ptr() { return std::bit_cast<T*>(m_ptr); }
 
     template<typename T>
-    [[nodiscard]] size_t size() const noexcept
+    [[nodiscard]] T* writePtr() { return std::bit_cast<T*>(m_ptr + m_writeOffset); }
+
+    template<typename T>
+    [[nodiscard]] size_t size()
     {
         return byteSize() / util::roundup(sizeof(T), BufferUsage2Alignment[m_usage]);
     }
 
     template<typename T>
-    std::span<T> pushData(const T* data, GLsizei size = 1) const noexcept
+    std::span<T> pushData(const T* data, GLsizei size = 1)
     {
         uint8_t* dst = m_ptr + m_writeOffset;
         const GLsizei byteSize = sizeof(T) * size;
@@ -101,22 +101,22 @@ public:
     }
 
     template<typename T>
-    void setData(const T* data, GLintptr byteOffset = 0, GLsizei size = 1) const noexcept
+    void setData(const T* data, GLintptr byteOffset = 0, GLsizei size = 1)
     {
         glNamedBufferSubData(m_name, byteOffset, sizeof(T) * size, std::bit_cast<const void*>(data));
     }
 
-    void bind() const noexcept;
-    void bindAs(BufferUsage::Type usage) const noexcept;
-    void bindBase(GLuint bindingIndex) const noexcept;
-    void bindBaseAs(GLuint bindingIndex, BufferUsage::Type usage) const noexcept;
-    void bindRange(GLuint bindingIndex, GLintptr byteOffset, GLsizeiptr byteSize) const noexcept;
-    void invalidate(GLintptr offset = 0, GLsizeiptr length = 0) const noexcept;
+    void bind();
+    void bindAs(BufferUsage::Type usage);
+    void bindBase(GLuint bindingIndex);
+    void bindBaseAs(GLuint bindingIndex, BufferUsage::Type usage);
+    void bindRange(GLuint bindingIndex, GLintptr byteOffset, GLsizeiptr byteSize);
+    void invalidate(GLintptr offset = 0, GLsizeiptr length = 0);
 
     static constexpr GLbitfield s_access = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
 
 private:
-    [[nodiscard]] GLsizeiptr calculateWriteOffsetIncrement(GLsizei byteSize) const noexcept
+    [[nodiscard]] GLsizeiptr calculateWriteOffsetIncrement(GLsizei byteSize)
     {
         return util::roundup(byteSize, BufferUsage2Alignment[m_usage]);
     }
@@ -125,7 +125,7 @@ private:
     BufferUsage::Type m_usage{};
     GLsizei m_wholeByteSize = 0;
     uint8_t* m_ptr = nullptr;
-    mutable GLsizeiptr m_writeOffset = 0;
+    GLsizeiptr m_writeOffset = 0;
     bool m_managed = true;
 };
 

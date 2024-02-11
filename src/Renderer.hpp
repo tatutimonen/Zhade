@@ -41,21 +41,21 @@ public:
     explicit Renderer(RendererDescriptor desc);
     ~Renderer();
 
-    [[nodiscard]] const Camera<CameraType::PERSPECTIVE>& camera() const noexcept { return m_camera; }
-    [[nodiscard]] const Scene& scene() const noexcept { return m_scene; }
+    [[nodiscard]] Camera<CameraType::PERSPECTIVE>& camera() { return m_camera; }
+    [[nodiscard]] Scene& scene() { return m_scene; }
 
-    void render() const noexcept;
+    void render();
 
 private:
-    [[nodiscard]] const Buffer* buffer(const Handle<Buffer>& handle) const noexcept { return m_mngr->get(handle); }
-    [[nodiscard]] const Pipeline* pipeline() const noexcept { return m_mngr->get(m_pipeline); }
+    [[nodiscard]] Buffer* buffer(const Handle<Buffer>& handle) { return m_mngr->get(handle); }
+    [[nodiscard]] Pipeline* pipeline() { return m_mngr->get(m_pipeline); }
 
-    void setupVAO() noexcept;
-    void setupBuffers(const RendererDescriptor& desc) noexcept;
-    void setupCamera(CameraDescriptor cameraDesc) noexcept;
-    void setupPipeline(PipelineDescriptor mainPassDesc) noexcept;
-    void populateBuffers() const noexcept;
-    void clearDrawCounter() const noexcept;
+    void setupVAO();
+    void setupBuffers(const RendererDescriptor& desc);
+    void setupCamera(CameraDescriptor cameraDesc);
+    void setupPipeline(PipelineDescriptor mainPassDesc);
+    void populateBuffers();
+    void clearDrawCounter();
 
     ResourceManager* m_mngr;
     Scene m_scene;

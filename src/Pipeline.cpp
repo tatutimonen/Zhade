@@ -2,7 +2,7 @@
 
 #include <format>
 #include <fstream>
-#include <print>
+#include <fmt/core.h>
 #include <sstream>
 #include <string_view>
 
@@ -36,7 +36,7 @@ Pipeline::~Pipeline()
 
 //------------------------------------------------------------------------
 
-void Pipeline::freeResources() const noexcept
+void Pipeline::freeResources()
 {
     glDeleteProgramPipelines(1, &m_name);
     for (const GLuint program : m_stages) {
@@ -51,11 +51,11 @@ void Pipeline::freeResources() const noexcept
 
 //------------------------------------------------------------------------
 
-std::string Pipeline::readFileContents(const fs::path& path) const noexcept
+std::string Pipeline::readFileContents(const fs::path& path)
 {
     std::ifstream file{path};
     if (file.bad()) [[unlikely]] {
-        std::println("Error reading shader from {}", path.string());
+        fmt::println("Error reading shader from {}", path.string());
         return "";
     }
     std::ostringstream osstream;
@@ -65,7 +65,7 @@ std::string Pipeline::readFileContents(const fs::path& path) const noexcept
 
 //------------------------------------------------------------------------
 
-GLuint Pipeline::createShaderProgramInclude(PipelineStage::Type stage, const fs::path& shaderPath) const noexcept
+GLuint Pipeline::createShaderProgramInclude(PipelineStage::Type stage, const fs::path& shaderPath)
 {
     const GLuint shader = glCreateShader(PipelineStage2GLShader[stage]);
     const std::string shaderSource = readFileContents(shaderPath);
@@ -73,12 +73,13 @@ GLuint Pipeline::createShaderProgramInclude(PipelineStage::Type stage, const fs:
     glShaderSource(shader, 1, &shaderSourceRaw, nullptr);
     static const GLchar* virtualIncludePaths[] = { "/" };
     glCompileShaderIncludeARB(shader, sizeof(virtualIncludePaths) / sizeof(GLchar*), virtualIncludePaths, nullptr);
+    
     GLint compileStatus = GL_FALSE;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &compileStatus);
     if (compileStatus == GL_FALSE) [[unlikely]] {
         GLchar infoLog[LOCAL_CHAR_BUF_SIZE];
         glGetShaderInfoLog(shader, sizeof(infoLog), nullptr, infoLog);
-        std::println("Error compiling shader {}: {}", shaderPath.string(), infoLog);
+        fmt::println("Error compiling shader {}: {}", shaderPath.string(), infoLog);
         return 0;
     }
 
@@ -88,12 +89,13 @@ GLuint Pipeline::createShaderProgramInclude(PipelineStage::Type stage, const fs:
     glLinkProgram(program);
     glDetachShader(program, shader);
     glDeleteShader(shader);
+    
     GLint linkStatus = GL_FALSE;
     glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);
     if (linkStatus == GL_FALSE) [[unlikely]] {
         GLchar infoLog[LOCAL_CHAR_BUF_SIZE];
         glGetProgramInfoLog(program, sizeof(infoLog), nullptr, infoLog);
-        std::println("Error linking shader {}: {}", shaderPath.string(), infoLog);
+        fmt::println("Error linking shader {}: {}", shaderPath.string(), infoLog);
         return 0;
     }
 
@@ -102,7 +104,7 @@ GLuint Pipeline::createShaderProgramInclude(PipelineStage::Type stage, const fs:
 
 //------------------------------------------------------------------------
 
-void Pipeline::setupHeaders() const noexcept
+void Pipeline::setupHeaders()
 {
     for (std::string_view header : m_headers) {
         const fs::path path = SOURCE_PATH / fs::path{header}.filename();
@@ -113,7 +115,7 @@ void Pipeline::setupHeaders() const noexcept
 
 //------------------------------------------------------------------------
 
-void Pipeline::setupStageProgram(PipelineStage::Type stage, const fs::path& shaderPath) noexcept
+void Pipeline::setupStageProgram(PipelineStage::Type stage, const fs::path& shaderPath)
 {
     if (shaderPath.empty()) return;
     m_stages[stage] = createShaderProgramInclude(stage, shaderPath);
@@ -122,15 +124,16 @@ void Pipeline::setupStageProgram(PipelineStage::Type stage, const fs::path& shad
 
 //------------------------------------------------------------------------
 
-void Pipeline::validate() const noexcept
+void Pipeline::validate()
 {
     glValidateProgramPipeline(m_name);
+
     GLint status = GL_FALSE;
     glGetProgramPipelineiv(m_name, GL_VALIDATE_STATUS, &status);
     if (status == GL_FALSE) [[unlikely]] {
         GLchar infoLog[LOCAL_CHAR_BUF_SIZE];
         glGetProgramPipelineInfoLog(m_name, sizeof(infoLog), nullptr, infoLog);
-        std::println("Error validating pipeline with ID {}: {}", m_name, infoLog);
+        fmt::println("Error validating pipeline with ID {}: {}", m_name, infoLog);
     }
 }
 

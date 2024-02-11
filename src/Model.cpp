@@ -27,7 +27,7 @@ Model::~Model()
 
 //------------------------------------------------------------------------
 
-void Model::freeResources() const noexcept
+void Model::freeResources()
 {
     for (const Handle<Texture>& texHandle : m_textures) {
         m_mngr->destroy(texHandle);

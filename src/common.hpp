@@ -7,7 +7,7 @@
 
 #include <cstdint>
 #include <filesystem>
-#include <print>
+#include <fmt/core.h>
 #include <ranges>
 
 namespace fs = std::filesystem;

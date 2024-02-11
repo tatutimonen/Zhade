@@ -35,11 +35,11 @@ public:
     Framebuffer(Framebuffer&&) = delete;
     Framebuffer& operator=(Framebuffer&&) = delete;
 
-    [[nodiscard]] GLuint name() const noexcept { return m_name; }
-    [[nodiscard]] const Texture* texture() const noexcept;
+    [[nodiscard]] GLuint name() { return m_name; }
+    [[nodiscard]] Texture* texture();
 
-    void bind(GLenum target = GL_FRAMEBUFFER) const noexcept { glBindFramebuffer(target, m_name); }
-    void freeResources() const noexcept;
+    void bind(GLenum target = GL_FRAMEBUFFER) { glBindFramebuffer(target, m_name); }
+    void freeResources();
 
 private:
 

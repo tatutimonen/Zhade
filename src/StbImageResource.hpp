@@ -7,7 +7,7 @@ extern "C" {
 }
 
 #include <bit>
-#include <print>
+#include <fmt/core.h>
 #include <utility>
 
 //------------------------------------------------------------------------
@@ -42,9 +42,9 @@ public:
         return *this;
     }
 
-    [[nodiscard]] const glm::ivec2& dims() const noexcept { return m_dims; }
-    [[nodiscard]] T* data() noexcept { return m_data; }
-    [[nodiscard]] const T* data() const noexcept { return m_data; }
+    [[nodiscard]] const glm::ivec2& dims() const { return m_dims; }
+    [[nodiscard]] T* data() { return m_data; }
+    [[nodiscard]] const T* data() const { return m_data; }
 
 private:
     void load(const fs::path& path)
@@ -59,7 +59,7 @@ private:
             m_data = stbi_loadf(pathStr.c_str(), &m_dims.x, &m_dims.y, nullptr, 4);
 
         if (m_data == nullptr) [[unlikely]] {
-            std::println("Error loading image data from {}", pathStr);
+            fmt::println("Error loading image data from {}", pathStr);
         }
     }
 

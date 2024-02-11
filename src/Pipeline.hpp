@@ -65,17 +65,17 @@ public:
     Pipeline(Pipeline&&) = delete;
     Pipeline& operator=(Pipeline&&) = delete;
 
-    void bind() const noexcept { glBindProgramPipeline(m_name); }
-    void freeResources() const noexcept;
+    void bind() { glBindProgramPipeline(m_name); }
+    void freeResources();
 
 private:
-    [[nodiscard]] std::string readFileContents(const fs::path& path) const noexcept;
+    [[nodiscard]] std::string readFileContents(const fs::path& path);
     [[nodiscard]] GLuint createShaderProgramInclude(PipelineStage::Type stage, const fs::path& shaderPath)
-        const noexcept;
+       ;
 
-    void setupHeaders() const noexcept;
-    void setupStageProgram(PipelineStage::Type stage, const fs::path& shaderPath) noexcept;
-    void validate() const noexcept;
+    void setupHeaders();
+    void setupStageProgram(PipelineStage::Type stage, const fs::path& shaderPath);
+    void validate();
 
     GLuint m_name = 0;
     std::array<GLuint, PipelineStage::NUM_SUPPORTED_STAGES> m_stages;

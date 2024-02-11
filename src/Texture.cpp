@@ -43,7 +43,7 @@ Texture::~Texture()
 
 //------------------------------------------------------------------------
 
-void Texture::freeResources() const noexcept
+void Texture::freeResources()
 {
     glMakeTextureHandleNonResidentARB(m_handle);
     glDeleteTextures(1, &m_texture);
@@ -52,14 +52,14 @@ void Texture::freeResources() const noexcept
 
 //------------------------------------------------------------------------
 
-void Texture::setData(const void* data, GLsizei depth) const noexcept
+void Texture::setData(const void* data, GLsizei depth)
 {
     glTextureSubImage2D(m_texture, 0, 0, 0, m_dims.x, m_dims.y, GL_RGBA, GL_UNSIGNED_BYTE, data);
 }
 
 //------------------------------------------------------------------------
 
-Handle<Texture> Texture::fromFile(ResourceManager* mngr, const fs::path& path, TextureDescriptor desc) noexcept
+Handle<Texture> Texture::fromFile(ResourceManager* mngr, const fs::path& path, TextureDescriptor desc)
 {
     if (s_cache.contains(path) and mngr->exists(s_cache[path])) {
         return s_cache[path];
@@ -81,7 +81,7 @@ Handle<Texture> Texture::fromFile(ResourceManager* mngr, const fs::path& path, T
 
 //------------------------------------------------------------------------
 
-Handle<Texture> Texture::makeDefault(ResourceManager* mngr) noexcept
+Handle<Texture> Texture::makeDefault(ResourceManager* mngr)
 {
     static constexpr TextureDescriptor desc{
         .dims = {1, 1},

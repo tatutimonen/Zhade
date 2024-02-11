@@ -45,18 +45,18 @@ public:
     ObjectPool(ObjectPool&&) = default;
     ObjectPool& operator=(ObjectPool&&) = default;
 
-    [[nodiscard]] size_t size() const noexcept { return m_size; }
+    [[nodiscard]] size_t size() { return m_size; }
 
     template<typename... Args>
     requires std::constructible_from<T, Args...>
-    [[nodiscard]] Handle<T> allocate(Args&& ...args) const noexcept
+    [[nodiscard]] Handle<T> allocate(Args&& ...args)
     {
         const Handle<T> handle = handleToNextFree();
         std::construct_at(&m_pool[handle.m_index], std::forward<Args>(args)...);
         return handle;
     }
 
-    [[nodiscard]] Handle<T> allocate(const T& item) const noexcept
+    [[nodiscard]] Handle<T> allocate(const T& item)
     requires std::copyable<T>
     {
         const Handle<T> handle = handleToNextFree();
@@ -64,7 +64,7 @@ public:
         return handle;
     }
 
-    [[nodiscard]] Handle<T> allocate(T&& item) const noexcept
+    [[nodiscard]] Handle<T> allocate(T&& item)
     requires std::movable<T>
     {
         const Handle<T> handle = handleToNextFree();
@@ -72,7 +72,7 @@ public:
         return handle;
     }
 
-    void deallocate(const Handle<T>& handle) const noexcept
+    void deallocate(const Handle<T>& handle)
     {
         const T* ptr = get(handle);
         if (ptr == nullptr) [[unlikely]] return;
@@ -82,7 +82,7 @@ public:
         ++m_generations[deallocIdx];
     }
 
-    [[nodiscard]] T* get(const Handle<T>& handle) const noexcept
+    [[nodiscard]] T* get(const Handle<T>& handle)
     {
         const uint32_t idx = handle.m_index;
         if (handle.m_generation < m_generations[idx]) [[unlikely]] return nullptr;
@@ -90,7 +90,7 @@ public:
     }
 
 private:
-    [[nodiscard]] Handle<T> handleToNextFree() const noexcept
+    [[nodiscard]] Handle<T> handleToNextFree()
     {
         if (m_freeList.size() == 0) [[unlikely]] resize();
         const uint32_t nextFreeIdx = m_freeList.top();
@@ -98,7 +98,7 @@ private:
         return Handle<T>(nextFreeIdx, ++m_generations[nextFreeIdx]);
     }
 
-    void resize() const noexcept
+    void resize()
     {
         const size_t size_prev = m_size;
         m_size = std::max(1ull, m_size) * DYNAMIC_STORAGE_GROWTH_FACTOR;
@@ -112,10 +112,10 @@ private:
         }
     }
 
-    mutable size_t m_size;
-    mutable std::vector<T> m_pool;
-    mutable std::vector<uint32_t> m_generations;
-    mutable Stack<uint32_t> m_freeList;
+    size_t m_size;
+    std::vector<T> m_pool;
+    std::vector<uint32_t> m_generations;
+    Stack<uint32_t> m_freeList;
 };
 
 //------------------------------------------------------------------------

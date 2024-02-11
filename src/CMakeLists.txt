@@ -28,4 +28,5 @@ target_link_libraries(${PROJECT_NAME}
             assimp::assimp
             imgui::imgui
             robin_hood::robin_hood
+            fmt::fmt
 )

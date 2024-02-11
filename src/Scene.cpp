@@ -42,7 +42,7 @@ Scene::~Scene()
 
 //------------------------------------------------------------------------
 
-void Scene::addModelFromFile(const fs::path& path) const noexcept
+void Scene::addModelFromFile(const fs::path& path)
 {
     if (m_modelCache.contains(path) and m_mngr->exists(m_modelCache[path])) {
         const Handle<Model>& modelHandle = m_modelCache[path];
@@ -73,7 +73,7 @@ void Scene::addModelFromFile(const fs::path& path) const noexcept
 //------------------------------------------------------------------------
 
 Mesh Scene::loadMesh(const aiScene* aiScenePtr, const aiMesh* aiMeshPtr, const fs::path& path,
-    Model* modelPtr) const noexcept
+    Model* modelPtr)
 {
     auto verticesFuture = std::async(
         std::launch::async,
@@ -107,7 +107,7 @@ Mesh Scene::loadMesh(const aiScene* aiScenePtr, const aiMesh* aiMeshPtr, const f
 
 //------------------------------------------------------------------------
 
-Scene::VerticesLoadInfo Scene::loadVertices(const aiMesh* aiMeshPtr) const noexcept
+Scene::VerticesLoadInfo Scene::loadVertices(const aiMesh* aiMeshPtr)
 {
     std::array<uint8_t, KIB_BYTES * 3> buf;
     std::pmr::monotonic_buffer_resource rsrc{buf.data(), buf.size()};
@@ -132,7 +132,7 @@ Scene::VerticesLoadInfo Scene::loadVertices(const aiMesh* aiMeshPtr) const noexc
 
 //------------------------------------------------------------------------
 
-Scene::IndicesLoadInfo Scene::loadIndices(const aiMesh* aiMeshPtr) const noexcept
+Scene::IndicesLoadInfo Scene::loadIndices(const aiMesh* aiMeshPtr)
 {
     std::array<uint8_t, KIB_BYTES> buf;
     std::pmr::monotonic_buffer_resource rsrc{buf.data(), buf.size()};
@@ -154,7 +154,7 @@ Scene::IndicesLoadInfo Scene::loadIndices(const aiMesh* aiMeshPtr) const noexcep
 //------------------------------------------------------------------------
 
 Handle<Texture> Scene::loadTexture(const aiMaterial* aiMaterialPtr, aiTextureType textureType, const fs::path& dir)
-    const noexcept
+   
 {
     if (aiMaterialPtr->GetTextureCount(textureType) == 0) [[unlikely]] {
         return m_defaultTexture;

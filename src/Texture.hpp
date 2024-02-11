@@ -46,17 +46,17 @@ public:
     Texture(Texture&&) = delete;
     Texture& operator=(Texture&&) = delete;
 
-    [[nodiscard]] GLuint name() const noexcept { return m_texture; }
-    [[nodiscard]] GLuint64 handle() const noexcept { return m_handle; }
-    [[nodiscard]] const glm::ivec2& dims() const noexcept { return m_dims; }
+    [[nodiscard]] GLuint name() { return m_texture; }
+    [[nodiscard]] GLuint64 handle() { return m_handle; }
+    [[nodiscard]] const glm::ivec2& dims() { return m_dims; }
 
-    void freeResources() const noexcept;
-    void generateMipmap() const noexcept { glGenerateTextureMipmap(m_texture); }
-    void setData(const void* data, GLsizei depth = 0) const noexcept;
+    void freeResources();
+    void generateMipmap() { glGenerateTextureMipmap(m_texture); }
+    void setData(const void* data, GLsizei depth = 0);
 
     [[nodiscard]] static Handle<Texture> fromFile(ResourceManager* mngr, const fs::path& path,
-        TextureDescriptor desc = TextureDescriptor{}) noexcept;
-    [[nodiscard]] static Handle<Texture> makeDefault(ResourceManager* mngr) noexcept;
+        TextureDescriptor desc = TextureDescriptor{});
+    [[nodiscard]] static Handle<Texture> makeDefault(ResourceManager* mngr);
 
     static inline robin_hood::unordered_map<fs::path, Handle<Texture>> s_cache;
 

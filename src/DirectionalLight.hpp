@@ -40,14 +40,18 @@ public:
     DirectionalLight(DirectionalLight&&) = delete;
     DirectionalLight& operator=(DirectionalLight&&) = delete;
 
-    [[nodiscard]] const glm::vec3& direction() const noexcept { return m_props.direction; }
+    [[nodiscard]] const glm::vec3& direction() { return m_props.direction; }
 
-    void prepareForRendering(const Handle<Buffer>& viewProjUniformBuffer) const noexcept;
+    void prepareForRendering(const Handle<Buffer>& viewProjUniformBuffer);
 
 private:
-    [[nodiscard]] const Framebuffer* framebuffer() const noexcept;
-    [[nodiscard]] const Buffer* buffer(const Handle<Buffer>& handle) const noexcept;
-    [[nodiscard]] const Pipeline* pipeline() const noexcept;
+    [[nodiscard]] Framebuffer* framebuffer();
+    [[nodiscard]] Buffer* buffer(const Handle<Buffer>& handle);
+    [[nodiscard]] Pipeline* pipeline();
+
+    void setupMatrices(const DirectionalLightDescriptor& desc);
+    void setupFramebuffer();
+    void setupBuffers();
 
     ResourceManager* m_mngr;
     DirectionalLightProperties m_props;

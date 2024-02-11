@@ -4,7 +4,7 @@
 
 #include <algorithm>
 #include <memory>
-#include <print>
+#include <fmt/core.h>
 #include <vector>
 
 //------------------------------------------------------------------------
@@ -25,12 +25,12 @@ public:
         }
     }
 
-    [[nodiscard]] size_t size() const noexcept { return m_size; }
+    [[nodiscard]] size_t size() { return m_size; }
 
     T& top()
     {
         if (m_size == 0) [[unlikely]] {
-            std::println("Top of an empty Stack");
+            fmt::println("Top of an empty Stack");
         }
         return at(m_size - 1);
     }
@@ -38,7 +38,7 @@ public:
     const T& top() const
     {
         if (m_size == 0) [[unlikely]] {
-            std::println("Top of an empty Stack");
+            fmt::println("Top of an empty Stack");
         }
         return at(m_size - 1);
     }
@@ -50,7 +50,7 @@ public:
         }
     }
 
-    void push(const T& item) noexcept
+    void push(const T& item)
     requires std::copyable<T>
     {
         if (m_size == m_underlying.size()) [[unlikely]] {
@@ -59,7 +59,7 @@ public:
         at(m_size++) = item;
     }
 
-    void push(T&& item) noexcept
+    void push(T&& item)
     requires std::movable<T>
     {
         if (m_size == m_underlying.size()) [[unlikely]] {
@@ -70,7 +70,7 @@ public:
 
     template<typename... Args>
     requires std::constructible_from<T, Args...>
-    void emplace(Args&& ...args) noexcept
+    void emplace(Args&& ...args)
     {
         if (m_size == m_underlying.size()) [[unlikely]] {   
             resize();
@@ -78,7 +78,7 @@ public:
         std::construct_at(&this[m_size++], std::forward<Args>(args)...);
     }
 
-    void resize(size_t size) noexcept
+    void resize(size_t size)
     {
         m_underlying.resize(size);
         m_size = std::min(m_size, m_underlying.size());
@@ -100,7 +100,7 @@ public:
     }
 
 private:
-    void resize() noexcept
+    void resize()
     {
         m_underlying.resize(std::max(1ull, m_size) * DYNAMIC_STORAGE_GROWTH_FACTOR);
     }

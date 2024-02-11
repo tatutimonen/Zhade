@@ -76,11 +76,11 @@ public:
     }
     Camera() = default;
 
-    [[nodiscard]] const glm::vec3& center() const noexcept { return m_settings.center; }
-    [[nodiscard]] const glm::vec3& target() const noexcept { return m_settings.target; }
-    [[nodiscard]] const glm::vec3& up() const noexcept { return m_settings.up; }
+    [[nodiscard]] const glm::vec3& center() { return m_settings.center; }
+    [[nodiscard]] const glm::vec3& target() { return m_settings.target; }
+    [[nodiscard]] const glm::vec3& up() { return m_settings.up; }
 
-    void update() const noexcept
+    void update()
     {
         const bool moved = move();
         const bool rotated = rotate();
@@ -91,20 +91,20 @@ public:
     }
 
     // According to the GLFW input reference.
-    static void scrollCallback([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xoffset, double yoffset) noexcept
+    static void scrollCallback([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xoffset, double yoffset)
     {
         s_cameraSpeed = std::max(1.0f, s_cameraSpeed + 2.0f * implicit_cast<float>(yoffset));
     }
 
 private:
-    const Buffer* uniformBuffer() const noexcept { return m_mngr->get(m_uniformBuffer); }
+    Buffer* uniformBuffer() { return m_mngr->get(m_uniformBuffer); }
 
-    void updateView() const noexcept
+    void updateView()
     {
         m_matrices.viewMatT = glm::transpose(glm::lookAt(m_settings.center, m_settings.center + m_settings.target, m_settings.up));
     }
 
-    void updateProjectivity() const noexcept
+    void updateProjectivity()
     {
         if constexpr (T == CameraType::PERSPECTIVE) {
             const auto [fov, aspectRatio] = std::get<PerspectiveSettings>(m_varSettings);
@@ -117,7 +117,7 @@ private:
         uniformBuffer()->setData<glm::mat4>(&m_matrices.projMat, offsetof(ViewProjMatrices, projMat));
     }
 
-    bool move() const noexcept
+    bool move()
     {
         [[maybe_unused]] const auto& [keys, pitch, yaw] = m_app->getGLFWState();
         const float cameraSpeed = s_cameraSpeed * m_app->deltaTime();
@@ -145,7 +145,7 @@ private:
         return false;
     }
 
-    bool rotate() const noexcept
+    bool rotate()
     {
         [[maybe_unused]] const auto& [keys, pitch, yaw] = m_app->getGLFWState();
 
@@ -166,9 +166,9 @@ private:
 
     static inline float s_cameraSpeed = 5.0f;
 
-    mutable CameraSettings m_settings;
-    mutable VarCameraSettings m_varSettings;
-    mutable ViewProjMatrices m_matrices;
+    CameraSettings m_settings;
+    VarCameraSettings m_varSettings;
+    ViewProjMatrices m_matrices;
     Handle<Buffer> m_uniformBuffer;
     ResourceManager* m_mngr;
     App* m_app;

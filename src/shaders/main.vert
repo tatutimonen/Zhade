@@ -27,19 +27,19 @@ out VERT_OUT {
 //------------------------------------------------------------------------
 // Uniforms etc.
 
-layout (binding = VIEW_PROJ_BINDING, std140) uniform ViewProj {
+layout (binding = VIEW_PROJ_BINDING, std140) uniform ViewProjBlock {
     ViewProjMatrices u_viewProj;
 };
 
-layout (binding = HALF_VECTOR_BINDING, std140) uniform HalfVector {
+layout (binding = HALF_VECTOR_BINDING, std140) uniform HalfVectorBlock {
     vec3 u_halfVector;
 };
 
-layout (binding = DRAW_METADATA_BINDING, std430) restrict readonly buffer DrawMeta {
+layout (binding = DRAW_METADATA_BINDING, std430) restrict readonly buffer DrawMetadataBlock {
     DrawMetadata b_meta[];
 };
 
-layout (binding = DIRECTIONAL_LIGHT_SHADOW_MATRIX_BINDING, std140) uniform ShadowMatrix {
+layout (binding = DIRECTIONAL_LIGHT_SHADOW_MATRIX_BINDING, std140) uniform ShadowMatrixBlock {
     mat4 u_shadowMat;
 };
 

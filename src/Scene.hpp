@@ -42,9 +42,9 @@ public:
     Scene(Scene&&) = delete;
     Scene& operator=(Scene&&) = delete;
 
-    [[nodiscard]] std::span<Handle<Model>> models() const noexcept { return m_models; }
+    [[nodiscard]] std::span<Handle<Model>> models() { return m_models; }
 
-    void addModelFromFile(const fs::path& path) const noexcept;
+    void addModelFromFile(const fs::path& path);
 
 private:
     struct VerticesLoadInfo
@@ -59,21 +59,21 @@ private:
     };
 
     [[nodiscard]] Mesh loadMesh(const aiScene* aiScenePtr, const aiMesh* aiMeshPtr, const fs::path& path,
-        Model* model) const noexcept;
-    [[nodiscard]] VerticesLoadInfo loadVertices(const aiMesh* aiMeshPtr) const noexcept;
-    [[nodiscard]] IndicesLoadInfo loadIndices(const aiMesh* aiMeshPtr) const noexcept;
+        Model* model);
+    [[nodiscard]] VerticesLoadInfo loadVertices(const aiMesh* aiMeshPtr);
+    [[nodiscard]] IndicesLoadInfo loadIndices(const aiMesh* aiMeshPtr);
     [[nodiscard]] Handle<Texture> loadTexture(const aiMaterial* aiMaterialPtr, aiTextureType textureType,
-        const fs::path& dir) const noexcept;
+        const fs::path& dir);
 
-    [[nodiscard]] const Buffer* buffer(const Handle<Buffer>& handle) const noexcept { return m_mngr->get(handle); }
+    [[nodiscard]] Buffer* buffer(const Handle<Buffer>& handle) { return m_mngr->get(handle); }
 
     Handle<Buffer> m_vertexBuffer;
     Handle<Buffer> m_indexBuffer;
     Handle<Buffer> m_meshBuffer;
     DirectionalLight m_sunLight;
     Handle<Texture> m_defaultTexture;
-    mutable std::vector<Handle<Model>> m_models;
-    mutable robin_hood::unordered_map<fs::path, Handle<Model>> m_modelCache;
+    std::vector<Handle<Model>> m_models;
+    robin_hood::unordered_map<fs::path, Handle<Model>> m_modelCache;
     ResourceManager* m_mngr;
 
     friend class Renderer;

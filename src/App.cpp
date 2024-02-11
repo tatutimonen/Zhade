@@ -22,7 +22,7 @@ App::~App()
 
 //------------------------------------------------------------------------
 
-void App::init() const noexcept
+void App::init()
 {
     // GLFW.
     glfwInit();
@@ -68,7 +68,7 @@ void App::init() const noexcept
 
 //------------------------------------------------------------------------
 
-void App::updateAndRenderGUI() const noexcept
+void App::updateAndRenderGUI()
 {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();

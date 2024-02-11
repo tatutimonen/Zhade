@@ -19,11 +19,11 @@ out gl_PerVertex {
 //------------------------------------------------------------------------
 // Uniforms etc.
 
-layout (binding = VIEW_PROJ_BINDING, std140) uniform ViewProj {
+layout (binding = VIEW_PROJ_BINDING, std140) uniform ViewProjBlock {
     ViewProjMatrices u_viewProj;
 };
 
-layout (binding = DRAW_METADATA_BINDING, std430) restrict readonly buffer DrawMeta {
+layout (binding = DRAW_METADATA_BINDING, std430) restrict readonly buffer DrawMetadataBlock {
     DrawMetadata b_meta[];
 };
 

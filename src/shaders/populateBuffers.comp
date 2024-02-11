@@ -9,24 +9,24 @@
 layout (
     local_size_x = WORK_GROUP_LOCAL_SIZE_X,
     local_size_y = WORK_GROUP_LOCAL_SIZE_Y,
-    local_size_y = WORK_GROUP_LOCAL_SIZE_Z
+    local_size_z = WORK_GROUP_LOCAL_SIZE_Z
 ) in;
 
 //------------------------------------------------------------------------
 // Inputs.
 
-layout (binding = MESH_BINDING, std140) restrict readonly buffer Meshes {
+layout (binding = MESH_BINDING, std140) restrict readonly buffer MeshBlock {
     Mesh b_mesh[];
 };
 
 //------------------------------------------------------------------------
 // Outputs.
 
-layout (binding = INDIRECT_BINDING, std430) restrict writeonly buffer DrawIndirect {
+layout (binding = INDIRECT_BINDING, std430) restrict writeonly buffer DrawIndirectBlock {
     DrawElementsIndirectCommand b_cmd[];
 };
 
-layout (binding = DRAW_METADATA_BINDING, std430) restrict writeonly buffer DrawMeta {
+layout (binding = DRAW_METADATA_BINDING, std430) restrict writeonly buffer DrawMetadataBlock {
     DrawMetadata b_meta[];
 };
 

@@ -2,7 +2,7 @@
 
 #include "ResourceManager.hpp"
 
-#include <print>
+#include <fmt/core.h>
 
 //------------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ Framebuffer::Framebuffer(FramebufferDescriptor desc)
     }
 
     if (glCheckNamedFramebufferStatus(m_name, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) [[unlikely]] {
-        std::println("Framebuffer {} is incomplete", m_name);
+        fmt::println("Framebuffer {} is incomplete", m_name);
     }
 }
 
@@ -39,7 +39,7 @@ Framebuffer::~Framebuffer()
 
 //------------------------------------------------------------------------
 
-void Framebuffer::freeResources() const noexcept
+void Framebuffer::freeResources()
 {
     m_mngr->destroy(m_texture);
     glDeleteFramebuffers(1, &m_name);
@@ -47,7 +47,7 @@ void Framebuffer::freeResources() const noexcept
 
 //------------------------------------------------------------------------
 
-const Texture* Framebuffer::texture() const noexcept
+Texture* Framebuffer::texture()
 {
     return m_mngr->get(m_texture);
 }
