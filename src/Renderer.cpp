@@ -1,13 +1,5 @@
 #include "Renderer.hpp"
 
-#include "common.hpp"
-
-#include <array>
-#include <cstring>
-#include <memory_resource>
-#include <numeric>
-#include <ranges>
-
 //------------------------------------------------------------------------
 
 namespace Zhade

@@ -6,7 +6,6 @@
 #include "Model.hpp"
 #include "ResourceManager.hpp"
 #include "Texture.hpp"
-#include "common.hpp"
 
 #include <assimp/scene.h>
 #include <robin_hood.h>

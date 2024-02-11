@@ -2,8 +2,6 @@
 
 #include "ResourceManager.hpp"
 
-#include <fmt/core.h>
-
 //------------------------------------------------------------------------
 
 namespace Zhade

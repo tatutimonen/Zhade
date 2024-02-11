@@ -1,8 +1,5 @@
 #include "Scene.hpp"
 
-#include "common.hpp"
-#include "util.hpp"
-
 #include <assimp/Importer.hpp>
 
 #include <array>
@@ -156,7 +153,7 @@ Scene::IndicesLoadInfo Scene::loadIndices(const aiMesh* aiMeshPtr)
 Handle<Texture> Scene::loadTexture(const aiMaterial* aiMaterialPtr, aiTextureType textureType, const fs::path& dir)
    
 {
-    if (aiMaterialPtr->GetTextureCount(textureType) == 0) [[unlikely]] {
+    if (aiMaterialPtr->GetTextureCount(textureType) == 0) {
         return m_defaultTexture;
     }
 

@@ -4,7 +4,6 @@
 
 #include <array>
 #include <string>
-#include <string_view>
 #include <vector>
 
 //------------------------------------------------------------------------
@@ -70,8 +69,7 @@ public:
 
 private:
     [[nodiscard]] std::string readFileContents(const fs::path& path);
-    [[nodiscard]] GLuint createShaderProgramInclude(PipelineStage::Type stage, const fs::path& shaderPath)
-       ;
+    [[nodiscard]] GLuint createShaderProgramInclude(PipelineStage::Type stage, const fs::path& shaderPath);
 
     void setupHeaders();
     void setupStageProgram(PipelineStage::Type stage, const fs::path& shaderPath);

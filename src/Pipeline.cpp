@@ -1,7 +1,5 @@
 #include "Pipeline.hpp"
 
-#include <fmt/core.h>
-
 #include <fstream>
 #include <sstream>
 #include <string_view>
@@ -53,7 +51,7 @@ void Pipeline::freeResources()
 std::string Pipeline::readFileContents(const fs::path& path)
 {
     std::ifstream file{path};
-    if (file.bad()) [[unlikely]] {
+    if (file.bad()) {
         fmt::println("Error reading shader from {}", path.string());
         return "";
     }
@@ -75,7 +73,7 @@ GLuint Pipeline::createShaderProgramInclude(PipelineStage::Type stage, const fs:
     
     GLint compileStatus = GL_FALSE;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &compileStatus);
-    if (compileStatus == GL_FALSE) [[unlikely]] {
+    if (compileStatus == GL_FALSE) {
         GLchar infoLog[LOCAL_CHAR_BUF_SIZE];
         glGetShaderInfoLog(shader, sizeof(infoLog), nullptr, infoLog);
         fmt::println("Error compiling shader {}: {}", shaderPath.string(), infoLog);
@@ -91,7 +89,7 @@ GLuint Pipeline::createShaderProgramInclude(PipelineStage::Type stage, const fs:
     
     GLint linkStatus = GL_FALSE;
     glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);
-    if (linkStatus == GL_FALSE) [[unlikely]] {
+    if (linkStatus == GL_FALSE) {
         GLchar infoLog[LOCAL_CHAR_BUF_SIZE];
         glGetProgramInfoLog(program, sizeof(infoLog), nullptr, infoLog);
         fmt::println("Error linking shader {}: {}", shaderPath.string(), infoLog);
@@ -129,7 +127,7 @@ void Pipeline::validate()
 
     GLint status = GL_FALSE;
     glGetProgramPipelineiv(m_name, GL_VALIDATE_STATUS, &status);
-    if (status == GL_FALSE) [[unlikely]] {
+    if (status == GL_FALSE) {
         GLchar infoLog[LOCAL_CHAR_BUF_SIZE];
         glGetProgramPipelineInfoLog(m_name, sizeof(infoLog), nullptr, infoLog);
         fmt::println("Error validating pipeline with ID {}: {}", m_name, infoLog);

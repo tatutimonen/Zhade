@@ -7,7 +7,6 @@
 #include "ObjectPool.hpp"
 #include "Pipeline.hpp"
 #include "Texture.hpp"
-#include "common.hpp"
 
 //------------------------------------------------------------------------
 

@@ -3,7 +3,6 @@
 #include "common.hpp"
 
 #include <algorithm>
-#include <memory>
 #include <vector>
 
 //------------------------------------------------------------------------

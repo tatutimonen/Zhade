@@ -2,13 +2,10 @@
 
 #include "Buffer.hpp"
 #include "Camera.hpp"
-#include "Framebuffer.hpp"
 #include "Handle.hpp"
 #include "Pipeline.hpp"
 #include "ResourceManager.hpp"
 #include "Scene.hpp"
-
-#include <optional>
 
 //------------------------------------------------------------------------
 
