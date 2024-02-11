@@ -3,12 +3,6 @@
 #include "common.hpp"
 
 #include <assimp/vector3.h>
-#include <glm/glm.hpp>
-extern "C" {
-#include <GL/glew.h>
-}
-
-#include <span>
 
 //------------------------------------------------------------------------
 
@@ -45,17 +39,17 @@ namespace util
 
 [[nodiscard]] inline glm::vec3 makeUnitVec3x()
 {
-    return glm::vec3(1.0f, 0.0f, 0.0f);
+    return glm::vec3{1.0f, 0.0f, 0.0f};
 }
 
 [[nodiscard]] inline glm::vec3 makeUnitVec3y()
 {
-    return glm::vec3(0.0f, 1.0f, 0.0f);
+    return glm::vec3{0.0f, 1.0f, 0.0f};
 }
 
 [[nodiscard]] inline glm::vec3 makeUnitVec3z()
 {
-    return glm::vec3(0.0f, 0.0f, 1.0f);
+    return glm::vec3{0.0f, 0.0f, 1.0f};
 }
 
 /*
@@ -75,44 +69,44 @@ namespace util
 
 [[nodiscard]] inline GLuint makeUnitVec3xPacked()
 {
-    return vec4ToINT_2_10_10_10_REV(glm::vec4(makeUnitVec3x(), 0.0f));
+    return vec4ToINT_2_10_10_10_REV(glm::vec4{makeUnitVec3x(), 0.0f});
 }
 
 [[nodiscard]] inline GLuint makeNegUnitVec3xPacked()
 {
-    return vec4ToINT_2_10_10_10_REV(glm::vec4(-makeUnitVec3x(), 0.0f));
+    return vec4ToINT_2_10_10_10_REV(glm::vec4{-makeUnitVec3x(), 0.0f});
 }
 
 [[nodiscard]] inline GLuint makeUnitVec3yPacked()
 {
-    return vec4ToINT_2_10_10_10_REV(glm::vec4(makeUnitVec3y(), 0.0f));
+    return vec4ToINT_2_10_10_10_REV(glm::vec4{makeUnitVec3y(), 0.0f});
 }
 
 [[nodiscard]] inline GLuint makeNegUnitVec3yPacked()
 {
-    return vec4ToINT_2_10_10_10_REV(glm::vec4(-makeUnitVec3y(), 0.0f));
+    return vec4ToINT_2_10_10_10_REV(glm::vec4{-makeUnitVec3y(), 0.0f});
 }
 
 [[nodiscard]] inline GLuint makeUnitVec3zPacked()
 {
-    return vec4ToINT_2_10_10_10_REV(glm::vec4(makeUnitVec3z(), 0.0f));
+    return vec4ToINT_2_10_10_10_REV(glm::vec4{makeUnitVec3z(), 0.0f});
 }
 
 [[nodiscard]] inline GLuint makeNegUnitVec3zPacked()
 {
-    return vec4ToINT_2_10_10_10_REV(glm::vec4(-makeUnitVec3z(), 0.0f));
+    return vec4ToINT_2_10_10_10_REV(glm::vec4{-makeUnitVec3z(), 0.0f});
 }
 
 //------------------------------------------------------------------------
 
 [[nodiscard]] inline glm::vec3 vec3FromAiVector3D(const aiVector3D& vec)
 {
-    return glm::vec3(vec.x, vec.y, vec.z);
+    return glm::vec3{vec.x, vec.y, vec.z};
 }
 
 [[nodiscard]] inline glm::vec2 vec2FromAiVector3D(const aiVector3D& vec)
 {
-    return glm::vec2(vec.x, vec.y);
+    return glm::vec2{vec.x, vec.y};
 }
 
 //------------------------------------------------------------------------
