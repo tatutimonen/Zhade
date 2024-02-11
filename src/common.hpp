@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common_defs.h"
+#include "util.hpp"
 
 #include <assimp/postprocess.h>
 #include <fmt/core.h>

@@ -101,7 +101,7 @@ private:
     void resize()
     {
         const size_t size_prev = m_size;
-        m_size = std::max(1ull, m_size) * DYNAMIC_STORAGE_GROWTH_FACTOR;
+        m_size = std::max(implicit_cast<size_t>(1), m_size) * DYNAMIC_STORAGE_GROWTH_FACTOR;
 
         m_pool.resize(m_size);
         m_generations.resize(m_size);

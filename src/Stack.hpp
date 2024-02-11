@@ -4,7 +4,6 @@
 
 #include <algorithm>
 #include <memory>
-#include <fmt/core.h>
 #include <vector>
 
 //------------------------------------------------------------------------
@@ -20,9 +19,7 @@ class Stack
 public:
     explicit Stack(size_t capacity = 0)
     {
-        if (capacity > 0) [[likely]] {
-            resize(capacity);
-        }
+        if (capacity > 0) resize(capacity);
     }
 
     [[nodiscard]] size_t size() { return m_size; }
@@ -102,7 +99,7 @@ public:
 private:
     void resize()
     {
-        m_underlying.resize(std::max(1ull, m_size) * DYNAMIC_STORAGE_GROWTH_FACTOR);
+        m_underlying.resize(std::max(implicit_cast<size_t>(1), m_size) * DYNAMIC_STORAGE_GROWTH_FACTOR);
     }
 
     std::vector<T> m_underlying;
