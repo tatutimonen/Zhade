@@ -84,21 +84,39 @@ void Renderer::setupVAO()
 
 void Renderer::setupBuffers(const RendererDescriptor& desc)
 {
-    m_commandBuffer = m_mngr->createBuffer(desc.commandBufferDesc);
-    buffer(m_commandBuffer)->bind();
-    buffer(m_commandBuffer)->bindBaseAs(INDIRECT_BINDING, BufferUsage::STORAGE);
+    m_commandBuffer = m_mngr->createBuffer({
+        .byteSize = MAX_DRAWS * sizeof(DrawElementsIndirectCommand),
+        .usage = BufferUsage::INDIRECT,
+        .bindings = { BufferUsage::INDIRECT },
+        .indexedBindings = {
+            {.target = BufferUsage::STORAGE, .index = INDIRECT_BINDING}
+        }
+    });
 
-    m_drawMetadataBuffer = m_mngr->createBuffer(desc.drawMetadataBuffer);
-    buffer(m_drawMetadataBuffer)->bindBase(DRAW_METADATA_BINDING);
-    
-    m_atomicDrawCounterBuffer = m_mngr->createBuffer({.byteSize = sizeof(GLuint), .usage = BufferUsage::ATOMIC_COUNTER});
-    buffer(m_atomicDrawCounterBuffer)->bindBase(ATOMIC_COUNTER_BINDING);
-    buffer(m_atomicDrawCounterBuffer)->bindAs(BufferUsage::PARAMETER);
-    
-    m_viewProjUniformBuffer = m_mngr->createBuffer({.byteSize = sizeof(ViewProjMatrices), .usage = BufferUsage::UNIFORM});
-    buffer(m_viewProjUniformBuffer)->bindBase(VIEW_PROJ_BINDING);
+    m_drawMetadataBuffer = m_mngr->createBuffer({
+        .byteSize = MAX_DRAWS * sizeof(DrawMetadata),
+        .usage = BufferUsage::STORAGE,
+        .indexedBindings = {
+            {.target = BufferUsage::STORAGE, .index = DRAW_METADATA_BINDING}
+        }
+    });
 
-    buffer(m_scene.m_meshBuffer)->bindBase(MESH_BINDING);
+    m_atomicDrawCounterBuffer = m_mngr->createBuffer({
+        .byteSize = sizeof(GLuint),
+        .usage = BufferUsage::ATOMIC_COUNTER,
+        .bindings = { BufferUsage::PARAMETER },
+        .indexedBindings = {
+            {.target = BufferUsage::ATOMIC_COUNTER, .index = ATOMIC_COUNTER_BINDING}
+        }
+    });
+
+    m_viewProjUniformBuffer = m_mngr->createBuffer({
+        .byteSize = sizeof(ViewProjMatrices),
+        .usage = BufferUsage::UNIFORM,
+        .indexedBindings = {
+            {.target = BufferUsage::UNIFORM, .index = VIEW_PROJ_BINDING}
+        }
+    });
 }
 
 //------------------------------------------------------------------------

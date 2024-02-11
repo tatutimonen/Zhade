@@ -22,14 +22,6 @@ struct RendererDescriptor
     ResourceManager* mngr;
     SceneDescriptor sceneDesc;
     CameraDescriptor cameraDesc;
-    BufferDescriptor commandBufferDesc{
-        .byteSize = MAX_DRAWS * sizeof(DrawElementsIndirectCommand),
-        .usage = BufferUsage::INDIRECT
-    };
-    BufferDescriptor drawMetadataBuffer{
-        .byteSize = MAX_DRAWS * sizeof(DrawMetadata),
-        .usage = BufferUsage::STORAGE
-    };
     PipelineDescriptor mainPassDesc;
 };
 

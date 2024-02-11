@@ -39,7 +39,7 @@ Pipeline::~Pipeline()
 void Pipeline::freeResources()
 {
     glDeleteProgramPipelines(1, &m_name);
-    for (const GLuint program : m_stages) {
+    for (GLuint program : m_stages) {
         if (glIsProgram(program)) {
             glDeleteProgram(program);
         }

@@ -22,7 +22,6 @@ struct ModelDescriptor
     std::vector<Handle<Texture>> textures;
     glm::mat4 mat{1.0f};
     ResourceManager* mngr = nullptr;
-    bool managed = true;
 };
 
 //------------------------------------------------------------------------
@@ -46,7 +45,6 @@ private:
     std::vector<Handle<Texture>> m_textures;
     glm::mat4 m_mat;
     ResourceManager* m_mngr = nullptr;
-    bool m_managed = true;
 
     friend class Scene;
 };

@@ -51,10 +51,18 @@ inline GLint BufferUsage2Alignment[] {
     1
 };
 
+struct IndexedBufferBinding
+{
+    BufferUsage::Type target;
+    GLuint index;
+};
+
 struct BufferDescriptor
 {
     GLsizei byteSize;
     BufferUsage::Type usage;
+    std::vector<BufferUsage::Type> bindings;
+    std::vector<IndexedBufferBinding> indexedBindings;
     bool managed = true;
 };
 
@@ -106,11 +114,8 @@ public:
         glNamedBufferSubData(m_name, byteOffset, sizeof(T) * size, std::bit_cast<const void*>(data));
     }
 
-    void bind();
     void bindAs(BufferUsage::Type usage);
-    void bindBase(GLuint bindingIndex);
     void bindBaseAs(GLuint bindingIndex, BufferUsage::Type usage);
-    void bindRange(GLuint bindingIndex, GLintptr byteOffset, GLsizeiptr byteSize);
     void invalidate(GLintptr offset = 0, GLsizeiptr length = 0);
 
     static constexpr GLbitfield s_access = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;

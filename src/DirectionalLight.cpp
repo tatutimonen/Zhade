@@ -11,12 +11,13 @@ namespace Zhade
 //------------------------------------------------------------------------
 
 DirectionalLight::DirectionalLight(DirectionalLightDescriptor desc)
-    : m_props{desc.props},
-      m_shadowMapDims{desc.shadowMapDims},
-      m_mngr{desc.mngr}
+    : m_mngr{desc.mngr},
+      m_props{desc.props},
+      m_shadowMapDims{desc.shadowMapDims}
 {
-    
-
+    setupMatrices(desc);
+    setupFramebuffer();
+    setupBuffers();
     m_pipeline = m_mngr->createPipeline(desc.shadowPassDesc);
 }
 
@@ -103,24 +104,30 @@ void DirectionalLight::setupBuffers()
 {
     m_propsBuffer = m_mngr->createBuffer({
         .byteSize = sizeof(DirectionalLightProperties),
-        .usage = BufferUsage::STORAGE
+        .usage = BufferUsage::STORAGE,
+        .indexedBindings = {
+            {.target = BufferUsage::STORAGE, .index = DIRECTIONAL_LIGHT_PROPS_BINDING}
+        }
     });
-    buffer(m_propsBuffer)->bindBase(DIRECTIONAL_LIGHT_PROPS_BINDING);
     buffer(m_propsBuffer)->setData(&m_props);
 
     m_depthTextureBuffer = m_mngr->createBuffer({
         .byteSize = sizeof(GLuint64),
-        .usage = BufferUsage::UNIFORM
+        .usage = BufferUsage::UNIFORM,
+        .indexedBindings = {
+            {.target = BufferUsage::UNIFORM, .index = DIRECTIONAL_LIGHT_DEPTH_TEXTURE_BINDING}
+        }
     });
-    buffer(m_depthTextureBuffer)->bindBase(DIRECTIONAL_LIGHT_DEPTH_TEXTURE_BINDING);
     const GLuint64 depthTextureHandle = framebuffer()->texture()->handle();
     buffer(m_depthTextureBuffer)->pushData(&depthTextureHandle);
 
     m_shadowMatrixBuffer = m_mngr->createBuffer({
         .byteSize = sizeof(glm::mat4),
-        .usage = BufferUsage::UNIFORM
+        .usage = BufferUsage::UNIFORM,
+        .indexedBindings = {
+            {.target = BufferUsage::UNIFORM, .index = DIRECTIONAL_LIGHT_SHADOW_MATRIX_BINDING}
+        }
     });
-    buffer(m_shadowMatrixBuffer)->bindBase(DIRECTIONAL_LIGHT_SHADOW_MATRIX_BINDING);
     const glm::mat4 shadowMatrix = (
         glm::mat4{
             0.5f, 0.0f, 0.0f, 0.5f,

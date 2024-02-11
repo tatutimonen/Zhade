@@ -23,9 +23,21 @@ namespace Zhade
 struct SceneDescriptor
 {
     ResourceManager* mngr;
-    BufferDescriptor vertexBufferDesc{.byteSize = GIB_BYTES/2, .usage = BufferUsage::VERTEX};
-    BufferDescriptor indexBufferDesc{.byteSize = GIB_BYTES/2, .usage = BufferUsage::INDEX};
-    BufferDescriptor meshBufferDesc{.byteSize = GIB_BYTES/4, .usage = BufferUsage::STORAGE};
+    BufferDescriptor vertexBufferDesc{
+        .byteSize = GIB_BYTES/2,
+        .usage = BufferUsage::VERTEX
+    };
+    BufferDescriptor indexBufferDesc{
+        .byteSize = GIB_BYTES/2,
+        .usage = BufferUsage::INDEX
+    };
+    BufferDescriptor meshBufferDesc{
+        .byteSize = GIB_BYTES/4,
+        .usage = BufferUsage::STORAGE,
+        .indexedBindings = {
+            {.target = BufferUsage::STORAGE, .index = MESH_BINDING}
+        }
+    };
     DirectionalLightDescriptor sunLightDesc;
 };
 
@@ -47,16 +59,8 @@ public:
     void addModelFromFile(const fs::path& path);
 
 private:
-    struct VerticesLoadInfo
-    {
-        GLuint base;
-    };
-
-    struct IndicesLoadInfo
-    {
-        GLuint base;
-        GLuint extent;
-    };
+    struct VerticesLoadInfo { GLuint base; };
+    struct IndicesLoadInfo { GLuint base; GLuint extent; };
 
     [[nodiscard]] Mesh loadMesh(const aiScene* aiScenePtr, const aiMesh* aiMeshPtr, const fs::path& path,
         Model* model);
@@ -67,6 +71,7 @@ private:
 
     [[nodiscard]] Buffer* buffer(const Handle<Buffer>& handle) { return m_mngr->get(handle); }
 
+    ResourceManager* m_mngr;
     Handle<Buffer> m_vertexBuffer;
     Handle<Buffer> m_indexBuffer;
     Handle<Buffer> m_meshBuffer;
@@ -74,7 +79,6 @@ private:
     Handle<Texture> m_defaultTexture;
     std::vector<Handle<Model>> m_models;
     robin_hood::unordered_map<fs::path, Handle<Model>> m_modelCache;
-    ResourceManager* m_mngr;
 
     friend class Renderer;
 };
