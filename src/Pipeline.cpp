@@ -30,8 +30,7 @@ Pipeline::Pipeline(PipelineDescriptor desc)
 
 Pipeline::~Pipeline()
 {
-    if (m_managed) [[likely]] return;
-    freeResources();
+    if (not m_managed) freeResources();
 }
 
 //------------------------------------------------------------------------

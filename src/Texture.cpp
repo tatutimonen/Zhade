@@ -37,8 +37,7 @@ Texture::Texture(TextureDescriptor desc)
 
 Texture::~Texture()
 {
-    if (m_managed) [[likely]] return;
-    freeResources();
+    if (not m_managed) freeResources();
 }
 
 //------------------------------------------------------------------------
@@ -65,7 +64,7 @@ Handle<Texture> Texture::fromFile(ResourceManager* mngr, const fs::path& path, T
         return s_cache[path];
     }
 
-    const StbImageResource img{path};
+    StbImageResource img{path};
     desc.dims = img.dims();
 
     desc.managed = true;

@@ -24,7 +24,7 @@ Framebuffer::Framebuffer(FramebufferDescriptor desc)
         glNamedFramebufferDrawBuffer(m_name, GL_NONE);
     }
 
-    if (glCheckNamedFramebufferStatus(m_name, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) [[unlikely]] {
+    if (glCheckNamedFramebufferStatus(m_name, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         fmt::println("Framebuffer {} is incomplete", m_name);
     }
 }
@@ -33,8 +33,7 @@ Framebuffer::Framebuffer(FramebufferDescriptor desc)
 
 Framebuffer::~Framebuffer()
 {
-    if (m_managed) [[likely]] return;
-    freeResources();
+    if (not m_managed) freeResources();
 }
 
 //------------------------------------------------------------------------

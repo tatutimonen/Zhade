@@ -6,8 +6,6 @@ extern "C" {
 #include <stb_image.h>
 }
 
-#include <bit>
-#include <fmt/core.h>
 #include <utility>
 
 //------------------------------------------------------------------------
@@ -42,9 +40,8 @@ public:
         return *this;
     }
 
-    [[nodiscard]] const glm::ivec2& dims() const { return m_dims; }
+    [[nodiscard]] const glm::ivec2& dims() { return m_dims; }
     [[nodiscard]] T* data() { return m_data; }
-    [[nodiscard]] const T* data() const { return m_data; }
 
 private:
     void load(const fs::path& path)
