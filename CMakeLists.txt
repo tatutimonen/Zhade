@@ -20,7 +20,7 @@ set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems
 set(VCPKG_BUILD_TYPE release)
 
 project(Zhade CXX)
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(WIN32)
@@ -35,14 +35,15 @@ endif()
 #-------------------------------------------------------------------------
 # Libraries.
 
+find_package(absl CONFIG REQUIRED)
+find_package(assimp CONFIG REQUIRED)
+find_package(fmt CONFIG REQUIRED)
 find_package(GLEW CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
-find_package(assimp CONFIG REQUIRED)
-find_path(STB_INCLUDE_DIRS "stb_c_lexer.h")
 find_package(imgui CONFIG REQUIRED)
 find_package(robin_hood CONFIG REQUIRED)
-find_package(fmt CONFIG REQUIRED)
+find_path(STB_INCLUDE_DIRS "stb_c_lexer.h")
 
 #-------------------------------------------------------------------------
 

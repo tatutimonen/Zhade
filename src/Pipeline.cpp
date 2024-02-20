@@ -12,7 +12,7 @@ namespace Zhade
 //------------------------------------------------------------------------
 
 Pipeline::Pipeline(PipelineDescriptor desc)
-    : m_headers{desc.headers},
+    : m_headers{desc.headers.cbegin(), desc.headers.cend()},
       m_managed{desc.managed}
 {
     glCreateProgramPipelines(1, &m_name);

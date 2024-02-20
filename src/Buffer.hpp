@@ -2,6 +2,8 @@
 
 #include "common.hpp"
 
+#include <absl/types/span.h>
+
 #include <bit>
 #include <cstring>
 #include <span>
@@ -60,8 +62,8 @@ struct BufferDescriptor
 {
     GLsizei byteSize;
     BufferUsage::Type usage;
-    std::vector<BufferUsage::Type> bindings;
-    std::vector<IndexedBufferBinding> indexedBindings;
+    absl::Span<const BufferUsage::Type> bindings;
+    absl::Span<const IndexedBufferBinding> indexedBindings;
     bool managed = true;
 };
 

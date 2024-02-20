@@ -136,7 +136,9 @@ Scene::IndicesLoadInfo Scene::loadIndices(const aiMesh* aiMeshPtr)
     std::pmr::vector<GLuint> indices{&rsrc};
 
     for (const aiFace& face : std::span{aiMeshPtr->mFaces, aiMeshPtr->mNumFaces}) {
-        indices.append_range(std::span{face.mIndices, face.mNumIndices});
+        for (auto idx : std::span{face.mIndices, face.mNumIndices}) {
+            indices.push_back(idx);
+        }
     }
 
     GLuint* indicesStart = buffer(m_indexBuffer)->writePtr<GLuint>();

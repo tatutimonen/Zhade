@@ -2,9 +2,11 @@
 
 #include "common.hpp"
 
+#include <absl/types/span.h>
+
 #include <array>
 #include <string>
-#include <vector>
+#include <string_view>
 
 //------------------------------------------------------------------------
 
@@ -46,7 +48,7 @@ struct PipelineDescriptor
     fs::path fragPath;
     fs::path geomPath{};
     fs::path compPath{};
-    std::vector<std::string> headers{"/common_defs.h"};
+    absl::Span<const std::string_view> headers{"/common_defs.h"};
     bool managed = true;
 };
 

@@ -2,16 +2,17 @@
     "name": "zhade",
     "version": "1.0",
     "dependencies": [
+        "abseil",
+        "assimp",
+        "fmt",
         "glew",
         "glfw3",
         "glm",
-        "assimp",
-        "stb",
         {
             "name": "imgui",
             "features": [ "glfw-binding", "opengl3-binding" ]
         },
         "robin-hood-hashing",
-        "fmt"
+        "stb"
     ]
 }

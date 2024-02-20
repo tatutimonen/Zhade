@@ -22,11 +22,12 @@ set(src_files
 add_executable(${PROJECT_NAME} ${src_files})
 
 target_link_libraries(${PROJECT_NAME}
-    PRIVATE GLEW::GLEW
+    PRIVATE absl::span
+            assimp::assimp
+            fmt::fmt
+            GLEW::GLEW
             glfw
             glm::glm
-            assimp::assimp
             imgui::imgui
             robin_hood::robin_hood
-            fmt::fmt
 )
