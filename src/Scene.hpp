@@ -53,6 +53,7 @@ public:
     Scene(Scene&&) = delete;
     Scene& operator=(Scene&&) = delete;
 
+    [[nodiscard]] const DirectionalLight& sun() { return m_sunLight; }
     [[nodiscard]] std::span<Handle<Model>> models() { return m_models; }
 
     void addModelFromFile(const fs::path& path);

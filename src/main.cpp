@@ -9,9 +9,9 @@ int main()
 {
     using namespace Zhade;
 
-    ResourceManager mngr{};
+    ResourceManager mngr;
 
-    App app{};
+    App app;
     app.init();
     {
         Renderer renderer{{
@@ -21,12 +21,12 @@ int main()
                 .sunLightDesc = {
                     .mngr = &mngr,
                     .props = {
-                        .direction = {1600.0f, 5300.0f, 920.0f},
+                        .direction = glm::vec3{0.273005, -0.960278, 0.057737},
                         .strength = 1.0f,
                         .color = {1.0f, 1.0f, 1.0f},
-                        .ambient = {1.0f, 1.0f, 1.0f}
+                        .ambient = {0.4f, 0.4f, 0.4f}
                     },
-                    .shadowMapDims = {1024, 1024},
+                    .shadowMapDims = {2048, 2048},
                     .shadowPassDesc = {
                         .vertPath = SHADER_PATH / "shadowMapDirectional.vert",
                         .fragPath = SHADER_PATH / "passthrough.frag",
@@ -54,6 +54,12 @@ int main()
             app.updateAndRenderGUI();
             glfwSwapBuffers(app.getGLCtx());
         }
+
+        fmt::println(
+            "{}, {}",
+            glm::to_string(renderer.camera().center()),
+            glm::to_string(renderer.camera().target())
+        );
     }
 
     return 0;

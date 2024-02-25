@@ -28,7 +28,7 @@ struct TextureDescriptor
     glm::ivec2 dims{256, 256};
     GLsizei levels = 8;
     GLenum internalFormat = GL_RGBA8;
-    SamplerDescriptor sampler{};
+    SamplerDescriptor sampler;
     bool managed = true;
 };
 

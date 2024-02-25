@@ -21,8 +21,7 @@ struct DirectionalLightDescriptor
 {
     ResourceManager* mngr;
     DirectionalLightProperties props;
-    glm::vec3 position{1600.0f, 5300.0f, 920.0f};
-    glm::vec3 target{};
+    glm::vec3 position{-1163.729858, 4203.104980, -258.124634};
     glm::ivec2 shadowMapDims;
     PipelineDescriptor shadowPassDesc;
 };
@@ -35,8 +34,8 @@ public:
     explicit DirectionalLight(DirectionalLightDescriptor desc);
     ~DirectionalLight();
 
-    DirectionalLight(const DirectionalLight&) = default;
-    DirectionalLight& operator=(const DirectionalLight&) = default;
+    DirectionalLight(const DirectionalLight&) = delete;
+    DirectionalLight& operator=(const DirectionalLight&) = delete;
     DirectionalLight(DirectionalLight&&) = delete;
     DirectionalLight& operator=(DirectionalLight&&) = delete;
 

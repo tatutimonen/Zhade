@@ -49,9 +49,9 @@ void main()
 {
     Out.uv = a_uv;
     Out.drawID = gl_DrawID;
-    vec3 modelPos = vec4(a_pos, 1.0) * b_meta[gl_DrawID].modelMatT;
-    vec3 viewModel = vec4(modelPos, 1.0) * u_viewProj.viewMatT;
-    Out.shadowCoord = u_shadowMat * vec4(modelPos, 1.0);
+    vec3 modelWorld = vec4(a_pos, 1.0) * b_meta[gl_DrawID].modelMatT;
+    vec3 viewModel = vec4(modelWorld, 1.0) * u_viewProj.viewMatT;
+    Out.shadowCoord = u_shadowMat * vec4(modelWorld, 1.0);
     gl_Position = u_viewProj.projMat * vec4(viewModel, 1.0);
 }
 

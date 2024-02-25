@@ -40,8 +40,9 @@ layout (binding = DIRECTIONAL_LIGHT_DEPTH_TEXTURE_BINDING, std140) uniform SunLi
 
 void main()
 {
+    vec4 diffuse = texture(makeSampler2D(diffuse), In.uv);
     float shadowFactor = textureProj(u_sunLightDepthTexture, In.shadowCoord);
-    FragColor = (1.0 - shadowFactor) * texture(makeSampler2D(diffuse), In.uv);
+    FragColor = shadowFactor * 0.7 * diffuse + vec4(b_sunLight.ambient, 1.0) * diffuse;
 }
 
 //------------------------------------------------------------------------

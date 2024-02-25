@@ -43,7 +43,10 @@ struct PerspectiveSettings
 
 struct OrthoSettings
 {
-    float xmin{}, xmax{App::s_windowWidth}, ymin{}, ymax{App::s_windowHeight};
+    float xmin = -0.5f * App::s_windowWidth;
+    float xmax = 0.5f * App::s_windowWidth;
+    float ymin = 0.5f * App::s_windowHeight;
+    float ymax = -0.5f * App::s_windowHeight;
 };
 
 using VarCameraSettings = std::variant<PerspectiveSettings, OrthoSettings>;

@@ -13,7 +13,7 @@ namespace Zhade
 // As described by Smith [https://youtu.be/SmlLdd1Q2V8].
 
 template<typename T>
-[[nodiscard]] constexpr T implicit_cast(std::type_identity_t<T> val)
+[[nodiscard]] constexpr T implicit_cast(std::type_identity_t<T> val) noexcept
 {
     return val;
 }

@@ -35,12 +35,10 @@ DirectionalLight::~DirectionalLight()
 
 void DirectionalLight::prepareForRendering(const Handle<Buffer>& viewProjUniformBuffer)
 {
-    framebuffer()->bind();
     glViewport(0, 0, m_shadowMapDims.x, m_shadowMapDims.y);
+    framebuffer()->bind();
     pipeline()->bind();
     buffer(viewProjUniformBuffer)->setData(&m_matrices);
-    //glEnable(GL_POLYGON_OFFSET_FILL);
-    //glPolygonOffset(2.0f, 4.0f);
 }
 
 //------------------------------------------------------------------------
@@ -68,13 +66,22 @@ Pipeline* DirectionalLight::pipeline()
 
 void DirectionalLight::setupMatrices(const DirectionalLightDescriptor& desc)
 {
+    auto makeOrtho = [](float extent, float near = 10.0f, float far = 10'000.0f)
+    {
+        return glm::ortho(
+            -extent, extent,
+            extent, -extent,
+            near, far
+        );
+    };
+
     m_matrices = {
-        .viewMatT = glm::transpose(glm::lookAt(desc.position, desc.position + desc.target, util::makeUnitVec3y())),
-        .projMat = glm::ortho(
-            0.0f, static_cast<float>(m_shadowMapDims.x),
-            0.0f, static_cast<float>(m_shadowMapDims.y), 
-            10.0f, 10'000.0f
-        )
+        .viewMatT = glm::transpose(glm::lookAt(
+            desc.position,
+            desc.position + desc.props.direction,
+            util::makeUnitVec3y()
+        )),
+        .projMat = makeOrtho(1000.0f)
     };
 }
 
@@ -90,6 +97,8 @@ void DirectionalLight::setupFramebuffer()
             .sampler = {
                 .wrapS = GL_CLAMP_TO_EDGE,
                 .wrapT = GL_CLAMP_TO_EDGE,
+                .magFilter = GL_LINEAR,
+                .minFilter = GL_LINEAR,
                 .anisotropy = 1.0f
             }
         },
@@ -119,7 +128,7 @@ void DirectionalLight::setupBuffers()
         }
     });
     const GLuint64 depthTextureHandle = framebuffer()->texture()->handle();
-    buffer(m_depthTextureBuffer)->pushData(&depthTextureHandle);
+    buffer(m_depthTextureBuffer)->setData(&depthTextureHandle);
 
     m_shadowMatrixBuffer = m_mngr->createBuffer({
         .byteSize = sizeof(glm::mat4),
@@ -130,10 +139,10 @@ void DirectionalLight::setupBuffers()
     });
     const glm::mat4 shadowMatrix = (
         glm::mat4{
-            0.5f, 0.0f, 0.0f, 0.5f,
-            0.0f, 0.5f, 0.0f, 0.5f,
-            0.0f, 0.0f, 0.5f, 0.5f,
-            0.0f, 0.0f, 0.0f, 1.0f
+            0.5f, 0.0f, 0.0f, 0.0f,
+            0.0f, 0.5f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.5f, 0.0f,
+            0.5f, 0.5f, 0.5f, 1.0f
         }
         * m_matrices.projMat
         * glm::mat4(glm::transpose(m_matrices.viewMatT))
