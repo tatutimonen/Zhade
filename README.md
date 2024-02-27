@@ -12,4 +12,4 @@
 
    3. Do `mkdir build; cd build; cmake ..` to generate platform-specific project files
 
-   4. Do `..\Invoke-CompileAndRun.ps1` or `../compile-and-run.sh` depending on your platform
+   4. Do `..\CompileAndRun.ps1` or `../compile-and-run.sh` depending on your platform
