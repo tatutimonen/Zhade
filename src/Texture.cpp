@@ -27,6 +27,8 @@ Texture::Texture(TextureDescriptor desc)
     if (desc.internalFormat == GL_DEPTH_COMPONENT32F) {  // Depth texture?
         glSamplerParameteri(m_sampler, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
         glSamplerParameteri(m_sampler, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+        static constexpr GLfloat ones[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+        glSamplerParameterfv(m_sampler, GL_TEXTURE_BORDER_COLOR, ones);
     }
 
     m_handle = glGetTextureSamplerHandleARB(m_texture, m_sampler);

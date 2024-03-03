@@ -36,8 +36,8 @@ void App::init()
     m_window = glfwCreateWindow(s_windowWidth, s_windowHeight, s_title.data(), nullptr, nullptr);
     glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwMakeContextCurrent(m_window);
-    glfwSetKeyCallback(m_window, keyCallback);
-    glfwSetCursorPosCallback(m_window, mouseCallback);
+    glfwSetKeyCallback(m_window, glfwKeyCallback);
+    glfwSetCursorPosCallback(m_window, glfwMouseCallback);
     glfwSetScrollCallback(m_window, Camera<>::scrollCallback);
 
     glfwSwapInterval(0);
@@ -47,7 +47,7 @@ void App::init()
     glewInit();
 
     // OpenGL.
-    glDebugMessageCallback(debugCallback, nullptr);
+    glDebugMessageCallback(glDebugCallback, nullptr);
     glClearColor(15.0f/255.0f, 46.0f/255.0f, 101.0f/255.0f, 1.0f);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);

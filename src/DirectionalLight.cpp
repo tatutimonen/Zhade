@@ -95,8 +95,8 @@ void DirectionalLight::setupFramebuffer()
             .levels = 1,
             .internalFormat = GL_DEPTH_COMPONENT32F,
             .sampler = {
-                .wrapS = GL_CLAMP_TO_EDGE,
-                .wrapT = GL_CLAMP_TO_EDGE,
+                .wrapS = GL_CLAMP_TO_BORDER,
+                .wrapT = GL_CLAMP_TO_BORDER,
                 .magFilter = GL_LINEAR,
                 .minFilter = GL_LINEAR,
                 .anisotropy = 1.0f
@@ -127,7 +127,7 @@ void DirectionalLight::setupBuffers()
             {.target = BufferUsage::UNIFORM, .index = DIRECTIONAL_LIGHT_DEPTH_TEXTURE_BINDING}
         }
     });
-    const GLuint64 depthTextureHandle = framebuffer()->texture()->handle();
+    GLuint64 depthTextureHandle = framebuffer()->texture()->handle();
     buffer(m_depthTextureBuffer)->setData(&depthTextureHandle);
 
     m_shadowMatrixBuffer = m_mngr->createBuffer({
@@ -137,7 +137,7 @@ void DirectionalLight::setupBuffers()
             {.target = BufferUsage::UNIFORM, .index = DIRECTIONAL_LIGHT_SHADOW_MATRIX_BINDING}
         }
     });
-    const glm::mat4 shadowMatrix = (
+    glm::mat4 shadowMatrix = (
         glm::mat4{
             0.5f, 0.0f, 0.0f, 0.0f,
             0.0f, 0.5f, 0.0f, 0.0f,

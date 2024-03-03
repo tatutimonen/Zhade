@@ -2,6 +2,7 @@
 
 #include "util.hpp"
 
+#include <fmt/core.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 extern "C" {
@@ -14,7 +15,6 @@ extern "C" {
 
 #include <array>
 #include <cstdint>
-#include <fmt/core.h>
 #include <string_view>
 
 //------------------------------------------------------------------------
@@ -39,10 +39,10 @@ public:
 
     App(const App&) = delete;
     App& operator=(const App&) = delete;
-    App(App&&) = default;
-    App& operator=(App&&) = default;
+    App(App&&) = delete;
+    App& operator=(App&&) = delete;
            
-    GLFWwindow* getGLCtx() { return m_window; }
+    GLFWwindow* glCtx() { return m_window; }
     float deltaTime() { return ImGui::GetIO().DeltaTime; }
     const GLFWState& getGLFWState() { return s_state; }
 
@@ -50,7 +50,7 @@ public:
     void updateAndRenderGUI();
 
     // According to the GLFW input reference.
-    static void keyCallback(GLFWwindow* window, int key, [[maybe_unused]] int scancode, int action, int mode)
+    static void glfwKeyCallback(GLFWwindow* window, int key, [[maybe_unused]] int scancode, int action, int mode)
     {
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) [[unlikely]] {
             glfwSetWindowShouldClose(window, GL_TRUE);
@@ -59,7 +59,7 @@ public:
     }
 
     // According to the GLFW input reference.
-    static void mouseCallback([[maybe_unused]] GLFWwindow* window, double xPos, double yPos)
+    static void glfwMouseCallback([[maybe_unused]] GLFWwindow* window, double xPos, double yPos)
     {
         static float xPosPrev = xPos;
         static float yPosPrev = yPos;
@@ -76,7 +76,7 @@ public:
         yPosPrev = yPos;
     }
 
-    static void debugCallback([[maybe_unused]] GLenum source, [[maybe_unused]] GLenum type, [[maybe_unused]] GLuint id,
+    static void glDebugCallback([[maybe_unused]] GLenum source, [[maybe_unused]] GLenum type, [[maybe_unused]] GLuint id,
         GLenum severity, [[maybe_unused]] GLsizei length, const char* message, [[maybe_unused]] const void* userParam)
     {
         if (severity == GL_DEBUG_SEVERITY_MEDIUM || severity == GL_DEBUG_SEVERITY_HIGH) [[unlikely]] {

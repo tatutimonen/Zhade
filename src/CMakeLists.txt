@@ -1,7 +1,9 @@
 set(src_files
     App.cpp
+    NewApp.cpp
     Buffer.cpp
     Camera.cpp
+    NewCamera.cpp
     DirectionalLight.cpp
     Framebuffer.cpp
     Handle.cpp

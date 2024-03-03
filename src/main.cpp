@@ -28,7 +28,7 @@ int main()
                     },
                     .shadowMapDims = {2048, 2048},
                     .shadowPassDesc = {
-                        .vertPath = SHADER_PATH / "shadowMapDirectional.vert",
+                        .vertPath = SHADER_PATH / "shadowMap.vert",
                         .fragPath = SHADER_PATH / "passthrough.frag",
                         .compPath = SHADER_PATH / "populateBuffers.comp"
                     }
@@ -46,20 +46,14 @@ int main()
 
         renderer.scene().addModelFromFile(ASSET_PATH / "crytek-sponza" / "sponza.obj");
 
-        while (not glfwWindowShouldClose(app.getGLCtx()))
+        while (not glfwWindowShouldClose(app.glCtx()))
         {
             glfwPollEvents();
             renderer.camera().update();
             renderer.render();
             app.updateAndRenderGUI();
-            glfwSwapBuffers(app.getGLCtx());
+            glfwSwapBuffers(app.glCtx());
         }
-
-        fmt::println(
-            "{}, {}",
-            glm::to_string(renderer.camera().center()),
-            glm::to_string(renderer.camera().target())
-        );
     }
 
     return 0;

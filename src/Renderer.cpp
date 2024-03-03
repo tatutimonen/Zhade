@@ -35,8 +35,10 @@ void Renderer::render()
 {
     m_scene.m_sunLight.prepareForRendering(m_viewProjUniformBuffer);
     populateBuffers();
+    //glCullFace(GL_FRONT);
     glClear(GL_DEPTH_BUFFER_BIT);
     glMultiDrawElementsIndirectCount(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, 0, MAX_DRAWS, 0);
+    //glCullFace(GL_BACK);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, App::s_windowWidth, App::s_windowHeight);

@@ -6,7 +6,11 @@
 #include <assimp/postprocess.h>
 #include <fmt/core.h>
 #include <glm/gtx/string_cast.hpp>
+extern "C" {
+#include <GLFW/glfw3.h>
+}
 
+#include <bitset>
 #include <cstdint>
 #include <filesystem>
 #include <ranges>
@@ -23,6 +27,8 @@ namespace Zhade
 {
 
 //------------------------------------------------------------------------
+
+using Keys = std::bitset<GLFW_KEY_LAST + 1>;
 
 struct Vertex
 {

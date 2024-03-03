@@ -37,25 +37,25 @@ namespace util
 
 //------------------------------------------------------------------------
 
-[[nodiscard]] inline glm::vec3 makeUnitVec3x()
+[[nodiscard]] constexpr glm::vec3 makeUnitVec3x()
 {
-    return glm::vec3{1.0f, 0.0f, 0.0f};
+    return glm::vec3{1, 0, 0};
 }
 
-[[nodiscard]] inline glm::vec3 makeUnitVec3y()
+[[nodiscard]] constexpr glm::vec3 makeUnitVec3y()
 {
-    return glm::vec3{0.0f, 1.0f, 0.0f};
+    return glm::vec3{0, 1, 0};
 }
 
-[[nodiscard]] inline glm::vec3 makeUnitVec3z()
+[[nodiscard]] constexpr glm::vec3 makeUnitVec3z()
 {
-    return glm::vec3{0.0f, 0.0f, 1.0f};
+    return glm::vec3{0, 0, 1};
 }
 
 /*
  * Adapted from: https://www.gamedev.net/forums/topic/685081-normal-vector-artifacts-with-nvmeshmender/5326137/.
  */
-[[nodiscard]] inline GLuint vec4ToINT_2_10_10_10_REV(const glm::vec4& v)
+[[nodiscard]] constexpr GLuint vec4ToINT_2_10_10_10_REV(const glm::vec4& v)
 {
     const GLuint xs = v.x < 0;
     const GLuint ys = v.y < 0;
@@ -67,34 +67,34 @@ namespace util
            xs <<  9 | (static_cast<GLuint>(v.x * 511 + (xs << 9)) & 511);
 }
 
-[[nodiscard]] inline GLuint makeUnitVec3xPacked()
+[[nodiscard]] constexpr GLuint makeUnitVec3xPacked()
 {
-    return vec4ToINT_2_10_10_10_REV(glm::vec4{makeUnitVec3x(), 0.0f});
+    return vec4ToINT_2_10_10_10_REV(glm::vec4{makeUnitVec3x(), 0});
 }
 
-[[nodiscard]] inline GLuint makeNegUnitVec3xPacked()
+[[nodiscard]] constexpr GLuint makeNegUnitVec3xPacked()
 {
-    return vec4ToINT_2_10_10_10_REV(glm::vec4{-makeUnitVec3x(), 0.0f});
+    return vec4ToINT_2_10_10_10_REV(glm::vec4{-makeUnitVec3x(), 0});
 }
 
-[[nodiscard]] inline GLuint makeUnitVec3yPacked()
+[[nodiscard]] constexpr GLuint makeUnitVec3yPacked()
 {
-    return vec4ToINT_2_10_10_10_REV(glm::vec4{makeUnitVec3y(), 0.0f});
+    return vec4ToINT_2_10_10_10_REV(glm::vec4{makeUnitVec3y(), 0});
 }
 
-[[nodiscard]] inline GLuint makeNegUnitVec3yPacked()
+[[nodiscard]] constexpr GLuint makeNegUnitVec3yPacked()
 {
-    return vec4ToINT_2_10_10_10_REV(glm::vec4{-makeUnitVec3y(), 0.0f});
+    return vec4ToINT_2_10_10_10_REV(glm::vec4{-makeUnitVec3y(), 0});
 }
 
-[[nodiscard]] inline GLuint makeUnitVec3zPacked()
+[[nodiscard]] constexpr GLuint makeUnitVec3zPacked()
 {
-    return vec4ToINT_2_10_10_10_REV(glm::vec4{makeUnitVec3z(), 0.0f});
+    return vec4ToINT_2_10_10_10_REV(glm::vec4{makeUnitVec3z(), 0});
 }
 
-[[nodiscard]] inline GLuint makeNegUnitVec3zPacked()
+[[nodiscard]] constexpr GLuint makeNegUnitVec3zPacked()
 {
-    return vec4ToINT_2_10_10_10_REV(glm::vec4{-makeUnitVec3z(), 0.0f});
+    return vec4ToINT_2_10_10_10_REV(glm::vec4{-makeUnitVec3z(), 0});
 }
 
 //------------------------------------------------------------------------
@@ -108,6 +108,17 @@ namespace util
 {
     return glm::vec2{vec.x, vec.y};
 }
+
+//------------------------------------------------------------------------
+
+inline constexpr glm::vec3 left{1, 0, 0};
+inline constexpr glm::vec3 right = -left;
+
+inline constexpr glm::vec3 up{0, 1, 0};
+inline constexpr glm::vec3 down = -up;
+
+inline constexpr glm::vec3 front{0, 0, 1};
+inline constexpr glm::vec3 back = -front;
 
 //------------------------------------------------------------------------
 
