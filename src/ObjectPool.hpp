@@ -15,8 +15,10 @@ namespace Zhade
 //------------------------------------------------------------------------
 // Inspired by: https://twitter.com/SebAaltonen/status/1535176343847043072.
 
-template<std::default_initializable T>
-class ObjectPool<T>
+//template<std::default_initializable T>
+template<typename T>
+requires (std::default_initializable<T>)
+class ObjectPool
 {
 public:
     explicit ObjectPool(size_t size = OBJECT_POOL_INIT_SIZE)

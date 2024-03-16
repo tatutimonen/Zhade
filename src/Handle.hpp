@@ -1,5 +1,6 @@
 #pragma once
 
+#include <concepts>
 #include <cstdint>
 
 //------------------------------------------------------------------------
@@ -11,7 +12,7 @@ namespace Zhade
 // Adapted from: https://twitter.com/SebAaltonen/status/1534416275828514817.
 
 template<typename T>
-class Handle
+class [[nodiscard]] Handle
 {
 public:
     Handle() = default;
@@ -24,6 +25,7 @@ private:
     uint32_t m_generation = 0;
 
     template<typename U>
+    requires (std::default_initializable<U>)
     friend class ObjectPool;
 };
 
